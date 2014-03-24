@@ -340,7 +340,8 @@ var User = (function () {
 		// initialize
 		users[this.userid] = this;
 	}
-
+	
+	User.prototype.namelock = false;
 	User.prototype.staffAccess = false;
 	User.prototype.goldDev = false;
 	User.prototype.isSysop = false;
@@ -657,6 +658,10 @@ var User = (function () {
 		}
 		if (users[userid] && !users[userid].authenticated && users[userid].connected && !auth) {
 			this.send('|nametaken|'+name+"|Someone is already using the name \""+users[userid].name+"\".");
+			return false;
+		}
+		if (this.namelock === true) {
+			this.send('|nametaken|'+name+"|You are namelock!");
 			return false;
 		}
 
