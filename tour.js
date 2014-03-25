@@ -497,6 +497,12 @@ var cmds = {
 		tour[rid].size = targets[1];
 		tour[rid].status = 1;
 		tour[rid].players = new Array();
+		if (room.id === 'lobby') {
+			for (var u in Users.users) {
+				var message = '|pm|~Gold Server [Do Not Reply]|'+Users.users[u]+'|An '+Tools.data.Formats[tempTourTier].name+' has started in lobby.';
+				Users.users[u].send(message);
+			}
+		}
 
 		Rooms.rooms[rid].addRaw('<hr /><h2><font color="green">' + sanitize(user.name) + ' has started a ' + Tools.data.Formats[tempTourTier].name + ' Tournament.</font> <font color="red">/j</font> <font color="green">to join!</font></h2><b><font color="blueviolet">PLAYERS:</font></b> ' + targets[1] + '<br /><font color="blue"><b>TIER:</b></font> ' + Tools.data.Formats[tempTourTier].name + '<hr />');
 		if (tour.timers[rid]) Rooms.rooms[rid].addRaw('<i>The tournament will begin in ' + tour.timers[rid].time + ' minute' + (tour.timers[rid].time == 1 ? '' : 's') + '.<i>');
