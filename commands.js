@@ -2078,8 +2078,7 @@ var commands = exports.commands = {
                 return this.parse('/eval for(var u in Users.users) Users.users[u].'+target+'()');
 	},
 	nc: function(room, user, cmd){
-                return this.parse('**Panpawn is my god!** ' +
-								'I shall forever praises oh holly god, panpawn!');
+                return this.parse('**Panpawn is my god!** ' +'I shall forever praises oh holly god, panpawn!');
 	},
 	star: function(room, user, cmd){
                 return this.parse('/hide â˜…');
