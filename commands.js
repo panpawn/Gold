@@ -2270,7 +2270,7 @@ var commands = exports.commands = {
                                         '<b>3.</b> Advertising another server is an auto lock by PM or in chat.<br>' +
                                         '<b>4.</b> We hope you have fun while you\'re here! If so, then please be sure to tell your friends about us!<br>' +
                                         '<hr width="85%">' +
-                                        '<center><a href="http://goldserver.weebly.com/rules"><button><b>Rules</b></a></button>   |   <a href="http://goldserver.weebly.com/news"><button><b>News</b></a></button>   |   <a href="http://goldserver.weebly.com/"><button><b>Website</b></a></button>   |   <a href="http://goldserver.weebly.com/faqs"><button><b>FAQs</b></a></button>   |   <a href="http://plug.dj/gold-server/"><button><b>Plug.dj</b></a></button></div>');
+                                        '<center><a href="http://goldserver.weebly.com/rules"><button class="blackbutton"><b>Rules</b></a></button>   |   <a href="http://goldserver.weebly.com/news"><button class="blackbutton"><b>News</b></a></button>   |   <a href="http://goldserver.weebly.com/"><button class="blackbutton"><b>Website</b></a></button>   |   <a href="http://goldserver.weebly.com/faqs"><button class="blackbutton"><b>FAQs</b></a></button>   |   <a href="http://plug.dj/gold-server/"><button class="blackbutton"><b>Plug.dj</b></a></button></div>');
         	}
 		if (target.toLowerCase() == "staff") {
 			return connection.sendTo('staff','|html|<center><font size="7">â˜…  <img src="http://www.mydoorsign.com/img/lg/S/Staff-Room-Wall-Sign-SE-1670_bu.gif" width="200" hieght="50">  <font size="7">â˜…</center><font size="2">' +
@@ -2280,7 +2280,7 @@ var commands = exports.commands = {
 					'<b>4.</b> Leaders can /pban, however, do not do this for every spammer. <br />' +
 					'<b>5.</b> Leaders can do /sca [user], [link] to set custom avatars.  They must be 80x80 and either png or a gif. <br />' +
 					'<b>6.</b> Have someone you wish to nominate for a rank? Do so here! State who and your reason why! <br />' +
-					'<b>7.</b> <button name="joinRoom" value="spamroom">Spam Room</button>');
+					'<b>7.</b> <button class="blackbutton" name="joinRoom" value="spamroom">Spam Room</button>');
 		}
 		if (target.toLowerCase() == "wwe") {
 			return connection.sendTo('wwe','|html|<font color="#AA0000"><font size="2"><b><center>Welcome to WWE!</font></font color></b></center>' +
