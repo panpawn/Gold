@@ -2305,7 +2305,7 @@ var commands = exports.commands = {
 	roomban: function(target, room, user, connection) {
 		if (!target) return this.parse('/help roomban');
 		if(room.id === 'lobby') {
-		return this.sendReply('|html|No! Bad! Do not use this command here!');
+		return this.sendReply('No! Bad! Do not use this command here!');
 		}
 		target = this.splitTarget(target, true);
 		var targetUser = this.targetUser;
