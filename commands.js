@@ -2502,7 +2502,9 @@ var commands = exports.commands = {
 	},
 	busy: function(target, room, user, connection) {
 		if (!this.can('lock')) return false;
-
+		if (user.name.slice[-6] === '- Busy') {
+			return this.sendReply('Mushy pls.');
+		}
 		if (!user.isAway) {
 			user.originalName = user.name;
 			var awayName = user.name + ' - Busy';
