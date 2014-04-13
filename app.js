@@ -449,3 +449,4 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 
 global.tour = require('./tour.js').tour();
 global.hangman = require('./hangman.js').hangman();
+global.profile = require('./profile.js');
