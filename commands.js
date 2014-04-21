@@ -2437,11 +2437,13 @@ var commands = exports.commands = {
          Users.users[u].send('|pm|~Staff PM|'+Users.users[u].group+Users.users[u].name+'|Attention: "'+user.userid+'" has submitted a **new room suggestion**. Please see staff room.'); } 
 		}
 	},
+	
 	roomreply: function(target, room, user) {
 		if (!target) return this.sendReply('/roomreply [user] - Denies a user of their recent room request.');
 		if (!this.can('pban')) return false;
-		var target = toUserid(target);
-		
+		if (target.toLowerCase() === 'zarel') return false;
+		target = toUserid(target);
+
 		Rooms.rooms.staff.add('|html|<b>'+target+'</b>\'s room request has been <font color="red">denied</font> by '+user.userid+'.');
 		Rooms.rooms.room.add('|html|<b>'+target+'</b>\'s room request has been <font color="red">denied</font> by '+user.userid+'.');	
 
