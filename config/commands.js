@@ -2590,6 +2590,14 @@ var commands = exports.commands = {
 		// secret sysop command
 		room.add(target);
 	},
+	
+	tnoff: function (target, room, user) {
+		this.parse('/ignore Tournament Notification')
+	}
+	
+	tnon: function (target, room, user) {
+		this.parse('/unignore Tournament Notification')
+	}
 
 	/*********************************************************
 	 * Help commands
