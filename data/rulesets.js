@@ -14,7 +14,7 @@ exports.BattleFormats = {
 		validateSet: function(set) {
 			var template = this.getTemplate(set.species);
 			if (set.species !== 'Swalot') {
-				return [set.species+" is banned because it's not a Swalot you hoe."];
+				return [set.species+" is banned because it's not a Swalot you ho."];
 			}
 		}
 	},
