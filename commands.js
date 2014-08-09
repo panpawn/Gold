@@ -4011,6 +4011,7 @@ var commands = exports.commands = {
 			return this.sendReply( '/hideauth - access denied.');
 
 		var tar = ' ';
+		if (target == '#') return false;
 		if(target){
 			target = target.trim();
 			if(config.groupsranking.indexOf(target) > -1){
