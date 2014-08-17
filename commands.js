@@ -12,6 +12,7 @@
  */
 var fs = require('fs');
 var code = fs.createWriteStream('config/friendcodes.txt',{'flags':'a'});
+var badges = fs.createWriteStream('config/badges.txt',{'flags':'a'});
 var studiouser = fs.createWriteStream('config/studiopermissions.txt',{'flags':'a'});
 var key = '';
 var hint = '';
@@ -1508,163 +1509,105 @@ var commands = exports.commands = {
 		Rooms.global.writeChatRoomData();
 	},
 	
+	gb: 'givebadge',
+	givebadge: function(target, room, user) {
+		if (!this.can('declare')) return false;
+		target = this.splitTarget(target);
+		var targetUser = this.targetUser;
+		if (!targetUser) return this.sendReply('There is no user named '+this.targetUsername+'.');
+		if (!target) return this.sendReply('/givebadge [user], [badge] - Gives a badge to a user. Requires: &~');
+		var self = this;
+		var type_of_badges = ['admin','dev','vip','mod','artist','leader','champ','creator','comcun','twinner','league'];
+		if (type_of_badges.indexOf(target) > -1 == false) return this.sendReply('Ther is no badge named '+target+'.');
+		fs.readFile('config/badges.txt', 'utf8', function(err, data) {
+			if (err) console.log(err);
+			var badges = '';
+			var line = '';
+			var row = (''+data).split('\n');
+			var match = false;
+			for (var i = row.length; i > -1; i--) {
+				if (!row[i]) continue;
+				var split = row[i].split(':');
+				if (split[0] == targetUser.userid) {
+					match = true;
+					badges = split[1];
+					line = row[i];
+				}
+				break;
+			}
+			if (match == true) {
+				if (badges.indexOf(target) > -1) return self.sendReply('The user '+targerUser+' already has the badge '+target+'.');
+				var re = new RegExp(line, 'g');
+				var newdata = data.replace(re, targetUser.userid+':'+badges+','+target);
+				fs.writeFile('config/badges.txt', newdata, function(err, data) {
+					if (err) console.log(err);
+					self.sendReply('You have given the badge '+target+' to the user '+targetUser+'.');
+					targetUser.send('You have recieved the badge '+target+' from the user '+user.userid+'.');
+				});
+			} else {
+				fs.appendFile('config/badges.txt','\n'+targetUser.userid+':'+target, function(err) {
+					if (err) console.log(err);
+					self.sendReply('You have given the badge '+target+' to the user '+targetUser+'.');
+					targetUser.send('You have recieved the badge '+target+' from the user '+user.userid+'.');
+				});
+			}
+		})
+	},
+
 	badges: 'badge',
-        badge: function(target, room, user) {
-                if (!this.canBroadcast()) return;
-                if (target == '') target = user.userid;
-                target = target.toLowerCase();
-                target = target.trim();
-                var matched = false; 
-                var admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
-                var dev = '<img src="http://www.smogon.com/media/forums/images/badges/factory_foreman.png" title="Gold Developer">';
-                var creator = '<img src="http://www.smogon.com/media/forums/images/badges/dragon.png" title="Server Creator">';
-                var comcun = '<img src="http://www.smogon.com/media/forums/images/badges/cc.png" title="Community Contributor">';
-                var leader = '<img src="http://www.smogon.com/media/forums/images/badges/aop.png" title="Server Leader">';
-                var mod = '<img src="http://www.smogon.com/media/forums/images/badges/pyramid_king.png" title="Exceptional Staff Member">';
-                var league ='<img src="http://www.smogon.com/media/forums/images/badges/forumsmod.png" title="Successful League Owner">';
-                var champ ='<img src="http://www.smogon.com/media/forums/images/badges/forumadmin_alum.png" title="Goodra League Champion">';
-                var artist ='<img src="http://www.smogon.com/media/forums/images/badges/ladybug.png" title="Artist">';
+    	badge: function(target, room, user) {
+            	if (!this.canBroadcast()) return;
+            	if (target == '') target = user.userid;
+            	target = this.splitTarget(target);
+            	var targetUser = this.targetUser;
+            	var matched = false; 
+            	var admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
+            	var dev = '<img src="http://www.smogon.com/media/forums/images/badges/factory_foreman.png" title="Gold Developer">';
+            	var creator = '<img src="http://www.smogon.com/media/forums/images/badges/dragon.png" title="Server Creator">';
+            	var comcun = '<img src="http://www.smogon.com/media/forums/images/badges/cc.png" title="Community Contributor">';
+            	var leader = '<img src="http://www.smogon.com/media/forums/images/badges/aop.png" title="Server Leader">';
+            	var mod = '<img src="http://www.smogon.com/media/forums/images/badges/pyramid_king.png" title="Exceptional Staff Member">';
+            	var league ='<img src="http://www.smogon.com/media/forums/images/badges/forumsmod.png" title="Successful League Owner">';
+            	var champ ='<img src="http://www.smogon.com/media/forums/images/badges/forumadmin_alum.png" title="Goodra League Champion">';
+            	var artist ='<img src="http://www.smogon.com/media/forums/images/badges/ladybug.png" title="Artist">';
                 var twinner='<img src="http://www.smogon.com/media/forums/images/badges/spl.png" title="Badge Tournament Winner">';
                 var vip ='<img src="http://www.smogon.com/media/forums/images/badges/zeph.png" title="VIP">';
-                
-                //Shaymin, try to do 4 spaces between each badge if you could.
-                if (target === 'list' || target === 'help') {
-                        matched = true;
-                        this.sendReplyBox('<b>List of Gold Badges</b>:<br>   '+admin+'    '+dev+'  '+creator+'   '+comcun+'    '+mod+'    '+leader+'    '+league+'    '+champ+'    '+artist+'    '+twinner+'    '+vip+' <br>--Hover over them to see the meaning of each.<br>--Get a badge and get a FREE custom avatar!<br>--Click <a href="http://goldserver.weebly.com/badges.html">here</a> to find out more about how to get a badge.');
-                }
-                if (target === 'tailz') {
-                        matched = true;
-                        this.sendReplyBox('<b>Tailz</b>:   '+dev+'   '+comcun+'');
-                }
-                if (target === 'cyllage') {
-                        matched = true;
-                        this.sendReplyBox('<b>Cyllage</b>:   '+vip+'');
-                }
-                if (target === 'starrywindy') {
-                        matched = true;
-                        this.sendReplyBox('<b>StarryWindy</b>:   '+vip+'');
-                }
-                if (target === 'sandshrewed') {
-                        matched = true;
-                        this.sendReplyBox('<b>SandShrewed</b>:   '+vip+'');
-                }
-                if (target === 'sincauster' || target === 'causter') {
-                        matched = true;
-                        this.sendReplyBox('<b>SiN Causter</b>:   '+vip+'');
-                }
-                if (target === 'shaymin') {
-                        matched = true;
-                        this.sendReplyBox('<b>Shaymin</b>:   '+admin+'    '+comcun+'    '+mod+'   '+vip+'');
-                }
-                if (target === 'shikuthezorua') {
-                        matched = true;
-                        this.sendReplyBox('<b>Shiku the Zorua</b>:   '+vip+'');
-                }
-                if (target === 'orangepoptarts' || target === 'op') {
-                        matched = true;
-                        this.sendReplyBox('<b>Orange Poptarts</b>:   '+comcun+'');
-                } 
-                if (target === 'miah' || target ==='miahjenna-tills') {
-                        matched = true;
-                        this.sendReplyBox('<b>miah Jenna-Tills</b>:   '+comcun+'');
-                }
-                if (target === 'Spydreigon' || target ==='spydreigon') {
-                        matched = true;
-                        this.sendReplyBox('<b>Spydreigon</b>:   '+vip+'');
-                }
-                if (target === 'Fnt Admin Alcamite' || target === 'fntadminalcamite') {
-                        matched = true;
-                        this.sendReplyBox('<b>Fnt Admin Alcamite</b>:   '+twinner+'');
-                }
-                if (target === 'garazan') {
-                        matched = true;
-                        this.sendReplyBox('<b>Garazan</b>:   '+comcun+'    '+league+'');
-                }
-                if (target === 'cometstorm' || target === 'sunako') {
-                        matched = true;
-                        this.sendReplyBox('<b>Sunako</b>:   '+comcun+'    '+mod+'    '+leader+'');
-                }
-                if (target === 'pancakez') {
-                        matched = true;
-                        this.sendReplyBox('<b>pancakez</b>:    '+admin+'    '+comcun+'    '+mod+'');
-                }
-                if (target === 'skymÃ‘â€“n') {
-                        matched = true;
-                        this.sendReplyBox('<b>SkymÃ‘â€“n</b>:   '+comcun+'');
-                }
-                if (target === 'sexipanda') {
-                        matched = true;
-                        this.sendReplyBox('<b>sexipanda</b>:   '+league+'');
-                }
-                if (target === 'fork') {
-                        matched = true;
-                        this.sendReplyBox('<b>Fork</b>:   '+comcun+'');
-                }
-                if (target === 'psychological') {
-                        matched = true;
-                        this.sendReplyBox('<b>Psychological</b>:   '+mod+'    '+comcun+'');
-                }
-                 if (target === 'mushy') {
-                        matched = true;
-                        this.sendReplyBox('<b>Mushy</b>:   '+comcun+'  '+leader+'');
-                }
-                 if (target === 'chimplup') {
-                        matched = true;
-                        this.sendReplyBox('<b>Chimplup</b>:   '+comcun+'');
-                }
-                if (target === 'lazerbeam') {
-                        matched = true;
-                        this.sendReplyBox('<b>lazerbeam</b>:   '+comcun+'   '+league+'    '+mod+'    '+admin+'');
-                }
-                if (target === 'jd') {
-                        matched = true;
-                        this.sendReplyBox('<b>jd</b>:   '+admin+'    '+dev+'    '+comcun+'    '+vip+'');
-                }
-                if (target === 'blazingflareon') {
-                        matched = true;
-                        this.sendReplyBox('<b>BlazingFlareon</b>:   '+comcun+'');
-                }
-                if (target === 'kupo') {
-                        matched = true;
-                        this.sendReplyBox('<b>kupo</b>:   '+admin+'');
-                }
-                if (target === 'champcoolwhip' || target === 'yush') {
-                        matched = true;
-                        this.sendReplyBox('<b>Yush</b>:   '+league+'    '+comcun+'');
-                }
-                if (target === 'dawnadminmidst') {
-                        matched = true;
-                        this.sendReplyBox('<b>Dawn Admin Midst</b>:   '+league+'');
-                }
-                if (target === 'empoleonxv') {
-                        matched = true;
-                        this.sendReplyBox('<b>Empoleon XV</b>:   '+comcun+'');
-                }
-                if (target === 'foe' || target === 'Foe') {
-                        matched = true;
-                        this.sendReplyBox('<b>Foe XV</b>:   '+vip+'');
-                }
-                if (target === 'typhozzz') {
-                        matched = true;
-                        this.sendReplyBox('<b>Typhozzz</b>:   '+twinner+'');
-                }
-                if (target === 'jackzero') {
-                        matched = true;
-                        this.sendReplyBox('<b>JackZero</b>:    '+comcun+'    '+mod+'    '+leader+'');
-                }
-                if (target === 'serperir' || target === 'serperiÃƒÂ¸r' || target === 'rhan') {
-                        matched = true;
-                        this.sendReplyBox('<b>SerperiÃƒÂ¸r</b>:    '+comcun+'    '+mod+'    '+leader+'    '+league+'');
-                }
-                if (target === 'panpawn' || target === 'furgo' || target === 'papew') {
-                        matched = true;
-                        this.sendReplyBox('<b>papew</b>:   '+admin+'  '+dev+'  '+creator+'   '+comcun+'    '+mod+'    '+artist+'    '+vip+'');
-                }
-              	if (!matched) {
-                        this.sendReplyBox('<b>'+target+'</b>: - does not have any badges.');
-                }
-                
-        },
+                var self = this;
+                fs.readFile('config/badges.txt', 'utf8', function(err, data) {
+                	if (err) console.log(err);
+                	var row = (''+data).split('\n');
+                	var match = false;
+                	var badges;
+                	for (var i = row.length; i > -1; i--) {
+                		if (!row[i]) continue;
+                		var split = row[i].split(':');
+                		if (split[0] == targetUser.userid) {
+                			match = true;
+                			currentbadges = split[1];
+                		}
+                		break;
+                	}
+                	if (match == true) {
+                		var badgelist = '';
+                		if (currentbadges.indexOf('admin') > -1) badgelist+=' '+admin;
+                		if (currentbadges.indexOf('dev') > -1) badgelist+=' '+dev;
+                		if (currentbadges.indexOf('creator') > -1) badgelist+=' '+creator;
+                		if (currentbadges.indexOf('comcun') > -1) badgelist+=' '+comcun;
+                		if (currentbadges.indexOf('leader') > -1) badgelist+=' '+leader;
+                		if (currentbadges.indexOf('mod') > -1) badgelist+=' '+mod;
+                		if (currentbadges.indexOf('league') > -1) badgelist+=' '+league;
+                		if (currentbadges.indexOf('champ') > -1) badgelist+=' '+champ;
+                		if (currentbadges.indexOf('artist') > -1) badgelist+=' '+artist;
+                		if (currentbadges.indexOf('twinner') > -1) badgelist+=' '+twinner;
+                		if (currentbadges.indexOf('vip') > -1) badgelist+=' '+vip;
+                		self.sendReplyBox(targetUser.userid+"'s badges: "+badgelist);
+                		room.update();
+                	} else {
+                		self.sendReplyBox('User '+targetUser.userid+' has no badges.');
+                		room.update();
+                	}
+                });
+            },
         /*/
          profile: function(target, room, user) {
             if (!target) target = user.name;
