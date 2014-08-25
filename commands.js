@@ -843,8 +843,10 @@ var commands = exports.commands = {
 		var price = 0;
 		if (target2 === 'symbol') {
 			price = 5;
-			if (price <= user.money) {
-				user.money = user.money - price;
+			if ((price <= user.money) || user.isVIP) {
+				if (!user.isVIP) {
+					user.money = user.money - price;
+				}
 				this.sendReply('You have purchased a custom symbol. You will have this until you log off for more than an hour.');
 				this.sendReply('Use /customsymbol [symbol] to change your symbol now!');
 				user.canCustomSymbol = true;
@@ -855,12 +857,14 @@ var commands = exports.commands = {
 		}
 		if (target[0] === 'custom') {
 			price = 35;
-			if (price <= user.money) {
+			if ((price <= user.money) || user.isVIP) {
+				if (!user.isVIP) {
+					user.money = user.money - price;
+				}
 				if (!target[1]) return this.sendReply('Please specify the avatar you would like you buy. It has a maximum size of 80x80 and must be in .png format. ex: /buy custom, [url to the avatar]');
        				var filename = target[1].split('.');
 				filename = '.'+filename.pop();
 				if (filename != ".png") return this.sendReply('Your avatar must be in .png format.');
-				user.money = user.money - price;
 				this.sendReply('You have purchased a custom avatar. Staff have been notified and it will be added in due time.');
 				user.canCustomAvatar = true;
 				Rooms.rooms.staff.add(user.name+' has purchased a custom avatar. Image: '+target[1]);
@@ -897,12 +901,14 @@ var commands = exports.commands = {
 		*/
 		if (target[0] === 'animated') {
 			price = 45;
-			if (price <= user.money) {
+			if ((price <= user.money) || user.isVIP) {
 				if (!target[1]) return this.sendReply('Please specify the avatar you would like you buy. It has a maximum size of 80x80 and must be in .gif format. ex: /buy animated, [url to the avatar]');
        				var filename = target[1].split('.');
 				filename = '.'+filename.pop();
 				if (filename != ".gif") return this.sendReply('Your avatar must be in .gif format.');
-				user.money = user.money - price;
+				if (!user.isVIP) {
+					user.money = user.money - price;
+				}
 				this.sendReply('You have purchased a custom animated avatar. Staff have been notified and it will be added in due time.');
 				user.canAnimatedAvatar = true;
 				Rooms.rooms.staff.add(user.name+' has purchased a custom animated avatar. Image: '+target[1]);
@@ -928,8 +934,10 @@ var commands = exports.commands = {
 		}
 		if (target2 === 'trainer') {
 			price = 60;
-			if (price <= user.money) {
-				user.money = user.money - price;
+			if ((price <= user.money) || user.isVIP) {
+				if (!user.isVIP) {
+					user.money = user.money - price;
+				}
 				this.sendReply('You have purchased a trainer card. You need to message an Admin capable of adding this (Panpawn / papew).');
 				user.canTrainerCard = true;
 				this.add(user.name + ' has purchased a trainer card!');
@@ -952,8 +960,10 @@ var commands = exports.commands = {
 		}
 		if (target2 === 'fix') {
 			price = 15;
-			if (price <= user.money) {
-				user.money = user.money - price;
+			if ((price <= user.money) || user.isVIP) {
+				if (!user.isVIP) {
+					user.money = user.money - price;
+				}
 				this.sendReply('You have purchased the ability to alter your avatar or trainer card. You need to message an Admin capable of adding this (Panpawn / papew).');
 				user.canFixItem = true;
 				this.add(user.name + ' has purchased the ability to set alter their card or avatar or music box!');
