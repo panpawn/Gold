@@ -446,7 +446,9 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 	}, (1).hour());
 });
 
-//global.tour = require('./tour.js').tour();
+global.Spamroom = require('./spamroom.js');
+
+//global.tour = new (require('./tour.js').tour)();
 global.hangman = require('./hangman.js').hangman();
 try {
 	global.economy = require('./economy.js');
