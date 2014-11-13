@@ -1840,7 +1840,8 @@ var commands = exports.commands = {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox('<div class="broadcast-blue"><center><font color="#A80000" size ="3"><b>Scizornician</b></font><br />' +
            '<b>Quote:</b> "It\'s all shits and giggles until someone giggles and shits."</font><br />' +
-           '<b>Quote:</b> "Light travels faster than sound, that\'s why some people appear bright before they speak."</font><br />' +
+           '<b>Quote:</b> "Light travels faster than sound, that\'s why some people appear bright before they speak."<br />' +
+           '<b>Quote:</b> "If you don\'t stand for something, you will fall for anything."</font><br />' +
            '<img src="http://107.191.104.240:8000/avatars/sciz.gif"></center></div>');
 	},
 
