@@ -2708,7 +2708,7 @@ var commands = exports.commands = {
     spamroom: 'shadowban',
     sban: 'shadowban',
     shadowban: function(target, room, user) {
-        if (!target) return this.parse('/help shadowban');
+        if (!target) return this.parse('Incorrect command syntax.');
 
         var params = this.splitTarget(target).split(',');
         var action = params[0].trim().toLowerCase();
@@ -2735,7 +2735,7 @@ var commands = exports.commands = {
     unspamroom: 'unshadowban',
     unsban: 'unshadowban',
     unshadowban: function(target, room, user) {
-        if (!target) return this.parse('/help unshadowban');
+        if (!target) return this.parse('Incorrect command syntax.');
         this.splitTarget(target);
 
         if (!this.can('lock')) return false;
