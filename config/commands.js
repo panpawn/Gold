@@ -2114,7 +2114,7 @@ var commands = exports.commands = {
             '4. <a href="https://www.youtube.com/watch?v=JCT5uTdPRgs"><button>Black Sabbath - N.I.B</a></button><br />' +
             '5. <a href="https://www.youtube.com/watch?v=as7p6VwnR5s"><button>Vexento - Praeclara</a></button><br />' +
             '6. <a href="https://www.youtube.com/watch?v=G5zdal1MKf0"><button>Volbeat - Doc Holiday</a></button><br />' +
-            '7. <a href="https://www.youtube.com/watch?v=VRFCMM3bra8"><button>Billy Talent - Viking Death March</a></button></center>');
+            '7. <a href="https://www.youtube.com/watch?v=1dcXmkco5ko"><button>Braken - To The Stars</a></button></center>');
     },
 
     silrbox: function(target, room, user) {
