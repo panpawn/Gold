@@ -98,5 +98,9 @@ exports.commands = {
 		if (!room.answers) room.answers = new Object();
 		room.answers[ips] = target.toLowerCase();
 		return this.sendReply('You are now voting for ' + target + '.');
+	},
+	tierpoll: function (target, room, user) {
+		if (!this.can('broadcast', null, room)) return;
+		this.parse('/poll Tournament tier?, ' + Object.keys(Tools.data.Formats).filter(function (f) { return Tools.data.Formats[f].effectType === 'Format'; }).join(", "));
 	}
 };
