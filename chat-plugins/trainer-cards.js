@@ -10,6 +10,25 @@ exports.commands = {
             '<font color="1752A6">"They call me Snow cause Im one cold motherfucker</center>');
     },
 
+    lando:  function(target, room, user) {
+        if (!this.canBroadcast()) return;
+        this.sendReplyBox('<center target="_blank"><br />' + 
+          '<marquee behavior="slide" direction="down" scrollamount="10">' +
+          '<img src="http://images.cooltext.com/4239380.png" height="115" target="_blank"></marquee>' + 
+          '<br target="_blank">' + 
+          '<img src="http://images.cooltext.com/4239387.png" target="_blank">' + 
+          '<img src="http://play.pokemonshowdown.com/sprites/xyani/landorus-therian.gif" target="_blank">' +
+          '<img src="http://play.pokemonshowdown.com/sprites/xyani/landorus.gif" target="_blank">' +
+          '<img src="http://images.cooltext.com/4239397.png" target="_blank">' +
+          '<img src="http://play.pokemonshowdown.com/sprites/xyani/sharpedo-mega.gif" target="_blank">' +
+          '<img src="http://play.pokemonshowdown.com/sprites/xyani/houndoom-mega.gif" target="_blank">' +
+          '<img src="http://play.pokemonshowdown.com/sprites/xyani/sableye-mega.gif" target="_blank">' +
+          '<br target="_blank"><b target="_blank">Ace:</b> Randorosu' +
+          '<br target="_blank"><b target="_blank">Monotype Specialty:</b> GrounDark' +
+          '<br target="_blank">"Friends are what the heart needs all the time, even if some more than others.' +
+          '<button type="button">Click for leh internet hearts! :D</button></center>');
+     },
+   
     beno: function(target, room, user) {
         if (!this.canBroadcast()) return;
         this.sendReplyBox('<center><img src="http://fc06.deviantart.net/fs29/f/2008/092/4/c/NOT_MY_MUDKIP_by_joeywaii.jpg" width="250">' +
