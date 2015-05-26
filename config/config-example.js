@@ -245,7 +245,7 @@ exports.grouplist = [
 		potd: true,
 		disableladder: true,
 		roommod: true,
-		roomdriver, true,
+		roomdriver: true,
 		tournamentsmanagement: true
 	},
 	{
