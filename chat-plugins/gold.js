@@ -710,6 +710,8 @@ exports.commands = {
 				case 'eating':
 					awayName = user.name + ' - Ⓔⓐⓣⓘⓝⓖ';
 					break;
+				case 'afk':
+					awayName = user.name + ' - ⒶⒻⓀ'
 				default:
 					awayName = user.name + ' - Ⓐⓦⓐⓨ';
 			}
