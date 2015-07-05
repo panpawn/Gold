@@ -2306,7 +2306,7 @@ exports.commands = {
 		if (target.length > 15) return this.sendReply('This new room suggestion is too long; it cannot exceed 15 characters.');
 		if (!this.canTalk()) return;
 		Rooms.rooms.room.add('|html|<font size="4"><b>New color guessed!</b></font><br><b>Guessed by:</b> ' + user.userid + '<br><b>Color:</b> ' + target + '');
-		this.sendReply('Thanks, your new color guess has been sent.  We\'ll review your color soon and get back to you. ("' + target + '")');
+		this.sendReply("Thanks, your new color guess has been sent.  We\'ll review your color soon and get back to you. ("' + target + '")");
 	},
 	/*****************
 	 * Money commands *
