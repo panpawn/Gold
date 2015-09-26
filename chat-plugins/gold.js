@@ -291,10 +291,6 @@ exports.commands = {
 			'<center><button name="send" value="/challenge ponybot, challengecup1vs1" class="blackbutton" title="Challenge Cup 1vs1 Battle!"><font size="white">Click here for a CC1vs1 battle!'
 		);
 	},
-	css: function(target, room, user, connection) {
-		var css = fs.readFileSync('config/custom.css', 'utf8');
-		return user.send('|popup|' + css);
-	},
 	pbl: 'pbanlist',
 	permabanlist: 'pbanlist',
 	pbanlist: function(target, room, user, connection) {
@@ -305,11 +301,6 @@ exports.commands = {
 	vault: function(target, room, user, connection) {
 		var money = fs.readFileSync('config/money.csv', 'utf8');
 		return user.send('|popup|' + money);
-	},
-	s: 'spank',
-	spank: function(target, room, user) {
-		if (!target) return this.sendReply('/spank needs a target.');
-		return this.parse('/me spanks ' + target + '!');
 	},
 	bitch: 'complain',
 	report: 'complain',
@@ -327,37 +318,6 @@ exports.commands = {
 			if ((Users.users[u].group == "~" || Users.users[u].group == "&" || Users.users[u].group == "@" || Users.users[u].group == "%") && Users.users[u].connected)
 				Users.users[u].send('|pm|~Server|' + Users.users[u].getIdentity() + '|' + user.userid + ' (in ' + room.id + ') has reported: ' + target + '');
 	},
-
-	//New Room Commands
-	/*
-	newroomcommands: function(target, room, user) {
-		if (!this.canBroadcast()) return;
-		this.sendReplyBox('<b>New Room Commands</b><br>' +
-			'-/newroomfaq - Shows an FAQ for making a new room.<br>' +
-			'-/newroomquestions - A command with a list of questions for a future room founder to answer.<br>' +
-			'-/newroom - A command a future room founder will use to answer /newroomquestion\'s questions.<br>' +
-			'-/roomreply [user] - Denies a user of a room. Requires &, ~.');
-	},
-	newroomfaq: function(target, room, user) {
-		if (!this.canBroadcast()) return;
-		this.sendReplyBox('So, you\'re interested in making a new room on Gold, aye? Well, the process is rather simple, really! Do /newroomquestions and answer those questions with your answers and staff will review them to consider making your room!');
-	},
-	newroomquestions: function(target, room, user) {
-		if (!this.canBroadcast()) return;
-		this.sendReplyBox('<b>New Room Questions:</b><br>' +
-			'Directions: Using the "/newroom" command, answer the following and <i>number</i> your answers on one line.<br>' +
-			'1. Prefered room name?<br>' +
-			'2. Is this a new room, or does it already have an established user base to it that will follow it here?<br>' +
-			'3. How many new users do you honestly think it will attract to the server?<br>' +
-			'4. Are you willing to enforce the <a href="http://goldservers.info/forums/showthread.php?tid=61">servers rules</a> as well as your room\'s rules in your room?<br>' +
-			'5. Do you have a website for your room? If not, do you plan to create one?<br>' +
-			'6. What makes your room different than all the others?<br><br>' +
-			'<b>Things to Note:</b><br>' +
-			'-Even if you do get a room on Gold, if it isn\'t active or you or your members make a severe offense against our rules than we have a right to delete it.  After all, owning any room is a responsibility and a privilege, not a right.<br>' +
-			'-If your room is successful and active on the server for a months time, it will qualify for a welcome message when users join the room!<br>' +
-			'-Remember, you get global voice by contributing to the server; so if your room is successful for a while, that is contribution to the server and you *could* get global voice as a result!');
-	},
-	*/
 	newroom: 'newroomquestions',
 	newroomcommands: 'newroomquestions',
 	newroomfaq: 'newroomquestions',
