@@ -144,7 +144,7 @@ body {
 	font:10pt Verdana,sans-serif;
 	white-space:nowrap
 }
-.userlist li em.group {
+.userlist li .group {
 	font-style:normal;
 	font-size:8pt;
 	color:#000;
