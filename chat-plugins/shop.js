@@ -352,25 +352,22 @@ exports.commands = {
 		var bucks = economy.readMoney(toId(target)) || 'does not have any';
 		if (parseInt(bucks)) bucks = 'has ' + bucks;
 		var output = '<u>Gold Wallet:</u><br />' + 
-			'<b><span style = "color:' + Gold.hashColor(target) + '">' + Tools.escapeHTML(target) + '</font></b> ' + bucks + ' Gold ' +
-			(bucks === 1 ? 'buck' : 'bucks');
+			'<b><span style = "color:' + Gold.hashColor(target) + '">' + Tools.escapeHTML(target) + '</span></b> ' + bucks + ' Gold ' + (bucks === 1 ? 'buck' : 'bucks');
 		return this.sendReplyBox(output);
 	},
 	whosgotthemoneyz: 'richestusers',
 	richestuser: 'richestusers',
 	richestusers: function(target, room, user) {
 		if (!this.canBroadcast()) return;
-		var buckList = fs.readFileSync('config/money.csv', 'utf8')
-			.split('\n')
-			.map(function (line) {
+		var buckList = fs.readFileSync('config/money.csv', 'utf8').split('\n').map(function (line) {
 				return line.split(',');
-			})
-			.sort(function (a, b) {
+			}).sort(function (a, b) {
 				return parseInt(b[1]) - parseInt(a[1]);
 			});
-		var total = [];
+		var username, total = [];
 		for (var i = 0; i < 10; i++) {
-			total.push((i + 1) + '. ' + (Users.getExact(buckList[0]) ? Users.getExact(buckList[0]).name : buckList[0]) + ': ' + buckList[1]);
+			username = (Users.getExact(buckList[0]) ? Users.getExact(buckList[0]).name : buckList[0]);
+			total.push((i + 1) + '. <b style = "color: ' + Gold.hashColor(username) + '">' + username + ': </b>' + buckList[1]);
 		}
 		return this.sendReplyBox('<b>The richest users are:</b><br>' + total.join('<br>'));
 	},
