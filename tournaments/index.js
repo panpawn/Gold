@@ -686,12 +686,15 @@ Tournament = (function () {
 	Tournament.prototype.onBattleWin = function (room, winner) {
 		var from = Users.get(room.p1);
 		var to = Users.get(room.p2);
+		var tourSize = this.generator.getUsers().length;
 
 		var result = 'draw';
 		if (from === winner) {
 			result = 'win';
+			if (this.room.id === 'lobby' && tourSize >= 4  && room.battle.endType !== 'forced') Ladders('tournaments').updateRating(from.name, to.name, 1, room);
 		} else if (to === winner) {
 			result = 'loss';
+			if (this.room.id === 'lobby' && tourSize >= 4  && room.battle.endType !== 'forced') Ladders('tournaments').updateRating(from.name, to.name, 0, room);
 		}
 
 		if (result === 'draw' && !this.generator.isDrawingSupported) {
