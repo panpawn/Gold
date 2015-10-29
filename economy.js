@@ -13,23 +13,11 @@ function readMoney(user) {
 	} catch (e) {
 		return 0;
 	}
-	var rows = data.split("\n");
-	var matched = false;
-	for (var i = 0; i < rows.length; i++) {
-		if (!rows[i]) continue;
-		var parts = rows[i].split(",");
-		var userid = toId(parts[0]);
-		if (user === userid) {
-			var matched = true;
-			var amount = Number(parts[1]);
-			break;
-		}
-	}
-	if (matched === true) {
-		return amount;
-	} else {
-		return 0;
-	}
+	return new Map(
+		data.split('\n').map(function (log) {
+			return log.split(',');
+		});
+	).get(user) || 0;
 }
 exports.readMoney = readMoney;
 
