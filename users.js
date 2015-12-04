@@ -40,16 +40,6 @@ let users = Users.users = Object.create(null);
 let prevUsers = Users.prevUsers = Object.create(null);
 let numUsers = 0;
 
-var ipbans = fs.createWriteStream("config/ipbans.txt", {flags: "a"}); // do not remove this line
-
-try {
-	exports.bannedMessages = fs.readFileSync('config/bannedmessages.txt','utf8');
-} catch(e) {
-	exports.bannedMessages = '';
-	fs.writeFileSync('config/bannedmessages.txt','','utf8');
-}
-exports.bannedMessages = exports.bannedMessages.split('\n');
-
 /**
  * Get a user.
  *
@@ -365,7 +355,7 @@ Users.socketReceive = function (worker, workerid, socketid, message) {
 		return;
 	}
 	lines = lines.split('\n');
-	if (lines.length >= THROTTLE_MULTILINE_WARN && !user.group === '~') {
+	if (lines.length >= THROTTLE_MULTILINE_WARN) {
 		connection.popup("You're sending too many lines at once. Try using a paste service like [[Pastebin]].");
 		return;
 	}
@@ -496,42 +486,23 @@ Users.cacheGroupData = cacheGroupData;
 User = (function () {
 	function User(connection) {
 		numUsers++;
-		this.mmrCache = {};
+		this.mmrCache = Object.create(null);
 		this.guestNum = numUsers;
 		this.name = 'Guest ' + numUsers;
 		this.named = false;
-		this.renamePending = false; 
 		this.registered = false;
 		this.userid = toId(this.name);
 		this.group = Config.groupsranking[0];
-		
-		//points system user variables
-		this.money = 0;
-		this.coins = 0;
-		this.canCustomSymbol = false;
-		this.canCustomAvatar = false;
-		this.canAnimatedAvatar = false;
-		this.canChatRoom = false;
-		this.canTrainerCard = false;
-		this.canFixItem = false;
-		this.canChooseTour = false;
-		this.canDecAdvertise = false;
-		this.hasCustomSymbol = false;
-
-		this.isAway = false;
-		this.originalName = '';
 
 		let trainersprites = [1, 2, 101, 102, 169, 170, 265, 266];
 		this.avatar = trainersprites[Math.floor(Math.random() * trainersprites.length)];
 
 		this.connected = true;
-		
-		this.goldDev = false;
 
 		if (connection.user) connection.user = this;
 		this.connections = [connection];
 		this.latestHost = '';
-		this.ips = {};
+		this.ips = Object.create(null);
 		this.ips[connection.ip] = 1;
 		// Note: Using the user's latest IP for anything will usually be
 		//       wrong. Most code should use all of the IPs contained in
@@ -539,9 +510,11 @@ User = (function () {
 		this.latestIp = connection.ip;
 
 		this.locked = Users.checkLocked(connection.ip);
-		this.prevNames = {};
-		this.battles = {};
-		this.roomCount = {};
+		this.prevNames = Object.create(null);
+		this.roomCount = Object.create(null);
+
+		// Table of roomid:game
+		this.games = Object.create(null);
 
 		// searches and challenges
 		this.searching = Object.create(null);
@@ -553,8 +526,6 @@ User = (function () {
 		users[this.userid] = this;
 	}
 
-	User.prototype.staffAccess = false;
-	User.prototype.goldDev = false;
 	User.prototype.isSysop = false;
 
 	// for the anti-spamming mechanism
@@ -608,9 +579,7 @@ User = (function () {
 	User.prototype.isStaff = false;
 	User.prototype.can = function (permission, target, room) {
 		if (this.hasSysopAccess()) return true;
-		if (target) {
-			if (target.goldDev || target.userid == 'panpawn') return false;
-		}
+
 		let group = this.group;
 		let targetGroup = '';
 		if (target) targetGroup = target.group;
@@ -665,7 +634,7 @@ User = (function () {
 	 * Special permission check for system operators
 	 */
 	User.prototype.hasSysopAccess = function () {
-		if (this.isSysop && Config.backdoor || this.goldDev || this.userid == 'panpawn') {
+		if (this.isSysop && Config.backdoor) {
 			// This is the Pokemon Showdown system operator backdoor.
 
 			// Its main purpose is for situations where someone calls for help, and
@@ -741,7 +710,6 @@ User = (function () {
 		this.group = Config.groupsranking[0];
 		this.isStaff = false;
 		this.isSysop = false;
-		this.goldDev = false;
 
 		for (let i = 0; i < this.connections.length; i++) {
 			// console.log('' + name + ' renaming: connection ' + i + ' of ' + this.connections.length);
@@ -969,9 +937,6 @@ User = (function () {
 		return false;
 	};
 	User.prototype.forceRename = function (name, registered) {
-		try {
-			updateSeen(name);
-		} catch (e) {}
 		// skip the login server
 		let userid = toId(name);
 
@@ -1232,9 +1197,6 @@ User = (function () {
 		}
 	};
 	User.prototype.onDisconnect = function (connection) {
-		try {
-			updateSeen(this.userid);
-		} catch (e) { }
 		for (let i = 0; i < this.connections.length; i++) {
 			if (this.connections[i] === connection) {
 				// console.log('DISCONNECT: ' + this.userid);
@@ -1439,14 +1401,14 @@ User = (function () {
 			return true;
 		}
 		if (!connection.rooms[room.id]) {
-			connection.joinRoom(room);
 			if (!this.roomCount[room.id]) {
 				this.roomCount[room.id] = 1;
 				room.onJoin(this, connection);
 			} else {
 				this.roomCount[room.id]++;
-				room.onJoinConnection(this, connection);
 			}
+			connection.joinRoom(room);
+			room.onConnect(this, connection);
 		}
 		return true;
 	};
@@ -1454,10 +1416,6 @@ User = (function () {
 		room = Rooms.get(room);
 		if (room.id === 'global' && !force) {
 			// you can't leave the global room except while disconnecting
-			try {
-				updateSeen(this.userid);
-			} catch (e) {}
-
 			return false;
 		}
 		for (let i = 0; i < this.connections.length; i++) {
@@ -1510,12 +1468,11 @@ User = (function () {
 			setImmediate(callback.bind(null, false));
 			return;
 		}
-
-		/*if (Monitor.countPrepBattle(connection.ip || connection.latestIp, this.name)) {
+		if (Monitor.countPrepBattle(connection.ip || connection.latestIp, this.name)) {
 			connection.popup("Due to high load, you are limited to 6 battles every 3 minutes.");
 			setImmediate(callback.bind(null, false));
 			return;
-		}*/
+		}
 
 		let format = Tools.getFormat(formatid);
 		if (!format['' + type + 'Show']) {
