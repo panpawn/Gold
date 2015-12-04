@@ -1541,7 +1541,7 @@ BattleSide = (function () {
 		this.battle.send('sideupdate', this.id + "\n" + sideUpdate);
 	};
 	BattleSide.prototype.emitCallback = function () {
-		this.battle.send('callback', this.id + "\n" +
+		this.battle.send('sideupdate', this.id + "\n|callback|" +
 			Array.prototype.slice.call(arguments).join('|'));
 	};
 	BattleSide.prototype.emitRequest = function (update) {
@@ -3244,10 +3244,10 @@ Battle = (function () {
 			this.add('-damage', target, target.getHealth, '[from] confusion');
 			break;
 		default:
-			if (effect.effectType === 'Move') {
+			if (effect.effectType === 'Move' || !name) {
 				this.add('-damage', target, target.getHealth);
 			} else if (source && (source !== target || effect.effectType === 'Ability')) {
-				this.add('-damage', target, target.getHealth, '[from] ' + effect.fullname, '[of] ' + source);
+				this.add('-damage', target, target.getHealth, '[from] ' + name, '[of] ' + source);
 			} else {
 				this.add('-damage', target, target.getHealth, '[from] ' + name);
 			}
@@ -3711,8 +3711,8 @@ Battle = (function () {
 			}
 		}
 
-		if (this.gen <= 2) {
-			// in gen 1-2, fainting skips the rest of the turn, including residuals
+		if (this.gen <= 1) {
+			// in gen 1, fainting skips the rest of the turn, including residuals
 			this.queue = [];
 		} else if (this.gen <= 3 && this.gameType === 'singles') {
 			// in gen 3 or earlier, fainting in singles skips to residuals
