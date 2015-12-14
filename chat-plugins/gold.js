@@ -345,7 +345,7 @@ exports.commands = {
 	
 	dk: 'dropkick',
 	dropkick: function(target, room, user) {
-		if (!target) return this.parse('/help dk);
+		if (!target) return this.parse('/help dk');
 		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
 	},
 	dkhelp: ['Usage: /dropkick OR /dk [user] - Dropkicks the user!'],
