@@ -34,7 +34,7 @@ exports.commands = {
 	},
 	dm: 'daymute',
 	daymute: function (target, room, user, connection, cmd) {
-		if (!target) return this.errorReply("Usage: /dm [user], [reason].");
+		if (!target) return this.parse('/help daymute');
 		if (room.isMuted(user) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
 
 		target = this.splitTarget(target);
@@ -62,6 +62,8 @@ exports.commands = {
 
 		room.mute(targetUser, muteDuration, false);
 	},
+	daymutehelp: ["Usage: /dm [user], [reason]."],
+	
 	globalauth: 'gal',
 	stafflist: 'gal',
 	authlist: 'gal',
@@ -137,6 +139,7 @@ exports.commands = {
 		}
 	},
 	roomfounder: function(target, room, user) {
+		if (!target) return this.parse('/help roomfounder');
 		if (!room.chatRoomData) {
 			return this.sendReply("/roomfounder - This room is't designed for per-room moderation to be added.");
 		}
@@ -154,6 +157,8 @@ exports.commands = {
 		Rooms.global.writeChatRoomData();
 		room.active = true; // fairly give new rooms activity a chance
 	},
+	roomfounderhelp: ["Usage: /roomfounder [user]"],
+	
 	tell: function(target, room, user) {
 		if (!this.canTalk()) return;
 		if (!target) return this.parse("/help tell");
@@ -174,6 +179,8 @@ exports.commands = {
 		Gold.tells[targetUser].add(messageToSend);
 		return this.sendReply('Message "' + message + '" sent to ' + targetUser + '.');
 	},
+	tellhelp: ["Usage: /tell [user], [message] - Leaves a message to be delivered to the user when they are next online."],
+	
 	hide: 'hideauth',
 	hideauth: function(target, room, user) {
 		if (!user.can('lock')) return this.sendReply("/hideauth - access denied.");
@@ -213,6 +220,7 @@ exports.commands = {
 		this.logModCommand(user.name + ' is hiding auth symbol as \'' + tar + '\'');
 		user.isHiding = true;
 	},
+	
 	show: 'showauth',
 	showauth: function(target, room, user) {
 		if (!user.can('lock')) return this.sendReply("/showauth - access denied.");
@@ -222,6 +230,7 @@ exports.commands = {
 		this.sendReply("You have now revealed your auth symbol.");
 		return this.logModCommand(user.name + " has revealed their auth symbol.");
 	},
+	
 	pb: 'permaban',
 	pban: 'permaban',
 	permban: 'permaban',
@@ -243,6 +252,7 @@ exports.commands = {
 		targetUser.ban();
 		ipbans.write('\n' + targetUser.latestIp);
 	},
+	
 	clearall: 'clearroom',
 	clearroom: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
@@ -264,6 +274,7 @@ exports.commands = {
 			}
 		}, 1000);
 	},
+	
 	bc: 'battlecount',
 	battlecount: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
@@ -271,13 +282,16 @@ exports.commands = {
 		Rooms('global').battleCount = Number(target);
 		return this.sendReply("The global room's battle count has been forcibly set to: " + Number(target));
 	},
+	
 	hc: function(room, user, cmd) {
 		return this.parse('/hotpatch chat');
 	},
+	
 	css: function(target, room, user, connection) {
 		var css = fs.readFileSync('config/custom.css', 'utf8');
 		return user.send('|popup|' + css);
 	},
+	
 	pbl: 'pbanlist',
 	permabanlist: 'pbanlist',
 	pbanlist: function(target, room, user, connection) {
@@ -285,15 +299,31 @@ exports.commands = {
 		var pban = fs.readFileSync('config/pbanlist.txt', 'utf8');
 		return user.send('|popup|' + pban);
 	},
+	
 	vault: function(target, room, user, connection) {
 		var money = fs.readFileSync('config/money.csv', 'utf8');
 		return user.send('|popup|' + money);
 	},
+	
 	s: 'spank',
 	spank: function(target, room, user) {
-		if (!target) return this.sendReply('/spank needs a target.');
-		return this.parse('/me spanks ' + target + '!');
+		if (!target) return this.parse('/help spank');
+		var item = "";
+		var itemRnd = ~~(6 * Math.random());
+		
+		switch (itemRnd) {
+			case 1: item += "a slipper" break;
+			case 2: item += "a cane" break;
+			case 3: item += "an unidentified object" break;
+			case 4: item += "a belt" break;
+			case 5: item += "their battling skills" break;
+			case 6: item += "panpawn's punishing stick" break;
+		}
+		
+		return this.parse('/me spanks ' + target + 'with' + item + '!');
 	},
+	spankhelp: ["Usage: /spank [user] - Spanks the user!"],
+	
 	newroom: 'newroomquestions',
 	newroomcommands: 'newroomquestions',
 	newroomfaq: 'newroomquestions',
@@ -301,27 +331,36 @@ exports.commands = {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox('For our NEW room request system, fill out our application found <a href="http://goo.gl/forms/YHZVb6BvTb">here</a>.');
 	},
+	
 	punt: function(target, room, user) {
-		if (!target) return this.sendReply('/punt needs a target.');
+		if (!target) return this.parse('/help punt');
 		return this.parse('/me punts ' + target + ' to the moon!');
 	},
+	punthelp: ["Usage: /punt [user] - Punts the user!"],
+	
 	crai: 'cry',
 	cry: function(target, room, user) {
 		return this.parse('/me starts tearbending dramatically like Katara~!');
 	},
+	
 	dk: 'dropkick',
 	dropkick: function(target, room, user) {
-		if (!target) return this.sendReply('/dropkick needs a target.');
+		if (!target) return this.parse('/help dk');
 		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
 	},
+	dkhelp: ['Usage: /dropkick OR /dk [user] - Dropkicks the user!'],
+	
 	fart: function(target, room, user) {
-		if (!target) return this.sendReply('/fart needs a target.');
+		if (!target) return this.parse('/help fart');
 		return this.parse('/me farts on ' + target + '\'s face!');
 	},
+	farthelp: ['Usage: /fart [user] - Fart on a user!']
+	
 	poke: function(target, room, user) {
 		if (!target) return this.sendReply('/poke needs a target.');
 		return this.parse('/me pokes ' + target + '.');
 	},
+	
 	pet: function(target, room, user) {
 		if (!target) return this.sendReply('/pet needs a target.');
 		return this.parse('/me pets ' + target + ' lavishly.');
@@ -371,7 +410,7 @@ exports.commands = {
     },
 	mt: 'mktour',
 	mktour: function(target, room, user) {
-		if (!target) return this.errorReply("Usage: /mktour [tier] - creates a tournament in single elimination.");
+		if (!target) return this.parse("/help mt");
 		target = toId(target);
 		var t = target;
 		if (t === 'rb') t = 'randombattle';
@@ -381,32 +420,38 @@ exports.commands = {
 		if (t === 'ag') t === 'anythinggoes';
 		if (t === 'ts') t === 'tiershift';
 		this.parse('/tour create ' + t + ', elimination');
-	},
+	}, 
+	mthelp: ["Usage: /mktour OR /mt [tier] - creates a tournament in single elimination."],
+	
 	pic: 'image',
 	image: function(target, room, user) {
-		if (!target) return this.sendReply('/image [url] - Shows an image using /a. Requires ~.');
+		if (!target) return this.parse('/help image');
 		return this.parse('/a |raw|<center><img src="' + target + '">');
 	},
-	dk: 'dropkick',
-	dropkick: function(target, room, user) {
-		if (!target) return this.sendReply('/dropkick needs a target.');
-		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
-	},
+	imagehelp: ['Usage: /image OR /pic [url] - Shows an image using /a. Requires ~.'],
+	
+	
 	halloween: function(target, room, user) {
-		if (!target) return this.sendReply('/halloween needs a target.');
+		if (!target) return this.parse(/help halloween);
 		return this.parse('/me takes ' + target + '`s pumpkin and smashes it all over the Pok\u00E9mon Stadium!');
 	},
+	halloweenhelp: ['Usage: /halloween [user] - Halloween Special!'],
+	
 	barn: function(target, room, user) {
-		if (!target) return this.sendReply('/barn needs a target.');
+		if (!target) return this.sendReply('/help barn');
 		return this.parse('/me has barned ' + target + ' from the entire server!');
 	},
+	barnhelp: ['Usage: /barn [user] - Barn the user!'],
+	
 	lick: function(target, room, user) {
-		if (!target) return this.sendReply('/lick needs a target.');
+		if (!target) return this.parse('/help lick');
 		return this.parse('/me licks ' + target + ' excessively!');
 	},
+	lickhelp: ['Usage: /lick [user] - Licks the user!'],
+	
 	def: 'define',
 	define: function(target, room, user) {
-		if (!target) return this.sendReply('Usage: /define <word>');
+		if (!target) return this.parse('/help define');
 		target = toId(target);
 		if (target > 50) return this.sendReply('/define <word> - word can not be longer than 50 characters.');
 		if (!this.canBroadcast()) return;
@@ -436,6 +481,8 @@ exports.commands = {
 		}
 		request(options, callback);
 	},
+	definehelp: ['Usage: /define or /def [word] - Provides a definition for said word.'],
+	
 	u: 'urbandefine',
     ud: 'urbandefine',
     urbandefine: function(target, room, user) {
@@ -474,6 +521,8 @@ exports.commands = {
     	}
     	request(options, callback);
     },
+    urbandefinehelp:['Usage: /u OR /ud OR /urbandefine [word] - Provides a definition for said word from UrbanDictionary.'],
+    
 	gethex: 'hex',
 	hex: function(target, room, user) {
 		if (!this.canBroadcast()) return;
@@ -481,14 +530,19 @@ exports.commands = {
 		if (!target) target = toId(user.name);
 		return this.sendReplyBox('<b><font color="' + Gold.hashColor(target) + '">' + target + '</font></b>.  The hexcode for this name color is: ' + Gold.hashColor(target) + '.');
 	},
+	
 	rsi: 'roomshowimage',
 	roomshowimage: function(target, room, user) {
 		if (!this.can('ban', null, room)) return false;
-		if (!target) return this.sendReply("git gud");
+		if (!target) return this.parse("/help rsi");
 		var parts = target.split(',');
+		if (!parts[2]) parts[2] = "";
+		if (!parts[1] || parts[1] > 500) parts[1] = "500";
+		if (parts[2] > 500) parts[2] = "500";
 		if (!this.canBroadcast()) return;
-		this.sendReplyBox("<img src=" + parts[0] + " width=" + parts[1] + " height=" + parts[1]);
+		this.sendReplyBox("<center><img src=" + parts[0] + " width=" + parts[1] + " height=" + parts[2] + "</center>");
 	},
+	rsihelp: ['/rsi OR /roomshowimage [image url], [width], [height] - Displays an image in the room [May be scaled if no height is entered].']
 
 	uor: 'usersofrank',
 	usersofrank: function(target, room, user) {
@@ -598,11 +652,13 @@ exports.commands = {
 		targetUser.popup('You were kicked from ' + room.id + ' by ' + user.name + '.');
 		targetUser.leaveRoom(room.id);
 	},
+	kickhelp: ['Usage: /k OR /kick [user] - Kicks a user from the room [Must be below your rank].'],
+	
 	flogout: 'forcelogout',
 	forcelogout: function(target, room, user) {
 		if (!user.can('hotpatch')) return;
 		if (!this.canTalk()) return false;
-		if (!target) return this.sendReply('/forcelogout [username], [reason] OR /flogout [username], [reason] - You do not have to add a reason');
+		if (!target) return this.parse('/help flogout');
 		target = this.splitTarget(target);
 		var targetUser = this.targetUser;
 		if (!targetUser) {
@@ -612,13 +668,14 @@ exports.commands = {
 		this.addModCommand('' + targetUser.name + ' was forcibly logged out by ' + user.name + '.' + (target ? " (" + target + ")" : ""));
 		targetUser.resetName();
 	},
+	flogouthelp: ['/flogout OR /forcelogout [username], [reason] - You do not have to add a reason'];
 	goldstaff: function(target, room, user) {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox('The staff forums can be found <a href="https://groups.google.com/forum/#!forum/gold-staff">here</a>.');
 	},
 	pus: 'pmupperstaff',
 	pmupperstaff: function(target, room, user) {
-		if (!target) return this.sendReply('/pmupperstaff [message] - Sends a PM to every upper staff');
+		if (!target) return this.parse('/help pus');
 		if (!this.can('pban')) return false;
 		for (var u in Users.users) {
 			if (Users.users[u].group == '~' || Users.users[u].group == '&') {
@@ -626,6 +683,8 @@ exports.commands = {
 			}
 		}
 	},
+	pushelp: ['/pmupperstaff OR /pus [message] - Sends a PM to every upper staff'],
+	
 	client: function(target, room, user) {
 		if (!this.canBroadcast()) return;
 		return this.sendReplyBox('Gold\'s custom client can be found <a href="http://goldservers.info">here</a>.');
@@ -633,7 +692,7 @@ exports.commands = {
 
 	pas: 'pmallstaff',
 	pmallstaff: function(target, room, user) {
-		if (!target) return this.sendReply('/pmallstaff [message] - Sends a PM to every user in a room.');
+		if (!target) return this.parse('/help pas');
 		if (!this.can('pban')) return false;
 		for (var u in Users.users) {
 			if (Users.users[u].isStaff) {
@@ -641,9 +700,11 @@ exports.commands = {
 			}
 		}
 	},
+	pashelp: ['/pas OR /pmallstaff [message] - Sends a PM to every staff member in a room. Requires: Global & or ~'],
+	
 	masspm: 'pmall',
 	pmall: function(target, room, user) {
-		if (!target) return this.parse('/pmall [message] - Sends a PM to every user in a room.');
+		if (!target) return this.parse('/help masspm');
 		if (!this.can('pban')) return false;
 		var pmName = '~Gold Server [Do not reply]';
 		for (var i in Users.users) {
@@ -651,6 +712,8 @@ exports.commands = {
 			Users.users[i].send(message);
 		}
 	},
+	masspmhelp: [/pmall [message] - Sends a PM to every user in a room. Requires: Global & or ~],
+	
 	regdate: function(target, room, user, connection) {
 		if (!this.canBroadcast()) return;
 		if (!target || target === "0") target = toId(user.userid);
