@@ -774,11 +774,13 @@ let GlobalRoom = (function () {
 			this.maxUsersDate = Date.now();
 		}
 
+		require('./chat-plugins/namefilter.js').notifyName(user);
 		return user;
 	};
 	GlobalRoom.prototype.onRename = function (user, oldid, joining) {
 		delete this.users[oldid];
 		this.users[user.userid] = user;
+		require('./chat-plugins/namefilter.js').notifyName(user);
 		return user;
 	};
 	GlobalRoom.prototype.onUpdateIdentity = function () {};
