@@ -241,6 +241,15 @@ exports.grouplist = [
 		root: true,
 		globalonly: true
 	},
+        {
+		symbol: '¿',
+		id: "developer",
+		name: "Developer",
+		inherit: '&',
+		globalonly: true,
+
+	},
+
 	{
 		symbol: '&',
 		id: "leader",
@@ -320,6 +329,16 @@ exports.grouplist = [
 		receiveauthmessages: true,
 		tournamentsmoderation: true,
 		jeopardy: true,
+		joinbattle: true
+	},{
+		symbol: '$',
+		id: "operator",
+		name: "Operator",
+		inherit: '+',
+		jurisdiction: 'u',
+		warn: true,
+		kick: true,
+		mute: true,
 		joinbattle: true
 	},
 	{
