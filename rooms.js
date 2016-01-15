@@ -1446,6 +1446,16 @@ let ChatRoom = (function () {
 			this.userList = this.getUserList();
 			this.reportJoinsQueue = [];
 		}
+
+		this.deleteInactive = setTimeout(function () {
+			if (this.active && !this.protect && !this.isOfficial && !this.isPrivate && !this.isPersonal && !this.isStaff) {
+				Rooms.global.deregisterChatRoom(this.id);
+				this.addRaw('<font color=red><b>This room has been automatically deleted due to inactivity.  It will be removed upon the next server restart.</b></font>');
+				if (this.id !== 'global') this.update();
+				this.modchat = '~';
+				Rooms('staff').add("|raw|<font color=red><b>" + this.title + " has been automatically deleted from the server due to inactivity.</b></font>").update();
+			}
+		}.bind(this), 2 * 24 * 60 * 60 * 1000); //48 hours
 	}
 	ChatRoom.prototype = Object.create(Room.prototype);
 	ChatRoom.prototype.type = 'chat';
@@ -1756,26 +1766,3 @@ Rooms.aliases = aliases;
 
 Rooms.RoomGame = require('./room-game.js').RoomGame;
 Rooms.RoomGamePlayer = require('./room-game.js').RoomGamePlayer;
-
-var checkInactiveRooms = setInterval(function() {
-	for (var u in Rooms.rooms) {
-		if (!Rooms.rooms[u].active && Room.rooms[u].type === 'chat') {
-			if (Rooms.rooms[u].messageCount < 40) Rooms.rooms[u].active = false;
-			if (Rooms.rooms[u].messageCount > 40) Rooms.rooms[u].active = true;
-		}
-	}
-}, 60 * 60000); // every hour
-
-var deleteInactiveRooms = setInterval(function() {
-	for (var u in Rooms.rooms) {
-		if (Rooms.rooms[u].type === 'chat') {
-			if (!Rooms.rooms[u].active && !Rooms.rooms[u].protect && !Rooms.rooms[u].isOfficial && !Rooms.rooms[u].isPrivate && !Rooms.rooms[u].isPersonal) {
-				Rooms.global.deregisterChatRoom(Rooms.rooms[u].id);
-				Rooms.rooms[u].addRaw('<font color=red><b>This room has been automatically deleted due to inactivity.  It will be removed upon the next server restart.</b></font>');
-				if (Rooms.rooms[u].id !== 'global') Rooms.rooms[u].update();
-				Rooms.rooms[u].modchat = '~';
-				Rooms('staff').add("|raw|<font color=red><b>" + Rooms.rooms[u].title + " has been automatically deleted from the server due to inactivity.</b></font>").update();
-			}
-		}
-	}
-}, 2 * 24 * 60 * 60 * 1000); // 48 hours
