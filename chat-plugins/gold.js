@@ -138,7 +138,7 @@ exports.commands = {
 	},
 	roomobj: function(target, room, user) {
 		if (!this.can('hotpatch')) return false;
-		return this.sendReplyBox('{"title":"' + room.title + '","auth":' + JSON.stringify(room.auth) + ',"introMessage":"' + room.introMessage + '","founder":"' + room.founder + '","desc":"' + room.desc + '"},')
+		return this.sendReply('{"title":"' + room.title + '","auth":' + JSON.stringify(room.auth) + ',"introMessage":"' + room.introMessage + '","founder":"' + room.founder + '","desc":"' + room.desc + '"},')
 	},
 	roomfounder: function(target, room, user) {
 		if (!room.chatRoomData) {
