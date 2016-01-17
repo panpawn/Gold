@@ -138,7 +138,13 @@ exports.commands = {
 	},
 	roomobj: function(target, room, user) {
 		if (!this.can('hotpatch')) return false;
-		return this.sendReply('{"title":"' + room.title.replace('"', '\"') + '","auth":' + JSON.stringify(room.auth) + ',"introMessage":"' + room.introMessage.replace('"', '\"') + '","founder":"' + room.founder + '","desc":"' + room.desc.replace('"', '\"') + '"},')
+		var obj = {title: room.title.replace('"', '\\"')};
+		if (room.auth) obj.auth = JSON.stringify(room.auth);
+		if (room.introMessage) obj.introMessage = room.introMessage.replace('"', '\\"');
+		if (room.founder) obj.founder = room.founder;
+		if (room.desc) obj.desc = room.desc.replace('"', '\\"');
+		var s = JSON.stringify(obj);
+		return this.sendReply(s);
 	},
 	roomfounder: function(target, room, user) {
 		if (!room.chatRoomData) {
