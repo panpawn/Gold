@@ -65,9 +65,8 @@ Gold.emoticons = {
 		}
 		return false;
 	},
-	userColor: function (color, text) {
-		if (!text) text = color;
-		return '<font color=' + Gold.hashColor(color) + '>' + Tools.escapeHTML(text) + '</font>';
+	userColor: function (user, text) {
+		return '<font color=' + Gold.hashColor(toId(user)) + '>' + Tools.escapeHTML(text || user) + '</font>';
 	},
 	processChatData: function(user, room, connection, message) {
 		var match = false;
@@ -87,7 +86,7 @@ Gold.emoticons = {
 				message = Tools.escapeHTML(message);
 				message = this.processEmoticons(message);
 				user.sendTo(room, '|html|' + 
-					' <small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user) + '</strong><b>' + this.userColor(user, ":") + '</b> &nbsp;' + message
+					'<small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user, user.name + ':') + '</strong> &nbsp;' + message
 				);
 				room.update();
 				Users.ShadowBan.addMessage(user, "To " + room, origmsg);
@@ -108,7 +107,7 @@ Gold.emoticons = {
 					message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
 					message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
 
-					room.addRaw(' <small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user) + '</strong><b>' + this.userColor(user, ":") + '</b> &nbsp;' + message);
+					room.addRaw('<small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user.userid, user.name + ':') + '</strong> &nbsp;' + message);
 					room.update();
 					room.messageCount++;
 					return false;
