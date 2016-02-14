@@ -87,7 +87,6 @@ exports.commands = {
 				}
 			}
 		}
-		/*
 		function getStatus (user) {
 			if (!Users(user)) return false;
 			if (Users(user)) {
@@ -95,7 +94,6 @@ exports.commands = {
 			}
 			return status;
 		}
-		*/
 		function lastActive (user) {
 			if (!Users(user)) return false;
 			var time = Users(user).lastActive;
@@ -149,7 +147,6 @@ exports.commands = {
 			room.update();
 		}
 	},
-	/*
 	status: function(target, room, user) {
 		if (!this.canTalk()) return;
 		var status = Tools.escapeHTML(target);
@@ -164,5 +161,4 @@ exports.commands = {
 		Users(target).status = false;
 		this.logModCommand(user.name + ' has reset ' + target + '\'s status.');
 	}
-	*/
 };
