@@ -61,7 +61,7 @@ var Panagram = (function () {
 	    }
 		if (guess.species === this.answer.species) {
 			this.room.add('|html|<b>' + nameColor(user.name) + '</b> guessed <b>' + guess.species + '</b>, which was the correct answer! This user has also won 1 buck!');
-			economy.writeMoney('money', user.userid, +1);
+			economy.writeMoney('money', user.userid, +0.25);
 			this.end();
 		} else {
 			this.room.add('|html|<b>' + nameColor(user.name) + '</b> guessed <b>' + guess.species + '</b>, but was not the correct answer...');
