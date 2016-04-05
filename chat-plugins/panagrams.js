@@ -88,9 +88,9 @@ exports.commands = {
 		if (!this.canBroadcast()) return;
 		this.sendReplyBox('<center><b>Panagram Help</b><br>' +
 			'<i style = "color:gray">By SilverTactic (Siiilver) and panpawn</i></center><br>' +
-			'<code>/panagram [session number]</code> - Starts a game of Panagram in the room for [session number] games (Panagrams are just anagrams with Pokemon). Alternate forms and CAP Pokemon won\'t be selected. Requires @ or higher.<br>' +
-			'<code>/panagramend</code> OR <code>/endp</code> - Ends a game of panagram. Requires + or higher.<br>' +
-			'<code>/panagramskip</code> OR <code>/pskip</code> - Skips the current session of the game of panagram. Requires + or higher.<br>' +
+			'<code>/panagram [session number]</code> - Starts a game of Panagram in the room for [session number] games (Panagrams are just anagrams with Pokemon). Alternate forms and CAP Pokemon won\'t be selected. Requires # or higher.<br>' +
+			'<code>/panagramend</code> OR <code>/endp</code> - Ends a game of panagram. Requires @ or higher.<br>' +
+			'<code>/panagramskip</code> OR <code>/pskip</code> - Skips the current session of the game of panagram. Requires @ or higher.<br>' +
 			'<code>/panagramhint</code> OR <code>/ph</code> - Gives a hint to the answer.<br>' +
 			'<code>/gp</code> - Guesses the answer.<br>' +
 			'Users can guess answers by simply typing them into the chat as well.'
