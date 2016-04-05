@@ -428,73 +428,28 @@ exports.commands = {
 	atm: function(target, room, user) {
 		if (!this.canBroadcast()) return;
 		if (!target) target = user.name;
-		var originalName = Tools.escapeHTML(target);
-		target = toId(target);
-		function atm(target) {
-			var bucks = economy.readMoney(target);
-			var label = (bucks == 1 ? ' Gold buck' : ' Gold bucks');
-			var output = "<u>Gold Wallet:</u><br />";
-			switch (bucks) {
-				case 0:
-					output += "<b><font color=\"" + Gold.hashColor(target) + "\">" + originalName + "</font></b> does not have any Gold bucks.";
-					break;
-				default:
-					output += "<b><font color=\"" + Gold.hashColor(target) + "\">" + originalName + "</font></b> has " + bucks + label + ".";
-			}
-			return output;
-		}
-		return this.sendReplyBox(atm(target));
+		target = (Users.getExact(target) ? Users.getExact(target).name : target);
+		var bucks = economy.readMoney(toId(target)) || 'does not have any';
+		if (parseInt(bucks)) bucks = 'has ' + bucks;
+		var output = '<u>Gold Wallet:</u><br />' + 
+			'<b><span style = "color:' + Gold.hashColor(target) + '">' + Tools.escapeHTML(target) + '</span></b> ' + bucks + ' Gold ' + (bucks === 1 ? 'buck' : 'bucks');
+		return this.sendReplyBox(output);
 	},
-	whosgotthemoneyz: 'richestuser',
-	richestuser: function(target, room, user) {
+	whosgotthemoneyz: 'richestusers',
+	richestuser: 'richestusers',
+	richestusers: function(target, room, user) {
 		if (!this.canBroadcast()) return;
-		var data = fs.readFileSync('config/money.csv', 'utf8');
-		var row = ('' + data).split("\n");
-		var userids = {
-			id: [],
-			money: []
-		};
-		var highest = {
-			id: [],
-			money: []
-		};
-		var size = 0;
-		var amounts = [];
-		for (var i = row.length; i > -1; i--) {
-			if (!row[i]) continue;
-			var parts = row[i].split(",");
-			userids.id[i] = parts[0];
-			userids.money[i] = Number(parts[1]);
-			size++;
-			if (isNaN(parts[1]) || parts[1] === 'Infinity') userids.money[i] = 0;
-		}
+		var buckList = fs.readFileSync('config/money.csv', 'utf8').split('\n').map(function (line) {
+				return line.split(',');
+			}).sort(function (a, b) {
+				return parseInt(b[1]) - parseInt(a[1]);
+			});
+		var username, total = [];
 		for (var i = 0; i < 10; i++) {
-			var tempHighest = 0;
-			for (var x = 0; x < size; x++) {
-				if (userids.money[x] > tempHighest) tempHighest = userids.money[x];
-			}
-			for (var x = 0; x < size; x++) {
-				var found = false;
-				if (userids.money[x] === tempHighest && !found) {
-					highest.id[i] = userids.id[x];
-					highest.money[i] = userids.money[x];
-					userids.id[x];
-					userids.money[x] = 0;
-					found = true;
-				}
-			}
+			username = (Users.getExact(buckList[0]) ? Users.getExact(buckList[0]).name : buckList[0]);
+			total.push((i + 1) + '. <b style = "color: ' + Gold.hashColor(username) + '">' + username + ': </b>' + buckList[1]);
 		}
-		return this.sendReplyBox('<b>The richest users are:</b>' +
-			'<br>1. ' + highest.id[0] + ': ' + highest.money[0] +
-			'<br>2. ' + highest.id[1] + ': ' + highest.money[1] +
-			'<br>3. ' + highest.id[2] + ': ' + highest.money[2] +
-			'<br>4. ' + highest.id[3] + ': ' + highest.money[3] +
-			'<br>5. ' + highest.id[4] + ': ' + highest.money[4] +
-			'<br>6. ' + highest.id[5] + ': ' + highest.money[5] +
-			'<br>7. ' + highest.id[6] + ': ' + highest.money[6] +
-			'<br>8. ' + highest.id[7] + ': ' + highest.money[7] +
-			'<br>9. ' + highest.id[8] + ': ' + highest.money[8] +
-			'<br>10. ' + highest.id[9] + ': ' + highest.money[9]);
+		return this.sendReplyBox('<b>The richest users are:</b><br>' + total.join('<br>'));
 	},
 	moneylog: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
@@ -591,14 +546,9 @@ exports.commands = {
 	rs: 'resetsymbol',
 	resetsymbol: function(target, room, user) {
 		if (!user.hasCustomSymbol) return this.sendReply('You don\'t have a custom symbol!');
-		user.getIdentity = function() {
-			if (this.muted) return '!' + this.name;
-			if (this.locked) return '‽' + this.name;
-			return this.group + this.name;
-		};
-		user.hasCustomSymbol = false;
-		delete user.getIdentity;
+		user.getIdentity = Users.User.prototype.getIdentity;
 		user.updateIdentity();
+		user.hasCustomSymbol = false;
 		this.sendReply('Your symbol has been reset.');
 	},
 };
