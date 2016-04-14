@@ -2292,6 +2292,32 @@ exports.Formats = [
 		ruleset: 'Alpha Tier',
 		banlist: ['Azumarill', 'Bisharp', 'Chansey', 'Clefable', 'Diggersby', 'Dragonite', 'Excadrill', 'Ferrothorn', 'Garchomp', 'Gengar', 'Gliscor', 'Heatran', 'Jirachi', 'Kyurem-Black', 'Landorus-Therian', 'Latios', 'Rotom-Wash', 'Scizor', 'Serperior', 'Staraptor', 'Talonflame', 'Terrakion', 'Thundurus', 'Thundurus-Therian', 'Tornadus-Therian', 'Tyranitar', 'Victini', 'Weavile', 'Alakazite', 'Altarianite', 'Charizardite X', 'Charizardite Y', 'Diancite', 'Galladite', 'Gardevoirite', 'Gyaradosite', 'Heracronite', 'Latiasite', 'Lopunnite', 'Medichamite', 'Metagrossite', 'Pidgeotite', 'Pinsirite', 'Sablenite', 'Venusaurite'],
 	},
+	{
+		name: "Middle Cup PX",
+		section: "Gold Server Tiers",
+		desc: [
+			'Middle Cup, but with a twist.',
+			'&bullet; <a href = "http://goldservers.info/forums/showthread.php?tid=11">MCPX Thread</a>'
+		],
+
+		maxForcedLevel: 50,
+		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
+		banlist: ['Uber', 'Shadow Tag', 'Eviolite', 'DeepSeaTooth', 'Light Ball', 'Teeter Dance', 'Flatter', 'Supersonic', 'Dynamic Punch', 'Flatter', 'Confuse Ray','Chatter'],
+		onValidateSet: function (set) {
+			const allowed = {
+				'ferroseed':1, 'togetic':1, 'pawniard': 1, 'porygon2': 1, 'farfetchd':1, 'ditto':1, 'unown':1,
+				'corsola':1, 'delibird':1, 'volbeat':1, 'illumise':1, 'spinda':1, 'castform':1, 'luvdisc':1, 'pachirisu':1, 'dedenne':1, 
+				'smeargle':1, 'pikachu':1, 'pikachucosplay':1, 'pikachurockstar':1, 'pikachulibre':1, 'pikachucosplay':1, 'pikachupopstar':1,
+				'pikachurockstar':1, 'pikachubelle':1, 'pikachuphd':1, 'clefairy':1, 'tangela':1, 'misdreavus':1, 'metang':1, 'monferno':1, 'prinplup':1, 
+				'gabite':1, 'meditite':1, 'murkrow':1, 'swirlix':1, 'yanma':1, 'dunsparce':1, 'gurdurr':1, 'machoke':1, 'emolga':1
+			};
+			const NFEbanlist = {'frogadier':1, 'fraxure':1, 'electabuzz':1, 'magmar':1, 'servine':1};
+			let tier = this.getTemplate(set.species).tier, species = toId(set.species);
+			if ((!(species in allowed) && tier !== 'LC' && tier !== 'NFE') || (tier === 'NFE' && (species in NFEbanlist))) {
+				return [set.species + " is banned in MCPX."];
+			}
+		}
+	},
 
 	// BW2 Singles
 	///////////////////////////////////////////////////////////////////
