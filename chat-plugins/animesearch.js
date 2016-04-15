@@ -23,7 +23,7 @@ function viewInfo (data) {
 		'<b>Episode Duration: </b>' + (data.episode_length ? data.episode_length + ' minutes' : 'N/A') + '<br>' +
 		'<b>Air Date: </b>' + (data.started_airing || 'Unknown') + '<br>' +
 		'<b>Rating: </b>' + (data.community_rating ? Math.round(data.community_rating * 100) / 100 + ' on 5' : 'N/A') + '<br>' +
-		'<b>Genre(s): </b>' + data.genres.map(function (genre) { return genre.name }).join(', ') + '<br>' +
+		'<b>Genre(s): </b>' + data.genres.map(genre => genre.name).join(', ') + '<br>' +
 		'<details style = "outline: 0px">' +
 		'<summary><b>Synopsis</b> (Click to view)</summary>' +
 		data.synopsis.split('\n')[0] +
@@ -80,9 +80,9 @@ exports.commands = {
 		if (!target || !target.trim()) return this.sendReply('/' + cmd + ' [query] - Searches for an anime based on the given search query.');
 
 		searchAnime(target.trim()).then((anime) => {
-			let genres = anime.genres.map(function (genre) { return toId(genre.name) });
-			if (!room.isPrivate && (genres.indexOf('hentai') > -1 || (genres.indexOf('yaoi') > -1 && anime.title.match(/pico/ig))) && this.broadcasting)
-				this.errorReply('Hentai anime cannot be broadcasted outside of private rooms.');
+			let genres = anime.genres.map(genre => toId(genre.name));
+			if ((genres.indexOf('hentai') > -1 || (genres.indexOf('yaoi') > -1 && anime.title.match(/pico/ig))) && this.broadcasting)
+				this.errorReply('Hentai anime cannot be broadcasted.'); //explicitly detect boku no pico
 			else this.sendReplyBox(viewInfo(anime));
 			room.update();
 		}).catch((error) => {
