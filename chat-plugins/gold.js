@@ -1309,20 +1309,18 @@ Gold.pluralFormat = function(length, ending) {
 Gold.regdate = function(name) {
 	name = toId(name);
 	if (regdateCache[name]) return regdateCache[name];
-	else {
-		request('http://pokemonshowdown.com/users/' + name + '.json', function (error, response, body) {
-			var data = JSON.parse(body);
-			var date = data['registertime'];
-			if (date !== 0 && date.toString().length < 13) {
-				while (date.toString().length < 13) {
-					date = Number(date.toString() + '0');
-				}
+	request('http://pokemonshowdown.com/users/' + name + '.json', function (error, response, body) {
+		var data = JSON.parse(body);
+		var date = data['registertime'];
+		if (date !== 0 && date.toString().length < 13) {
+			while (date.toString().length < 13) {
+				date = Number(date.toString() + '0');
 			}
-			if (date !== 0) {
-				regdateCache[name] = date;
-				saveRegdateCache();
-			}
-			return date;
-		});
-	}
+		}
+		if (date !== 0) {
+			regdateCache[name] = date;
+			saveRegdateCache();
+		}
+	});
+	return regdateCache[name] || 0;
 }
