@@ -49,8 +49,7 @@ exports.commands = {
         if (commaIndex < 0) return this.errorReply("You forgot the comma.");
         var targetUser = toId(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
         var message = target.slice(commaIndex + 1).trim();
-        if (Users.getExact(targetUser) && Users.getExact(targetUser).connected && targetUser !== user.userid && !user.can('hotpatch')) return this.parse("/msg " + targetUser + ", " + message);
-        if (message.length > 500) return this.errorReply("This tell is too large, try making it shorter.");
+        if (Users(targetUser) && Users(targetUser).connected && targetUser !== user.userid && !user.can('hotpatch')) return this.parse("/msg " + targetUser + ", " + message);        if (message.length > 500) return this.errorReply("This tell is too large, try making it shorter.");
         if (targetUser.length < 1 || targetUser.length > 18) return this.errorReply("Usernames cannot be this length.  Check spelling?");
         if (!message || message.length < 1) return this.errorReply("Tell messages must be at least one character.");
         if (tells[targetUser] && tells[targetUser].length >= maxTells) return this.errorReply("This user has too many tells queued, try again later.");
