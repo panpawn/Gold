@@ -659,35 +659,14 @@ exports.commands = {
 	},
 	regdate: function(target, room, user, connection) {
 		var targetid = toId(target);
-		var self = this;
-		if (targetid.length < 1 || targetid.length > 19) return this.sendReply("Usernames may not be less than one character or longer than 19");
+		if (targetid.length < 1 || targetid.length > 18) return this.errorReply("Usernames must be between 1 and 18 characters long.");
 		if (!this.runBroadcast()) return;
-		if (regdateCache[targetid]) {
-			reply(regdateCache[targetid]);
+		var date = Gold.regdate(targetid);
+		var name = "<font color=\"" + Gold.hashColor(targetid) + "\">" + Tools.escapeHTML(target) + "</font>";
+		if (date === 0) {
+			self.sendReplyBox(name + " is not registered.");
 		} else {
-			request('http://pokemonshowdown.com/users/' + targetid + '.json', function (error, response, body) {
-				var data = JSON.parse(body);
-				var date = data['registertime'];
-				if (date !== 0 && date.toString().length < 13) {
-					while (date.toString().length < 13) {
-						date = Number(date.toString() + '0');
-					}
-				}
-				reply(date);
-				if (date !== 0) {
-					regdateCache[targetid] = date;
-					saveRegdateCache();
-				}
-			});
-		}
-
-		function reply(date) {
-			if (date === 0) {
-				self.sendReplyBox("<font color=\"" + Gold.hashColor(targetid) + "\">" + Tools.escapeHTML(target) + "</font> is not registered.");
-			} else {
-				self.sendReplyBox("<font color=\"" + Gold.hashColor(targetid) + "\">" + Tools.escapeHTML(target) + "</font> was registered on " + moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ"));
-			}
-			room.update();
+			self.sendReplyBox(name + " was registered on " + moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ"));
 		}
 	},
 	removebadge: function(target, room, user) {
@@ -1347,4 +1326,22 @@ Gold.pluralFormat = function(length, ending) {
 	if (!ending) ending = 's';
 	if (isNaN(Number(length))) return false;
 	return (length == 1 ? '' : ending);
+}
+Gold.regdate = function(name) {
+	name = toId(name);
+	if (regdateCache[name]) return regdateCache[name];
+	request('http://pokemonshowdown.com/users/' + name + '.json', function (error, response, body) {
+		var data = JSON.parse(body);
+		var date = data['registertime'];
+		if (date !== 0 && date.toString().length < 13) {
+			while (date.toString().length < 13) {
+				date = Number(date.toString() + '0');
+			}
+		}
+		if (date !== 0) {
+			regdateCache[name] = date;
+			saveRegdateCache();
+		}
+	});
+	return regdateCache[name] || 0;
 }
