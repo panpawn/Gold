@@ -1,185 +1,165 @@
-/* Dice commands chat-plugin
- * by jd
-*/
-var tax = 0.10; // 10%
+/*Dice Game plugin by SilverTactic (Silveee)*/
 
-function handleWinnings (bet) {
-	return bet - Math.round(bet * tax);
+'use strict';
+
+const INACTIVE_END_TIME = 60 * 1000; //1 minute
+const TAX = 0.10; // 10%
+
+function diceImg(num) {
+	switch (num) {
+	case 0:
+		return "http://i.imgur.com/nUbpLTD.png";
+	case 1:
+		return "http://i.imgur.com/BSt9nfV.png";
+	case 2:
+		return "http://i.imgur.com/eTQMVhY.png";
+	case 3:
+		return "http://i.imgur.com/3Y2hCAJ.png";
+	case 4:
+		return "http://i.imgur.com/KP3Za7O.png";
+	case 5:
+		return "http://i.imgur.com/lvi2ZZe.png";
+	}
+}
+
+class Dice {
+	constructor(room, amount, starter) {
+		this.room = room;
+		if (!this.room.diceCount) this.room.diceCount = 0;
+		this.bet = amount;
+		this.players = [];
+		this.timer = setTimeout(() => {
+			this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class = "infobox">(This game of dice has been ended due to inactivity.)</div>').update();
+			delete this.room.dice;
+		}, INACTIVE_END_TIME);
+
+		let buck = (this.bet === 1 ? 'buck' : 'bucks');
+		this.startMessage = '<div class = "infobox"><b style = "font-size: 14pt; color: #24678d"><center><span style = "color: ' + Gold.hashColor(starter) + '">' + Tools.escapeHTML(starter) + '</span> has started a game of dice for <span style = "color: green">' + amount + '</span> ' + buck + '!</center></b><br>' +
+			'<center><img style = "margin-right: 30px;" src = "http://i.imgur.com/eywnpqX.png" width = "80" height = "80">' +
+			'<img style = "transform:rotateY(180deg); margin-left: 30px;" src = "http://i.imgur.com/eywnpqX.png" width = "80" height = "80"><br>' +
+			'<button name = "send" value = "/joindice">Click to join!</button></center>';
+		this.room.add('|uhtml|' + (++this.room.diceCount) + '|' + this.startMessage + '</div>');
+	}
+
+	join(user, self) {
+		Economy.readMoney(user.userid, money => {
+			if (money < this.bet) return self.sendReply('You don\'t have enough money for this game of dice.');
+			if (this.players.includes(user)) return self.sendReply('You have already joined this game of dice.');
+			if (this.players.length) {
+				let p1 = this.players[0];
+				for (let i in user.getAlts(true)) {
+					if (p1.userid === toId(user.getAlts(true)[i])) return self.errorReply("Your alt '" + user.getAlts(true)[i] + "' has already joined this game of dice.");
+				}
+				if (p1.getAlts(true).map(toId).includes(user.userid)) return self.errorReply("Your alt '" + p1.name + "' has already joined this game of dice.");
+			}
+			this.players.push(user);
+			this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + Tools.escapeHTML(user.name) + ' has joined the game!</center></div>').update();
+			if (this.players.length === 2) this.play();
+		});
+	}
+
+	leave(user, self) {
+		if (!this.players.includes(user)) return self.sendReply('You haven\'t joined the game of dice yet.');
+		this.players.remove(user);
+		this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '</div>');
+	}
+
+	play() {
+		let p1 = this.players[0], p2 = this.players[1];
+		Economy.readMoney(p1.userid, money1 => {
+			Economy.readMoney(p2.userid, money2 => {
+				if (money1 < this.bet || money2 < this.bet) {
+					let user = (money1 < this.bet ? p1 : p2);
+					let other = (user === p1 ? p2 : p1);
+					user.sendTo(this.room, 'You have been removed from this game of dice, as you do not have enough money.');
+					other.sendTo(this.room, user.name + ' has been removed from this game of dice, as they do not have enough money. Wait for another user to join.');
+					this.players.remove(user);
+					this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + this.players.map(user => Tools.escapeHTML(user.name)) + ' has joined the game!</center>').update();
+					return;
+				}
+				let players = this.players.map(user => Tools.escapeHTML(user.name)).join(' and ');
+				this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + players + ' have joined the game!</center></div>').update();
+				let roll1, roll2;
+				do {
+					roll1 = Math.floor(Math.random() * 6);
+					roll2 = Math.floor(Math.random() * 6);
+				} while (roll1 === roll2);
+				if (roll2 > roll1) this.players.reverse();
+				let winner = this.players[0], loser = this.players[1];
+
+				let taxedAmt = Math.round(this.bet * TAX);
+				setTimeout(() => {
+					let buck = (this.bet === 1 ? 'buck' : 'bucks');
+					this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class="infobox"><center>' + players + ' have joined the game!<br><br>' +
+						'The game has been started! Rolling the dice...<br />' +
+						'<img src = "' + diceImg(roll1) + '" align = "left" title = "' + Tools.escapeHTML(p1.name) + '\'s roll"><img src = "' + diceImg(roll2) + '" align = "right" title = "' + p2.name + '\'s roll"><br/>' +
+						'<b style = "color:' + Gold.hashColor(p1.userid) + '">' + Tools.escapeHTML(p1.name) + '</b> rolled ' + (roll1 + 1) + '!<br />' +
+						'<b style = "color:' + Gold.hashColor(p2.userid) + '">' + Tools.escapeHTML(p2.name) + '</b> rolled ' + (roll2 + 1) + '!<br />' +
+						'<b style = "color:' + Gold.hashColor(winner.userid) + '">' + Tools.escapeHTML(winner.name) + '</b> has won <b style = "color:green">' + (this.bet - taxedAmt) + '</b> ' + buck + '!<br/>' +
+						'Better luck next time, ' + Tools.escapeHTML(loser.name) + '!'
+					).update();
+					Economy.writeMoney(winner.userid, (this.bet - taxedAmt), () => {
+						Economy.writeMoney(loser.userid, -this.bet, () => {
+							this.end();
+						});
+					});
+				}, 800);
+			});
+		});
+	}
+
+	end(user) {
+		if (user) this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class = "infobox">(This game of dice has been forcibly ended by ' + Tools.escapeHTML(user.name) + '.)</div>');
+		clearTimeout(this.timer);
+		delete this.room.dice;
+	}
 }
 
 exports.commands = {
-	gambledicehelp: function(target, room, user) {
-		if (!this.runBroadcast()) return;
-		this.sendReplyBox(
-			'Dice game commands: <br />' +
-			'/startdice <bet> - Starts a game.<br />' +
-			'/joindice - Joins the game.<br />' +
-			'/enddice - Forcibly ends the game.'
-		);
-	},
-	dicestart: 'startdice',
-	startdice: function(target, room, user) {
-	 	if (!this.canTalk()) return this.errorReply("You can not start dice games while unable to speak.");
-	 	if (room.id !== 'gamechamber' && !user.can('pban')) return this.sendReply("Dice games should only be started in \"Game Chamber\".");
-	 	//if (!user.can('broadcast',null,room)) return this.errorReply('/startdice - Access denied.');
-	 	if (!target) return this.errorReply('Usage: /startdice <bet>');
-	 	if (isNaN(Number(target))) return this.errorReply('/startdice - <bet> must be a number greater than 0');
-	 	target = Math.round(Number(target));
-	 	if (target < 1) return this.errorReply('/startdice - You can not bet less than one buck.');
-	 	if (target > 5000) return this.errorReply('/startdice - You can\'t bet more than 5,000 bucks.');
+	startdice: 'dicegame',
+	dicegame: function (target, room, user) {
+		if (room.id === 'lobby') return this.errorReply("This command cannot be used in the Lobby.");
+		if (!user.can('broadcast', null, room) && room.id !== 'gamechamber') return this.errorReply("You must be ranked + or higher in this room to start a game of dice outside the Game Chamber.")
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.errorReply("You cannot use this command while unable to talk.");
+		if (room.dice) return this.errorReply("There is already a game of dice going on in this room.");
 
-	 	Economy.readMoney(user.userid, (userMoney) => {
-	 		if (!room.dice) room.dice = {};
-	 		if (!room.dice.status) room.dice.status = 0;
-	 		if (room.dice.status > 0) return this.errorReply('/startdice - There is already a game started in here!');
-	 		room.dice.status = 1;
-	 		room.dice.bet = target;
-	 		room.dice.startTime = Date.now();
-	 		room.addRaw('<div class="infobox"><h2><center><font color="' + Gold.hashColor(user.name) + '">' + Tools.escapeHTML(user.name) + '</font> <font color=#24678d>has started a dice game for </font><font color=red>' + target +
-	 			' </font><font color=#24678d> buck' + Gold.pluralFormat(target) + '.</font><br /> <button name="send" value="/joindice">Click to join.</button></center></h2></div>');
-	 		room.update();
-	 	});
+		let amount = Number(target) || 1;
+		if (isNaN(target)) return this.errorReply('"' + target + '" isn\'t a valid number.');
+		if (target.includes('.') || amount < 1 || amount > 5000) return this.sendReply('The number of bucks must be between 1 and 5,000 and cannot contain a decimal.');
+
+		room.dice = new Dice(room, amount, user.name);	
 	},
 
-	joindice: function(target, room, user) {
-		if (!this.canTalk()) return this.errorReply("You may not join dice games while unable to speak.");
-	 	if (!room.dice) return this.errorReply('There is no dice game in it\'s signup phase in this room.');
-	 	if (room.dice.status !== 1) return this.errorReply('There is no dice game in it\'s signup phase in this room.');
+	dicejoin: 'joindice',
+	joindice: function (target, room, user) {
+		if (room.id === 'lobby') return this.errorReply("This command cannot be used in the Lobby.");
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot use this command while unable to talk.");
+		if (!room.dice) return this.errorReply('There is no game of dice going on in this room.');
 
-	 	room.dice.status = 2;
-	 	Economy.readMoney(user.userid, (userMoney) => {
-	 		if (userMoney < room.dice.bet) {
-	 			this.errorReply('You don\'t have enough bucks to join this game.');
-	 			return room.dice.status = 1;
-	 		}
-	 		if (!room.dice.player1) {
-	 			room.dice.player1 = user.userid;
-	 			room.dice.status = 1;
-	 			room.addRaw('<b><font color="' + Gold.hashColor(user.name) + '">' + Tools.escapeHTML(user.name) + '</font> has joined the dice game.</b>');
-	 			return room.update();
-	 		}
-	 		if (room.dice.player1 === user.userid) return room.dice.status = 1;
-	 		if (room.dice.player1 !== user.userid) {
-	 			room.dice.player2 = user.userid;
-	 			if (!Users(room.dice.player1) || !Users(room.dice.player1).userid) {
-	 				room.addRaw("<b>Player 1 seems to be missing... game ending.</b>");
-	 				delete room.dice.player1;
-	 				delete room.dice.player2;
-	 				delete room.dice.bet;
-	 				delete room.dice.startTime;
-	 				room.update();
-	 				return false;
-	 			}
-	 			if (!Users(room.dice.player2) || !Users(room.dice.player2).userid) {
-	 				room.addRaw("<b>Player 2 seems to be missing... game ending.</b>");
-	 				delete room.dice.player1;
-	 				delete room.dice.player2;
-	 				delete room.dice.bet;
-	 				delete room.dice.startTime;
-	 				room.update();
-	 				return false;
-	 			}
-	 			if (room.dice.player1 !== Users.get(room.dice.player1).userid) {
-	 				room.addRaw('<b>Player 1 has changed names, game ending.</b>');
-	 				room.dice.status = 0;
-	 				delete room.dice.player1;
-	 				delete room.dice.player2;
-	 				delete room.dice.bet;
-	 				delete room.dice.startTime;
-	 				room.update();
-	 				return false;
-	 			}
-	 			room.addRaw('<b><font color="' + Gold.hashColor(user.name) + '">' + Tools.escapeHTML(user.name) + '</font> has joined the dice game.</b>');
-	 			room.update();
-	 			var firstNumber = Math.floor(6 * Math.random()) + 1;
-	 			var secondNumber = Math.floor(6 * Math.random()) + 1;
-	 			var firstName = Users.get(room.dice.player1).name;
-	 			var secondName = Users.get(room.dice.player2).name;
-	 			Economy.readMoney(toId(firstName), function (firstMoney) {
-		 			Economy.readMoney(toId(secondName), function(secondMoney) {
-	 					if (firstMoney < room.dice.bet) {
-							room.dice.status = 0;
-	 						delete room.dice.player1;
-	 						delete room.dice.player2;
-	 						delete room.dice.bet;
-	 						delete room.dice.startTime;
-	 						room.addRaw('<b><font color="' + Gold.hashColor(firstName) + '">' + Tools.escapeHTML(firstName) + '</font> no longer has enough bucks to play, game ending.');
-	 						return room.update();
-	 					}
-	 					if (secondMoney < room.dice.bet) {
-							room.dice.status = 0;
-	 						delete room.dice.player1;
-	 						delete room.dice.player2;
-	 						delete room.dice.bet;
-	 						delete room.dice.startTime;
-	 						room.addRaw('<b><font color="' + Gold.hashColor(secondName) + '">' + Tools.escapeHTML(secondName) + ' no longer has enough bucks to play, game ending.');
-	 						return room.update();
-	 					}
-	 					var output = '<div class="infobox">Game has two players, starting now.<br />';
-	 					output += 'Rolling the dice.<br />';
-	 					output += Tools.escapeHTML(firstName) + ' has rolled a ' + firstNumber + '.<br />';
-	 					output += Tools.escapeHTML(secondName) + ' has rolled a ' + secondNumber + '.<br />';
-						while (firstNumber === secondNumber) {
-							output += 'Tie... rolling again.<br />';
-	 						firstNumber = Math.floor(6 * Math.random()) + 1;
-	 						secondNumber = Math.floor(6 * Math.random()) + 1;
-			 				output += Tools.escapeHTML(firstName) + ' has rolled a ' + firstNumber + '.<br />';
-	 						output += Tools.escapeHTML(secondName) + ' has rolled a ' + secondNumber + '.<br />';
-						}
-						var betMoney = room.dice.bet;
-	 					if (firstNumber > secondNumber) {
-	 						output += '<b><font color="' + Gold.hashColor(firstName) + '">' + Tools.escapeHTML(firstName) + '</font></b> has won <font color=#24678d><b>' + handleWinnings(betMoney) + '</b></font> buck' + Gold.pluralFormat(betMoney) + '.<br />'
-	 						output += 'Better luck next time, <font color="' + Gold.hashColor(secondName) + '">' + Tools.escapeHTML(secondName) + '</font>!';
-	 						Economy.writeMoney(Users.get(firstName).userid, handleWinnings(betMoney), function() {
-	 							Economy.writeMoney(Users.get(secondName).userid, -betMoney,function() {
-	 								Economy.readMoney(Users.get(firstName).userid, function (firstMoney){
-	 									Economy.readMoney(Users.get(secondName).userid, function (secondMoney) {
-	 										//logDice(firstName + ' has won ' + betMoney + ' ' + ((betMoney === 1) ? " buck." : " bucks.") + ' from a dice game with ' + secondName + '. They now have ' + firstMoney);
-	 										//logDice(secondName + ' has lost ' + betMoney + ' ' + ((betMoney === 1) ? " buck." : " bucks.") + ' from a dice game with ' + firstName + '. They now have ' + secondMoney);
-	 									});
-	 								});
-	 							});
-	 						});
-	 						room.dice.status = 0;
-	 						delete room.dice.player1;
-	 						delete room.dice.player2;
-	 						delete room.dice.bet;
-	 						delete room.dice.startTime;
-	 					}
-	 					if (secondNumber > firstNumber) {
-	 						output += '<b><font color="' + Gold.hashColor(secondName) + '">' + Tools.escapeHTML(secondName) + '</font></b> has won <font color=#24678d><b>' + handleWinnings(betMoney) + '</b></font> buck' + Gold.pluralFormat(betMoney) + '.<br />';
-	 						output += 'Better luck next time <font color="' + Gold.hashColor(firstName) + '">' + Tools.escapeHTML(firstName) + '</font>!';
-	 						Economy.writeMoney(Users.get(secondName).userid, handleWinnings(betMoney), function() {
-	 							Economy.writeMoney(Users.get(firstName).userid, -betMoney,function() {
-	 								Economy.readMoney(Users.get(firstName).userid, function(firstMoney){
-		 								Economy.readMoney(Users.get(secondName).userid, function(secondMoney){
-	 										//logDice(secondName + ' has won ' + betMoney + ' ' + ((betMoney === 1) ? " buck." : " bucks.") + ' from a dice game with ' + firstName + '. They now have ' + secondMoney);
-	 										//logDice(firstName + ' has lost ' + betMoney + ' ' + ((betMoney === 1) ? " buck." : " bucks.") + ' from a dice game with ' + secondName + '. They now have ' + firstMoney);
-		 								});
-	 								});
-	 							});
-	 						});
-	 						room.dice.status = 0;
-	 						delete room.dice.player1;
-	 						delete room.dice.player2;
-	 						delete room.dice.bet;
-	 						delete room.dice.startTime;
-	 					}
-	 					output += '</div>';
-	 					room.addRaw(output);
-	 					room.update();
-	 				});
-	 			});
-	 		}
-		});
+		room.dice.join(user, this);
 	},
+
+	diceleave: 'leavedice',
+	leavedice: function (target, room, user) {
+		if (room.id === 'lobby') return this.errorReply("This command cannot be used in the Lobby.");
+		if (!room.dice) return this.errorReply('There is no game of dice going on in this room.');
+
+		room.dice.leave(user, this);
+	},
+
+	diceend: 'enddice',
 	enddice: function (target, room, user) {
-		if (!this.canTalk()) return this.errorReply("You may not end dice games while unable to speak.");
-		if (!room.dice) return this.errorReply('/enddice - There is no dice game in this room.');
-		if (room.dice.status === 0) return this.errorReply('/enddice - There is no dice game in this room.');
-		if ((Date.now() - room.dice.startTime) < 60000 && !user.can('broadcast', null, room)) return this.errorReply('Regular users may not end a dice game within the first minute of it starting.');
-		room.dice = {};
-		room.dice.status = 0;
-		return this.add('|raw|<b><font color="' + Gold.hashColor(user.name) +'">' + Tools.escapeHTML(user.name) + '</font> ended the dice game.');
+		if (room.id === 'lobby') return this.errorReply("This command cannot be used in the Lobby.");
+		if (!this.can('broadcast', null, room)) return this.errorReply("You must be ranked + or higher in this room to end a game of dice.");
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot use this command while unable to talk.");
+		if (!room.dice) return this.errorReply('There is no game of dice going on in this room.');
+
+		room.dice.end(user);
 	},
+	dicegamehelp: [
+		'/startdice or /dicegame [amount] - Starts a game of dice in the room for a given number of bucks, 1 by default (NOTE: There is a 10% tax on bucks you win from dice games).',
+		'/joindice - Joins the game of dice. You cannot use this command if you don\'t have the number of bucks the game is for.',
+		'/leavedice - Leaves the game of dice.',
+		'/enddice - Ends the game of dice. Requires + or higher to use.',
+	],
 };
