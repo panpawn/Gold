@@ -55,8 +55,8 @@ exports.commands = {
 		}).join('');
 
 		room.addRaw('<center><strong><font color="' + colour + '">~~ ' + Tools.escapeHTML(message) + ' ~~</font></strong></center>');
-		//user.lastPoof = Date.now();
-		//user.lastPoofMessage = message;
+		user.lastPoof = Date.now();
+		user.lastPoofMessage = message;
 		user.disconnectAll();
 	},
 
