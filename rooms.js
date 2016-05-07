@@ -1531,6 +1531,12 @@ let ChatRoom = (() => {
 		return message;
 	};
 	ChatRoom.prototype.onConnect = function (user, connection) {
+		if (user.lastPoof && (Date.now() - user.lastPoof < 1000 * 60 * 5) && !user.can('hotpatch')) {
+			user.send("|popup|You poof'd less than 5 minutes ago. Don't poof if you're gonna come back this soon ffs" +
+				'\n\n"' + user.lastPoofMessage + '" was your poof message, if that\'s what you came back for');
+			user.disconnectAll();
+			return;
+		}
 		let userList = this.userList ? this.userList : this.getUserList();
 		this.sendUser(connection, '|init|chat\n|title|' + this.title + '\n' + userList + '\n' + this.getLogSlice(-100).join('\n') + this.getIntroMessage(user));
 		if (this.poll) this.poll.onConnect(user, connection);
