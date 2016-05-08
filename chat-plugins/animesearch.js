@@ -8,11 +8,11 @@ const request = require('request');
 if (!global.animeCache) global.animeCache = {queries: {}, results: {}};
 let animeCache = global.animeCache;
 
-function formatQuery (query) {
+function formatQuery(query) {
 	return query.toLowerCase().replace(/ /g, '');
 }
 
-function viewInfo (data) {
+function viewInfo(data) {
 	let info = '<div style = "min-height: 250px">' +
 		'<div style = "float: left; height: 250px; margin-right: 2px;"><img src = "' + data.cover_image + '" style = "max-height: 250px;"></div>' +
 		'<div style = "padding: 2px">' +
@@ -31,7 +31,7 @@ function viewInfo (data) {
 	return info;
 }
 
-function searchAnime (query) {
+function searchAnime(query) {
 	let formattedQuery = formatQuery(query);
 	return new Promise((resolve, reject) => {
 		if (animeCache.queries[formattedQuery]) return resolve(animeCache.queries[formattedQuery]);
@@ -54,9 +54,9 @@ function searchAnime (query) {
 			if (!firstMatch && !exactMatch) return reject('Anime results for "' + query + '" were not found...');
 			let info = data.search[exactMatch || firstMatch];
 			resolve(info.link);
-		})
+		});
 	})
-	.then((name) => {
+	.then(name => {
 		return new Promise((resolve, reject) => {
 			if (animeCache.results[name]) return resolve(animeCache.results[name]);
 			animeCache.queries[formattedQuery] = name;
@@ -79,15 +79,17 @@ exports.commands = {
 		if (this.broadcasting && room.id === 'lobby') return this.errorReply("This command cannot be broadcasted in the Lobby.");
 		if (!target || !target.trim()) return this.sendReply('/' + cmd + ' [query] - Searches for an anime based on the given search query.');
 
-		searchAnime(target.trim()).then((anime) => {
+		searchAnime(target.trim()).then(anime => {
 			let genres = anime.genres.map(genre => toId(genre.name));
-			if ((genres.indexOf('hentai') > -1 || (genres.indexOf('yaoi') > -1 && anime.title.match(/pico/ig))) && this.broadcasting)
+			if ((genres.indexOf('hentai') > -1 || (genres.indexOf('yaoi') > -1 && anime.title.match(/pico/ig))) && this.broadcasting) {
 				this.errorReply('Hentai anime cannot be broadcasted.'); //explicitly detect boku no pico
-			else this.sendReplyBox(viewInfo(anime));
+			} else {
+				this.sendReplyBox(viewInfo(anime));
+			}
 			room.update();
-		}).catch((error) => {
+		}).catch(error => {
 			this.errorReply(error);
 			room.update();
 		});
-	}
-}
+	},
+};
