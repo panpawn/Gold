@@ -11,11 +11,8 @@ let prices;
 exports.commands = {
 	shop: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (room.id === 'lobby' && this.broadcasting) {
-			return this.sendReplyBox('<center>Click <button name="send" value="/shop" style="background-color: black; font-color: white;" title="Enter the Shop!"><font color="white"><b>here</button></b></font> to enter our shop!');
-		} else {
 			Economy.updatePrices();
-			let topStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px;';
+			let topStyle = '<div class="infobox-limited">background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px;';
 			let top = '<center><h3><b><u>Gold Bucks Shop</u></b></h3><table style="' + topStyle + '" border="1" cellspacing ="2" cellpadding="3"><tr><th>Item</th><th>Description</th><th>Cost</th></tr>';
 			let bottom = '</table><br /><b>Prices in the shop go up and down automatically depending on the amount of bucks the average user has at that given time.</b><br />To buy an item from the shop, click the respective button for said item.<br>Do /getbucks to learn more about how to obtain bucks. </center>';
 
@@ -32,7 +29,7 @@ exports.commands = {
 				Economy.shopTable("Mystery Box", "Gives you a special surprise gift when you open it! (Could be good or bad!)", prices['pack']) +
 				Economy.shopTable("Emote", "A custom chat emoticon such as \"Kappa\" - must be 30x30", prices['emote']) +
 				Economy.shopTable("Color", "This gives your username a custom color on the userlist and in all rooms (existing at time of purchase)", prices['color']) +
-				Economy.shopTable("Icon", "This gives your username a custom userlist icon on our regular client - MUST be a Pokemon and has to be 32x32.", prices['icon']) +
+				Economy.shopTable("Icon", "This gives your username a custom userlist icon on our regular client - MUST be a Pokemon and has to be 32x32.</div>", prices['icon']) +
 				bottom
 			);
 		}
