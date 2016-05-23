@@ -1414,10 +1414,10 @@ exports.commands = {
 		for (let obj in Users.bans) {
 			if (~hiddenNames.indexOf(obj)) continue;
 
-			reply += "<tr><td>" + (Users.bans[obj].userid ? "<b><font color=" + Gold.hashColor(Users.bans[obj].userid) + ">" + Users.bans[obj].userid + "</font></b>" : "N/A") + "</td>";
+			reply += "<tr><td>" + (Users.bans[obj].userid ? Gold.nameColor(Users.bans[obj].userid, true) : "N/A") + "</td>";
 			reply += "<td>" + (~obj.indexOf('.') ? obj : "N/A") + "</td>";
 			reply += "<td>" + moment(Users.bans[obj].on).format("YYYY-MM-DD h:mmA ") + String(String(new Date(Users.bans[obj].on)).split("(")[1]).split(")")[0] + "</td>";
-			reply += "<td>" + (Users.bans[obj].by ? "<b><font color=" + Gold.hashColor(Users.bans[obj].by) + ">" + Tools.escapeHTML(Users.bans[obj].by) + "</font></b>" : "Unknown") + "</td>";
+			reply += "<td>" + (Users.bans[obj].by ? Gold.nameColor(Users.bans[obj].by, true) : "Unknown") + "</td>";
 			reply += "<td>" + (Users.bans[obj].expires ? "In " + moment(Users.bans[obj].expires).fromNow(true) : "Never") + "</td>";
 			reply += "<td>" + (Users.bans[obj].reason ? Tools.escapeHTML(Users.bans[obj].reason) : "Not given") + "</td>";
 			reply += "</tr>";
