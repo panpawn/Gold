@@ -1351,7 +1351,7 @@ class User {
 					}
 				}
 			});
-			Punishments.lock(userid, expires.getTime(), (options.reason ? options.reason : false));
+			Punishments.lock(this, expires.getTime(), (options.reason ? options.reason : false));
 		}
 
 		for (let ip in this.ips) {
@@ -1386,7 +1386,7 @@ class User {
 			this.autoconfirmed = '';
 		}
 		this.locked = userid; // in case of merging into a recently banned account
-		Punishments.lock(userid, expires.getTime(), (options.reason ? options.reason : false));
+		Punishments.lock(Users(userid), expires.getTime(), (options.reason ? options.reason : false));
 		this.disconnectAll();
 		saveBans();
 	}
