@@ -2167,9 +2167,10 @@ exports.Formats = [
 				'corsola':1, 'delibird':1, 'volbeat':1, 'illumise':1, 'spinda':1, 'castform':1, 'luvdisc':1, 'pachirisu':1, 'dedenne':1,
 				'smeargle':1, 'pikachu':1, 'pikachucosplay':1, 'pikachulibre':1, 'pikachupopstar':1,
 				'pikachurockstar':1, 'pikachubelle':1, 'pikachuphd':1, 'clefairy':1, 'tangela':1, 'misdreavus':1, 'metang':1, 'monferno':1, 'prinplup':1,
-				'gabite':1, 'meditite':1, 'murkrow':1, 'swirlix':1, 'yanma':1, 'dunsparce':1, 'gurdurr':1, 'machoke':1, 'emolga':1, 'piloswine':1,
+				'gabite':1, 'meditite':1, 'swirlix':1, 'yanma':1, 'dunsparce':1, 'gurdurr':1, 'machoke':1, 'emolga':1, 'piloswine':1,
+				'combusken':1, 'phione':1, 'chansey':1,
 			};
-			const NFEbanlist = {'frogadier':1, 'fraxure':1, 'electabuzz':1, 'magmar':1, 'servine':1};
+			const NFEbanlist = {'frogadier':1, 'fraxure':1, 'electabuzz':1, 'magmar':1, 'servine':1, 'murkrow':1};
 			let tier = this.getTemplate(set.species).tier, species = toId(set.species);
 			if ((!(species in allowed) && tier !== 'LC' && tier !== 'NFE') || (tier === 'NFE' && (species in NFEbanlist))) {
 				return [set.species + " is banned in MCPX."];
