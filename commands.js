@@ -870,11 +870,6 @@ exports.commands = {
 
 		let currentGroup = ((room.auth && room.auth[userid]) || (room.isPrivate !== true && Users.usergroups[userid]) || ' ');
 		let nextGroup = target;
-		if (room.auth[user.userid] === '&' && room.founder !== user.userid) {
-			if (currentGroup === '&' || currentGroup === '#' || nextGroup === '&' || nextGroup === '#') {
-				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + (Config.groups[nextGroup] ? Config.groups[nextGroup].name : "this rank."));
-			}
-		}
 		if (target === 'deauth') nextGroup = Config.groupsranking[0];
 		if (!nextGroup) {
 			return this.errorReply("Please specify a group such as /roomvoice or /roomdeauth");
@@ -882,7 +877,13 @@ exports.commands = {
 		if (!Config.groups[nextGroup]) {
 			return this.errorReply("Group '" + nextGroup + "' does not exist.");
 		}
-
+		if (room.auth[user.userid] === '&' && room.founder && room.founder !== user.userid) {
+			if (currentGroup === '&' || currentGroup === '#' || nextGroup === '&' || nextGroup === '#') {
+				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + (Config.groups[nextGroup] ? Config.groups[nextGroup].name : "this rank."));
+			}
+		}
+		let leGroups = Config.groupsranking;
+		if (room.auth[user.userid] === '#' && room.founder && room.founder !== user.userid && Config.groupsranking[nextGroup] && Config.groupsranking[currentGroup] && leGroups.indexOf(nextGroup) > leGroups.indexOf(currentGroup)) return false;
 		if (Config.groups[nextGroup].globalonly || (Config.groups[nextGroup].battleonly && !room.battle)) {
 			return this.errorReply("Group 'room" + Config.groups[nextGroup].id + "' does not exist as a room rank.");
 		}
