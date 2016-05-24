@@ -872,7 +872,7 @@ exports.commands = {
 		let nextGroup = target;
 		if (room.auth[user.userid] === '&' && room.founder !== user.userid) {
 			if (currentGroup === '&' || currentGroup === '#' || nextGroup === '&' || nextGroup === '#') {
-				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + Config.groups[nextGroup].name + ".");
+				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + (Config.groups[nextGroup] ? Config.groups[nextGroup].name : "this rank."));
 			}
 		}
 		if (target === 'deauth') nextGroup = Config.groupsranking[0];
