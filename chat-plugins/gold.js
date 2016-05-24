@@ -583,7 +583,7 @@ exports.commands = {
 	declaremodhelp: ['/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires #, &, ~'],
 	k: 'kick',
 	kick: function(target, room, user) {
-		if (!this.can('lock')) return false;
+		if (!this.can('mute'), null, room) return false;
 		if (Gold.kick === undefined) Gold.kick = true;
 		if (!target) return this.parse('/help kick');
 		if (!this.canTalk()) return false;
