@@ -870,7 +870,11 @@ exports.commands = {
 
 		let currentGroup = ((room.auth && room.auth[userid]) || (room.isPrivate !== true && Users.usergroups[userid]) || ' ');
 		let nextGroup = target;
-		if (nextGroup === '#' || nextGroup === 'owner' || (room.auth[targetUser] === '#' && nextGroup === ' ')) return false;
+		if (room.auth[user.userid] === '&' && room.founder !== user.userid) {
+			if (currentGroup === '&' || currentGroup === '#' || nextGroup === '&' || nextGroup === '#') {
+				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + Config.groups[nextGroup].name + ".");
+			}
+		}
 		if (target === 'deauth') nextGroup = Config.groupsranking[0];
 		if (!nextGroup) {
 			return this.errorReply("Please specify a group such as /roomvoice or /roomdeauth");
