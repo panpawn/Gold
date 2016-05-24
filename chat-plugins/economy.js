@@ -217,7 +217,7 @@ exports.commands = {
 				prize = ['nothing', 'rick rolled', 'meme avatar', 'kick from Lobby', '2 minute mute'].sample();
 			} else if (randomNumber > 70) {
 				goodBad = 'good';
-				prize = ['a custom symbol', 'ability to get Dubtrack VIP', 'ability to set the PotD', 'custom color', 'the cost of the mystery box back', 'ability to have a leader/admin broadcast an image to Lobby'].sample();
+				prize = ['a custom symbol', 'a custom userlist icon', 'ability to get Dubtrack VIP', 'ability to set the PotD', 'custom color', 'the cost of the mystery box back', 'ability to have a leader/admin broadcast an image to Lobby', 'a kind, warm hearted thank you'].sample();
 			}
 			switch (prize) {
 			// good
@@ -233,6 +233,12 @@ exports.commands = {
 			case 'a custom symbol':
 				user.canCustomSymbol = true;
 				this.sendReply("Do /customsymbol [symbol] to set a FREE custom symbol! (Do /rs to reset your custom symbol when you want to remove it later.)");
+				break;
+			case 'a kind, warm hearted thank you':
+				this.sendReply("THANK U 8D!");
+				break;
+			case 'a custom userlist icon':
+				this.sendReply("PM a leader or administrator to claim this prize!");
 				break;
 			// bad
 			case 'nothing':
