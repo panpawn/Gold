@@ -214,7 +214,7 @@ exports.commands = {
 			let goodBad = '';
 			if (randomNumber < 70) {
 				goodBad = 'bad';
-				prize = ['nothing', 'rick rolled', 'poof', 'meme avatar', 'kick from Lobby', '2 minute mute'].sample();
+				prize = ['nothing', 'rick rolled', 'meme avatar', 'kick from Lobby', '2 minute mute'].sample();
 			} else if (randomNumber > 70) {
 				goodBad = 'good';
 				prize = ['a custom symbol', 'ability to get Dubtrack VIP', 'ability to set the PotD', 'custom color', 'the cost of the mystery box back', 'ability to have a leader/admin broadcast an image to Lobby'].sample();
@@ -250,9 +250,6 @@ exports.commands = {
 				try {
 					Rooms('lobby').mute(user, 2 * 60 * 1000, false);
 				} catch (e) {}
-				break;
-			case 'poof':
-				this.parse('/poof');
 				break;
 			case 'rick rolled':
 				Rooms('lobby').add("|raw|<blink>" +
