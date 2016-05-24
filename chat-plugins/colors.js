@@ -276,6 +276,10 @@ var mainCustomColors = {
 	'dontlose': 'dhcli22h',
 	'tatsumaki': 'developmentary',
 	'starry': 'starryblanket',
+	'imas': 'imas234',
+	'vexeniv': 'vexenx',
+	'ayanosredscarf': 'ezichqog',
+	'penquin': 'privatepenquin',
 	'cathy': '' //{color: '#ff5cb6'}
 };
 
