@@ -1207,9 +1207,9 @@ exports.commands = {
 	d: 'poof',
 	cpoof: 'poof',
 	poof: function (target, room, user) {
-		if (Config.poofOff) return this.sendReply("Poof is currently disabled.");
-		if (target && !this.can('broadcast')) return false;
-		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
+		if (Config.poofOff) return this.errorReply("Poof is currently disabled.");
+		if (target && !this.can('broadcast')) return this.errorReply("Only voices or above can poof with a target.  Try /poof instead.");
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.errorReply("You cannot do this while unable to talk.");
 		if (room.id !== 'lobby') return false;
 		let message = target || messages[Math.floor(Math.random() * messages.length)];
 		if (message.indexOf('{{user}}') < 0) message = '{{user}} ' + message;
