@@ -273,13 +273,15 @@ Punishments.unlock = function (name) {
 		user.locked = false;
 		user.updateIdentity();
 		success.push(user.getLastName());
-		if (id.charAt(0) !== '#') Users.users.forEach(curUser => {
-			if (curUser.locked === id) {
-				curUser.locked = false;
-				curUser.updateIdentity();
-				success.push(curUser.getLastName());
-			}
-		});
+		if (id.charAt(0) !== '#') {
+			Users.users.forEach(curUser => {
+				if (curUser.locked === id) {
+					curUser.locked = false;
+					curUser.updateIdentity();
+					success.push(curUser.getLastName());
+				}
+			});
+		}
 	}
 	if (Punishments.unpunish(name, 'LOCK')) {
 		if (!success.length) success.push(name);
@@ -315,14 +317,16 @@ Punishments.unnamelock = function (name) {
 		user.namelocked = false;
 		user.resetName();
 		success.push(user.getLastName());
-		if (id.charAt(0) !== '#') Users.users.forEach(curUser => {
-			if (curUser.locked === id) {
-				curUser.locked = false;
-				curUser.namelocked = false;
-				curUser.resetName();
-				success.push(curUser.getLastName());
-			}
-		});
+		if (id.charAt(0) !== '#') {
+			Users.users.forEach(curUser => {
+				if (curUser.locked === id) {
+					curUser.locked = false;
+					curUser.namelocked = false;
+					curUser.resetName();
+					success.push(curUser.getLastName());
+				}
+			});
+		}
 	}
 	if (Punishments.unpunish(name, 'NAMELOCK')) {
 		if (!success.length) success.push(name);
@@ -410,7 +414,6 @@ Punishments.checkName = function (user, registered) {
 
 	let id = punishment[0];
 	let punishUserid = punishment[1];
-	let expireTime = punishment[2];
 
 	if (registered && id === 'BAN') {
 		let bannedUnder = '';
