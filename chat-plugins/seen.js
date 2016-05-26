@@ -25,6 +25,7 @@ function saveData() {
 
 function updateSeen(userid) {
 	if (!userid) return false;
+	if (userid.substr(0, 5) === 'guest') return false; // don't record guest numbers
 	seenData[toId(userid)] = Date.now();
 	saveData();
 }
