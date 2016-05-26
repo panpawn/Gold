@@ -49,7 +49,7 @@ exports.commands = {
 				if (userid === user.userid) return this.sendReplyBox(userName + ", have you looked in a mirror lately?");
 				if (Users(target) && Users(target).connected) return this.sendReplyBox(userName + ' is currently <font color="green">online</font>.');
 				if (!seenData[userid]) return this.sendReplyBox(userName + ' has <font color=\"red\">never</font> been seen online on this server.');
-				let userLastSeen = moment(seenData[userid]).format("MMMM Do YYYY, h:mm:ss A");
+				let userLastSeen = moment(seenData[userid]).format("MMMM Do YYYY, h:mm A");
 				this.sendReplyBox(userName + ' was last seen online on ' + userLastSeen + ' EST. (' + moment(seenData[userid]).fromNow() + ')');
 				break;
 		}
