@@ -186,8 +186,7 @@ exports.tourannouncements = [/* roomids */];
 exports.appealurl = '';
 
 // chat filter - filter out server advertisements and banned messages
-exports.adWhitelist = adWhitelist = []; // what serverids should not be considered 'advertising'
-for (var u in adWhitelist) adWhitelist[u] = '.*' + adWhitelist[u];
+exports.adWhitelist = []; // what serverids should not be considered 'advertising'
 
 try {
 	exports.bannedMessages = fs.readFileSync('config/bannedmessages.txt', 'utf8').toLowerCase().split('\n');
