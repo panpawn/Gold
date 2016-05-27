@@ -35,17 +35,13 @@ Config.chatfilter = function (message, user, room, connection) {
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name +
 				' was locked from talking by the Server. (Advertising) (' + connection.ip + ')\n');
 			connection.sendTo(room, '|raw|<strong class="message-throttle-notice">You have been locked for attempting to advertise.</strong>');
-			let alertMessage = user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message.") +
-				" **Message:** " + message
-			Gold.pmUpperStaff(alertMessage, "~Server");
-			Rooms('staff').add(alertMessage).update();
-
+			let alertMessage =
+			Gold.pmUpperStaff(user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message.") + " **Message:** " + message, "~Server");
+			Rooms('staff').add('|raw|' + Gold.nameColor(user.name) + " has been locked for attempting to advertise" + (room ? ". <b>Room:</b>" + room.id : " in a private message.") + " <b>Message:</b> " + message).update();
 			return false;
 		}
-		let alertLockMessage = user.name + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") +
-			" **Message:** " + message;
-		Gold.pmUpperStaff(alertLockMessage, "~Server");
-		Rooms('staff').add(alertLockMessage).update();
+		Gold.pmUpperStaff(user.name + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") + " **Message:** " + message, "~Server");
+		Rooms('staff').add('|raw||' + Gold.nameColor(user.name, true) + " has attempted to advertise" + (room ? ". <b>Room:</b> " + room.id : " in a private message.") + " <b>Message:</b> " + message).update();
 		connection.sendTo(room, '|raw|<strong class="message-throttle-notice">Advertising detected, your message has not been sent and upper staff has been notified.' +
 			'<br />Further attempts to advertise will result in being locked</strong>');
 		connection.user.popup("Advertising detected, your message has not been sent and upper staff has been notified.\n" +
