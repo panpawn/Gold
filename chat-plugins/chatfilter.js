@@ -23,10 +23,10 @@ Config.chatfilter = function (message, user, room, connection) {
 			return false;
 		}
 	}
-	let pre_matches = (message.match(/psim/g) || []).length + (message.match(/us/g) || []).length;
-	let final_check = (pre_matches >= 2 ? adWhitelist.filter(server => { return ~message.indexOf(server) }).length : 1);
+	let pre_matches = (message.match(/psim|psim.us|psim us/g) || []).length
+	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server) }).length : 0);
 
-	if (!user.can('hotpatch') && (pre_matches >= 2 && final_check == 0 || pre_matches >= 4 && final_check >= 1 || message.match(adRegex))) {
+	if (!user.can('hotpatch') && (pre_matches >= 1 && final_check == 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
 		if (user.locked) return false;
 		if (!user.advWarns) user.advWarns = 0;
 		user.advWarns++;
