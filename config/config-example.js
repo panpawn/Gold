@@ -1,7 +1,7 @@
 'use strict';
 
 // The server port - the port to run Pokemon Showdown under
-exports.port = 8080;
+exports.port = 8000;
 
 // proxyip - proxy IPs with trusted X-Forwarded-For headers
 //   This can be either false (meaning not to trust any proxies) or an array
@@ -186,7 +186,8 @@ exports.tourannouncements = [/* roomids */];
 exports.appealurl = '';
 
 // chat filter - filter out server advertisements and banned messages
-exports.adWhitelist = []; // what serverids should not be considered 'advertising'
+exports.adWhitelist = adWhitelist = []; // what serverids should not be considered 'advertising'
+for (var u in adWhitelist) adWhitelist[u] = '.*' + adWhitelist[u];
 
 try {
 	exports.bannedMessages = fs.readFileSync('config/bannedmessages.txt', 'utf8').toLowerCase().split('\n');
@@ -270,14 +271,20 @@ exports.grouplist = [
 		inherit: '@',
 		jurisdiction: '@u',
 		promote: 'u',
-		roomleader: true,
+		roomowner: true,
+		roommod: true,
+		roomdriver: true,
 		forcewin: true,
 		declare: true,
 		modchatall: true,
-		tournamentsmanagement: true,
-		roomop: true,
+		rangeban: true,
 		makeroom: true,
-		seniorstaff: true
+		editroom: true,
+		potd: true,
+		disableladder: true,
+		globalonly: true,
+		tournamentsmanagement: true,
+		gamemanagement: true,
 	},
 	{
 		symbol: '#',
