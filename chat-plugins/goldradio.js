@@ -3,15 +3,8 @@
  * This is a daily activity where users nominate the featured artist for the day, which is selected randomly once voting has ended.
  * Only works in a room with the id 'goldenrodradiotower'
  */
-'use strict';
 
-function toArrayOfArrays(map) {
-	let ret = [];
-	map.forEach((value, key) => {
-		ret.push([value, key]);
-	});
-	return ret;
-}
+'use strict';
 
 function toArtistId(artist) { // toId would return '' for foreign/sadistic artists
 	return artist.toLowerCase().replace(/\s/g, '').replace(/\b&\b/g, '');
@@ -23,14 +16,18 @@ let artistOfTheDay = {
 	removedNominators: [],
 };
 
-let goldenrodradiotower = Rooms('goldenrodradiotower');
-if (goldenrodradiotower && !goldenrodradiotower.plugin) {
-	goldenrodradiotower.plugin = artistOfTheDay;
+let goldenrodradiotower = Rooms.get('goldenrodradiotower');
+if (goldenrodradiotower) {
+	if (goldenrodradiotower.plugin) {
+		artistOfTheDay = goldenrodradiotower.plugin;
+	} else {
+		goldenrodradiotower.plugin = artistOfTheDay;
+	}
 }
 
 let commands = {
 	start: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !this.can('mute', null, room)) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 		if (artistOfTheDay.pendingNominations) return this.sendReply("Nominations for the Artist of the Day are already in progress.");
@@ -49,21 +46,21 @@ let commands = {
 		Rooms.global.writeChatRoomData();
 		room.addRaw(
 			"<div class=\"broadcast-blue\"><strong>Nominations for the Artist of the Day have begun!</strong><br />" +
-		        "Use /aotd nom to nominate an artist.</div>"
+			"Use /aotd nom to nominate an artist.</div>"
 		);
 		this.privateModCommand("(" + user.name + " began nominations for the Artist of the Day.)");
 	},
 	starthelp: ["/aotd start - Start nominations for the Artist of the Day. Requires: % @ # & ~"],
 
 	end: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !this.can('mute', null, room)) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 		if (!artistOfTheDay.pendingNominations) return this.sendReply("Nominations for the Artist of the Day are not in progress.");
 		if (!artistOfTheDay.nominations.size) return this.sendReply("No nominations have been submitted yet.");
 
-		let nominations = toArrayOfArrays(artistOfTheDay.nominations);
-		let artist = nominations[~~(Math.random() * nominations.length)][0];
+		let nominations = Array.from(artistOfTheDay.nominations);
+		let artist = nominations[~~(Math.random() * nominations.length)][1];
 		artistOfTheDay.pendingNominations = false;
 		artistOfTheDay.nominations.clear();
 		artistOfTheDay.removedNominators = [];
@@ -71,14 +68,14 @@ let commands = {
 		Rooms.global.writeChatRoomData();
 		room.addRaw(
 			"<div class=\"broadcast-blue\"><strong>Nominations for the Artist of the Day have ended!</strong><br />" +
-		        "Randomly selected artist: " + Tools.escapeHTML(artist) + "</div>"
+			"Randomly selected artist: " + Tools.escapeHTML(artist) + "</div>"
 		);
 		this.privateModCommand("(" + user.name + " ended nominations for the Artist of the Day.)");
 	},
 	endhelp: ["/aotd end - End nominations for the Artist of the Day and set it to a randomly selected artist. Requires: % @ # & ~"],
 
 	prenom: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !target) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd prenom');
 		if (!room.chatRoomData || !target) return false;
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
@@ -118,18 +115,18 @@ let commands = {
 	prenomhelp: ["/aotd prenom [artist] - Nominate an artist for the Artist of the Day between nomination periods."],
 
 	nom: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !target) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd nom');
 		if (!room.chatRoomData || !target) return false;
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 		if (!artistOfTheDay.pendingNominations) return this.sendReply("Nominations for the Artist of the Day are not in progress.");
 
 		let removedNominators = artistOfTheDay.removedNominators;
-		if (removedNominators.indexOf(user) >= 0) return this.sendReply("Since your nomination has been removed, you cannot submit another artist until the next round.");
+		if (removedNominators.includes(user)) return this.sendReply("Since your nomination has been removed, you cannot submit another artist until the next round.");
 
 		let alts = user.getAlts();
 		for (let i = 0; i < removedNominators.length; i++) {
-			if (alts.indexOf(removedNominators[i].name) >= 0) return this.sendReply("Since your nomination has been removed, you cannot submit another artist until the next round.");
+			if (alts.includes(removedNominators[i].name)) return this.sendReply("Since your nomination has been removed, you cannot submit another artist until the next round.");
 		}
 
 		let nominationId = toArtistId(target);
@@ -137,9 +134,9 @@ let commands = {
 
 		let userid = user.userid;
 		let latestIp = user.latestIp;
-		for (let data, nominationsIterator = artistOfTheDay.nominations.entries(); !(data = nominationsIterator.next().value);) { // replace with for-of loop once available
+		for (let data of artistOfTheDay.nominations) {
 			let nominator = data[0];
-			if (nominator.ips[latestIp] && nominator.userid !== userid || alts.indexOf(nominator.name) >= 0) return this.sendReply("You have already submitted a nomination for the Artist of the Day under the name " + nominator.name + ".");
+			if (nominator.ips[latestIp] && nominator.userid !== userid || alts.includes(nominator.name)) return this.sendReply("You have already submitted a nomination for the Artist of the Day under the name " + nominator.name + ".");
 			if (toArtistId(data[1]) === nominationId) return this.sendReply("" + target + " has already been nominated.");
 		}
 
@@ -150,7 +147,7 @@ let commands = {
 	nomhelp: ["/aotd nom [artist] - Nominate an artist for the Artist of the Day."],
 
 	viewnoms: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData) return false;
 
 		let buffer = "";
@@ -177,12 +174,12 @@ let commands = {
 		if (!this.runBroadcast()) return false;
 		if (!artistOfTheDay.nominations.size) return this.sendReplyBox("No nominations have been submitted yet.");
 
-		let nominations = toArrayOfArrays(artistOfTheDay.nominations).sort((a, b) => a[0].localeCompare(b[0]));
+		let nominations = Array.from(artistOfTheDay.nominations).sort((a, b) => a[1].localeCompare(b[1]));
 
 		buffer += "Current nominations (" + nominations.length + "):";
 		for (let i = 0; i < nominations.length; i++) {
 			buffer += "<br />" +
-				"- " + Tools.escapeHTML(nominations[i][0]) + " (submitted by " + Tools.escapeHTML(nominations[i][1].name) + ")";
+				"- " + Tools.escapeHTML(nominations[i][1]) + " (submitted by " + Tools.escapeHTML(nominations[i][0].name) + ")";
 		}
 
 		this.sendReplyBox(buffer);
@@ -190,7 +187,7 @@ let commands = {
 	viewnomshelp: ["/aotd viewnoms - View the current nominations for the Artist of the Day. Requires: % @ # & ~"],
 
 	removenom: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !target || !this.can('mute', null, room)) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd removenom');
 		if (!room.chatRoomData || !target || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
@@ -200,9 +197,9 @@ let commands = {
 		target = this.splitTarget(target);
 		let name = this.targetUsername;
 		let userid = toId(name);
-		if (!userid) return this.sendReply("'" + name + "' is not a valid username.");
+		if (!userid) return this.errorReply("'" + name + "' is not a valid username.");
 
-		for (let nominator, nominatorsIterator = artistOfTheDay.nominations.keys(); !(nominator = nominatorsIterator.next().value);) { // replace with for-of loop once available
+		for (let nominator of artistOfTheDay.nominations.keys()) {
 			if (nominator.userid === userid) {
 				artistOfTheDay.nominations.delete(nominator);
 				artistOfTheDay.removedNominators.push(nominator);
@@ -215,11 +212,11 @@ let commands = {
 	removenomhelp: ["/aotd removenom [username] - Remove a user\'s nomination for the Artist of the Day and prevent them from voting again until the next round. Requires: % @ # & ~"],
 
 	set: function (target, room, user) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !this.can('mute', null, room)) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd set');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
-		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
-		if (!toId(target)) return this.sendReply("No valid artist was specified.");
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.errorReply("You cannot do this while unable to talk.");
+		if (!toId(target)) return this.errorReply("No valid artist was specified.");
 		if (artistOfTheDay.pendingNominations) return this.sendReply("The Artist of the Day cannot be set while nominations are in progress.");
 
 		room.chatRoomData.artistOfTheDay = target;
@@ -229,7 +226,7 @@ let commands = {
 	sethelp: ["/aotd set [artist] - Set the Artist of the Day. Requires: % @ # & ~"],
 
 	quote: function (target, room, user) {
-		if (room.id !== 'thestudio') return this.sendReply('This command can only be used in The Studio.');
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData) return false;
 		if (!target) {
 			if (!this.runBroadcast()) return;
@@ -262,13 +259,13 @@ let commands = {
 	],
 
 	'': function (target, room) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !this.runBroadcast()) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.runBroadcast()) return false;
 		this.sendReplyBox("The Artist of the Day " + (room.chatRoomData.artistOfTheDay ? "is " + room.chatRoomData.artistOfTheDay + "." : "has not been set yet."));
 	},
 
 	help: function (target, room) {
-		if (room.id !== 'goldenrodradiotower' || !room.chatRoomData || !this.runBroadcast()) return false;
+		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.runBroadcast()) return false;
 		this.sendReply("Use /help aotd to view help for all commands, or /help aotd [command] for help on a specific command.");
 	},
