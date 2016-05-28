@@ -33,6 +33,7 @@ exports.commands = {
 				Economy.shopTable("Emote", "A custom chat emoticon such as \"Kappa\" - must be 30x30", prices['emote']) +
 				Economy.shopTable("Color", "This gives your username a custom color on the userlist and in all rooms (existing at time of purchase)", prices['color']) +
 				Economy.shopTable("Icon", "This gives your username a custom userlist icon on our regular client - MUST be a Pokemon and has to be 32x32.", prices['icon']) +
+				Economy.shopTable("VIP Status", "Gives you the ability to change your custom symbol, avatar, custom color, and userlist icon as much as you wish, and it is also displayed in your profile.", prices['vip']) +
 				bottom
 			);
 		}
@@ -200,6 +201,16 @@ exports.commands = {
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a custom userlist icon. Image: ' + link(parts[1].replace(' ', ''), 'desired icon'), true);
 			alertStaff('<center><button name="send" value="/icon ' + user.userid + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom userlist icon.">Click2Set</button></center>', false);
 			this.sendReply("You have purchased a custom userlist icon.  The staff have been notified and this will be added ASAP.");
+			break;
+
+		case 'vip':
+		case 'vipstatus':
+			price = prices['vip'];
+			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
+			processPurchase(price, parts[0]);
+			alertStaff(Gold.nameColor(user.name, true) + " has purchased VIP Status from the shop.", true);
+			alertStaff('<center><button name="send" value="/givevip ' + user.userid + '" target="_blank" title="Click give the above user VIP status.">Click2Set</button></center>', false);
+			this.sendReply("You have purchased VIP status, congratulations!  Screen cap this message.  An upper staff should be giving you VIP status shortly.");
 			break;
 
 		case 'mysterybox':
@@ -599,6 +610,7 @@ global.Economy = {
 			'color': Math.round(avg * 5.3),
 			'icon': Math.round(avg * 10),
 			'pack': Math.round(avg * 1),
+			'vip': Math.round(avg * 30.5),
 		};
 	},
 
