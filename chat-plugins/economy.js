@@ -23,7 +23,7 @@ exports.commands = {
 				top +
 				Economy.shopTable("Symbol", "Buys a custom symbol to go infront of name and puts you towards the top of userlist (lasts 2 hrs from logout)", prices['symbol']) +
 				Economy.shopTable("Declare", "Advertisement declare for a room on the server from an Administrator / Leader.", prices['declare']) +
-				Economy.shopTable("Fix", "Ability to modify a custom avatar, trainer card, userlist icon, or custom emoticon.", prices['fix']) +
+				Economy.shopTable("Fix", "Ability to modify a custom avatar, trainer card, or userlist icon.", prices['fix']) +
 				Economy.shopTable("Custom", "Buys a custom avatar to be applied to your name (you supply)", prices['custom']) +
 				Economy.shopTable("Animated", "Buys an animated avatar to be applied to your name (you supply)", prices['animated']) +
 				Economy.shopTable("Room", "Buys a public unofficial chat room - will be deleted if inactive. Must have a valid purpose; staff can reject making these.", prices['room']) +
