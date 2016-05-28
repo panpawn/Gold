@@ -800,12 +800,12 @@ class Tournament {
 		let data = {results: this.generator.getResults().map(usersToNames), bracketData: this.getBracketData()};
 		data = data['results'].toString();
 
-		let winner = '';
+		let winner, runnerUp = '';
 
 		if (data.indexOf(',') >= 0) {
 			data = data.split(',');
 			winner = data[0];
-			//if (data[1]) runnerUp = data[1];
+			if (data[1]) runnerUp = data[1];
 		} else {
 			winner = data;
 		}
@@ -815,8 +815,12 @@ class Tournament {
 			let money = (tourSize < 50 ? tourSize : 50);
 
 			try {
-				this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
+				this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
 				Economy.writeMoney(toId(winner), money);
+				if (runnerUp.length >= 1) {
+					this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
+					Economy.writeMoney(toId(runnerUp), Math.round(money / 2)); // gives runner up half the prize
+				}
 			} catch (e) {}
 		}
 		if (this.autoDisqualifyTimer) clearTimeout(this.autoDisqualifyTimer);
