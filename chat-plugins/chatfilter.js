@@ -41,7 +41,7 @@ Config.chatfilter = function (message, user, room, connection) {
 			return false;
 		}
 		Gold.pmUpperStaff(user.name + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") + " **Message:** " + message, "~Server");
-		Rooms('staff').add('|raw||' + Gold.nameColor(user.name, false) + " has attempted to advertise" + (room ? ". <b>Room:</b> " + room.id : " in a private message.") + " <b>Message:</b> " + message).update();
+		Rooms('staff').add('|raw|' + Gold.nameColor(user.name, false) + " has attempted to advertise" + (room ? ". <b>Room:</b> " + room.id : " in a private message.") + " <b>Message:</b> " + message).update();
 		connection.sendTo(room, '|raw|<strong class="message-throttle-notice">Advertising detected, your message has not been sent and upper staff has been notified.' +
 			'<br />Further attempts to advertise will result in being locked</strong>');
 		connection.user.popup("Advertising detected, your message has not been sent and upper staff has been notified.\n" +
