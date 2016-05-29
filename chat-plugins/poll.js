@@ -70,7 +70,7 @@ class Poll {
 		this.options.forEach((option, number) => {
 			count++;
 			if (count === 1) output += "<tr>";
-			output += '<td style="border: 0px; color: white; padding: 3px;"><button class="button" style="' + blackbutton + '" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + number + '. <strong>' + Tools.escapeHTML(option.name) + '</strong></button></td>';
+			output += '<td style="border: 0px; color: white; padding: 3px;"><button class="button" style="' + blackbutton + '" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '"><strong>' + Tools.escapeHTML(option.name) + '</strong></button></td>';
 			if (count >= 4) {
 				output += "</tr>";
 				count = 0;
