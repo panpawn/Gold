@@ -331,9 +331,8 @@ exports.commands = {
 		if (!room.poll) return this.errorReply("There is no poll running in this room.");
 		if (!this.runBroadcast()) return;
 		room.poll.update();
-		var votes = room.poll.totalVotes;
-		var lbl = (votes > 1 ? ' VOTES' : ' VOTE');
-		return this.sendReplyBox("TOTAL VOTES: " + votes + lbl);
+		let votes = room.poll.totalVotes;
+		return this.sendReplyBox("TOTAL VOTES: " + votes + " VOTE" + Gold.pluralFormat(votes, 'S'));
 	},
 	ep: 'endpoll',
 	endpoll: function(target, room, user) {
@@ -353,7 +352,7 @@ exports.commands = {
 	},
 	tierpoll: 'tpoll',
 	tpoll: function(target, room, user) {
-		var tiers = ['Challenge Cup 1v1', 'OMotM', 'OU', 'Random Battle', 'Random Monotype Battle', 'UU', 'NU', 'RU', 'PU', 'Ubers', 'Monotype'];
+		let tiers = ['Gold Battle', 'Random','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', '[Seasonal]', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype Battle', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
 	vote: function(target, room, user) {
