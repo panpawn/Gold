@@ -2159,8 +2159,10 @@ exports.Formats = [
 
 		maxForcedLevel: 50,
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
-		banlist: ['Uber', 'Shadow Tag', 'Eviolite', 'DeepSeaTooth', 'Light Ball', 'Teeter Dance', 'Flatter', 'Supersonic', 'Dynamic Punch', 'Flatter', 'Confuse Ray', 'Chatter'],
+		banlist: ['Uber', 'Shadow Tag', 'DeepSeaTooth', 'Light Ball', 'Teeter Dance', 'Flatter', 'Supersonic', 'Dynamic Punch', 'Flatter', 'Confuse Ray', 'Chatter'],
 		onValidateSet: function (set) {
+			let tier = this.getTemplate(set.species).tier;
+			if (set.item === 'Eviolite' && tier !== 'LC') return [set.species + " is not in LC and cannot hold an Eviolite."];
 			const allowed = {
 				'ferroseed':1, 'togetic':1, 'pawniard': 1, 'porygon2': 1, 'farfetchd':1, 'ditto':1, 'unown':1,
 				'corsola':1, 'delibird':1, 'volbeat':1, 'illumise':1, 'spinda':1, 'castform':1, 'luvdisc':1, 'pachirisu':1, 'dedenne':1,
@@ -2170,7 +2172,7 @@ exports.Formats = [
 				'combusken':1, 'phione':1, 'chansey':1,
 			};
 			const NFEbanlist = {'frogadier':1, 'fraxure':1, 'electabuzz':1, 'magmar':1, 'servine':1, 'murkrow':1};
-			let tier = this.getTemplate(set.species).tier, species = toId(set.species);
+			let species = toId(set.species);
 			if ((!(species in allowed) && tier !== 'LC' && tier !== 'NFE') || (tier === 'NFE' && (species in NFEbanlist))) {
 				return [set.species + " is banned in MCPX."];
 			}
