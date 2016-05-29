@@ -352,7 +352,7 @@ exports.commands = {
 	},
 	tierpoll: 'tpoll',
 	tpoll: function(target, room, user) {
-		let tiers = ['Gold Battle', 'Random Battle','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype Battle', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
+		let tiers = ['Gold Battle', 'Random Doubles','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype Battle', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
 	vote: function(target, room, user) {
