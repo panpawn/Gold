@@ -6,7 +6,7 @@
 'use strict';
 
 const permission = 'broadcast';
-const blackbutton = 'background: black; text-shadow: none; padding: 2px 6px; color: white; text-align: center; width: 100%;';
+const blackbutton = 'background: #ff9900; text-shadow: none; padding: 2px 6px; color: black; text-align: center; border: black, solid, 1px; width: 100%;';
 const moment = require('moment');
 
 class Poll {
@@ -352,7 +352,7 @@ exports.commands = {
 	},
 	tierpoll: 'tpoll',
 	tpoll: function(target, room, user) {
-		let tiers = ['Gold Battle', 'Random','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', '[Seasonal]', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype Battle', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
+		let tiers = ['Gold Battle', 'Random','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype Battle', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
 	vote: function(target, room, user) {
