@@ -6,7 +6,7 @@
 'use strict';
 
 const permission = 'broadcast';
-const blackbutton = 'background: black; text-shadow: none; padding: 2px 6px; color: white; text-align: left;';
+const blackbutton = 'background: black; text-shadow: none; padding: 2px 6px; color: white; text-align: center; width: 100%;';
 const moment = require('moment');
 
 class Poll {
@@ -64,11 +64,19 @@ class Poll {
 	}
 
 	generateVotes() {
-		let output = '<div class="infobox"><p style="margin: 2px 0 5px 0"><span style="border:1px solid #6A6;color:#484;border-radius:4px;padding:0 3px"><i class="fa fa-bar-chart"></i> Poll</span> <strong style="font-size:11pt">' + Tools.escapeHTML(this.question) + '</strong></p>';
-		this.options.forEach(function (option, number) {
-			output += '<button class="button" style="' + blackbutton + '" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + number + '. <strong>' + Tools.escapeHTML(option.name) + '</strong></button> ';
+		let count = 0;
+		let output = '<div class="infobox"><p style="margin: 2px 0 5px 0"><span style="border:1px solid #6A6;color:#484;border-radius:4px;padding:0 3px"><i class="fa fa-bar-chart"></i> Poll</span> <strong style="font-size:11pt">' + this.getQuestionMarkup() +
+			'</strong></p><table style="text-align: center; color: white; border-collapse: collapse; padding: 5px;">';
+		this.options.forEach((option, number) => {
+			count++;
+			if (count === 1) output += "<tr>";
+			output += '<td style="border: 0px; color: white; padding: 3px;"><button class="button" style="' + blackbutton + '" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + number + '. <strong>' + Tools.escapeHTML(option.name) + '</strong></button></td>';
+			if (count >= 4) {
+				output += "</tr>";
+				count = 0;
+			}
 		});
-		output += '<div style="margin-top: 7px; padding-left: 12px"><button value="/poll results" name="send" title="View results - you will not be able to vote after viewing results"><small>(View results)</small></button></div>';
+		output += '</table><div style="margin-top: 7px; padding-left: 12px"><button value="/poll results" name="send" title="View results - you will not be able to vote after viewing results"><small>(View results)</small></button></div>';
 		output += '</div>';
 
 		return output;
@@ -84,12 +92,15 @@ class Poll {
 		let c = 0;
 		let colors = ['#79A', '#8A8', '#88B'];
 		while (!i.done) {
-			let percentage = Math.round((i.value[1].votes * 100) / (this.totalVotes || 1));
-			output += '<div style="margin-top: 3px">' + i.value[0] + '. <strong>' + (i.value[0] === option ? '<em>' : '') + Tools.escapeHTML(i.value[1].name) + (i.value[0] === option ? '</em>' : '') + '</strong> <small> | <small>&nbsp;' + percentage + '%</small> (' + i.value[1].votes + ' vote' + (i.value[1].votes === 1 ? '' : 's') + ')</small><br /><span style="font-size:7pt;background:' + colors[c % 3] + ';padding-right:' + (percentage * 3) + 'px"></span></div>';
+			if (i.value[1].votes && i.value[1].votes !== 0) {
+				let percentage = Math.round((i.value[1].votes * 100) / (this.totalVotes || 1));
+				output += '<div style="margin-top: 3px">' + i.value[0] + '. <strong>' + (i.value[0] === option ? '<em>' : '') + Tools.escapeHTML(i.value[1].name) + (i.value[0] === option ? '</em>' : '') + '</strong> <small> | <small>&nbsp;' + percentage + '%</small> (' + i.value[1].votes + ' vote' + (i.value[1].votes === 1 ? '' : 's') + ')</small><br /><span style="font-size:7pt;background:' + colors[c % 3] + ';padding-right:' + (percentage * 3) + 'px"></span></div>';
+			}
 			i = iter.next();
 			c++;
 		}
 		if (option === 0 && !ended) output += '<div><small>(You can\'t vote after viewing results)</small></div>';
+		output += '<br /><small><font color=gray>(Optoins with 0 votes are not shown)</font></small>';
 		output += '</div>';
 
 		return output;
@@ -205,8 +216,8 @@ exports.commands = {
 				options.push(params[i]);
 			}
 
-			if (options.length > 14) {
-				return this.errorReply("Too many options for poll (maximum is 14).");
+			if (options.length > 25) {
+				return this.errorReply("Too many options for poll (maximum is 25).");
 			}
 
 			room.poll = new Poll(user, room, {source: params[0], supportHTML: supportHTML}, options);
