@@ -100,7 +100,7 @@ class Poll {
 			c++;
 		}
 		if (option === 0 && !ended) output += '<div><small>(You can\'t vote after viewing results)</small></div>';
-		output += '<br /><small><font color=gray>(Optoins with 0 votes are not shown)</font></small>';
+		output += '<br /><small><font color=gray>(Options with 0 votes are not shown)</font></small>';
 		output += '</div>';
 
 		return output;
