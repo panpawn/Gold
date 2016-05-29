@@ -798,30 +798,36 @@ class Tournament {
 		this.isEnded = true;
 
 		let data = {results: this.generator.getResults().map(usersToNames), bracketData: this.getBracketData()};
+		let data2 = data;
 		data = data['results'].toString();
 
-		let winner, runnerUp = '';
+		let winner = '';
+		let runnerUp = false;
 
 		if (data.indexOf(',') >= 0) {
 			data = data.split(',');
 			winner = data[0];
-			if (data[1]) runnerUp = data[1];
 		} else {
 			winner = data;
+		}
+
+		if (data2['bracketData']['rootNode']) {
+			if (data2['bracketData']['rootNode']['children']) {
+				if (data2['bracketData']['rootNode']['children'][0]['team'] !== winner) runnerUp = data2['bracketData']['rootNode']['children'][0]['team'];
+				if (data2['bracketData']['rootNode']['children'][1]['team'] !== winner) runnerUp = data2['bracketData']['rootNode']['children'][1]['team'];
+			}
 		}
 
 		let tourSize = this.generator.users.size;
 		if (this.room.isOfficial && tourSize >= 3) {
 			let money = (tourSize < 50 ? tourSize : 50);
 
-			try {
-				this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
-				Economy.writeMoney(toId(winner), money);
-				if (runnerUp.length >= 1) {
-					this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
-					Economy.writeMoney(toId(runnerUp), Math.round(money / 2)); // gives runner up half the prize
-				}
-			} catch (e) {}
+			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
+			Economy.writeMoney(toId(winner), money);
+			if (runnerUp) {
+				this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
+				Economy.writeMoney(toId(runnerUp), Math.round(money / 2)); // gives runner up half the prize
+			}
 		}
 		if (this.autoDisqualifyTimer) clearTimeout(this.autoDisqualifyTimer);
 		delete exports.tournaments[this.room.id];
