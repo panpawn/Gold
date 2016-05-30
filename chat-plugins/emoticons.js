@@ -28,7 +28,7 @@ Gold.emoticons = {
 		}
 		return text.replace(new RegExp(patterns.join('|'), 'g'), function(match) {
 			return typeof self.chatEmotes[match] != 'undefined' ?
-				'<img src="' + self.chatEmotes[match] + '" title="' + match + '" width="30" height="30"/>' :
+				'<img src="' + self.chatEmotes[match] + '" title="' + match + '"/>' :
 				match;
 		});
 	},
@@ -120,7 +120,7 @@ Gold.emoticons = {
 		self = this;
 		if (emoteRegex.test(message)) {
 			message = message.replace(emoteRegex, function (match) {
-				return '<img src=' + self.chatEmotes[match] + ' title=' + match + ' width="30" height="30">';
+				return '<img src=' + self.chatEmotes[match] + ' title=' + match + '>';
 			});
 			return message;
 		}
