@@ -823,10 +823,11 @@ class Tournament {
 			let money = (tourSize < 50 ? tourSize : 50);
 
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
-			Economy.writeMoney(toId(winner), money);
+			Economy.writeMoney(toId(winner), money, () => {
+				if (runnerUp) Economy.writeMoney(toId(runnerUp), Math.round(money/2));
+			});
 			if (runnerUp) {
 				this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
-				Economy.writeMoney(toId(runnerUp), Math.round(money / 2)); // gives runner up half the prize
 			}
 		}
 		if (this.autoDisqualifyTimer) clearTimeout(this.autoDisqualifyTimer);
