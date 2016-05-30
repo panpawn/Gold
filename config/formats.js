@@ -20,7 +20,7 @@ exports.Formats = [
 		name: "Unrated Random Battle",
 		section: "ORAS Singles",
 
-		team: 'random',
+		team: 'random',val
 		challengeShow: false,
 		rated: false,
 		ruleset: ['PotD', 'Pokemon', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
@@ -2081,7 +2081,7 @@ exports.Formats = [
 		searchShow: false,
 		maxLevel: 50,
 		defaultLevel: 50,
-		validateSet: function (set) {
+		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (!template.evos || template.evos.length === 0 || !template.prevo) {
 				return [set.species + " is not the middle Pokémon in an evolution chain."];
