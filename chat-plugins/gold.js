@@ -583,33 +583,35 @@ exports.commands = {
 	declaremodhelp: ['/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires #, &, ~'],
 	k: 'kick',
 	kick: function(target, room, user) {
-		if (!this.can('mute'), null, room) return false;
-		if (Gold.kick === undefined) Gold.kick = true;
 		if (!target) return this.parse('/help kick');
 		if (!this.canTalk()) return false;
-		if (toId(target) === 'disable') {
+		let kickBlock = (Gold.kick == undefined ? false : Gold.kick);
+		switch (target) {
+		case 'disable':
 			if (!this.can('hotpatch')) return false;
-			if (!Gold.kick) return this.errorReply("Kick is already disabled.");
-			Gold.kick = false;
-			return this.privateModCommand("(" + user.name + " has disabled kick.)");
-		}
-		if (toId(target) === 'enable') {
-			if (!this.can('hotpatch')) return false;
-			if (Gold.kick) return this.errorReply("Kick is already enabled.");
+			if (kickBlock) return this.errorReply("Kick is already disabled.");
 			Gold.kick = true;
+			return this.privateModCommand("(" + user.name + " has disabled kick.)");
+			break;
+		case 'enable':
+			if (!this.can('hotpatch')) return false;
+			if (!kickBlock) return this.errorReply("Kick is already enabled.");
+			Gold.kick = false;
 			return this.privateModCommand("(" + user.name + " has enabled kick.)");
+			break;
+		default:
+			target = this.splitTarget(target);
+			let targetUser = this.targetUser;
+			if (!targetUser || !targetUser.connected) {
+				return this.errorReply('User ' + this.targetUsername + ' not found.  Check spelling?');
+			}
+			if (!(targetUser in room.users)) return this.errorReply("User '" + targetUser + "' is not in this room.  Check spelling?");
+			if (!this.can('mute', targetUser, room)) return false;
+			if (kickBlock) return this.errorReply("Kick is currently disabled.");
+			this.addModCommand(targetUser.name + ' was kicked from the room by ' + user.name + '.');
+			targetUser.popup('You were kicked from ' + room.id + ' by ' + user.name + '.');
+			targetUser.leaveRoom(room.id);
 		}
-		target = this.splitTarget(target);
-		let targetUser = this.targetUser;
-		if (!targetUser || !targetUser.connected) {
-			return this.errorReply('User ' + this.targetUsername + ' not found.  Check spelling?');
-		}
-		if (!(targetUser in room.users)) return this.errorReply("User '" + targetUser + "' is not in this room.  Check spelling?");
-		if (!this.can('lock', targetUser, room)) return false;
-		if (!Gold.kick) return this.errorReply("Kick is currently disabled.");
-		this.addModCommand(targetUser.name + ' was kicked from the room by ' + user.name + '.');
-		targetUser.popup('You were kicked from ' + room.id + ' by ' + user.name + '.');
-		targetUser.leaveRoom(room.id);
 	},
 	kickhelp: ["Usage: /kick [user] - kicks a user from the room",
 				"/kick [enable/disable] - enables or disables kick. Requires ~."],
