@@ -2084,7 +2084,7 @@ exports.BattleScripts = {
 		let pokemonPool = [];
 		for (let id in this.data.FormatsData) {
 			let template = this.getTemplate(id);
-			if (format === 'monotyperandombattle') {
+			if (format === 'monotyperandombattle' || format === 'inverserandommonotype') {
 				let types = template.types;
 				if (template.battleOnly) types = this.getTemplate(template.baseSpecies).types;
 				if (types.indexOf(type) < 0) continue;
