@@ -1,6 +1,7 @@
 'use strict';
 
 const http = require('http');
+
 exports.commands = {
     animal: 'animals',
     animals: function(target, room, user) {
@@ -20,7 +21,7 @@ exports.commands = {
         if (!validTarget || tarId === 'help') return this.parse('/help animals');
         let self = this;
         let reqOpt = {
-            hostname: 'api.giphy.com',
+            hostname: 'api.giphy.com', // Do not change this
             path: '/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + tarId,
             method: 'GET',
             
@@ -38,8 +39,7 @@ exports.commands = {
                     } else {
                         self.sendReplyBox(output);
                         return room.update();
-                        
-                    }
+                        }
                     
                 } catch (e) {
                     self.errorReply("ERROR: Command has crashed [Memory Overloaded!]");
@@ -53,15 +53,15 @@ exports.commands = {
         req.end();
         
     },
-    animalshelp: ['Animals Plugin by DarkNightSkies & Kyv.n(♥)' +
-    '/animals cat - Displays a cat.' +
-    '/animals kitten - Displays a kitten.' +
-    '/animals dog - Displays a dog.' +
-    '/animals puppy - Displays a puppy.' +
-    '/animals bunny - Displays a bunny.' +
-    '/animals otter - Displays an otter.' +
-    '/animals pokemon - Displays a pokemon.' + 
-    '/animals help - Displays this help box.'
+    animalshelp: ['|raw|<div class="infobox"><strong>Animals Plugin by DarkNightSkies & Kyv.n(♥)</strong><br><br>' +
+    '/animals cat - Displays a cat.<br>' +
+    '/animals kitten - Displays a kitten.<br>' +
+    '/animals dog - Displays a dog.<br>' +
+    '/animals puppy - Displays a puppy.<br>' +
+    '/animals bunny - Displays a bunny.<br>' +
+    '/animals otter - Displays an otter.<br>' +
+    '/animals pokemon - Displays a pokemon.<br>' +
+    '/animals help - Displays this help box.</div>'
     ],
     
 };
