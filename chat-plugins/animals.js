@@ -53,15 +53,15 @@ exports.commands = {
         req.end();
         
     },
-    animalshelp: ['|raw|<div class="infobox"><strong>Animals Plugin by <font color="' + Gold.hashColor('darknightskies') + '">DarkNightSkies</font> & <font color="' + Gold.hashColor('kyvn') + '">Kyv.n(♥)</font><strong><br>' +
-    '<ul><li>/animals cat - Displays a cat.</li>' +
-    '<li>/animals kitten - Displays a kitten.</li>' +
-    '<li>/animals dog - Displays a dog.</li>' +
-    '<li>/animals puppy - Displays a puppy.</li>' +
-    '<li>/animals bunny - Displays a bunny.</li>' +
-    '<li>/animals otter - Displays an otter.</li>' +
-    '<li>/animals pokemon - Displays a pokemon.</li>' + 
-    '<li>/animals help - Displays this help box.</li></ul></div>'
+    animalshelp: ['Animals Plugin by DarkNightSkies & Kyv.n(♥)' +
+    '/animals cat - Displays a cat.' +
+    '/animals kitten - Displays a kitten.' +
+    '/animals dog - Displays a dog.' +
+    '/animals puppy - Displays a puppy.' +
+    '/animals bunny - Displays a bunny.' +
+    '/animals otter - Displays an otter.' +
+    '/animals pokemon - Displays a pokemon.' + 
+    '/animals help - Displays this help box.'
     ],
     
 };
