@@ -1440,13 +1440,13 @@ exports.commands = {
 
 		if (!targets[1]) return this.errorReply("Please specify a ban duration");
 
-		let validLetters = ['m', 'h', 'd'];
+		let validLetters = ['m', 'h', 'd', 'w'];
 		let durations = {'m': 'minutes', 'h': 'hours', 'd': 'days', 'w': 'weeks'};
 		let targetUser = Users.get(targets[0]);
 		let duration = targets[1].toLowerCase();
-		let durationLetter = duration.substr(-1)
+		let durationLetter = duration.substr(-1);
 		let durationNumber = Math.round(Number(duration.substr(0, duration.length - 1)));
-		targets.splice(0,2);
+		targets.splice(0, 2);
 		let reason = targets.join(',');
 
 		if (!targetUser) return this.errorReply("User '" + targets[0] + "' not found.");
@@ -1458,8 +1458,8 @@ exports.commands = {
 		}
 		if (!this.can('ban', targetUser)) return false;
 
-		var name = targetUser.getLastName();
-		var userid = targetUser.getLastId();
+		let name = targetUser.getLastName();
+		let userid = targetUser.getLastId();
 
 		if (Users.checkBanned(targetUser.latestIp) && !target && !targetUser.connected) {
 			let problem = " but was already banned";
@@ -1513,8 +1513,8 @@ exports.commands = {
 	timebanhelp: [
 		"/timeban [username], [duration], [reason] - Kick user from all rooms and ban user's IP address with reason. Requires: @ & ~",
 		"Valid durations: 'm' for minutes, 'h' for hours, 'd' for days, 'w' for weeks.",
-		"Example: /timeban user, 1d, spamming - Bans [user] for 1 day with the reason 'spamming'"
-		],
+		"Example: /timeban user, 1d, spamming - Bans [user] for 1 day with the reason 'spamming'",
+	],
 
 	b: 'ban',
 	ban: function (target, room, user, connection, cmd) {

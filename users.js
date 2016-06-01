@@ -125,8 +125,10 @@ Users.saveBans = saveBans;
 // check if any bans have expired
 function updateBans() {
 	let now = Date.now();
+	let save = false;
 	for (let obj in Users.bans) {
 		if (Users.bans[obj].expires < now) {
+			save = true;
 			Rooms('staff').addRaw("[Ban Notice] Ban against" + (~obj.indexOf('.') ? " IP " : " user ") + Tools.escapeHTML(obj) + " has <font color=\"green\">expired</font>." +
 				" DEBUG: Ban issued at (" + Users.bans[obj].on + ") expires on (" + Users.bans[obj].expires + ") current time (" + now + ")").update();
 			if (Users.bans[obj].type === 'user') Punishments.unlock(Users.bans[obj].userid);
@@ -135,9 +137,9 @@ function updateBans() {
 			}
 			if (~obj.indexOf('.')) delete lockedIps[obj];
 			delete Users.bans[obj];
-			saveBans();
 		}
 	}
+	if (save) saveBans();
 }
 
 Users.updateBans = updateBans;
@@ -1319,24 +1321,24 @@ class User {
 		if (!userid) userid = this.userid;
 
 		let now = Date.now();
-		let expires = new Date();
+		let expires;
 
 		if (options.type === 'user' || options.duration) {
 			switch (options.duration.substr(-1).toLowerCase()) {
 			case 'm':
-				expires.setMinutes(expires.getMinutes() + Number(options.duration.substr(0, options.duration.length - 1)));
+				expires = Date.now() + Number(options.duration.substr(0, options.duration.length - 1)) * 60 * 1000;
 				break;
 			case 'h':
-				expires.setHours(expires.getHours() + Number(options.duration.substr(0, options.duration.length - 1)));
+				expires = Date.now() + Number(options.duration.substr(0, options.duration.length - 1)) * 60 * 60 * 1000;
 				break;
 			case 'd':
-				expires.setHours(expires.getHours() + Number(options.duration.substr(0, options.duration.length - 1)) * 24);
+				expires = Date.now() + Number(options.duration.substr(0, options.duration.length - 1)) * 24 * 60 * 60 * 1000;
 				break;
 			case 'w':
-				expires.setHours(expires.getHours() + Number(options.duration.substr(0, options.duration.length - 1) * 24 * 7));
+				expires = Date.now() + Number(options.duration.substr(0, options.duration.length - 1)) * 7 * 24 * 60 * 60 * 1000;
 				break;
 			default:
-				expires.setHours(expires.getHours() + (24 * 5));
+				expires = Date.now() + 5 * 24 * 60 * 60 * 1000;
 				break;
 			}
 		}
@@ -1351,7 +1353,7 @@ class User {
 					}
 				}
 			});
-			Punishments.lock(this, expires.getTime(), (options.reason ? options.reason : false));
+			Punishments.lock(this, expires, (options.reason ? options.reason : false));
 		}
 
 		for (let ip in this.ips) {
@@ -1360,7 +1362,7 @@ class User {
 				'userid': userid,
 				'on': now,
 			};
-			if (options.type === 'user') Users.bans[ip].expires = expires.getTime();
+			if (options.type === 'user') Users.bans[ip].expires = expires;
 			if (options.by) Users.bans[ip].by = options.by;
 			if (options.reason) Users.bans[ip].reason = options.reason;
 		}
@@ -1370,7 +1372,7 @@ class User {
 				'userid': this.autoconfirmed,
 				'on': now,
 			};
-			if (options.type === 'user') Users.bans[this.autoconfirmed].expires = expires.getTime();
+			if (options.type === 'user') Users.bans[this.autoconfirmed].expires = expires;
 			if (options.by) Users.bans[this.autoconfirmed].by = options.by;
 			if (options.reason) Users.bans[this.autoconfirmed].reason = options.reason;
 		}
@@ -1380,13 +1382,13 @@ class User {
 				'userid': this.userid,
 				'on': now,
 			};
-			if (options.type === 'user') Users.bans[this.userid].expires = expires.getTime();
+			if (options.type === 'user') Users.bans[this.userid].expires = expires;
 			if (options.by) Users.bans[this.userid].by = options.by;
 			if (options.reason) Users.bans[this.userid].reason = options.reason;
 			this.autoconfirmed = '';
 		}
 		this.locked = userid; // in case of merging into a recently banned account
-		Punishments.lock(Users(userid), expires.getTime(), (options.reason ? options.reason : false));
+		Punishments.lock(Users(userid), expires, (options.reason ? options.reason : false));
 		this.disconnectAll();
 		saveBans();
 	}
