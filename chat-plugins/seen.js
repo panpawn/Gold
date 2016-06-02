@@ -23,7 +23,7 @@ function saveData() {
 	fs.writeFileSync('config/seenData.json', JSON.stringify(seenData));
 }
 
-function updateSeen(userid) {
+Gold.updateSeen = function(userid) {
 	if (!userid) return false;
 	userid = toId(userid);
 	if (userid.substr(0, 5) === 'guest') return false; // don't record guest numbers
@@ -31,7 +31,6 @@ function updateSeen(userid) {
 	saveData();
 }
 
-global.updateSeen = updateSeen;
 Gold.seenData = seenData;
 
 exports.commands = {

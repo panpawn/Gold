@@ -952,7 +952,7 @@ class User {
 	}
 	forceRename(name, registered) {
 		try {
-			updateSeen(name);
+			Gold.updateSeen(name);
 		} catch (e) { }
 		// skip the login server
 		let userid = toId(name);
@@ -1226,7 +1226,7 @@ class User {
 	}
 	onDisconnect(connection) {
 		try {
-			updateSeen(this.userid);
+			Gold.updateSeen(this.userid);
 		} catch (e) { }
 		for (let i = 0; i < this.connections.length; i++) {
 			if (this.connections[i] === connection) {
@@ -1486,7 +1486,7 @@ class User {
 		if (room.id === 'global' && !force) {
 			// you can't leave the global room except while disconnecting
 			try {
-				updateSeen(this.userid);
+				Gold.updateSeen(this.userid);
 			} catch (e) {}
 			return false;
 		}
