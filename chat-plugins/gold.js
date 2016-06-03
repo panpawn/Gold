@@ -1304,7 +1304,7 @@ exports.commands = {
 			this.sendReply("To continue, use this command again.");
 			user.lastCommand = 'advertise';
 		} else if (user.lastCommand === 'advertise') {
-			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + targetRoom + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
+			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><hr width="80%"><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + targetRoom + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
 			Economy.writeMoney(user.userid, -ADVERTISEMENT_COST);
 			user.lastCommand = '';
 			user.lastAdvertisement = Date.now();
