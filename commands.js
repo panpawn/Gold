@@ -2037,7 +2037,7 @@ exports.commands = {
 			reason = ' (' + targetUser.namelocked + ')';
 		}
 
-		let unlocked = Users.unnamelock(target);
+		let unlocked = Punishments.unnamelock(target);
 
 		if (unlocked) {
 			this.addModCommand(unlocked + " was unnamelocked by " + user.name + "." + reason);
