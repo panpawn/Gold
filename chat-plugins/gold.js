@@ -1246,7 +1246,7 @@ exports.commands = {
 		if (toId(target).length < 1) return this.sendReply(target + " is not a valid username.");
 		if (!this.runBroadcast()) return;
 
-		let targetUser = (Users.get(target).userid && Users.get(target).userid === toId(target) ? Users.get(target) : false);
+		let targetUser = Users.get(target);
 		let online = (targetUser ? targetUser.connected : false);
 
 		let username = (targetUser ? targetUser.name : target);
