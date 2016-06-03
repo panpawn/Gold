@@ -1297,14 +1297,15 @@ exports.commands = {
 			if (((Date.now() - user.lastAdvertisement) <= 10 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
 		target = target.split('|');
-		let targetRoom = target[0];
-		if (!room || !Rooms(targetRoom) || !target || !target[1]) return this.parse('/help advertise');
+		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
+		if (!room || !target || !target[1]) return this.parse('/help advertise');
+		if (!targetRoom) return this.errorReply("Room '" + toId(target[0]) + "' not found.  Check spelling?");
 		if (user.lastCommand !== 'advertise') {
 			this.sendReply("WARNING: this command will cost you " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + " to use.");
 			this.sendReply("To continue, use this command again.");
 			user.lastCommand = 'advertise';
 		} else if (user.lastCommand === 'advertise') {
-			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><hr width="80%"><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + Rooms(targetRoom).title + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
+			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><hr width="80%"><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + Rooms.search(toId(targetRoom)).title + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
 			Economy.writeMoney(user.userid, -ADVERTISEMENT_COST);
 			user.lastCommand = '';
 			user.lastAdvertisement = Date.now();
