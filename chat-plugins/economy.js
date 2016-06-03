@@ -101,6 +101,7 @@ exports.commands = {
 		case 'color':
 		case 'customcolor':
 			price = prices['color'];
+			if (Gold.hasBadge(user.userid, 'vip')) price = 0;
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			if (!parts[1]) return this.errorReply("Usage: /buy color, [hex code OR name of an alt you want the color of]");
 			if (parts[1].length > 20) return this.errorReply("This is not a valid color, try again.");
