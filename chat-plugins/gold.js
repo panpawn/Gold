@@ -1286,7 +1286,7 @@ exports.commands = {
 	advertise: 'advertisement',
 	advertisement: function(target, room, user) {
 		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby.");
-		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy and advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
+		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
 		if (target.length > 600) return this.errorReply("This advertisement is too long.");
 		let cdTime = 10 * 60 * 1000; // every 10 minutes
 		if (user.lastAdvertisement) {
