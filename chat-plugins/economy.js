@@ -22,7 +22,7 @@ exports.commands = {
 			return this.sendReply('|raw|' +
 				top +
 				Economy.shopTable("Symbol", "Buys a custom symbol to go infront of name and puts you towards the top of userlist (lasts 2 hrs from logout)", prices['symbol']) +
-				Economy.shopTable("Declare", "Advertisement declare for a room on the server from an Administrator / Leader.", prices['declare']) +
+				// Economy.shopTable("Declare", "Advertisement declare for a room on the server from an Administrator / Leader.", prices['declare']) +
 				Economy.shopTable("Fix", "Ability to modify a custom avatar, trainer card, or userlist icon.", prices['fix']) +
 				Economy.shopTable("Custom", "Buys a custom avatar to be applied to your name (you supply)", prices['custom']) +
 				Economy.shopTable("Animated", "Buys an animated avatar to be applied to your name (you supply)", prices['animated']) +
@@ -179,7 +179,7 @@ exports.commands = {
 			user.canFixItem = true;
 			this.sendReply("You have purchased a fix from the shop.  You can use this to alter your trainer card, music box, or custom chat emoticon.  PM a leader or administrator to proceed.");
 			break;
-
+		/*
 		case 'ad':
 		case 'declare':
 			price = prices['declare'];
@@ -189,7 +189,7 @@ exports.commands = {
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased the ability to declare from the shop.', true);
 			this.sendReply("You have purchased an advertisement declare from the shop.  Please prepare an advertisement for your room; a leader or administrator will soon be PMing you to proceed.");
 			break;
-
+		*/
 		case 'userlisticon':
 		case 'icon':
 			price = prices['icon'];
@@ -600,7 +600,7 @@ global.Economy = {
 		let avg = this.averageBucks();
 		prices = {
 			'symbol': Math.round(avg * 0.035),
-			'declare': Math.round(avg * 0.19),
+			// 'declare': Math.round(avg * 0.19),
 			'fix': Math.round(avg * 0.2),
 			'custom': Math.round(avg * 0.55),
 			'animated': Math.round(avg * 0.65),

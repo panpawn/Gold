@@ -11,6 +11,7 @@ const forever = require('forever');
 // misc
 const serverIp = '167.114.155.242';
 const formatHex = '#566'; //hex code for the formatting of the command
+const ADVERTISEMENT_COST = 8;
 
 let regdateCache = {};
 let badges = fs.createWriteStream('badges.txt', {
@@ -542,22 +543,6 @@ exports.commands = {
 		this.add('|raw|<div class="broadcast-gold"><b>' + target + '</b></div>');
 		this.logModCommand(user.name + ' declared ' + target);
 	},
-	advdeclare: function(target, room, user, connection, cmd) {
-		if (!this.can('pban')) return false;
-		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby by leaders and up.");
-		if (!this.canTalk()) return;
-		let parts = target.split('|');
-		if (!parts[1]) return this.parse('/help advdeclare');
-		let adRoom = (Rooms(toId(parts[1])) ? toId(parts[1]) : false);
-		if (!adRoom) return this.errorReply("That room does not exist.  Check spelling?");
-		let adv = (
-			parts[0] + '<br />' +
-			'<button name="joinRoom" value="' + adRoom + '" target="_blank">Click to join ' + parts[1] + '!</button>'
-		);
-		this.add('|raw|<div class="broadcast-blue"><b>' + adv + '</b></div>');
-		this.logModCommand(user.name + ' declared ' + adv);
-	},
-	advdeclarehelp: ["Usage: /advdeclare [advertisement]| [room]"],
 	pdeclare: function(target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help declare');
 		if (!this.can('declare', null, room)) return false;
@@ -1298,6 +1283,34 @@ exports.commands = {
 			room.update();
 		}
 	},
+	advertise: 'advertisement',
+	advertisement: function(target, room, user) {
+		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby.");
+		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy and advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
+		if (target.length > 600) return this.errorReply("This advertisement is too long.");
+		let cdTime = 10 * 60 * 1000; // every 10 minutes
+		if (user.lastAdvertisement) {
+			let milliseconds = (Date.now() - user.lastAdvertisement);
+			let seconds = ((milliseconds / 1000) % 60);
+			let minutes = ((seconds / 60) % 60);
+			let remainingTime = Math.round(seconds - (10 * 60));
+			if (((Date.now() - user.lastAdvertisement) <= 10 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
+		}
+		target = target.split('|');
+		let targetRoom = target[0];
+		if (!room || Rooms(targetRoom) || !target || !target[1]) return this.parse('/help advertise');
+		if (user.lastCommand !== 'advertise') {
+			this.sendReply("WARNING: this command will cost you " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + " to use.");
+			this.sendReply("To continue, use this command again.");
+			user.lastCommand = 'advertise';
+		} else if (user.lastCommand === 'advertise') {
+			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + targetRoom + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
+			Economy.writeMoney(user.userid, -ADVERTISEMENT_COST);
+			user.lastCommand = '';
+			user.lastAdvertisement = Date.now();
+		}
+	},
+	advertisehelp: ['Usage: /adverise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
