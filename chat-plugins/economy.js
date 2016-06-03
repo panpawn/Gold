@@ -659,7 +659,7 @@ global.Economy = {
 	},
 
 	shopTable: function (item, desc, price) {
-		let buttonStyle = 'border-radius: 5px; background: linear-gradient(-30deg, #fff493, #e8d95a, #fff493); color: black; text-shadow: 0px 0px 5px #d6b600; border-bottom: 2px solid #635b00; border-right: 2px solid #968900; width: 100%; height: 100%;';
+		let buttonStyle = 'border-radius: 5px; background: linear-gradient(-30deg, #fff493, #e8d95a, #fff493); color: black; text-shadow: 0px 0px 5px #d6b600; border-bottom: 2px solid #635b00; border-right: 2px solid #968900; width: 100%;';
 		let descStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
 		let priceStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black; font-weight: bold; text-align: center;';
 		return '<tr><td style="' + descStyle + '"><button title="Click this button to buy a(n) ' + item + ' from the shop." style="' + buttonStyle + '" name="send" value="/buy ' + item + '">' + item + '</button></td><td style="' + descStyle + '">' + desc + '</td><td style="' + priceStyle + '">' + price + '</td></tr>';
