@@ -2027,6 +2027,7 @@ exports.Formats = [
 	{
 		name: "Middle Cup",
 		section: "Other Metagames",
+		column: 2,
 
 		searchShow: false,
 		maxLevel: 50,
@@ -2061,6 +2062,7 @@ exports.Formats = [
 	{
 		name: "Gold Battle",
 		section: "Gold Server Tiers",
+		column: 3,
 		desc: ["&bullet; Only Gold Pokemon are allowed!  Do <code>/goldbattle</code> to see the list."],
 
 		onValidateSet: function (set) {
@@ -2074,6 +2076,7 @@ exports.Formats = [
 	{
 		name: "Alpha Tier",
 		section: "Gold Server Tiers",
+		column: 3,
 		desc: ["&bullet; The first step to Gold's tiering process, information about it can be found <a href=\"http://goldservers.info/forums/showthread.php?tid=9\">here</a>."],
 
 		ruleset: ['Pokemon', 'Standard', 'Swagger Clause', 'Team Preview', 'Mega Rayquaza Clause', 'Baton Pass Clause'],
@@ -2082,6 +2085,7 @@ exports.Formats = [
 	{
 		name: "Beta Tier",
 		section: "Gold Server Tiers",
+		column: 3,
 		desc: ["&bullet; The second step to Gold's tiering process, information about it can be found <a href=\"http://goldservers.info/forums/showthread.php?tid=9\">here</a>."],
 
 		ruleset: 'Alpha Tier',
@@ -2090,6 +2094,7 @@ exports.Formats = [
 	{
 		name: "Middle Cup PX",
 		section: "Gold Server Tiers",
+		column: 3,
 		desc: [
 			'Middle Cup, but with a twist.',
 			'&bullet; <a href = "http://goldservers.info/forums/showthread.php?tid=11">MCPX Thread</a>',
@@ -2119,6 +2124,7 @@ exports.Formats = [
 	{
 		name: "[Gen 3] Random Battle",
 		section: "Gold Server Tiers",
+		column: 3,
 
 		team: 'random',
 		ruleset: ['Pokemon', 'Standard', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
@@ -2128,6 +2134,7 @@ exports.Formats = [
 	{
 		name: "[Gen 4] Random Battle",
 		section: "Gold Server Tiers",
+		column: 3,
 
 		team: 'random',
 		ruleset: ['Pokemon', 'Standard', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
