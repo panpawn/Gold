@@ -1293,8 +1293,8 @@ exports.commands = {
 			let milliseconds = (Date.now() - user.lastAdvertisement);
 			let seconds = ((milliseconds / 1000) % 60);
 			let minutes = ((seconds / 60) % 60);
-			let remainingTime = Math.round(seconds - (10 * 60));
-			if (((Date.now() - user.lastAdvertisement) <= 10 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
+			let remainingTime = Math.round(seconds - (15 * 60));
+			if (((Date.now() - user.lastAdvertisement) <= 15 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
 		target = target.split('|');
 		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
