@@ -885,7 +885,7 @@ exports.commands = {
 		if (!Config.groups[nextGroup]) {
 			return this.errorReply("Group '" + nextGroup + "' does not exist.");
 		}
-		if (targetUser && targetUser.locked && !room.isPrivate && !room.battle && !room.isPersonal && (nextGroup === '%' || nextGroup === '@')) {
+		if (targetUser && targetUser.locked && !room.isPrivate && !room.battle && !room.isPersonal && (nextGroup === '%' || nextGroup === '@' || nextGroup === '&')) {
 			Monitor.log("[CrisisMonitor] " + user.name + " was automatically demoted in " + room.id + " for trying to promote locked user: " + targetUser.name + ".");
 			room.auth[user.userid] = '@';
 			user.updateIdentity(room.id);
