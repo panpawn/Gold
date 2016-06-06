@@ -885,6 +885,12 @@ exports.commands = {
 		if (!Config.groups[nextGroup]) {
 			return this.errorReply("Group '" + nextGroup + "' does not exist.");
 		}
+		if (targetUser && targetUser.locked && !room.isPrivate && !room.battle && !room.isPersonal && (nextGroup === '%' || nextGroup === '@')) {
+			Monitor.log("[CrisisMonitor] " + user.name + " was automatically demoted in " + room.id + " for trying to promote locked user: " + targetUser.name + ".");
+			room.auth[user.userid] = '@';
+			user.updateIdentity(room.id);
+			return this.errorReply("You have been automatically deauthed for trying to promote locked user: '" + name + "'.");
+		}
 		if (room.auth[user.userid] === '&' && room.founder && room.founder !== user.userid) {
 			if (currentGroup === '&' || currentGroup === '#' || nextGroup === '&' || nextGroup === '#') {
 				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + (Config.groups[nextGroup] ? Config.groups[nextGroup].name : "this rank."));
@@ -907,12 +913,6 @@ exports.commands = {
 			if (nextGroup !== ' ' && !user.can('room' + Config.groups[nextGroup].id, null, room) && this.can('roomleader', null, room)) {
 				return this.errorReply("/" + cmd + " - Access denied for promoting/demoting to " + Config.groups[nextGroup].name + ".");
 			}
-		}
-		if (targetUser && targetUser.locked && !room.isPrivate && !room.battle && !room.isPersonal && (nextGroup === '%' || nextGroup === '@')) {
-			Monitor.log("[CrisisMonitor] " + user.name + " was automatically demoted in " + room.id + " for trying to promote locked user: " + targetUser.name + ".");
-			room.auth[user.userid] = '@';
-			user.updateIdentity(room.id);
-			return this.errorReply("You have been automatically deauthed for trying to promote locked user: '" + name + "'.");
 		}
 
 		if (nextGroup === ' ') {
