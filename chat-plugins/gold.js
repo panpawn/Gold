@@ -1289,6 +1289,10 @@ exports.commands = {
 		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
 		if (target.length > 600) return this.errorReply("This advertisement is too long.");
 		let cdTime = 10 * 60 * 1000; // every 10 minutes
+		target = target.split('|');
+		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
+		if (!room || !target || !target[1]) return this.parse('/help advertise');
+		if (!targetRoom) return this.errorReply("Room '" + toId(target[0]) + "' not found.  Check spelling?");
 		if (user.lastAdvertisement) {
 			let milliseconds = (Date.now() - user.lastAdvertisement);
 			let seconds = ((milliseconds / 1000) % 60);
@@ -1296,10 +1300,6 @@ exports.commands = {
 			let remainingTime = Math.round(seconds - (15 * 60));
 			if (((Date.now() - user.lastAdvertisement) <= 15 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
-		target = target.split('|');
-		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
-		if (!room || !target || !target[1]) return this.parse('/help advertise');
-		if (!targetRoom) return this.errorReply("Room '" + toId(target[0]) + "' not found.  Check spelling?");
 		if (user.lastCommand !== 'advertise') {
 			this.sendReply("WARNING: this command will cost you " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + " to use.");
 			this.sendReply("To continue, use this command again.");
