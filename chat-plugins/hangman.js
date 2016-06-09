@@ -147,7 +147,7 @@ class Hangman extends Rooms.RoomGame {
 		if (this.guesses.length) {
 			if (this.letterGuesses.length) {
 				output += 'Letters: ' + this.letterGuesses.map(g =>
-					'<strong' + (g[1] === '1' ? '' : ' style="color: #DBA"') + '>' + Tools.escapeHTML(g[0]) + '</strong>'
+					'<strong' + (g[1] === '1' ? '' : ' style="color: #ffffff"') + '>' + Tools.escapeHTML(g[0]) + '</strong>'
 				).join(', ');
 			}
 			if (result === 2) {
