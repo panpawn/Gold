@@ -154,7 +154,7 @@ exports.commands = {
 				break;
 
 			case 'reload':
-				if (!this.can('hotpatch')) return false;
+				if (!this.can('pban')) return false;
 				reloadCustomAvatars();
 				for (var leUsers of Users.users) {
 					leUsers = leUsers[1];
