@@ -1096,7 +1096,7 @@ let commands = {
 			if (!this.can('pban')) return false;
 			if (!params[0]) return this.sendReply("Usage: " + cmd + " [bucks prize]");
 			let prize = params[0];
-			if (isNaN(prize) || ~prize.indexOf('.') || prize < 1 || prize > 500) return this.errorReply("This amount is not a valid integer that is between 1 and 500.");
+			if (isNaN(prize) || ~prize.indexOf('.') || prize < 1 || prize > 1000) return this.errorReply("This amount is not a valid integer that is between 1 and 1,000.");
 			if (prize == tournament.prizeMoney) return this.errorReply("This tournament's prize is already set to " + prize + " bucks.");
 			tournament.prizeMoney = prize;
 			this.privateModCommand("(" + user.name + " has set the prize for this tournament to be " + prize + " bucks.)");
