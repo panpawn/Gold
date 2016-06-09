@@ -391,54 +391,37 @@ exports.commands = {
 	},
 
 	whosgotthemoneyz: 'richestuser',
+	richestusers: 'richestuser',
 	richestuser: function (target, room, user) {
 		if (!this.runBroadcast()) return;
+		let number = (target && !~target.indexOf('.') && target > 1 && !isNaN(target) ? Number(target) : 10);
+		if (this.broadcasting && number > 10) number = 10; // limit to 10 when broadcasting
 		let data = fs.readFileSync('config/money.csv', 'utf8');
-		let row = ('' + data).split("\n");
-		let userids = {
-			id: [],
-			money: [],
-		};
-		let highest = {
-			id: [],
-			money: [],
-		};
-		let size = 0;
+		let row = data.split("\n");
+		if (number > row.length) number = row.length;
+		let userids = [];
 
+		function UserID (ID, Money) {
+			this.id = ID;
+			this.money = Money;
+		}
 		for (let i = row.length; i > -1; i--) {
 			if (!row[i]) continue;
 			let parts = row[i].split(",");
-			userids.id[i] = parts[0];
-			userids.money[i] = Number(parts[1]);
-			size++;
-			if (isNaN(parts[1]) || parts[1] === 'Infinity') userids.money[i] = 0;
+			if (Number(parts[1]) !== 0) userids.push(new UserID(parts[0], Number(parts[1])));
+			if (isNaN(parts[1]) || parts[1] === 'Infinity') userids[i].money = 0;
 		}
-		for (let i = 0; i < 10; i++) {
-			let tempHighest = 0;
-			for (let x = 0; x < size; x++) {
-				if (userids.money[x] > tempHighest) tempHighest = userids.money[x];
-			}
-			for (let x = 0; x < size; x++) {
-				let found = false;
-				if (userids.money[x] === tempHighest && !found) {
-					highest.id[i] = userids.id[x];
-					highest.money[i] = userids.money[x];
-					userids.money[x] = 0;
-					found = true;
-				}
-			}
+		userids.sort(function (a,b){
+			return b.money-a.money;
+		});
+		number = (number > userids.length ? userids.length : number);
+		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<center><b>The top ' + number + ' richest users are:</b></center><table style="text-align:center;" width="100%" border="1" cellspacing ="0" cellpadding="3">';
+		returnText += '<tr><td><b>Rank</b></td><td><b>Name</b></td><td><b>Bucks</b></td></tr>';
+		for (let i = 0; i < number; i++) {
+			if (userids[i]) returnText += '<tr><td>' + (i + 1) + '</td><td>' + Gold.nameColor(userids[i].id, true) + '</td><td>' + userids[i].money + '</td></tr>';
 		}
-		return this.sendReplyBox('<b>The richest users are:</b>' +
-			'<br>1. ' + highest.id[0] + ': ' + highest.money[0] +
-			'<br>2. ' + highest.id[1] + ': ' + highest.money[1] +
-			'<br>3. ' + highest.id[2] + ': ' + highest.money[2] +
-			'<br>4. ' + highest.id[3] + ': ' + highest.money[3] +
-			'<br>5. ' + highest.id[4] + ': ' + highest.money[4] +
-			'<br>6. ' + highest.id[5] + ': ' + highest.money[5] +
-			'<br>7. ' + highest.id[6] + ': ' + highest.money[6] +
-			'<br>8. ' + highest.id[7] + ': ' + highest.money[7] +
-			'<br>9. ' + highest.id[8] + ': ' + highest.money[8] +
-			'<br>10. ' + highest.id[9] + ': ' + highest.money[9]);
+		returnText += '</table></div>';
+		return this.sendReplyBox(returnText);
 	},
 
 	moneylog: function (target, room, user) {
