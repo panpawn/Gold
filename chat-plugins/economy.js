@@ -325,6 +325,7 @@ exports.commands = {
 		let targetUser = parts[0];
 		if (targetUser.length < 1 || toId(targetUser).length > 16) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
+		if (amount > Economy.readMoneySync(targetUser)) return this.errorReply("You cannot remove more bucks than the user has.");
 
 		//checks
 		if (isNaN(amount)) return this.errorReply("The amount you remove must be a number.");
