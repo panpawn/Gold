@@ -418,10 +418,12 @@ exports.commands = {
 			return b.money-a.money;
 		});
 		number = (number > userids.length ? userids.length : number);
-		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<b>The top ' + number + ' richest users are:</b><table style="text-align:center;" border="1" cellspacing ="0" cellpadding="3">';
-		returnText += '<tr><td><b>Rank</b></td><td><b>Name</b></td><td><b>Bucks</b></td></tr>';
+		let tableStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px; text-align:center;';
+		let tdStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
+		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<b>The top ' + number + ' richest users are:</b><table style="' + tableStyle + '" border="1" cellspacing ="0" cellpadding="3">';
+		returnText += '<tr><td style="' + tdStyle + '"><b>Rank</b></td><td style="' + tdStyle + '"><b>Name</b></td><td style="' + tdStyle + '"><b>Bucks</b></td></tr>';
 		for (let i = 0; i < number; i++) {
-			if (userids[i]) returnText += '<tr><td>' + (i + 1) + '</td><td>' + Gold.nameColor(userids[i].id, true) + '</td><td>' + userids[i].money + '</td></tr>';
+			if (userids[i]) returnText += '<tr><td style="' + tdStyle + '">' + (i + 1) + '</td><td style="' + tdStyle + '">' + Gold.nameColor(userids[i].id, true) + '</td><td style="' + tdStyle + '">' + userids[i].money + '</td></tr>';
 		}
 		returnText += '</table></div>';
 		return this.sendReplyBox(returnText);
