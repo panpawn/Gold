@@ -4,8 +4,6 @@
 
 'use strict';
 
-if (typeof Gold === 'undefined') global.Gold = {};
-
 const fs = require('fs');
 const moment = require('moment');
 
