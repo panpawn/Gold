@@ -415,7 +415,7 @@ exports.commands = {
 			return b.money-a.money;
 		});
 		number = (number > userids.length ? userids.length : number);
-		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<center><b>The top ' + number + ' richest users are:</b></center><table style="text-align:center;" width="100%" border="1" cellspacing ="0" cellpadding="3">';
+		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<center><b>The top ' + number + ' richest users are:</b></center><table style="text-align:center;" border="1" cellspacing ="0" cellpadding="3">';
 		returnText += '<tr><td><b>Rank</b></td><td><b>Name</b></td><td><b>Bucks</b></td></tr>';
 		for (let i = 0; i < number; i++) {
 			if (userids[i]) returnText += '<tr><td>' + (i + 1) + '</td><td>' + Gold.nameColor(userids[i].id, true) + '</td><td>' + userids[i].money + '</td></tr>';
