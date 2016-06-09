@@ -1284,7 +1284,7 @@ exports.commands = {
 		}
 	},
 	advertise: 'advertisement',
-	advertisement: function(target, room, user) {
+	advertisement: function (target, room, user, connection, cmd) {
 		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby.");
 		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
 		if (target.length > 600) return this.errorReply("This advertisement is too long.");
@@ -1300,12 +1300,13 @@ exports.commands = {
 			let remainingTime = Math.round(seconds - (15 * 60));
 			if (((Date.now() - user.lastAdvertisement) <= 15 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
+		let advertisement = (Config.chatfilter ? Config.chatfilter(Tools.escapeHTML(target[1]), user, room, connection) : Tools.escapeHTML(target[1]));
 		if (user.lastCommand !== 'advertise') {
 			this.sendReply("WARNING: this command will cost you " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + " to use.");
 			this.sendReply("To continue, use this command again.");
 			user.lastCommand = 'advertise';
 		} else if (user.lastCommand === 'advertise') {
-			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + Tools.escapeHTML(target[1]) + '<br /><hr width="80%"><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + Rooms.search(toId(targetRoom)).title + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
+			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + advertisement + '<br /><hr width="80%"><button name="joinRoom" value="' + toId(targetRoom) + '">Click to join ' + Rooms.search(toId(targetRoom)).title + '</button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
 			Economy.writeMoney(user.userid, -ADVERTISEMENT_COST);
 			user.lastCommand = '';
 			user.lastAdvertisement = Date.now();
