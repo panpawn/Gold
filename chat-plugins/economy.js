@@ -542,6 +542,7 @@ global.Economy = {
 	},
 
 	readMoneySync: function (user) {
+		user = toId(user);
 		let data;
 		try {
 			data = fs.readFileSync('config/money.csv', 'utf8');
