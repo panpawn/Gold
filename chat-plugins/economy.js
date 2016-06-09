@@ -298,6 +298,7 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /givebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
+		if (targetUser.length < 1 || toId(targetUser).length > 16) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
 
 		//checks
@@ -322,6 +323,7 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /removebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
+		if (targetUser.length < 1 || toId(targetUser).length > 16) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
 
 		//checks
@@ -344,6 +346,7 @@ exports.commands = {
 		let parts = target.split(',');
 		if (!parts[1]) return this.errorReply("Usage: /transferbucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
+		if (parts[0].length < 1 || toId(parts[0]).length > 16) return this.errorReply("Usernames cannot be this length.");
 
 		let amount = Math.round(Number(parts[1]));
 
