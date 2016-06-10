@@ -1318,17 +1318,9 @@ exports.commands = {
 	animals: function(target, room, user) {
 		if (!target) return this.parse('/help animals')
 		let tarId = toId(target);
-		let validTargets = {
-			'cat': 'cat',
-			'otter': 'otter',
-			'dog': 'dog',
-			'bunny': 'bunny',
-			'pokemon': 'pokemon',
-			'kitten': 'kitten',
-			'puppy': 'puppy'
-		};
+		let validTargets = ['cat', 'otter', 'dog', 'bunny', 'pokemon', 'kitten', 'puppy'];
 		if (room.id === 'lobby' && this.broadcasting) return this.errorReply("This command cannot be broadcasted in the Lobby.");
-		if (!validTargets[tarId]) return this.parse('/help animals');
+		if (!~validTargets.indexOf(tarId)) return this.parse('/help animals');
 		let self = this;
 		let reqOpt = {
 			hostname: 'api.giphy.com', // Do not change this
