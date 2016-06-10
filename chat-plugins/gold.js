@@ -1312,7 +1312,7 @@ exports.commands = {
 			user.lastAdvertisement = Date.now();
 		}
 	},
-	advertisehelp: ['Usage: /adverise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
+	advertisehelp: ['Usage: /advertise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
