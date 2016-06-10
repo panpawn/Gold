@@ -1,11 +1,23 @@
 'use strict';
 
+/**********************************
+ *********Animals Plugin***********
+ **********************************
+ *********Coding by Kyvn***********
+ ********Assistance by DNS*********
+ **********************************
+ ****Gives you a random animal*****
+ ***Based on your input I guess****
+ *********************************/
+
+
 const http = require('http');
 
 exports.commands = {
     animal: 'animals',
     animals: function(target, room, user) {
-        let tarId = toId(target)
+        if (!target) this.parse('/help animals')
+        let tarId = toId(target);
         let validTargets = {
             'cat': 'cat',
             'otter': 'otter',
@@ -17,7 +29,7 @@ exports.commands = {
             
         };
         let validTarget = validTargets[tarId];
-        if (room.id === 'lobby' && validTarget) return this.errorReply("This command cannot be broadcasted in the Lobby.");
+        if (room.id === 'lobby' && this.broadcasting) return this.errorReply("This command cannot be broadcasted in the Lobby.");
         if (!validTarget || tarId === 'help') return this.parse('/help animals');
         let self = this;
         let reqOpt = {
@@ -33,16 +45,17 @@ exports.commands = {
                     let output = '<center><img src="' + data.data["image_url"] + '" width="400"></center>';
                     if (!self.runBroadcast()) return;
                     if (data.data["image_url"] === undefined) {
-                        self.errorReply("ERROR: Command has crashed [No Images found]");
+                        self.errorReply("ERROR CODE 404: No images found!");
                         return room.update();
                         
                     } else {
                         self.sendReplyBox(output);
                         return room.update();
-                        }
+                        
+                    }
                     
                 } catch (e) {
-                    self.errorReply("ERROR: Command has crashed [Memory Overloaded!]");
+                    self.errorReply("ERROR CODE 503: Giphy is unavaliable right now. Try again later.");
                     return room.update();
                     
                 }
