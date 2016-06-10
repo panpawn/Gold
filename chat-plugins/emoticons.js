@@ -93,7 +93,8 @@ Gold.emoticons = {
 					message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
 					message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
 					message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
-					message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false});
+					message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
+					if (message.substr(0, 4) === '&gt;') message = '<span class="greentext">' + message + '</span>'; // greentext
 
 					var msg = '<small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;' + message;
 					if (nightclubs[room.id]) msg = '<div style = "color: white; background: black; font-size: 11pt; text-shadow: 0px 0px 10px, 0px 0px 10px, 0px 0px 10px; padding:1px; margin:-3px;">' + msg + '</div>';
