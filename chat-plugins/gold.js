@@ -1313,6 +1313,59 @@ exports.commands = {
 		}
 	},
 	advertisehelp: ['Usage: /advertise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
+	// Animal command by Kyvn and DNS
+	animal: 'animals',
+	animals: function(target, room, user) {
+		if (!target) return this.parse('/help animals')
+		let tarId = toId(target);
+		let validTargets = {
+			'cat': 'cat',
+			'otter': 'otter',
+			'dog': 'dog',
+			'bunny': 'bunny',
+			'pokemon': 'pokemon',
+			'kitten': 'kitten',
+			'puppy': 'puppy'
+		};
+		if (room.id === 'lobby' && this.broadcasting) return this.errorReply("This command cannot be broadcasted in the Lobby.");
+		if (!validTargets[tarId]) return this.parse('/help animals');
+		let self = this;
+		let reqOpt = {
+			hostname: 'api.giphy.com', // Do not change this
+			path: '/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + tarId,
+			method: 'GET',
+		};
+		let req = http.request(reqOpt, function(res) {
+			res.on('data', function(chunk) {
+				try {
+					let data = JSON.parse(chunk);
+					let output = '<center><img src="' + data.data["image_url"] + '" width="50%"></center>';
+					if (!self.runBroadcast()) return;
+					if (data.data["image_url"] === undefined) {
+						self.errorReply("ERROR CODE 404: No images found!");
+						return room.update();
+					} else {
+						self.sendReplyBox(output);
+						return room.update();
+					}
+				} catch (e) {
+					self.errorReply("ERROR CODE 503: Giphy is unavaliable right now. Try again later.");
+					return room.update();
+				}
+			});
+		});
+		req.end();
+	},
+	animalshelp: ['Animals Plugin by DarkNightSkies & Kyv.n(♥)',
+		'/animals cat - Displays a cat.',
+		'/animals kitten - Displays a kitten.',
+		'/animals dog - Displays a dog.',
+		'/animals puppy - Displays a puppy.',
+		'/animals bunny - Displays a bunny.',
+		'/animals otter - Displays an otter.',
+		'/animals pokemon - Displays a pokemon.',
+		'/animals help - Displays this help box.',
+	],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
