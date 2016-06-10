@@ -1,14 +1,9 @@
 'use strict';
 
-/**********************************
- *********Animals Plugin***********
- **********************************
- *********Coding by Kyvn***********
- ********Assistance by DNS*********
- **********************************
- ****Gives you a random animal*****
- ***Based on your input I guess****
- *********************************/
+/********************************
+* Animals Plugin by Kyvn & DNS  *
+* Have some Animals or somethin *
+********************************/
 
 
 const http = require('http');
