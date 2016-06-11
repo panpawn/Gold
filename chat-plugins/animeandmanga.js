@@ -56,7 +56,7 @@ exports.commands = {
 
 		search('anime', target).then(data => {
 			amCache.anime[format(target)] = data;
-			if (this.broadcasting && data.genres.includes('Hentai')) return this.errorReply("Hentai anime cannot be broadcasted.")
+			if (data.genres.includes('Hentai') || data.genres.includes('Ecchi')) return this.errorReply("Yea... no.  You can't use this command to look up this particular anime.");
 			this.sendReplyBox('<div style = "padding: 5px;min-height: 360px; text-shadow: 1px 1px 1px #777;">' +
 				'<center style = "font-size: 12pt"><b>' + data.title_romaji + '</b></center>' +
 				'<div style = "padding: 2px">' +
