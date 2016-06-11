@@ -1319,7 +1319,7 @@ exports.commands = {
 		if (!target) return this.parse('/help animals')
 		let tarId = toId(target);
 		let validTargets = ['cat', 'otter', 'dog', 'bunny', 'pokemon', 'kitten', 'puppy'];
-		if (room.id === 'lobby' && this.broadcasting) return this.errorReply("This command cannot be broadcasted in the Lobby.");
+		if (room.id === 'lobby') return this.errorReply("This command cannot be broadcasted in the Lobby.");
 		if (!validTargets.includes(tarId)) return this.parse('/help animals');
 		let self = this;
 		let reqOpt = {
