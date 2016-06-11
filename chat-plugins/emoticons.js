@@ -11,7 +11,6 @@ var serialize = require('node-serialize');
 var emotes = {};
 var Autolinker = require('autolinker');
 
-if (typeof Gold === 'undefined') global.Gold = {};
 
 Gold.emoticons = {
 	maxChatEmotes: 4, //the default maximum number of emoticons in one chat message that gets parsed
@@ -26,11 +25,18 @@ Gold.emoticons = {
 				patterns.push('(' + i.replace(metachars, "\\$&") + ')');
 			}
 		}
-		return text.replace(new RegExp(patterns.join('|'), 'g'), function(match) {
+		var message = text.replace(new RegExp(patterns.join('|'), 'g'), function(match) {
 			return typeof self.chatEmotes[match] != 'undefined' ?
 				'<img src="' + self.chatEmotes[match] + '" title="' + match + '"/>' :
 				match;
 		});
+		// PS Formatting
+		message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
+		message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
+		message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
+		message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
+		if (message.substr(0, 4) === '&gt;') message = '<span class="greentext">' + message + '</span>'; // greentext
+		return message;
 	},
 	checkEmoteModchat: function(user, room) {
 		var rank = (user.group !== ' ' ? user.group : (room.auth ? room.auth[user.userid] : user.group));
@@ -89,13 +95,6 @@ Gold.emoticons = {
 					message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
 					message = this.processEmoticons(message);
 
-					//PS formatting
-					message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
-					message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
-					message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
-					message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
-					if (message.substr(0, 4) === '&gt;') message = '<span class="greentext">' + message + '</span>'; // greentext
-
 					var msg = '<small>' + user.getIdentity(room).substr(0,1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;' + message;
 					if (nightclubs[room.id]) msg = '<div style = "color: white; background: black; font-size: 11pt; text-shadow: 0px 0px 10px, 0px 0px 10px, 0px 0px 10px; padding:1px; margin:-3px;">' + msg + '</div>';
 					if (room.type === 'chat') {
@@ -112,21 +111,11 @@ Gold.emoticons = {
 				break;
 		}
 	},
-	processPMsParsing: function (message) {
-		emoteRegex = [];
-		for (var emote in this.chatEmotes) {
-			emoteRegex.push(emote);
-		}
-		emoteRegex = new RegExp('(' + emoteRegex.join('|') + ')', 'g');
-		self = this;
-		if (emoteRegex.test(message)) {
-			message = message.replace(emoteRegex, function (match) {
-				return '<img src=' + self.chatEmotes[match] + ' title=' + match + '>';
-			});
-			return message;
-		}
-		return false;
-	}
+	processPMsParsing: function (user, message) {
+		if (this.processEmoticons(message) === message) return false;
+		var name = '<small>' + user.getIdentity().substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;';
+		return name + this.processEmoticons(message);
+	},
 };
 
 
@@ -302,8 +291,8 @@ exports.commands = {
 				"/emote view - Shows all of the current chat emoticons with the respected image.",
 				"/emote object - Shows the object of Gold.emoticons.chatEmotes. (Mostly for development usage)",
 				"/emote max, [max emotes / message] - Sets the max emoticon messages per chat message.  Requires ~.",
-				"/emote help - Shows this help command."],
-
+				"/emote help - Shows this help command.",
+	],
 	emoticonlist: 'emotelist',
 	emotelist: function(target, room, user) {
 		return this.errorReply("Try /emote view instead.");
