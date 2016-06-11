@@ -1,4 +1,5 @@
 'use strict';
+/* The gold server was created and modified by: Richard Adams */
 
 // modules
 const fs = require('fs');
