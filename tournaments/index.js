@@ -1101,6 +1101,10 @@ let commands = {
 			tournament.prizeMoney = prize;
 			this.privateModCommand("(" + user.name + " has set the prize for this tournament to be " + prize + " bucks.)");
 		},
+		prize: function (tournament, user, params, cmd) {
+			if (tournament.prizeMoney == 0) return this.errorReply("There is currently no prize set for this tournament.");
+			return this.sendReply("The prize for this tournament is currently set to " + tournament.prizeMoney + " Gold bucks.");
+		},
 	},
 };
 
@@ -1249,6 +1253,7 @@ CommandParser.commands.tournamenthelp = function (target, room, user) {
 		"- on/off: Enables/disables allowing mods to start tournaments in the current room.<br />" +
 		"- announce/announcements &lt;on|off>: Enables/disables tournament announcements for the current room.<br />" +
 		"- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />" +
+		"- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />" +
 		"More detailed help can be found <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6777489\">here</a>"
 	);
 };
