@@ -884,7 +884,7 @@ exports.BattleFormatsData = {
 		randomBattleMoves: ["stealthrock", "earthquake", "heavyslam", "roar", "toxic", "dragontail"],
 		randomDoubleBattleMoves: ["stealthrock", "earthquake", "heavyslam", "rockslide", "protect", "explosion"],
 		requiredItem: "Steelixite",
-		tier: "RU",
+		tier: "BL2",
 	},
 	drowzee: {
 		randomBattleMoves: ["psychic", "seismictoss", "thunderwave", "wish", "protect", "toxic", "shadowball", "trickroom", "calmmind", "dazzlinggleam"],
@@ -2101,6 +2101,9 @@ exports.BattleFormatsData = {
 	miltank: {
 		randomBattleMoves: ["milkdrink", "stealthrock", "bodyslam", "healbell", "curse", "earthquake", "toxic"],
 		randomDoubleBattleMoves: ["protect", "helpinghand", "bodyslam", "healbell", "curse", "earthquake", "thunderwave"],
+		eventPokemon: [
+			{"generation": 6, "level": 20, "perfectIVs": 3, "isHidden": false, "abilities":["scrappy"], "moves":["rollout", "attract", "stomp", "milkdrink"], "pokeball": "cherishball"},
+		],
 		tier: "NU",
 	},
 	raikou: {
@@ -5412,7 +5415,7 @@ exports.BattleFormatsData = {
 	tyrantrum: {
 		randomBattleMoves: ["stealthrock", "dragondance", "dragonclaw", "earthquake", "superpower", "outrage", "headsmash"],
 		randomDoubleBattleMoves: ["rockslide", "dragondance", "headsmash", "dragonclaw", "earthquake", "icefang", "firefang", "protect"],
-		tier: "RU",
+		tier: "BL2",
 	},
 	amaura: {
 		randomBattleMoves: ["naturepower", "hypervoice", "ancientpower", "thunderbolt", "darkpulse", "thunderwave", "dragontail", "flashcannon"],

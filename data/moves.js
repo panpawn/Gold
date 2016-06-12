@@ -2646,6 +2646,10 @@ exports.BattleMovedex = {
 				this.debug('removing Destiny Bond before attack');
 				pokemon.removeVolatile('destinybond');
 			},
+			onBeforeSwitchOutPriority: 1,
+			onBeforeSwitchOut: function (pokemon) {
+				pokemon.removeVolatile('destinybond');
+			},
 		},
 		secondary: false,
 		target: "self",
@@ -11337,13 +11341,14 @@ exports.BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "The user cures its burn, poison, or paralysis.",
-		shortDesc: "Removes status from the user.",
+		shortDesc: "User cures its burn, poison, or paralysis.",
 		id: "refresh",
 		name: "Refresh",
 		pp: 20,
 		priority: 0,
 		flags: {snatch: 1},
 		onHit: function (pokemon) {
+			if (pokemon.status in {'': 1, 'slp': 1, 'frz': 1}) return false;
 			pokemon.cureStatus();
 		},
 		secondary: false,
@@ -16230,7 +16235,7 @@ exports.BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep at the end of the next turn. If the target is still on the field and does not have a major status condition at that time, it falls asleep, and this effect cannot be prevented by Safeguard or a substitute. Fails if the target cannot fall asleep or if it already has a major status condition.",
+		desc: "Causes the target to fall asleep at the end of the next turn. Fails when used if the target cannot fall asleep or if it already has a major status condition. At the end of the next turn, if the target is still on the field, does not have a major status condition, and can fall asleep, it falls asleep. If the target becomes affected, this effect cannot be prevented by Safeguard or a substitute, or by falling asleep and waking up during the effect.",
 		shortDesc: "Puts the target to sleep after 1 turn.",
 		id: "yawn",
 		name: "Yawn",

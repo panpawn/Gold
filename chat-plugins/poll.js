@@ -25,7 +25,7 @@ class Poll {
 		this.timeout = null;
 		this.timeoutMins = 0;
 		this.startTime = Date.now();
-		this.startedUser = '<font color=' + Gold.hashColor(user.name) + '>' + Tools.escapeHTML(user.name) + '</font>';
+		this.startedUser = Gold.nameColor(user.name, false);
 
 		this.options = new Map();
 		for (let i = 0; i < options.length; i++) {
