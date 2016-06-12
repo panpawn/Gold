@@ -298,7 +298,7 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /givebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
-		if (targetUser.length < 1 || toId(targetUser).length > 16) return this.errorReply("Usernames cannot be this length.");
+		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
 
 		//checks
@@ -323,7 +323,7 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /removebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
-		if (targetUser.length < 1 || toId(targetUser).length > 16) return this.errorReply("Usernames cannot be this length.");
+		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
 		if (amount > Economy.readMoneySync(targetUser)) return this.errorReply("You cannot remove more bucks than the user has.");
 
@@ -347,32 +347,33 @@ exports.commands = {
 		let parts = target.split(',');
 		if (!parts[1]) return this.errorReply("Usage: /transferbucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
-		if (parts[0].length < 1 || toId(parts[0]).length > 16) return this.errorReply("Usernames cannot be this length.");
+		let targetUser = parts[0];
+		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
 
 		let amount = Math.round(Number(parts[1]));
 
 		//checks
 		if (isNaN(amount)) return this.errorReply("The amount you transfer must be a number.");
 		if (amount < 1) return this.errorReply("Cannot be less than 1.");
-		if (toId(parts[0]) === user.userid) return this.errorReply("You cannot transfer bucks to yourself.");
+		if (toId(targetUser) === user.userid) return this.errorReply("You cannot transfer bucks to yourself.");
 		if (Economy.readMoneySync(user.userid) < amount) return this.errorReply("You cannot transfer more than you have.");
 
 		//finally, transfer the bucks
 		Economy.writeMoney(user.userid, -amount, function () {
-			Economy.writeMoney(toId(parts[0]), +amount);
+			Economy.writeMoney(toId(targetUser), +amount);
 		});
 
 		//log the transaction
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
-		Economy.logTransaction(user.name + " has transfered " + amountLbl + " to " + parts[0]);
+		Economy.logTransaction(user.name + " has transfered " + amountLbl + " to " + targetUser);
 
 		//send return messages
-		this.sendReply("You have transfered " + amountLbl + " to " + parts[0] + ".");
+		this.sendReply("You have transfered " + amountLbl + " to " + targetUser + ".");
 
-		let targetUser = Users(parts[0]);
-		if (targetUser) {
-			targetUser.popup("|modal|" + user.name + " has transferred " + amountLbl + " to you.");
-			targetUser.sendTo(room, "|raw|<b>" + Gold.nameColor(user.name, false) + " has transferred " + amountLbl + " to you.</b>");
+		let targetUserConnected = Users(parts[0]);
+		if (targetUserConnected) {
+			targetUserConnected.popup("|modal|" + user.name + " has transferred " + amountLbl + " to you.");
+			targetUserConnected.sendTo(room, "|raw|<b>" + Gold.nameColor(user.name, false) + " has transferred " + amountLbl + " to you.</b>");
 		}
 	},
 
