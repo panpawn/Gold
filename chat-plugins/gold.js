@@ -299,6 +299,7 @@ exports.commands = {
 			room.log[len] = '';
 		}
 		for (let u in room.users) {
+			if (!Users.get(u) || !Users.get(u).connected) continue;
 			users.push(u);
 			Users.get(u).leaveRoom(room, Users.get(u).connections[0]);
 		}
