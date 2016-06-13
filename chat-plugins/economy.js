@@ -167,7 +167,7 @@ exports.commands = {
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a music box.', true);
 			Gold.createMusicBox(user); // give the user a music box
 			this.parse('/' + toId(parts[0]) + ' help');
-			this.sendReply("You have purchased a music box. You may have a maximum of 6 songs in it.");
+			this.sendReply("You have purchased a music box. You may have a maximum of 8 songs in it.");
 			break;
 
 		case 'fix':
