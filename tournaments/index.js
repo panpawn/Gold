@@ -824,7 +824,7 @@ class Tournament {
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has won the bucks tournament for <font color=#24678d>' + this.prizeMoney + '</font> bucks!');
 			Economy.writeMoney(toId(winner), Number(this.prizeMoney));
 		} else if (this.room.isOfficial && tourSize >= 3) {
-			let money = (tourSize < 50 ? tourSize : 50);
+			let money = (tourSize < 50 ? Math.round(1.5 * tourSize) : 75);
 
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
 			Economy.writeMoney(toId(winner), money, () => {
