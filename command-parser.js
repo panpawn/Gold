@@ -366,7 +366,7 @@ class CommandContext {
 				if (room.id === 'lobby' && !user.can('hotpatch')) {
 					if (!user.banwordInfractions) user.banwordInfractions = 0;
 					user.banwordInfractions++;
-					let muteTime = (user.banwordInfractions == 1 ? 3 : 6 + (user.banwordInfractions * 2));
+					let muteTime = (user.banwordInfractions === 1 ? 3 : 6 + (user.banwordInfractions * 2));
 					this.errorReply("Your message contained banned words.  You have been muted for " + muteTime + "  minutes as a result.");
 					this.privateModCommand("(" + user.name + " was automatically muted for saying: " + message + ")");
 					room.mute(user, muteTime * 60 * 1000);

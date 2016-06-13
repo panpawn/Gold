@@ -208,7 +208,7 @@ TeamValidator.PM.spawn();
 
 // uptime recording
 fs.readFile('./logs/uptime.txt', function (err, uptime) {
-	if (!err) global.uptimeRecord = parseInt(uptime, 10);
+	if (!err) global.uptimeRecord = parseInt(uptime, 10); // eslint-disable-line radix
 	global.uptimeRecordInterval = setInterval(function () {
 		if (global.uptimeRecord && process.uptime() <= global.uptimeRecord) return;
 		global.uptimeRecord = process.uptime();

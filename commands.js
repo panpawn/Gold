@@ -245,9 +245,9 @@ exports.commands = {
 		if (targetUser !== user) {
 			if (Users.ShadowBan.checkBanned(user)) {
 				if (emotes) {
-					Users.ShadowBan.addMessage(user, "Private to " +  targetUser.getIdentity(), oldtarg);
+					Users.ShadowBan.addMessage(user, "Private to " + targetUser.getIdentity(), oldtarg);
 				} else {
-					Users.ShadowBan.addMessage(user, "Private to " +  targetUser.getIdentity(), target);
+					Users.ShadowBan.addMessage(user, "Private to " + targetUser.getIdentity(), target);
 				}
 			} else {
 				targetUser.send(message);
@@ -344,7 +344,7 @@ exports.commands = {
 					Rooms.get('upperstaff').add('|raw|<div class="broadcast-green">Private chat room created: <b>' + Tools.escapeHTML(target) + '</b></div>').update();
 				}
 				Gold.updateColor();
-				return this.sendReply("The private chat room '" + target + "' was created.");
+				this.sendReply("The private chat room '" + target + "' was created.");
 			} else {
 				let defaultIntro = '<h2 style="margin-top:0">' + target + ' <a href="/' + toId(target) + '"><code>&lt;&lt;' + toId(target) + '>></code></a></h2>(DEFAULT ROOMINTRO)<br />- To set a customized roomintro, use <code>/roomintro HTML</code>.<br />- Don\'t know HTML very well? Click <a href="http://www.smogon.com/forums/threads/html-jazz-b.3510885/">here</a> for a brief HTML guide.<br />- Be sure to set a short room description (80 characters or under) with <code>/roomdesc DESC</code><br />- To enable tournaments in your room, do <code>/tour ON</code><br />- Any room owner can view past logs of this room with <code>/viewlogs ' + toId(target) + ', [YYYY-MM-DD]</code><br />- Reminder that this room must maintain 40 messages / 48 hours to be considered "active" to not be automatically deleted.<br />- For any <i>general</i> questions on room management, please do not hesitate to contact a global staff member.<br />- <button name="send" value="/roomhelp">Room management commands</button>';
 				Rooms.search(target).introMessage = Rooms.search(target).chatRoomData.introMessage = defaultIntro;
@@ -823,31 +823,30 @@ exports.commands = {
 	},
 	roomownerhelp: ["/roomowner [username] - Appoints [username] as a room owner. Removes official status. Requires: & ~"],
 
-    roomdeowner: 'deroomowner',
 	roomdeowner: 'deroomowner',
-    deroomowner: function(target, room, user) {
-        if (!room.auth) {
-            return this.sendReply("/roomdeowner - This room isn't designed for per-room moderation");
-        }
-        if (!target) return this.parse('/help deroomowner');
-        target = this.splitTarget(target, true);
-        var targetUser = this.targetUser;
-        var name = this.targetUsername;
-        var userid = toId(name);
-        if (!userid || userid === '') return this.sendReply("User '" + name + "' does not exist.");
+	deroomowner: function (target, room, user) {
+		if (!room.auth) {
+			return this.sendReply("/roomdeowner - This room isn't designed for per-room moderation");
+		}
+		if (!target) return this.parse('/help deroomowner');
+		target = this.splitTarget(target, true);
+		let targetUser = this.targetUser;
+		let name = this.targetUsername;
+		let userid = toId(name);
+		if (!userid || userid === '') return this.sendReply("User '" + name + "' does not exist.");
 
 		if (room.auth[userid] !== '#') return this.sendReply("User '" + name + "' is not a room owner.");
 		if (room.founder !== user.userid && !this.can('pban')) return this.sendReply('/roomowner - Access denied.');
 
-        delete room.auth[userid];
-        this.sendReply('(' + name + ' is no longer Room Owner.)');
-        if (targetUser) {
-        	targetUser.updateIdentity();
-        	targetUser.popup("You were deroomownered by " + user.name + " in " + room.id + ".");
-        }
+		delete room.auth[userid];
+		this.sendReply('(' + name + ' is no longer Room Owner.)');
+		if (targetUser) {
+			targetUser.updateIdentity();
+			targetUser.popup("You were deroomownered by " + user.name + " in " + room.id + ".");
+		}
 
 		if (room.chatRoomData) Rooms.global.writeChatRoomData();
-    },
+	},
 	deroomownerhelp: ["/deroomowner [username] - Demotes a room owner. Requires &, ~, or Room Founder"],
 
 	roomdemote: 'roompromote',
@@ -961,7 +960,7 @@ exports.commands = {
 			connection.popup("The room '" + targetRoom.title + "' has no auth." + userLookup);
 			return;
 		}
-		var roomfounder = (targetRoom.founder ? "Room Founder:\n" + targetRoom.founder : false);
+		let roomfounder = (targetRoom.founder ? "Room Founder:\n" + targetRoom.founder : false);
 		if (roomfounder) buffer.unshift(roomfounder);
 		if (targetRoom !== room) buffer.unshift("" + targetRoom.title + " room auth:");
 		connection.popup(buffer.join("\n\n") + userLookup);
@@ -1524,8 +1523,8 @@ exports.commands = {
 		}
 		if (!this.can('ban', targetUser)) return false;
 
-		var name = targetUser.getLastName();
-		var userid = targetUser.getLastId();
+		let name = targetUser.getLastName();
+		let userid = targetUser.getLastId();
 
 		if (Users.checkBanned(targetUser.latestIp) && !target && !targetUser.connected) {
 			let problem = " but was already banned";
@@ -1661,8 +1660,8 @@ exports.commands = {
 			'reason': '#ipban',
 			'by': user.name,
 			'on': Date.now(),
-			'expires': expires.getTime()
-		}
+			'expires': expires.getTime(),
+		};
 		Users.saveBans();
 		this.privateModCommand("(" + user.name + " temporarily banned the " + (target.charAt(target.length - 1) === '*' ? "IP range" : "IP") + ": " + target + ")");
 	},

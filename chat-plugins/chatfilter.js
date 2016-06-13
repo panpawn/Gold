@@ -23,10 +23,10 @@ Config.chatfilter = function (message, user, room, connection) {
 			return false;
 		}
 	}
-	let pre_matches = (message.match(/psim|psim.us|psim us|psm.us|psm us/g) || []).length
-	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server) }).length : 0);
+	let pre_matches = (message.match(/psim|psim.us|psim us|psm.us|psm us/g) || []).length;
+	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server); }).length : 0);
 
-	if (!user.can('hotpatch') && (pre_matches >= 1 && final_check == 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
+	if (!user.can('hotpatch') && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
 		if (user.locked) return false;
 		if (!user.advWarns) user.advWarns = 0;
 		user.advWarns++;
@@ -35,7 +35,6 @@ Config.chatfilter = function (message, user, room, connection) {
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name +
 				' was locked from talking by the Server. (Advertising) (' + connection.ip + ')\n');
 			connection.sendTo(room, '|raw|<strong class="message-throttle-notice">You have been locked for attempting to advertise.</strong>');
-			let alertMessage =
 			Gold.pmUpperStaff(user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message.") + " **Message:** " + message, "~Server");
 			Rooms('staff').add('|raw|' + Gold.nameColor(user.name, false) + " has been locked for attempting to advertise" + (room ? ". <b>Room:</b> " + room.id : " in a private message.") + " <b>Message:</b> " + message).update();
 			return false;

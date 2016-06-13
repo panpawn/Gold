@@ -144,7 +144,7 @@ function updateBans() {
 
 Users.updateBans = updateBans;
 
-let expiredBansCheck = setInterval(function () {
+setInterval(function () {
 	updateBans();
 }, 1000 * 60 * 60);
 
@@ -1828,7 +1828,7 @@ Users.socketConnect = function (worker, workerid, socketid, ip) {
 			connection.send(
 				"|popup||modal|Your IP (" + ip + ") was banned while using the username '" + checkResult.userid + "'" + (checkResult.by ? " by " + checkResult.by : "") + " on " +
 				moment(checkResult.on).format("dddd, MMMM DD, YYYY h:mmA ") + String(String(new Date(checkResult.on)).split("(")[1]).split(")")[0] + ".\n\n" +
-				(checkResult.reason ? "Reason: " + checkResult.reason + "\n" : "" ) +
+				(checkResult.reason ? "Reason: " + checkResult.reason + "\n" : "") +
 				"\nYour ban will expire in " + moment(checkResult.expires).fromNow(true));
 		}
 		if (checkResult.type === "ip") {

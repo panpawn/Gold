@@ -2,9 +2,9 @@
 
 // modules
 const fs = require('fs');
-const request = require('request');
 const moment = require('moment');
 const http = require('http');
+const https = require('https');
 const geoip = require('geoip-ultralight');
 const forever = require('forever');
 
@@ -14,14 +14,47 @@ const formatHex = '#566'; //hex code for the formatting of the command
 const ADVERTISEMENT_COST = 10; // how much does /advertise cost to use?
 
 let regdateCache = {};
-let badges = fs.createWriteStream('badges.txt', {
-	'flags': 'a'
+fs.createWriteStream('badges.txt', {
+	'flags': 'a',
 });
 geoip.startWatchingDataUpdate();
 
+const messages = [
+	"ventured into Shrek's Swamp.",
+	"disrespected the OgreLord!",
+	"used Explosion!",
+	"was swallowed up by the Earth!",
+	"was eaten by Lex!",
+	"was sucker punched by Absol!",
+	"has left the building.",
+	"got lost in the woods!",
+	"left for their lover!",
+	"couldn't handle the coldness of Frost!",
+	"was hit by Magikarp's Revenge!",
+	"was sucked into a whirlpool!",
+	"got scared and left the server!",
+	"went into a cave without a repel!",
+	"got eaten by a bunch of piranhas!",
+	"ventured too deep into the forest without an escape rope",
+	"got shrekt",
+	"woke up an angry Snorlax!",
+	"was forced to give jd an oil massage!",
+	"was used as shark bait!",
+	"peered through the hole on Shedinja's back",
+	"received judgment from the almighty Arceus!",
+	"used Final Gambit and missed!",
+	"went into grass without any Pokemon!",
+	"made a Slowbro angry!",
+	"took a focus punch from Breloom!",
+	"got lost in the illusion of reality.",
+	"ate a bomb!",
+	"left for a timeout!",
+	"fell into a snake pit!",
+];
+
 exports.commands = {
 
-	restart: function(target, room, user) {
+	restart: function (target, room, user) {
 		if (!this.can('lockdown')) return false;
 		if (!Rooms.global.lockdown) {
 			return this.errorReply("For safety reasons, /restart can only be used during lockdown.");
@@ -78,7 +111,7 @@ exports.commands = {
 			return this.sendReply("The reason is too long. It cannot exceed 300 characters.");
 		}
 
-		let muteDuration =  0.45 * 60 * 1000;
+		let muteDuration = 0.45 * 60 * 1000;
 		if (!this.can('mute', targetUser, room)) return false;
 		let canBeMutedFurther = ((room.getMuteTime(targetUser) || 0) <= (muteDuration * 5 / 6));
 		if ((room.isMuted(targetUser) && !canBeMutedFurther) || targetUser.locked || !targetUser.connected) {
@@ -101,52 +134,45 @@ exports.commands = {
 	authlist: 'gal',
 	auth: 'gal',
 	goldauthlist: 'gal',
-	gal: function(target, room, user, connection) {
+	gal: function (target, room, user, connection) {
 		let ignoreUsers = ['ponybot', 'axews', 'tintins', 'amaterasu'];
-		fs.readFile('config/usergroups.csv', 'utf8', function(err, data) {
+		fs.readFile('config/usergroups.csv', 'utf8', function (err, data) {
 			let staff = {
 				"admins": [],
 				"leaders": [],
 				"mods": [],
 				"drivers": [],
-				"voices": []
+				"voices": [],
 			};
 			let row = ('' + data).split('\n');
 			for (let i = row.length; i > -1; i--) {
 				if (!row[i]) continue;
 				let rank = row[i].split(',')[1].replace("\r", '');
 				let person = row[i].split(',')[0];
-				function formatName (name) {
-					if (Users.getExact(name) && Users(name).connected) {
-						return '<i>' + Gold.nameColor(Users.getExact(name).name, true) + '</i>';
-					} else {
-						return Gold.nameColor(name, false);
-					}
-				}
 				let personId = toId(person);
 				switch (rank) {
-					case '~':
-						if (~ignoreUsers.indexOf(personId)) break;
-						staff['admins'].push(formatName(person));
-						break;
-					case '&':
-						if (~ignoreUsers.indexOf(personId)) break;
-						staff['leaders'].push(formatName(person));
-						break;
-					case '@':
-						if (~ignoreUsers.indexOf(personId)) break;
-						staff['mods'].push(formatName(person));
-						break;
-					case '%':
-						if (~ignoreUsers.indexOf(personId)) break;
-						staff['drivers'].push(formatName(person));
-						break;
-					case '+':
-						if (~ignoreUsers.indexOf(personId)) break;
-						staff['voices'].push(formatName(person));
-						break;
-					default:
-						continue;
+				case '~':
+					if (~ignoreUsers.indexOf(personId)) break;
+					staff['admins'].push(formatName(person));
+					break;
+				case '&':
+					if (~ignoreUsers.indexOf(personId)) break;
+					staff['leaders'].push(formatName(person));
+					break;
+				case '@':
+					if (~ignoreUsers.indexOf(personId)) break;
+					staff['mods'].push(formatName(person));
+					break;
+				case '%':
+					if (~ignoreUsers.indexOf(personId)) break;
+					staff['drivers'].push(formatName(person));
+					break;
+				case '+':
+					if (~ignoreUsers.indexOf(personId)) break;
+					staff['voices'].push(formatName(person));
+					break;
+				default:
+					continue;
 				}
 			}
 			connection.popup('|html|' +
@@ -160,7 +186,7 @@ exports.commands = {
 			);
 		});
 	},
-	protectroom: function(target, room, user) {
+	protectroom: function (target, room, user) {
 		if (!this.can('pban')) return false;
 		if (room.type !== 'chat' || room.isOfficial) return this.errorReply("This room does not need to be protected.");
 		if (target === 'off') {
@@ -177,7 +203,7 @@ exports.commands = {
 			this.privateModCommand("(" + user.name + " has protected this room from being automatically deleted.)");
 		}
 	},
-	roomfounder: function(target, room, user) {
+	roomfounder: function (target, room, user) {
 		if (!room.chatRoomData) {
 			return this.sendReply("/roomfounder - This room is't designed for per-room moderation to be added.");
 		}
@@ -196,12 +222,12 @@ exports.commands = {
 		room.protect = true; // fairly give new rooms activity a chance
 	},
 	hide: 'hideauth',
-	hideauth: function(target, room, user) {
+	hideauth: function (target, room, user) {
 		if (!user.can('lock')) return this.sendReply("/hideauth - access denied.");
 		let tar = ' ';
 		if (target) {
 			target = target.trim();
-			if (Config.groupsranking.indexOf(target) > -1 && target != '#') {
+			if (Config.groupsranking.indexOf(target) > -1 && target !== '#') {
 				if (Config.groupsranking.indexOf(target) <= Config.groupsranking.indexOf(user.group)) {
 					tar = target;
 				} else {
@@ -228,14 +254,14 @@ exports.commands = {
 				}
 			}
 			return tar + this.name;
-		}
+		};
 		user.updateIdentity();
 		this.sendReply('You are now hiding your auth symbol as \'' + tar + '\'.');
 		this.logModCommand(user.name + ' is hiding auth symbol as \'' + tar + '\'');
 		user.isHiding = true;
 	},
 	show: 'showauth',
-	showauth: function(target, room, user) {
+	showauth: function (target, room, user) {
 		if (!user.can('lock')) return this.sendReply("/showauth - access denied.");
 		delete user.getIdentity;
 		user.updateIdentity();
@@ -246,7 +272,7 @@ exports.commands = {
 	pb: 'permaban',
 	pban: 'permaban',
 	permban: 'permaban',
-	permaban: function(target, room, user, connection) {
+	permaban: function (target, room, user, connection) {
 		if (!target) return this.sendReply('/permaban [username] - Permanently bans the user from the server. Bans placed by this command do not reset on server restarts. Requires: & ~');
 		target = this.splitTarget(target);
 		let targetUser = this.targetUser;
@@ -283,8 +309,8 @@ exports.commands = {
 		let options = {
 			'type': 'pban',
 			'by': user.name,
-			'on': Date.now()
-		}
+			'on': Date.now(),
+		};
 		if (target) options.reason = target;
 		targetUser.ban(false, targetUser.userid, options);
 	},
@@ -310,55 +336,55 @@ exports.commands = {
 			}
 		}, 1000);
 	},
-	hc: function(room, user, cmd) {
+	hc: function (room, user, cmd) {
 		return this.parse('/hotpatch chat');
 	},
-	vault: function(target, room, user, connection) {
+	vault: function (target, room, user, connection) {
 		let money = fs.readFileSync('config/money.csv', 'utf8');
 		return user.send('|popup|' + money);
 	},
 	s: 'spank',
-	spank: function(target, room, user) {
+	spank: function (target, room, user) {
 		if (!target) return this.sendReply('/spank needs a target.');
 		return this.parse('/me spanks ' + target + '!');
 	},
-	punt: function(target, room, user) {
+	punt: function (target, room, user) {
 		if (!target) return this.sendReply('/punt needs a target.');
 		return this.parse('/me punts ' + target + ' to the moon!');
 	},
 	crai: 'cry',
-	cry: function(target, room, user) {
+	cry: function (target, room, user) {
 		return this.parse('/me starts tearbending dramatically like Katara~!');
 	},
 	dk: 'dropkick',
-	dropkick: function(target, room, user) {
+	dropkick: function (target, room, user) {
 		if (!target) return this.sendReply('/dropkick needs a target.');
 		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
 	},
-	fart: function(target, room, user) {
+	fart: function (target, room, user) {
 		if (!target) return this.sendReply('/fart needs a target.');
 		return this.parse('/me farts on ' + target + '\'s face!');
 	},
-	poke: function(target, room, user) {
+	poke: function (target, room, user) {
 		if (!target) return this.sendReply('/poke needs a target.');
 		return this.parse('/me pokes ' + target + '.');
 	},
-	pet: function(target, room, user) {
+	pet: function (target, room, user) {
 		if (!target) return this.sendReply('/pet needs a target.');
 		return this.parse('/me pets ' + target + ' lavishly.');
 	},
-	utube: function(target, room, user) {
+	utube: function (target, room, user) {
 		if (user.userid !== 'ponybot') return false;
 		let commaIndex = target.indexOf(',');
 		if (commaIndex < 0) return this.errorReply("You forgot the comma.");
-		let targetUser = toId(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
+		let targetUser = toId(target.slice(0, commaIndex));
 		let message = target.slice(commaIndex + 1).trim();
 		if (!targetUser || !message) return this.errorReply("Needs a target.");
 		if (!Users.get(targetUser).name) return false;
 		room.addRaw(Gold.nameColor(Users.get(targetUser).name, true) + '\'s link: <b>"' + message + '"</b>');
 	},
 	roomlist: function (target, room, user) {
-		if(!this.can('pban')) return;
+		if (!this.can('pban')) return;
 		let totalUsers = 0;
 		for (let u of Users.users) {
 			u = u[1];
@@ -367,13 +393,13 @@ exports.commands = {
 			}
 		}
 		let rooms = Object.keys(Rooms.rooms),
-		len = rooms.length,
-		header = ['<b><font color="#DA9D01" size="2">Total users connected: ' + totalUsers + '</font></b><br />'],
-		official = ['<b><font color="#1a5e00" size="2">Official chat rooms:</font></b><br />'],
-		nonOfficial = ['<hr><b><font color="#000b5e" size="2">Public chat rooms:</font></b><br />'],
-		privateRoom = ['<hr><b><font color="#ff5cb6" size="2">Private chat rooms:</font></b><br />'],
-		groupChats = ['<hr><b><font color="#740B53" size="2">Group Chats:</font></b><br />'],
-		battleRooms = ['<hr><b><font color="#0191C6" size="2">Battle Rooms:</font></b><br />'];
+			len = rooms.length,
+			header = ['<b><font color="#DA9D01" size="2">Total users connected: ' + totalUsers + '</font></b><br />'],
+			official = ['<b><font color="#1a5e00" size="2">Official chat rooms:</font></b><br />'],
+			nonOfficial = ['<hr><b><font color="#000b5e" size="2">Public chat rooms:</font></b><br />'],
+			privateRoom = ['<hr><b><font color="#ff5cb6" size="2">Private chat rooms:</font></b><br />'],
+			groupChats = ['<hr><b><font color="#740B53" size="2">Group Chats:</font></b><br />'],
+			battleRooms = ['<hr><b><font color="#0191C6" size="2">Battle Rooms:</font></b><br />'];
 
 		while (len--) {
 			let _room = Rooms.rooms[rooms[(rooms.length - len) - 1]];
@@ -381,137 +407,141 @@ exports.commands = {
 				battleRooms.push('<a href="/' + _room.id + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
 			}
 			if (_room.type === 'chat') {
-					if (_room.isPersonal) {
-						groupChats.push('<a href="/' + _room.id + '" class="ilink">' + _room.id + '</a> (' + _room.userCount + ')');
-						continue;
-					}
-					if (_room.isOfficial) {
-						official.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
-						continue;
-					}
-					if (_room.isPrivate) {
-						privateRoom.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
-						continue;
-					}
+				if (_room.isPersonal) {
+					groupChats.push('<a href="/' + _room.id + '" class="ilink">' + _room.id + '</a> (' + _room.userCount + ')');
+					continue;
+				}
+				if (_room.isOfficial) {
+					official.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+					continue;
+				}
+				if (_room.isPrivate) {
+					privateRoom.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+					continue;
+				}
 			}
 			if (_room.type !== 'battle' && _room.id !== 'global') nonOfficial.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
 		}
 		this.sendReplyBox(header + official.join(' ') + nonOfficial.join(' ') + privateRoom.join(' ') + (groupChats.length > 1 ? groupChats.join(' ') : '') + (battleRooms.length > 1 ? battleRooms.join(' ') : ''));
-    },
+	},
+
 	mt: 'mktour',
-	mktour: function(target, room, user) {
+	mktour: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /mktour [tier] - creates a tournament in single elimination.");
 		target = toId(target);
 		let t = target;
 		if (t === 'rb') t = 'randombattle';
 		if (t === 'cc1v1' || t === 'cc1vs1') t = 'challengecup1v1';
 		if (t === 'randmono' || t === 'randommonotype') t = 'monotyperandombattle';
-		if (t === 'mono') t === 'monotype';
-		if (t === 'ag') t === 'anythinggoes';
-		if (t === 'ts') t === 'tiershift';
+		if (t === 'mono') t = 'monotype';
+		if (t === 'ag') t = 'anythinggoes';
+		if (t === 'ts') t = 'tiershift';
 		this.parse('/tour create ' + t + ', elimination');
 	},
 	pic: 'image',
-	image: function(target, room, user) {
+	image: function (target, room, user) {
 		if (!target) return this.sendReply('/image [url] - Shows an image using /a. Requires ~.');
 		return this.parse('/a |raw|<center><img src="' + target + '">');
 	},
-	dk: 'dropkick',
-	dropkick: function(target, room, user) {
-		if (!target) return this.sendReply('/dropkick needs a target.');
-		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
-	},
-	halloween: function(target, room, user) {
+	halloween: function (target, room, user) {
 		if (!target) return this.sendReply('/halloween needs a target.');
 		return this.parse('/me takes ' + target + '\'s pumpkin and smashes it all over the Pok\u00E9mon Stadium!');
 	},
-	barn: function(target, room, user) {
+	barn: function (target, room, user) {
 		if (!target) return this.sendReply('/barn needs a target.');
 		return this.parse('/me has barned ' + target + ' from the entire server!');
 	},
-	lick: function(target, room, user) {
+	lick: function (target, room, user) {
 		if (!target) return this.sendReply('/lick needs a target.');
 		return this.parse('/me licks ' + target + ' excessively!');
 	},
+
 	def: 'define',
-	define: function(target, room, user) {
+	define: function (target, room, user) {
 		if (!target) return this.sendReply('Usage: /define <word>');
 		target = toId(target);
 		if (target > 50) return this.sendReply('/define <word> - word can not be longer than 50 characters.');
 		if (!this.runBroadcast()) return;
+
 		let options = {
-		    url: 'http://api.wordnik.com:80/v4/word.json/'+target+'/definitions?limit=3&sourceDictionaries=all' +
-		    '&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5',
+			host: 'api.wordnik.com',
+			port: 80,
+			path: '/v4/word.json/' + target + '/definitions?limit=3&sourceDictionaries=all' +
+			'&useCanonical=false&includeTags=false&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5',
+			method: 'GET',
 		};
-		let self = this;
-		function callback(error, response, body) {
-		    if (!error && response.statusCode == 200) {
-		        let page = JSON.parse(body);
-		        let output = '<font color=#24678d><b>Definitions for ' + target + ':</b></font><br />';
-		        if (!page[0]) {
-		        	self.sendReplyBox('No results for <b>"' + target + '"</b>.');
-		        	return room.update();
-		        } else {
-		        	let count = 1;
-		        	for (let u in page) {
-		        		if (count > 3) break;
-		        		output += '(<b>'+count+'</b>) ' + Tools.escapeHTML(page[u]['text']) + '<br />';
-		        		count++;
-		        	}
-		        	self.sendReplyBox(output);
-		        	return room.update();
-		        }
-		    }
-		}
-		request(options, callback);
+
+		http.get(options, res => {
+			let data = '';
+			res.on('data', chunk => {
+				data += chunk;
+			}).on('end', () => {
+				data = JSON.parse(data);
+				let output = '<font color=#24678d><b>Definitions for ' + target + ':</b></font><br />';
+				if (!data[0]) {
+					this.sendReplyBox('No results for <b>"' + target + '"</b>.');
+					return room.update();
+				} else {
+					let count = 1;
+					for (let u in data) {
+						if (count > 3) break;
+						output += '(<b>' + count + '</b>) ' + Tools.escapeHTML(data[u]['text']) + '<br />';
+						count++;
+					}
+					this.sendReplyBox(output);
+					return room.update;
+				}
+			});
+		});
 	},
+
 	u: 'urbandefine',
-    ud: 'urbandefine',
-    urbandefine: function(target, room, user) {
-    	if (!this.runBroadcast()) return;
-    	if (!target) return this.parse('/help urbandefine');
-    	if (target > 50) return this.sendReply('Phrase can not be longer than 50 characters.');
-    	let self = this;
-    	let options = {
-    		url: 'http://www.urbandictionary.com/iphone/search/define',
-    		term: target,
-    		headers: {
-    			'Referer': 'http://m.urbandictionary.com'
-    		},
-    		qs: {
-    			'term': target
-    		}
-    	};
-    	function callback(error, response, body) {
-    		if (!error && response.statusCode == 200) {
-    			let page = JSON.parse(body);
-    			let definitions = page['list'];
-    			if (page['result_type'] == 'no_results') {
-    				self.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
-    				return room.update();
-    			} else {
-    				if (!definitions[0]['word'] || !definitions[0]['definition']) {
-    					self.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
-    					return room.update();
-    				}
-    				let output = '<b>' + Tools.escapeHTML(definitions[0]['word']) + ':</b> ' + Tools.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
-    				if (output.length > 400) output = output.slice(0, 400) + '...';
-    				self.sendReplyBox(output);
-    				return room.update();
-    			}
-    		}
-    	}
-    	request(options, callback);
-    },
+	ud: 'urbandefine',
+	urbandefine: function (target, room, user) {
+		if (!this.runBroadcast()) return;
+		if (!target) return this.parse('/help urbandefine');
+		if (target.toString() > 50) return this.sendReply('Phrase can not be longer than 50 characters.');
+		let self = this;
+		let options = {
+			host: 'api.urbandictionary.com',
+			port: 80,
+			path: '/v0/define?term=' + encodeURIComponent(target),
+			term: target,
+		};
+
+		http.get(options, res => {
+			let data = '';
+			res.on('data', chunk => {
+				data += chunk;
+			}).on('end', () => {
+				data = JSON.parse(data);
+				let definitions = data['list'];
+				if (data['result_type'] === 'no_results') {
+					this.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
+					return room.update();
+				} else {
+					if (!definitions[0]['word'] || !definitions[0]['definition']) {
+						self.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
+						return room.update();
+					}
+					let output = '<b>' + Tools.escapeHTML(definitions[0]['word']) + ':</b> ' + Tools.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
+					if (output.length > 400) output = output.slice(0, 400) + '...';
+					this.sendReplyBox(output);
+					return room.update();
+				}
+			});
+		});
+	},
+
 	gethex: 'hex',
-	hex: function(target, room, user) {
+	hex: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!this.canTalk()) return;
 		if (!target) target = toId(user.name);
 		return this.sendReplyBox(Gold.nameColor(target, true) + '.  The hexcode for this name color is: ' + Gold.hashColor(target) + '.');
 	},
 	rsi: 'roomshowimage',
-	roomshowimage: function(target, room, user) {
+	roomshowimage: function (target, room, user) {
 		if (!this.can('ban', null, room)) return false;
 		if (!target) return this.parse('/help roomshowimage');
 		let parts = target.split(',');
@@ -522,7 +552,7 @@ exports.commands = {
 
 	admins: 'usersofrank',
 	uor: 'usersofrank',
-	usersofrank: function(target, room, user, connection, cmd) {
+	usersofrank: function (target, room, user, connection, cmd) {
 		if (cmd === 'admins') target = '~';
 		if (!target || !Config.groups[target]) return this.parse('/help usersofrank');
 		if (!this.runBroadcast()) return;
@@ -537,14 +567,14 @@ exports.commands = {
 		return this.sendReplyBox('There ' + (names.length === 1 ? 'is' : 'are') + ' <font color="#24678d"><b>' + names.length + '</b></font> ' + (names.length === 1 ? 'user' : 'users') + ' with the rank <font color="#24678d"><b>' + Config.groups[target].name + '</b></font> currently online.<br />' + names.join(', '));
 	},
 	usersofrankhelp: ["/usersofrank [rank symbol] - Displays all ranked users with that rank currently online."],
-	golddeclare: function(target, room, user, connection, cmd) {
+	golddeclare: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help declare');
 		if (!this.can('declare', null, room)) return false;
 		if (!this.canTalk()) return;
 		this.add('|raw|<div class="broadcast-gold"><b>' + target + '</b></div>');
 		this.logModCommand(user.name + ' declared ' + target);
 	},
-	pdeclare: function(target, room, user, connection, cmd) {
+	pdeclare: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help declare');
 		if (!this.can('declare', null, room)) return false;
 		if (!this.canTalk()) return;
@@ -559,7 +589,7 @@ exports.commands = {
 	staffdeclare: 'declaremod',
 	modmsg: 'declaremod',
 	moddeclare: 'declaremod',
-	declaremod: function(target, room, user) {
+	declaremod: function (target, room, user) {
 		if (!target) return this.parse('/help declaremod');
 		if (!this.can('declare', null, room)) return false;
 		if (!this.canTalk()) return;
@@ -568,22 +598,22 @@ exports.commands = {
 	},
 	declaremodhelp: ['/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires #, &, ~'],
 	k: 'kick',
-	kick: function(target, room, user) {
+	kick: function (target, room, user) {
 		if (!target) return this.parse('/help kick');
 		if (!this.canTalk()) return false;
-		let kickBlock = (Gold.kick == undefined ? false : Gold.kick);
+		let kickBlock = (Gold.kick === undefined ? false : Gold.kick);
 		switch (target) {
 		case 'disable':
 			if (!this.can('hotpatch')) return false;
 			if (kickBlock) return this.errorReply("Kick is already disabled.");
 			Gold.kick = true;
-			return this.privateModCommand("(" + user.name + " has disabled kick.)");
+			this.privateModCommand("(" + user.name + " has disabled kick.)");
 			break;
 		case 'enable':
 			if (!this.can('hotpatch')) return false;
 			if (!kickBlock) return this.errorReply("Kick is already enabled.");
 			Gold.kick = false;
-			return this.privateModCommand("(" + user.name + " has enabled kick.)");
+			this.privateModCommand("(" + user.name + " has enabled kick.)");
 			break;
 		default:
 			target = this.splitTarget(target);
@@ -601,30 +631,30 @@ exports.commands = {
 	},
 	kickhelp: ["Usage: /kick [user] - kicks a user from the room",
 				"/kick [enable/disable] - enables or disables kick. Requires ~."],
-	userid: function(target, room, user) {
+	userid: function (target, room, user) {
 		if (!target) return this.parse('/help userid');
 		if (!this.runBroadcast()) return;
 		return this.sendReplyBox(Tools.escapeHTML(target) + " ID: <b>" + Tools.escapeHTML(toId(target)) + "</b>");
 	},
 	useridhelp: ["/userid [user] - shows the user's ID (removes unicode from name basically)"],
 	pus: 'pmupperstaff',
-	pmupperstaff: function(target, room, user) {
+	pmupperstaff: function (target, room, user) {
 		if (!target) return this.sendReply('/pmupperstaff [message] - Sends a PM to every upper staff');
 		if (!this.can('pban')) return false;
 		Gold.pmUpperStaff(target, false, user.name);
 	},
-	client: function(target, room, user) {
+	client: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		return this.sendReplyBox('Gold\'s custom client can be found <a href="http://goldservers.info">here</a>.');
 	},
 	pas: 'pmallstaff',
-	pmallstaff: function(target, room, user) {
+	pmallstaff: function (target, room, user) {
 		if (!target) return this.sendReply('/pmallstaff [message] - Sends a PM to every user in a room.');
 		if (!this.can('pban')) return false;
 		Gold.pmStaff(target, user.name);
 	},
 	masspm: 'pmall',
-	pmall: function(target, room, user) {
+	pmall: function (target, room, user) {
 		if (!target) return this.parse('/pmall [message] - Sends a PM to every user in a room.');
 		if (!this.can('pban')) return false;
 		Gold.pmAll(target);
@@ -649,15 +679,15 @@ exports.commands = {
 					"- " + Gold.nameColor('PixelatedPaw', true) + " (One of the original administrators)";
 		user.popup(popup);
 	},
-	regdate: function(target, room, user, connection) {
+	regdate: function (target, room, user, connection) {
 		if (toId(target).length < 1 || toId(target).length > 19) return this.sendReply("Usernames may not be less than one character or longer than 19");
 		if (!this.runBroadcast()) return;
-		Gold.regdate(target, (date) => {
+		Gold.regdate(target, date => {
 			this.sendReplyBox(Gold.nameColor(target, false) + (date ? " was registered on " + moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ") : " is not registered."));
 			room.update();
 		});
 	},
-	removebadge: function(target, room, user) {
+	removebadge: function (target, room, user) {
 		if (!this.can('pban')) return false;
 		target = this.splitTarget(target);
 		let targetUser = this.targetUser;
@@ -665,8 +695,8 @@ exports.commands = {
 		if (!targetUser) return this.sendReply('There is no user named ' + this.targetUsername + '.');
 		let self = this;
 		let type_of_badges = ['admin', 'bot', 'dev', 'vip', 'artist', 'mod', 'leader', 'champ', 'creator', 'comcun', 'twinner', 'goodra', 'league', 'fgs'];
-		if (type_of_badges.indexOf(target) > -1 == false) return this.sendReply('The badge ' + target + ' is not a valid badge.');
-		fs.readFile('badges.txt', 'utf8', function(err, data) {
+		if (type_of_badges.indexOf(target) > -1 === false) return this.sendReply('The badge ' + target + ' is not a valid badge.');
+		fs.readFile('badges.txt', 'utf8', function (err, data) {
 			if (err) console.log(err);
 			let match = false;
 			let currentbadges = '';
@@ -675,18 +705,18 @@ exports.commands = {
 			for (let i = row.length; i > -1; i--) {
 				if (!row[i]) continue;
 				let split = row[i].split(':');
-				if (split[0] == targetUser.userid) {
+				if (split[0] === targetUser.userid) {
 					match = true;
 					currentbadges = split[1];
 					line = row[i];
 				}
 			}
-			if (match == true) {
-				if (currentbadges.indexOf(target) > -1 == false) return self.sendReply(currentbadges); //'The user '+targetUser+' does not have the badge.');
+			if (match === true) {
+				if (currentbadges.indexOf(target) > -1 === false) return self.sendReply(currentbadges); //'The user '+targetUser+' does not have the badge.');
 				let re = new RegExp(line, 'g');
 				currentbadges = currentbadges.replace(target, '');
 				let newdata = data.replace(re, targetUser.userid + ':' + currentbadges);
-				fs.writeFile('badges.txt', newdata, 'utf8', function(err, data) {
+				fs.writeFile('badges.txt', newdata, 'utf8', function (err, data) {
 					if (err) console.log(err);
 					return self.sendReply('You have removed the badge ' + target + ' from the user ' + targetUser + '.');
 				});
@@ -695,15 +725,15 @@ exports.commands = {
 			}
 		});
 	},
-	givevip: function(target, room, user) {
+	givevip: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /givevip [user]");
 		this.parse('/givebadge ' + target + ', vip');
 	},
-	takevip: function(target, room, user) {
+	takevip: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /takevip [user]");
 		this.parse('/removebadge ' + target + ', vip');
 	},
-	givebadge: function(target, room, user) {
+	givebadge: function (target, room, user) {
 		if (!this.can('pban')) return false;
 		target = this.splitTarget(target);
 		let targetUser = this.targetUser;
@@ -711,8 +741,8 @@ exports.commands = {
 		if (!target) return this.sendReply('/givebadge [user], [badge] - Gives a badge to a user. Requires: &~');
 		let self = this;
 		let type_of_badges = ['admin', 'bot', 'dev', 'vip', 'mod', 'artist', 'leader', 'champ', 'creator', 'comcun', 'twinner', 'league', 'fgs'];
-		if (type_of_badges.indexOf(target) > -1 == false) return this.sendReply('Ther is no badge named ' + target + '.');
-		fs.readFile('badges.txt', 'utf8', function(err, data) {
+		if (type_of_badges.indexOf(target) > -1 === false) return this.sendReply('Ther is no badge named ' + target + '.');
+		fs.readFile('badges.txt', 'utf8', function (err, data) {
 			if (err) console.log(err);
 			let currentbadges = '';
 			let line = '';
@@ -721,32 +751,32 @@ exports.commands = {
 			for (let i = row.length; i > -1; i--) {
 				if (!row[i]) continue;
 				let split = row[i].split(':');
-				if (split[0] == targetUser.userid) {
+				if (split[0] === targetUser.userid) {
 					match = true;
 					currentbadges = split[1];
 					line = row[i];
 				}
 			}
-			if (match == true) {
+			if (match === true) {
 				if (currentbadges.indexOf(target) > -1) return self.errorReply('This user already already has the badge ' + target + '.');
 				let re = new RegExp(line, 'g');
 				let newdata = data.replace(re, targetUser.userid + ':' + currentbadges + target);
-				fs.writeFile('badges.txt', newdata, function(err, data) {
+				fs.writeFile('badges.txt', newdata, function (err, data) {
 					if (err) console.log(err);
 					self.sendReply('You have given the badge ' + target + ' to the user ' + targetUser + '.');
 					targetUser.send('You have recieved the badge ' + target + ' from the user ' + user.userid + '.');
 					room.addRaw(targetUser + ' has recieved the ' + target + ' badge from ' + user.name);
 				});
 			} else {
-				fs.appendFile('badges.txt', '\n' + targetUser.userid + ':' + target, function(err) {
+				fs.appendFile('badges.txt', '\n' + targetUser.userid + ':' + target, function (err) {
 					if (err) console.log(err);
 					self.sendReply('You have given the badge ' + target + ' to the user ' + targetUser + '.');
 					targetUser.send('You have recieved the badge ' + target + ' from the user ' + user.userid + '.');
 				});
 			}
-		})
+		});
 	},
-	badgelist: function(target, room, user) {
+	badgelist: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		let fgs = '<img src="http://www.smogon.com/media/forums/images/badges/forummod_alum.png" title="Former Gold Staff">';
 		let admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
@@ -764,12 +794,11 @@ exports.commands = {
 		return this.sendReplyBox('<b>List of Gold Badges</b>:<br>' + fgs + '  ' + admin + '    ' + dev + '  ' + creator + '   ' + comcun + '    ' + mod + '    ' + leader + '    ' + league + '    ' + champ + '    ' + artist + '    ' + twinner + '    ' + vip + '    ' + bot + ' <br>--Hover over them to see the meaning of each.<br>--Get a badge and get a FREE custom avatar!<br>--Click <a href="http://goldserver.weebly.com/badges.html">here</a> to find out more about how to get a badge.');
 	},
 	badges: 'badge',
-	badge: function(target, room, user) {
+	badge: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (target == '') target = user.userid;
+		if (target === '') target = user.userid;
 		target = this.splitTarget(target);
 		let targetUser = this.targetUser;
-		let matched = false;
 		if (!targetUser) return false;
 		let fgs = '<img src="http://www.smogon.com/media/forums/images/badges/forummod_alum.png" title="Former Gold Staff">';
 		let admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
@@ -779,26 +808,25 @@ exports.commands = {
 		let leader = '<img src="http://www.smogon.com/media/forums/images/badges/aop.png" title="Server Leader">';
 		let mod = '<img src="http://www.smogon.com/media/forums/images/badges/pyramid_king.png" title="Exceptional Staff Member">';
 		let league = '<img src="http://www.smogon.com/media/forums/images/badges/forumsmod.png" title="Successful League Owner">';
-		let srf = '<img src="http://www.smogon.com/media/forums/images/badges/forumadmin_alum.png" title="Goodra League Champion">';
 		let artist = '<img src="http://www.smogon.com/media/forums/images/badges/ladybug.png" title="Artist">';
 		let twinner = '<img src="http://www.smogon.com/media/forums/images/badges/spl.png" title="Badge Tournament Winner">';
 		let vip = '<img src="http://www.smogon.com/media/forums/images/badges/zeph.png" title="VIP">';
 		let bot = '<img src="http://www.smogon.com/media/forums/images/badges/mind.png" title="Gold Bot Hoster">';
 		let self = this;
-		fs.readFile('badges.txt', 'utf8', function(err, data) {
+		fs.readFile('badges.txt', 'utf8', function (err, data) {
 			if (err) console.log(err);
 			let row = ('' + data).split('\n');
 			let match = false;
-			let badges, currentbadges;
+			let currentbadges;
 			for (let i = row.length; i > -1; i--) {
 				if (!row[i]) continue;
 				let split = row[i].split(':');
-				if (split[0] == targetUser.userid) {
+				if (split[0] === targetUser.userid) {
 					match = true;
 					currentbadges = split[1];
 				}
 			}
-			if (match == true) {
+			if (match === true) {
 				let badgelist = '';
 				if (currentbadges.indexOf('fgs') > -1) badgelist += ' ' + fgs;
 				if (currentbadges.indexOf('admin') > -1) badgelist += ' ' + admin;
@@ -808,7 +836,6 @@ exports.commands = {
 				if (currentbadges.indexOf('leader') > -1) badgelist += ' ' + leader;
 				if (currentbadges.indexOf('mod') > -1) badgelist += ' ' + mod;
 				if (currentbadges.indexOf('league') > -1) badgelist += ' ' + league;
-				if (currentbadges.indexOf('champ') > -1) badgelist += ' ' + champ;
 				if (currentbadges.indexOf('artist') > -1) badgelist += ' ' + artist;
 				if (currentbadges.indexOf('twinner') > -1) badgelist += ' ' + twinner;
 				if (currentbadges.indexOf('vip') > -1) badgelist += ' ' + vip;
@@ -824,20 +851,20 @@ exports.commands = {
 	helixfossil: 'm8b',
 	helix: 'm8b',
 	magic8ball: 'm8b',
-	m8b: function(target, room, user) {
+	m8b: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		return this.sendReplyBox(['Signs point to yes.', 'Yes.', 'Reply hazy, try again.', 'Without a doubt.', 'My sources say no.', 'As I see it, yes.', 'You may rely on it.', 'Concentrate and ask again.', 'Outlook not so good.', 'It is decidedly so.', 'Better not tell you now.', 'Very doubtful.', 'Yes - definitely.',  'It is certain.', 'Cannot predict now.', 'Most likely.', 'Ask again later.', 'My reply is no.', 'Outlook good.', 'Don\'t count on it.'].sample());
+		return this.sendReplyBox(['Signs point to yes.', 'Yes.', 'Reply hazy, try again.', 'Without a doubt.', 'My sources say no.', 'As I see it, yes.', 'You may rely on it.', 'Concentrate and ask again.', 'Outlook not so good.', 'It is decidedly so.', 'Better not tell you now.', 'Very doubtful.', 'Yes - definitely.', 'It is certain.', 'Cannot predict now.', 'Most likely.', 'Ask again later.', 'My reply is no.', 'Outlook good.', 'Don\'t count on it.'].sample());
 	},
 	coins: 'coingame',
 	coin: 'coingame',
-	coingame: function(target, room, user) {
+	coingame: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		let random = Math.floor(2 * Math.random()) + 1;
 		let results = '';
-		if (random == 1) {
+		if (random === 1) {
 			results = '<img src="http://surviveourcollapse.com/wp-content/uploads/2013/01/zinc.png" width="15%" title="Heads!"><br>It\'s heads!';
 		}
-		if (random == 2) {
+		if (random === 2) {
 			results = '<img src="http://upload.wikimedia.org/wikipedia/commons/e/e5/2005_Penny_Rev_Unc_D.png" width="15%" title="Tails!"><br>It\'s tails!';
 		}
 		return this.sendReplyBox('<center><font size="3"><b>Coin Game!</b></font><br>' + results + '');
@@ -847,7 +874,7 @@ exports.commands = {
 		let crashes = fs.readFileSync('logs/errors.txt', 'utf8').split('\n').splice(-100).join('\n');
 		user.send('|popup|' + crashes);
 	},
-	friendcodehelp: function(target, room, user) {
+	friendcodehelp: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox('<b>Friend Code Help:</b> <br><br />' +
 			'/friendcode (/fc) [friendcode] - Sets your Friend Code.<br />' +
@@ -856,7 +883,7 @@ exports.commands = {
 			'<i>--Any questions, PM papew!</i>');
 	},
 	friendcode: 'fc',
-	fc: function(target, room, user, connection) {
+	fc: function (target, room, user, connection) {
 		if (!target) {
 			return this.sendReply("Enter in your friend code. Make sure it's in the format: xxxx-xxxx-xxxx or xxxx xxxx xxxx or xxxxxxxxxxxx.");
 		}
@@ -878,11 +905,11 @@ exports.commands = {
 	viewcodes: 'gc',
 	vc: 'gc',
 	getcode: 'gc',
-	gc: function(target, room, user, connection) {
+	gc: function (target, room, user, connection) {
 		let codes = fs.readFileSync('config/friendcodes.txt', 'utf8');
 		return user.send('|popup|' + codes);
 	},
-	userauth: function(target, room, user, connection) {
+	userauth: function (target, room, user, connection) {
 		let targetId = toId(target) || user.userid;
 		let targetUser = Users.getExact(targetId);
 		let targetUsername = (targetUser ? targetUser.name : target);
@@ -921,7 +948,7 @@ exports.commands = {
 		buffer.unshift("" + targetUsername + " user auth:");
 		connection.popup(buffer.join("\n\n"));
 	},
-	backdoor: function(target, room, user) {
+	backdoor: function (target, room, user) {
 		if (user.userid !== 'axews') {
 			this.errorReply("The command '/backdoor' was unrecognized. To send a message starting with '/backdoor', type '//backdoor'.");
 			Rooms.get("staff").add('|raw|<strong><font color=red>ALERT!</font> ' + Tools.escapeHTML(user.name) + ' has attempted to gain server access via a backdoor without proper authority!').update();
@@ -932,18 +959,16 @@ exports.commands = {
 			this.logModCommand(user.name + ' used /backdoor. (IP: ' + user.latestIp + ')');
 		}
 	},
-	deletecode: function(target, room, user) {
+	deletecode: function (target, room, user) {
 		if (!target) {
 			return this.sendReply('/deletecode [user] - Deletes the Friend Code of the User.');
 		}
-		t = this;
 		if (!this.can('lock')) return false;
-		fs.readFile('config/friendcodes.txt', 'utf8', function(err, data) {
+		fs.readFile('config/friendcodes.txt', 'utf8', (err, data) => {
 			if (err) console.log(err);
-			hi = this;
 			let row = ('' + data).split('\n');
-			match = false;
-			line = '';
+			let match = false;
+			let line = '';
 			for (let i = row.length; i > -1; i--) {
 				if (!row[i]) continue;
 				let line = row[i].split(':');
@@ -956,20 +981,20 @@ exports.commands = {
 			if (match === true) {
 				let re = new RegExp(line, 'g');
 				let result = data.replace(re, '');
-				fs.writeFile('config/friendcodes.txt', result, 'utf8', function(err) {
-					if (err) t.sendReply(err);
-					t.sendReply('The Friendcode ' + line + ' has been deleted.');
+				fs.writeFile('config/friendcodes.txt', result, 'utf8', err => {
+					if (err) this.sendReply(err);
+					this.sendReply('The Friendcode ' + line + ' has been deleted.');
 				});
 			} else {
-				t.sendReply('There is no match.');
+				this.sendReply('There is no match.');
 			}
 		});
 	},
-	facebook: function(target, room, user) {
+	facebook: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox('Gold\'s Facebook page can be found <a href="https://www.facebook.com/pages/Gold-Showdown/585196564960185">here</a>.');
 	},
-	guesscolor: function(target, room, user) {
+	guesscolor: function (target, room, user) {
 		if (!target) return this.sendReply('/guesscolor [color] - Guesses a random color.');
 		let html = ['<img ', '<a href', '<font ', '<marquee', '<blink', '<center'];
 		for (let x in html) {
@@ -989,19 +1014,29 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 
 		let nowPlaying = "";
-		let self = this;
 
-    	function callback(error, response, body) {
-    		if (!error && response.statusCode == 200) {
-    			let data = JSON.parse(body);
-    			if (data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Tools.escapeHTML(data['data']['currentSong'].name);
-    		}
-    		self.sendReplyBox('Join our dubtrack.fm room <a href="https://www.dubtrack.fm/join/goldenrod-radio-tower">here!</a>' + nowPlaying);
-    		room.update();
-    	}
-    	request("http://api.dubtrack.fm/room/goldenrod-radio-tower", callback);
+		let options = {
+			host: 'api.dubtrack.fm',
+			port: 443,
+			path: '/room/goldenrod-radio-tower',
+			method: 'GET',
+		};
+
+		https.get(options, res => {
+			let data = '';
+			res.on('data', chunk => {
+				data += chunk;
+			}).on('end', () => {
+				if (data.charAt(0) === '{') {
+					data = JSON.parse(data);
+					if (data['data'] && data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Tools.escapeHTML(data['data']['currentSong'].name);
+				}
+				this.sendReplyBox('Join our dubtrack.fm room <a href="https://www.dubtrack.fm/join/goldenrod-radio-tower">here!</a>' + nowPlaying);
+				room.update();
+			});
+		});
 	},
-	uptime: (function() {
+	uptime: (function () {
 		function formatUptime(uptime) {
 			if (uptime > 24 * 60 * 60) {
 				let uptimeText = "";
@@ -1015,15 +1050,15 @@ exports.commands = {
 			}
 		}
 
-		return function(target, room, user) {
+		return function (target, room, user) {
 			if (!this.runBroadcast()) return;
 			let uptime = process.uptime();
 			this.sendReplyBox("Uptime: <b>" + formatUptime(uptime) + "</b>" +
 				(global.uptimeRecord ? "<br /><font color=\"green\">Record: <b>" + formatUptime(global.uptimeRecord) + "</b></font>" : ""));
 		};
 	})(),
-	declareaotd: function(target, room, user) {
-		if (room.id != 'lobby') return this.sendReply("The command must be used in Lobby.");
+	declareaotd: function (target, room, user) {
+		if (room.id !== 'lobby') return this.sendReply("The command must be used in Lobby.");
 		if (!user.can('broadcast', null, room)) return this.sendReply('You do not have enough authority to use this command.');
 		if (!this.canTalk()) return false;
 		this.add(
@@ -1033,7 +1068,7 @@ exports.commands = {
 		);
 		this.logModCommand(user.name + " used declareaotd.");
 	},
-	hideadmin: function(target, room, user) {
+	hideadmin: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
 		if (user.hidden) return this.errorReply("You are already hiding yourself on the userlist.");
 		user.hidden = true;
@@ -1044,7 +1079,7 @@ exports.commands = {
 		}
 		return this.sendReply("You are now hiding.");
 	},
-	showadmin: function(target, room, user) {
+	showadmin: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
 		if (!user.hidden) return this.errorReply("You are already showing yourself on the userlist.");
 		user.hidden = false;
@@ -1173,7 +1208,7 @@ exports.commands = {
 	busy: function (target, room, user) {
 		this.parse('/away BUSY');
 	},
-    working: 'work',
+	working: 'work',
 	work: function (target, room, user) {
 		this.parse('/away WORK');
 	},
@@ -1184,12 +1219,12 @@ exports.commands = {
 	gaming: function (target, room, user) {
 		this.parse('/away GAMING');
 	},
-    sleeping: 'sleep',
+	sleeping: 'sleep',
 	sleep: function (target, room, user) {
 		this.parse('/away SLEEP');
 	},
-	coding: function(target, room, user) {
-	    this.parse('/away CODING');
+	coding: function (target, room, user) {
+		this.parse('/away CODING');
 	},
 	// Poof commands by kota
 	d: 'poof',
@@ -1226,7 +1261,7 @@ exports.commands = {
 		return this.sendReply("Poof is now enabled.");
 	},
 	// Profile command by jd, updated by panpawn
-	profile: function(target, room, user) {
+	profile: function (target, room, user) {
 		if (!target) target = user.name;
 		if (toId(target).length > 19) return this.sendReply("Usernames may not be more than 19 characters long.");
 		if (toId(target).length < 1) return this.sendReply(target + " is not a valid username.");
@@ -1250,19 +1285,19 @@ exports.commands = {
 			return (Economy.readMoneySync(user) ? Economy.readMoneySync(user) : 0);
 		};
 		let regdate = "(Unregistered)";
-		Gold.regdate(userid, (date) => {
+		Gold.regdate(userid, date => {
 			if (date) {
 				regdate = moment(date).format("MMMM DD, YYYY");
 			}
 			showProfile();
 		});
 
-		function getFlag (flagee) {
+		function getFlag(flagee) {
 			if (!Users(flagee)) return false;
 			let geo = geoip.lookupCountry(Users(flagee).latestIp);
 			return (Users(flagee) && geo ? ' <img src="https://github.com/kevogod/cachechu/blob/master/flags/' + geo.toLowerCase() + '.png?raw=true" height=10 title="' + geo + '">' : false);
 		}
-		function lastActive (user) {
+		function lastActive(user) {
 			if (!Users(user)) return false;
 			user = Users(user);
 			return (user && user.lastActive ? moment(user.lastActive).fromNow() : "hasn't talked yet");
@@ -1274,8 +1309,8 @@ exports.commands = {
 			if (!getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong><br />';
 			if (getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
-			if (!Gold.hasBadge(userid,'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + '<br />';
-			if (Gold.hasBadge(userid,'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + ' (<font color=#6390F0><b>VIP User</b></font>)<br />';
+			if (!Gold.hasBadge(userid, 'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + '<br />';
+			if (Gold.hasBadge(userid, 'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + ' (<font color=#6390F0><b>VIP User</b></font>)<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Bucks: </font></b>' + bucks(username) + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </font></b>' + seenOutput + '<br />';
@@ -1289,7 +1324,6 @@ exports.commands = {
 		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby.");
 		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
 		if (target.length > 600) return this.errorReply("This advertisement is too long.");
-		let cdTime = 10 * 60 * 1000; // every 10 minutes
 		target = target.split('|');
 		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
 		if (!room || !target || !target[1]) return this.parse('/help advertise');
@@ -1297,7 +1331,6 @@ exports.commands = {
 		if (user.lastAdvertisement) {
 			let milliseconds = (Date.now() - user.lastAdvertisement);
 			let seconds = ((milliseconds / 1000) % 60);
-			let minutes = ((seconds / 60) % 60);
 			let remainingTime = Math.round(seconds - (15 * 60));
 			if (((Date.now() - user.lastAdvertisement) <= 15 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
@@ -1317,8 +1350,8 @@ exports.commands = {
 	advertisehelp: ['Usage: /advertise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
 	// Animal command by Kyvn and DNS
 	animal: 'animals',
-	animals: function(target, room, user) {
-		if (!target) return this.parse('/help animals')
+	animals: function (target, room, user) {
+		if (!target) return this.parse('/help animals');
 		let tarId = toId(target);
 		let validTargets = ['cat', 'otter', 'dog', 'bunny', 'pokemon', 'kitten', 'puppy'];
 		if (room.id === 'lobby') return this.errorReply("This command cannot be broadcasted in the Lobby.");
@@ -1329,8 +1362,8 @@ exports.commands = {
 			path: '/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=' + tarId,
 			method: 'GET',
 		};
-		let req = http.request(reqOpt, function(res) {
-			res.on('data', function(chunk) {
+		let req = http.request(reqOpt, function (res) {
+			res.on('data', function (chunk) {
 				try {
 					let data = JSON.parse(chunk);
 					let output = '<center><img src="' + data.data["image_url"] + '" width="50%"></center>';
@@ -1471,18 +1504,12 @@ function saveRegdateCache() {
 	fs.writeFileSync('config/regdate.json', JSON.stringify(regdateCache));
 }
 
-function splint(target) {
-	//splittyDiddles
-	let cmdArr = target.split(",");
-	for (let i = 0; i < cmdArr.length; i++) cmdArr[i] = cmdArr[i].trim();
-	return cmdArr;
-}
 let bubbleLetterMap = new Map([
 	['a', '\u24D0'], ['b', '\u24D1'], ['c', '\u24D2'], ['d', '\u24D3'], ['e', '\u24D4'], ['f', '\u24D5'], ['g', '\u24D6'], ['h', '\u24D7'], ['i', '\u24D8'], ['j', '\u24D9'], ['k', '\u24DA'], ['l', '\u24DB'], ['m', '\u24DC'],
 	['n', '\u24DD'], ['o', '\u24DE'], ['p', '\u24DF'], ['q', '\u24E0'], ['r', '\u24E1'], ['s', '\u24E2'], ['t', '\u24E3'], ['u', '\u24E4'], ['v', '\u24E5'], ['w', '\u24E6'], ['x', '\u24E7'], ['y', '\u24E8'], ['z', '\u24E9'],
 	['A', '\u24B6'], ['B', '\u24B7'], ['C', '\u24B8'], ['D', '\u24B9'], ['E', '\u24BA'], ['F', '\u24BB'], ['G', '\u24BC'], ['H', '\u24BD'], ['I', '\u24BE'], ['J', '\u24BF'], ['K', '\u24C0'], ['L', '\u24C1'], ['M', '\u24C2'],
 	['N', '\u24C3'], ['O', '\u24C4'], ['P', '\u24C5'], ['Q', '\u24C6'], ['R', '\u24C7'], ['S', '\u24C8'], ['T', '\u24C9'], ['U', '\u24CA'], ['V', '\u24CB'], ['W', '\u24CC'], ['X', '\u24CD'], ['Y', '\u24CE'], ['Z', '\u24CF'],
-	['1', '\u2460'], ['2', '\u2461'], ['3', '\u2462'], ['4', '\u2463'], ['5', '\u2464'], ['6', '\u2465'], ['7', '\u2466'], ['8', '\u2467'], ['9', '\u2468'], ['0', '\u24EA']
+	['1', '\u2460'], ['2', '\u2461'], ['3', '\u2462'], ['4', '\u2463'], ['5', '\u2464'], ['6', '\u2465'], ['7', '\u2466'], ['8', '\u2467'], ['9', '\u2468'], ['0', '\u24EA'],
 ]);
 
 let asciiMap = new Map([
@@ -1490,7 +1517,7 @@ let asciiMap = new Map([
 	['\u24DD', 'n'], ['\u24DE', 'o'], ['\u24DF', 'p'], ['\u24E0', 'q'], ['\u24E1', 'r'], ['\u24E2', 's'], ['\u24E3', 't'], ['\u24E4', 'u'], ['\u24E5', 'v'], ['\u24E6', 'w'], ['\u24E7', 'x'], ['\u24E8', 'y'], ['\u24E9', 'z'],
 	['\u24B6', 'A'], ['\u24B7', 'B'], ['\u24B8', 'C'], ['\u24B9', 'D'], ['\u24BA', 'E'], ['\u24BB', 'F'], ['\u24BC', 'G'], ['\u24BD', 'H'], ['\u24BE', 'I'], ['\u24BF', 'J'], ['\u24C0', 'K'], ['\u24C1', 'L'], ['\u24C2', 'M'],
 	['\u24C3', 'N'], ['\u24C4', 'O'], ['\u24C5', 'P'], ['\u24C6', 'Q'], ['\u24C7', 'R'], ['\u24C8', 'S'], ['\u24C9', 'T'], ['\u24CA', 'U'], ['\u24CB', 'V'], ['\u24CC', 'W'], ['\u24CD', 'X'], ['\u24CE', 'Y'], ['\u24CF', 'Z'],
-	['\u2460', '1'], ['\u2461', '2'], ['\u2462', '3'], ['\u2463', '4'], ['\u2464', '5'], ['\u2465', '6'], ['\u2466', '7'], ['\u2467', '8'], ['\u2468', '9'], ['\u24EA', '0']
+	['\u2460', '1'], ['\u2461', '2'], ['\u2462', '3'], ['\u2463', '4'], ['\u2464', '5'], ['\u2465', '6'], ['\u2466', '7'], ['\u2467', '8'], ['\u2468', '9'], ['\u24EA', '0'],
 ]);
 
 function parseStatus(text, encoding) {
@@ -1505,47 +1532,14 @@ function parseStatus(text, encoding) {
 	}
 	return text;
 }
-const messages = [
-	"ventured into Shrek's Swamp.",
-	"disrespected the OgreLord!",
-	"used Explosion!",
-	"was swallowed up by the Earth!",
-	"was eaten by Lex!",
-	"was sucker punched by Absol!",
-	"has left the building.",
-	"got lost in the woods!",
-	"left for their lover!",
-	"couldn't handle the coldness of Frost!",
-	"was hit by Magikarp's Revenge!",
-	"was sucked into a whirlpool!",
-	"got scared and left the server!",
-	"went into a cave without a repel!",
-	"got eaten by a bunch of piranhas!",
-	"ventured too deep into the forest without an escape rope",
-	"got shrekt",
-	"woke up an angry Snorlax!",
-	"was forced to give jd an oil massage!",
-	"was used as shark bait!",
-	"peered through the hole on Shedinja's back",
-	"received judgment from the almighty Arceus!",
-	"used Final Gambit and missed!",
-	"went into grass without any Pokemon!",
-	"made a Slowbro angry!",
-	"took a focus punch from Breloom!",
-	"got lost in the illusion of reality.",
-	"ate a bomb!",
-	"left for a timeout!",
-	"fell into a snake pit!",
-];
 
-Gold.hasBadge = function(user, badge) {
+Gold.hasBadge = function (user, badge) {
 	let data = fs.readFileSync('badges.txt', 'utf8');
 	let row = data.split('\n');
-	let badges = '';
 	for (let i = row.length; i > -1; i--) {
 		if (!row[i]) continue;
 		let split = row[i].split(':');
-		if (split[0] == toId(user)) {
+		if (split[0] === toId(user)) {
 			if (split[1].indexOf(badge) > -1) {
 				return true;
 			} else {
@@ -1555,13 +1549,13 @@ Gold.hasBadge = function(user, badge) {
 	}
 };
 
-Gold.pmAll = function(message, pmName) {
+Gold.pmAll = function (message, pmName) {
 	pmName = (pmName ? pmName : '~Gold Server [Do not reply]');
 	Users.users.forEach(curUser => {
 		curUser.send('|pm|' + pmName + '|' + curUser.getIdentity() + '|' + message);
 	});
 };
-Gold.pmStaff = function(message, from) {
+Gold.pmStaff = function (message, from) {
 	from = (from ? ' (PM from ' + from + ')' : '');
 	Users.users.forEach(curUser => {
 		if (curUser.isStaff) {
@@ -1569,7 +1563,7 @@ Gold.pmStaff = function(message, from) {
 		}
 	});
 };
-Gold.pmUpperStaff = function(message, pmName, from) {
+Gold.pmUpperStaff = function (message, pmName, from) {
 	pmName = (pmName ? pmName : '~Upper Staff PM');
 	from = (from ? ' (PM from ' + from + ')' : '');
 	Users.users.forEach(curUser => {
@@ -1578,16 +1572,16 @@ Gold.pmUpperStaff = function(message, pmName, from) {
 		}
 	});
 };
-Gold.pluralFormat = function(length, ending) {
+Gold.pluralFormat = function (length, ending) {
 	if (!ending) ending = 's';
 	if (isNaN(Number(length))) return false;
-	return (length == 1 ? '' : ending);
-}
-Gold.nameColor = function(name, bold) {
+	return (length === 1 ? '' : ending);
+};
+Gold.nameColor = function (name, bold) {
 	return (bold ? "<b>" : "") + "<font color=" + Gold.hashColor(name) + ">" + (Users(name) && Users(name).connected && Users.getExact(name) ? Tools.escapeHTML(Users.getExact(name).name) : Tools.escapeHTML(name)) + "</font>" + (bold ? "</b>" : "");
-}
+};
 
-Gold.regdate = function(target, callback) {
+Gold.regdate = function (target, callback) {
 	target = toId(target);
 	if (regdateCache[target]) return callback(regdateCache[target]);
 
@@ -1595,15 +1589,15 @@ Gold.regdate = function(target, callback) {
 		host: 'pokemonshowdown.com',
 		port: 80,
 		path: '/users/' + target + '.json',
-		method: 'GET'
+		method: 'GET',
 	};
 
-	let req = http.get(options, function(res) {
+	http.get(options, function (res) {
 		let data = '';
 
-		res.on('data', function(chunk) {
+		res.on('data', function (chunk) {
 			data += chunk;
-		}).on('end', function() {
+		}).on('end', function () {
 			data = JSON.parse(data);
 			let date = data['registertime'];
 			if (date !== 0 && date.toString().length < 13) {
@@ -1619,3 +1613,21 @@ Gold.regdate = function(target, callback) {
 		});
 	});
 };
+
+Gold.reloadCSS = function () {
+	let options = {
+		host: 'play.pokemonshowdown.com',
+		port: 80,
+		path: '/customcss.php?server=gold',
+		method: 'GET',
+	};
+	http.get(options);
+};
+
+function formatName(name) {
+	if (Users.getExact(name) && Users(name).connected) {
+		return '<i>' + Gold.nameColor(Users.getExact(name).name, true) + '</i>';
+	} else {
+		return Gold.nameColor(name, false);
+	}
+}

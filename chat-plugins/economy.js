@@ -406,7 +406,7 @@ exports.commands = {
 		if (number > row.length) number = row.length;
 		let userids = [];
 
-		function UserID (ID, Money) {
+		function UserID(ID, Money) {
 			this.id = ID;
 			this.money = Money;
 		}
@@ -416,8 +416,8 @@ exports.commands = {
 			if (Number(parts[1]) !== 0) userids.push(new UserID(parts[0], Number(parts[1])));
 			if (isNaN(parts[1]) || parts[1] === 'Infinity') userids[i].money = 0;
 		}
-		userids.sort(function (a,b){
-			return b.money-a.money;
+		userids.sort(function (a, b) {
+			return b.money - a.money;
 		});
 		number = (number > userids.length ? userids.length : number);
 		let tableStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px; text-align:center;';

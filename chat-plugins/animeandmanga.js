@@ -65,7 +65,7 @@ exports.commands = {
 				(data.type !== 'TV' ? '<b>Show Type: </b>' + data.type + '<br>' : '') +
 				(data.total_episodes ? '<b>Episode Count: </b>' + data.total_episodes + '<br>' : '') +
 				'<b>Episode Duration: </b>' + (data.duration ? data.duration + ' minutes' : 'N/A') + '<br>' +
-				'<b>Air Date: </b>' + (data.start_date ? data.start_date.split('T')[0] : 'Unknown') + (data.end_date && data.start_date !== data.end_date ? ' to ' +  data.end_date.split('T')[0] : '') + '<br>' +
+				'<b>Air Date: </b>' + (data.start_date ? data.start_date.split('T')[0] : 'Unknown') + (data.end_date && data.start_date !== data.end_date ? ' to ' + data.end_date.split('T')[0] : '') + '<br>' +
 				'<b>Rating: </b>' + (Math.round(data.average_score) ? Math.round(data.average_score * 10) / 100 + ' on 10' : 'N/A') + '<br>' +
 				'<b>Genre(s): </b>' + data.genres.join(', ') + '<br>' +
 				'<br><details style = "outline: none">' +
@@ -92,7 +92,7 @@ exports.commands = {
 
 		search('manga', target).then(data => {
 			amCache.manga[format(target)] = data;
-			if (this.broadcasting && data.genres.includes('Hentai')) return this.errorReply("Hentai manga cannot be broadcasted.")
+			if (this.broadcasting && data.genres.includes('Hentai')) return this.errorReply("Hentai manga cannot be broadcasted.");
 			this.sendReplyBox('<div style = "padding: 5px;min-height: 360px; text-shadow: 1px 1px 1px #777;">' +
 				'<center style = "font-size: 14pt"><b>' + data.title_romaji + '</b></center>' +
 				'<div style = "padding: 2px">' +
@@ -101,7 +101,7 @@ exports.commands = {
 				(data.type !== 'Manga' ? '<b>Type: </b>' + data.type + '<br>' : '') +
 				(data.total_volumes ? '<b>Volume Count: </b>' + data.total_volumes + '<br>' : '') +
 				(data.total_chapters ? '<b>Chapter Count: </b>' + data.total_chapters + '<br>' : '') +
-				'<b>Air Date: </b>' + (data.start_date ? data.start_date.split('T')[0] : 'Unknown') + (data.end_date && data.start_date !== data.end_date ? ' to ' +  data.end_date.split('T')[0] : '') + '<br>' +
+				'<b>Air Date: </b>' + (data.start_date ? data.start_date.split('T')[0] : 'Unknown') + (data.end_date && data.start_date !== data.end_date ? ' to ' + data.end_date.split('T')[0] : '') + '<br>' +
 				'<b>Rating: </b>' + (Math.round(data.average_score) ? Math.round(data.average_score * 10) / 100 + ' on 10' : 'N/A') + '<br>' +
 				'<b>Genre(s): </b>' + data.genres.join(', ') + '<br>' +
 				'<br><details style = "outline: none">' +

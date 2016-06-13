@@ -1,9 +1,9 @@
-var serverid = 'gold';
-var icons = {};
-var fs = require('fs');
-var request = require('request');
+'use strict';
 
-function load () {
+let icons = {};
+const fs = require('fs');
+
+function load() {
 	fs.readFile('config/icons.json', 'utf8', function (err, file) {
 		if (err) return;
 		icons = JSON.parse(file);
@@ -14,27 +14,25 @@ load();
 function updateIcons() {
 	fs.writeFileSync('config/icons.json', JSON.stringify(icons));
 
-	var newCss = '/* ICONS START */\n';
+	let newCss = '/* ICONS START */\n';
 
-	for (var name in icons) {
+	for (let name in icons) {
 		newCss += generateCSS(name, icons[name]);
 	}
 	newCss += '/* ICONS END */\n';
 
-	var file = fs.readFileSync('config/custom.css', 'utf8').split('\n');
+	let file = fs.readFileSync('config/custom.css', 'utf8').split('\n');
 	if (~file.indexOf('/* ICONS START */')) file.splice(file.indexOf('/* ICONS START */'), (file.indexOf('/* ICONS END */') - file.indexOf('/* ICONS START */')) + 1);
 	fs.writeFileSync('config/custom.css', file.join('\n') + newCss);
-	request('http://play.pokemonshowdown.com/customcss.php?server=' + serverid + '&invalidate', function callback(error, res, body) {
-		if (error) return console.log('updateIcons error: ' + error);
-	});
+	Gold.reloadCSS();
 }
 Gold.updateIcons = updateIcons;
 
 function generateCSS(name, icon) {
-	var css = '';
-	var rooms = [];
+	let css = '';
+	let rooms = [];
 	name = toId(name);
-	for (var room in Rooms.rooms) {
+	for (let room in Rooms.rooms) {
 		if (Rooms.rooms[room].id === 'global' || Rooms.rooms[room].type !== 'chat' || Rooms.rooms[room].isPersonal) continue;
 		rooms.push('#' + Rooms.rooms[room].id + '-userlist-user-' + name);
 	}
@@ -48,7 +46,7 @@ exports.commands = {
 	icon: function (target, room, user) {
 		if (!this.can('pban')) return false;
 		target = target.split(',');
-		for (var u in target) target[u] = target[u].trim();
+		for (let u in target) target[u] = target[u].trim();
 		if (!target[1]) return this.parse('/help icon');
 		if (toId(target[0]).length > 19) return this.errorReply("Usernames are not this long...");
 		if (target[1] === 'delete') {
@@ -72,6 +70,6 @@ exports.commands = {
 	iconhelp: [
 		"Commands Include:",
 		"/icon [user], [image url] - Gives [user] an icon of [image url]",
-		"/icon [user], delete - Deletes a user's icon"
-		]
+		"/icon [user], delete - Deletes a user's icon",
+	],
 };
