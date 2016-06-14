@@ -94,7 +94,7 @@ exports.commands = {
 			processPurchase(price, parts[0], 'Image: ' + parts[1]);
 			if (Config.customavatars[user.userid]) output = ' | <button name="send" value="/sca delete, ' + user.userid + '" target="_blank" title="Click this to remove current avatar.">Click2Remove</button>';
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a custom avatar. Image: ' + link(parts[1].replace(' ', ''), 'desired avatar'), true);
-			alertStaff('<center><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
+			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
 			this.sendReply("You have bought a custom avatar from the shop.  The staff have been notified and will set it ASAP.");
 			break;
 
@@ -133,7 +133,7 @@ exports.commands = {
 			processPurchase(price, parts[0], 'Image: ' + parts[1]);
 			if (Config.customavatars[user.userid]) output = ' | <button name="send" value="/sca delete, ' + user.userid + '" target="_blank" title="Click this to remove current avatar.">Click2Remove</button>';
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a custom animated avatar. Image: ' + link(parts[1].replace(' ', ''), 'desired avatar'), true);
-			alertStaff('<center><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
+			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
 			this.sendReply("You have purchased a custom animated avatar.  The staff have been notified and will add it ASAP.");
 			break;
 
