@@ -35,6 +35,7 @@ Gold.emoticons = {
 		message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
 		message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
 		message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
+		message = message.replace(/\^\^([^< ](?:[^<]*?[^< ])??)\^\^/g, '<sup>$1</sup>'); // superscript
 		message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
 		if (message.substr(0, 4) === '&gt;' || message.substr(0, 1) === '>') message = '<span class="greentext">' + message + '</span>'; // greentext
 		return message;
