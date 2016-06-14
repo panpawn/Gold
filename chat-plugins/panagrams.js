@@ -4,15 +4,17 @@
  * format that is dedicated to Pokemon
  * names. Winners recieve 0.25 bucks a peice.
  */
+'use strict';
+
 if (!Gold.pGames) Gold.pGames = {};
-var pGames = Gold.pGames;
+let pGames = Gold.pGames;
 
 function mix(word) {
-	var arr = [];
-	for (var k = 0; k < word.length; k++) {
+	let arr = [];
+	for (let k = 0; k < word.length; k++) {
 		arr.push(word[k]);
 	}
-	var a, b, i = arr.length;
+	let a, b, i = arr.length;
 	while (i) {
 		a = Math.floor(Math.random() * i);
 		i--;
@@ -23,11 +25,11 @@ function mix(word) {
 	return arr.join('');
 }
 
-var Panagram = (function () {
+let Panagram = (function () {
 	function Panagram(room, sessions) {
 		this.sessions = sessions;
 		this.room = room;
-		var dex = Tools.data.Pokedex;
+		let dex = Tools.data.Pokedex;
 		do {
 			this.answer = dex[Object.keys(dex)[Math.floor(Math.random() * Object.keys(dex).length)]];
 		} while (this.answer.num < 1 || this.answer.forme);
@@ -42,7 +44,7 @@ var Panagram = (function () {
 		this.hint = ['The scrambled Pokémon is <b>' + this.mixed + '</b>.',
 			'The Pokémon\'s name is <b>' + this.answer.species.length + '</b> characters long.',
 			'The first letter is <b>' + this.answer.species[0] + '</b>.',
-			'This Pokémon\'s type is <b>' + this.answer.types.join('/') + '</b>.'
+			'This Pokémon\'s type is <b>' + this.answer.types.join('/') + '</b>.',
 		].join('<br>');
 
 		this.room.chat = function (user, message, connection) {
@@ -53,7 +55,7 @@ var Panagram = (function () {
 				this.add('|c|' + user.getIdentity(this.id) + '|' + message);
 			}
 			this.update();
-		}
+		};
 	}
 	Panagram.prototype.guess = function (user, guess) {
 		if (guess.species === this.answer.species) {
@@ -103,13 +105,13 @@ exports.commands = {
 		if (target < 150) return this.errorReply("The minimum number of sessions you can have at a time is 150.");
 		if (~target.indexOf('.')) return this.errorReply("The number of sessions cannot be a decimal value.");
 		this.privateModCommand(user.name + ' has started a game of panagrams set for ' + target + ' sessions.');
-		Rooms('lobby').add("|raw|<div class=\"broadcast-gold\"><center>A session of <b>Panagrams</b> in <button name=\"joinRoom\" value=" + room.id +">" + room.title + "</button> has commenced for " + target + " games!</center></div>");
+		Rooms('lobby').add("|raw|<div class=\"broadcast-gold\"><center>A session of <b>Panagrams</b> in <button name=\"joinRoom\" value=" + room.id + ">" + room.title + "</button> has commenced for " + target + " games!</center></div>");
 		Rooms('lobby').update();
 		pGames[room.id] = new Panagram(room, Number(target));
 	},
 
 	ph: 'panagramhint',
-	panagramhint: function(target, room, user) {
+	panagramhint: function (target, room, user) {
 		if (!pGames[room.id]) return this.errorReply("There is no game of panagram going on in this room.");
 		if (!this.runBroadcast()) return;
 
@@ -125,7 +127,7 @@ exports.commands = {
 		if (!target) return this.sendReply('|html|/' + cmd + ' <em>Pokémon Name</em> - Guesses a Pokémon in a game of Panagram.');
 		if (!Tools.data.Pokedex[toId(target)]) return this.sendReply("'" + target + "' is not a valid Pokémon.");
 
-		var guess = Tools.data.Pokedex[toId(target)];
+		let guess = Tools.data.Pokedex[toId(target)];
 		if (guess.num < 1 || guess.forme) return this.sendReply(guess.species + ' is either an alternate form or doesn\'t exist in the games. They cannot be guessed.');
 		if (toId(guess.species) in pGames[room.id].guessed) return this.sendReply('That Pokémon has already been guessed!');
 
@@ -139,8 +141,8 @@ exports.commands = {
 		if (!pGames[room.id]) return this.errorReply("There is no game of panagram going on in this room.");
 		if (!this.can('ban', null, room)) return this.sendReply("You must be ranked @ or higher to end a game of panagram in this room.");
 
-		var skipCmd = ((cmd === 'panagramskip' || cmd === 'pskip') && pGames[room.id].sessions > 1);
+		let skipCmd = ((cmd === 'panagramskip' || cmd === 'pskip') && pGames[room.id].sessions > 1);
 		if (skipCmd) room.add('|html|The current session of panagram has been ended by ' + user.name + '. The answer was <b>' + pGames[room.id].answer.species + '</b>.');
 		pGames[room.id].end(!skipCmd);
-	}
+	},
 };

@@ -348,7 +348,6 @@ exports.BattleAliases = {
 	"bb": "Brave Bird",
 	"bd": "Belly Drum",
 	"bpass": "Baton Pass",
-	"bb": "Brave Bird",
 	"bp": "Baton Pass",
 	"cc": "Close Combat",
 	"cm": "Calm Mind",

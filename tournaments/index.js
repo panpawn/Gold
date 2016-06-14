@@ -828,7 +828,7 @@ class Tournament {
 
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
 			Economy.writeMoney(toId(winner), money, () => {
-				if (runnerUp) Economy.writeMoney(toId(runnerUp), Math.round(money/2));
+				if (runnerUp) Economy.writeMoney(toId(runnerUp), Math.round(money / 2));
 			});
 			if (runnerUp) {
 				this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
@@ -1101,12 +1101,12 @@ let commands = {
 			if (!params[0]) return this.sendReply("Usage: " + cmd + " [bucks prize]");
 			let prize = params[0];
 			if (isNaN(prize) || ~prize.indexOf('.') || prize < 1 || prize > 1000) return this.errorReply("This amount is not a valid integer that is between 1 and 1,000.");
-			if (prize == tournament.prizeMoney) return this.errorReply("This tournament's prize is already set to " + prize + " bucks.");
+			if (prize === tournament.prizeMoney) return this.errorReply("This tournament's prize is already set to " + prize + " bucks.");
 			tournament.prizeMoney = prize;
 			this.privateModCommand("(" + user.name + " has set the prize for this tournament to be " + prize + " bucks.)");
 		},
 		prize: function (tournament, user, params, cmd) {
-			if (tournament.prizeMoney == 0) return this.errorReply("There is currently no prize set for this tournament.");
+			if (tournament.prizeMoney === 0) return this.errorReply("There is currently no prize set for this tournament.");
 			return this.sendReply("The prize for this tournament is currently set to " + tournament.prizeMoney + " Gold bucks.");
 		},
 	},

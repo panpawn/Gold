@@ -883,7 +883,7 @@ exports.Formats = [
 		},
 	},
 
-		{
+	{
 
 		name: "Inverse Random Battle [Gen 2]",
 		section: "Gold Inverse Tiers",

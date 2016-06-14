@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+
 // The server port - the port to run Pokemon Showdown under
 exports.port = 8000;
 
@@ -195,7 +197,7 @@ try {
 }
 try {
 	CommandParser.uncacheTree('./chat-plugins/chatfilter.js');
-	setTimeout(function(){require('../chat-plugins/chatfilter.js');}, 500);
+	setTimeout(function () {require('../chat-plugins/chatfilter.js');}, 500);
 } catch (e) {}
 
 // replsocketprefix - the prefix for the repl sockets to be listening on

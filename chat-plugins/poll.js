@@ -5,7 +5,6 @@
 
 'use strict';
 
-const permission = 'broadcast';
 const blackbutton = 'background: #ff9900; text-shadow: none; padding: 2px 6px; color: black; text-align: center; border: black, solid, 1px; width: 100%;';
 const moment = require('moment');
 
@@ -327,7 +326,7 @@ exports.commands = {
 				"/poll display - Displays the poll",
 				"/poll end - Ends a poll and displays the results. Requires: % @ # & ~"],
 
-	votes: function(target, room, user) {
+	votes: function (target, room, user) {
 		if (!room.poll) return this.errorReply("There is no poll running in this room.");
 		if (!this.runBroadcast()) return;
 		room.poll.update();
@@ -335,11 +334,11 @@ exports.commands = {
 		return this.sendReplyBox("TOTAL VOTES: " + votes + " VOTE" + Gold.pluralFormat(votes, 'S'));
 	},
 	ep: 'endpoll',
-	endpoll: function(target, room, user) {
+	endpoll: function (target, room, user) {
 		this.parse('/poll end');
 	},
 	pr: 'pollremind',
-	pollremind: function(target, room, user) {
+	pollremind: function (target, room, user) {
 		if (!room.poll) return this.errorReply("There is no poll running in this room.");
 		if (!this.runBroadcast()) return;
 		room.poll.update();
@@ -352,12 +351,12 @@ exports.commands = {
 	},
 	tp: 'tpoll',
 	tierpoll: 'tpoll',
-	tpoll: function(target, room, user) {
-		let tiers = ['[Seasonal]', '1v1', 'Battle Factory', 'Hackmons Cup', 'Gold Battle', 'Random Doubles','Challenge Cup 1v1', 'Little Cup', 'Doubles OU', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
+	tpoll: function (target, room, user) {
+		let tiers = ['[Seasonal]', '1v1', 'Battle Factory', 'Hackmons Cup', 'Gold Battle', 'Random Doubles', 'Challenge Cup 1v1', 'Little Cup', 'Doubles OU', 'Anything Goes', 'OMotM', 'OverUsed', 'Random Battle', 'Random Monotype', 'UnderUsed', 'NeverUsed', 'RarelyUsed', 'PU', 'Ubers', 'Monotype'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
-	vote: function(target, room, user) {
+	vote: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /vote [poll option number] - votes for the [option] in the current poll.");
 		this.parse('/poll vote ' + target);
-	}
+	},
 };
