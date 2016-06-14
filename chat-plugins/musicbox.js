@@ -111,7 +111,7 @@ exports.commands = {
 						return this.sendReplyBox("You haven't set button css for your music box yet.");
 					}
 					if (toId(target) in {'remove':1, 'delete':1, 'none':1, 'hidden':1}) delete box.css;
-					else box.css = target.replace(/^["']/, '').replace(/["']$/, '');
+					else box.css = Tools.escapeHTML(target.replace(/^["']/, '').replace(/["']$/, ''));
 					fs.writeFileSync(FILE, JSON.stringify(musicboxes, null, 1));
 					this.parse('/musicbox');
 					return this.sendReply('Your music box\'s button CSS has been updated.');
