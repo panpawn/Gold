@@ -13,7 +13,9 @@
     "request": "^2.72.0",
     "sockjs": "0.3.15",
     "sugar": "1.4.1",
-	"nani": "1.2.0"
+    "nani": "1.2.0",
+    "origindb": "^2.6.1",
+    "uuid": "^2.0.2"
   },
   "optionalDependencies": {
     "cloud-env": "0.1.1",

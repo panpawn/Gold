@@ -126,6 +126,8 @@ Verifier.PM.spawn();
 
 global.Gold = {};
 
+global.Db = require('origindb')('config/db');
+
 global.CommandParser = require('./command-parser.js');
 
 global.Simulator = require('./simulator.js');
