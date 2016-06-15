@@ -566,7 +566,7 @@ exports.commands = {
 		// send messages
 		this.sendReply("Your trade has been taken submitted.");
 		if (Users.get(targetUser)) Users.get(targetUser).send("|pm|~Card Shop [Do not Reply]|" + targetUser + "|/html <div class=\"broadcast-green\">" + Tools.escapeHTML(user.name) + " has initiated a trade with you.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
-		user.send("|pm|~Card Shop [Do not Reply]|" + user.userid + "|/html <div class=\"broadcast-green\">Your trade with " + Tools.escapeHTML(targetUser) + " has been initiated.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
+		user.send("|pm|~Card Shop [Do not Reply]|" + user.userid + "|/html <div class=\"broadcast-green\">Your trade with " + Gold.nameColor(targetUser, true) + " has been initiated.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
 	},
 
 	trades: 'viewcardtrades',
@@ -614,7 +614,7 @@ exports.commands = {
 		let cardImage = '<img src="' + card.card + '" height=250>';
 		// rarity display
 		let cardRarityPoints = '(<font color="' + colors[card.rarity] + '">' + card.rarity + '</font> - ' + card.points + ')<br />';
-		let userSideDisplay = '<center>' + user.userid + '<br />' + cardImage + "<br />" + cardRarityPoints + '</center>';
+		let userSideDisplay = '<center>' + Gold.nameColor(user.userid, true) + '<br />' + cardImage + "<br />" + cardRarityPoints + '</center>';
 
 		// now build the target's side
 		card = cards[(displayTrade.from !== user.userid ? displayTrade.fromExchange : displayTrade.toExchange)];
@@ -622,7 +622,7 @@ exports.commands = {
 		cardImage = '<img src="' + card.card + '" height=250>';
 		// rarity display
 		cardRarityPoints = '(<font color="' + colors[card.rarity] + '">' + card.rarity + '</font> - ' + card.points + ')<br />';
-		let targetSideDisplay = "<center>" + (displayTrade.from !== user.userid ? displayTrade.from : displayTrade.to) + '<br />' + cardImage + "<br />" + cardRarityPoints + "</center>";
+		let targetSideDisplay = "<center>" + (displayTrade.from !== user.userid ? Gold.nameColor(displayTrade.from, true) : Gold.nameColor(displayTrade.to, true)) + '<br />' + cardImage + "<br />" + cardRarityPoints + "</center>";
 
 		// now build the entire popup
 		let tradeScreen = popup + // base popup
@@ -757,11 +757,11 @@ exports.commands = {
 			// and a button to view the card they just received
 			let targetUsers = [Users.get(trade.to), Users.get(trade.from)];
 			if (targetUsers[0]) {
-				targetUsers[0].popup("|html|" + backButton + "<center>Your trade with " + trade.from + " has gone through." +
+				targetUsers[0].popup("|html|" + backButton + "<center>Your trade with " + Gold.nameColor(trade.from, true) + " has gone through." +
 				"<br /><button name=\"send\" value=\"/cs card, " + trade.fromExchange + "\">View Traded Card</button></center>"); // show card
 			}
 			if (targetUsers[1]) {
-				targetUsers[1].popup("|html|<center>Your trade with " + trade.to + " has gone through." +
+				targetUsers[1].popup("|html|<center>Your trade with " + Gold.nameColor(trade.to, true) + " has gone through." +
 				"<br /><button name=\"send\" value=\"/cs card, " + trade.toExchange + "\">View Traded Card</button></center>");
 			}
 
