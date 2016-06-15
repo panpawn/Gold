@@ -16,7 +16,7 @@ const colors = {
 	Epic: '#73DF14',
 	Rare: '#2DD1B6',
 	Uncommon: '#2D3ED1',
-	Common: '#000',
+	Common: '#696969',
 };
 
 const shop = [
