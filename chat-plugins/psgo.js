@@ -71,7 +71,7 @@ function cacheRarity() {
 
 Gold.tourCard = function (tourSize, userid) {
 	if (tourSize > 32) tourSize = 32;
-	let tourRarity = tourCardRarity[Math.floor(tourSize / 2)];
+	let tourRarity = tourCardRarity[Math.floor(tourSize / 3)];
 	let cacheValue = rareCache[cleanCard.indexOf(toId(tourRarity))];
 	let card = cacheValue[Math.round(Math.random() * (cacheValue.length - 1))];
 	if (tourRarity === 'No Card') return;
@@ -294,7 +294,7 @@ exports.commands = {
 		let userid = user.userid;
 		if (target) userid = toId(target);
 		const cards = Db('cards').get(userid, []);
-		if (!cards.length) return this.sendReplyBox(userid + " has no cards.");
+		if (!cards.length) return this.sendReplyBox(Gold.nameColor(userid, false) + " has no cards.");
 		const cardsMapping = cards.map(function (card) {
 			return '<button name="send" value="/card ' + card.title + '" style="border-radius: 12px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2) inset;" class="card-button"><img src="' + card.card + '" width="80" title="' + card.name + '"></button>';
 		});
