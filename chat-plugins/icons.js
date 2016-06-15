@@ -60,7 +60,7 @@ exports.commands = {
 			return;
 		}
 		if (toId(target[0]) === 'delete') return this.errorReply("Did you mean: /icon " + target[1] + ", delete");
-		if (icons[toId(target[0])]) return this.errorReply("This user already has a custom userlist icon.  Do /icon delete, [user] and then set their new icon.");
+		if (icons[toId(target[0])]) return this.errorReply("This user already has a custom userlist icon.  Do /icon [user], delete and then set their new icon.");
 		this.sendReply("|raw|You have given <b><font color=" + Gold.hashColor(Tools.escapeHTML(target[0])) + ">" + Tools.escapeHTML(target[0]) + "</font></b> an icon.");
 		Rooms('staff').add('|raw|<b><font color="' + Gold.hashColor(Tools.escapeHTML(target[0])) + '">' + Tools.escapeHTML(target[0]) + '</font> has received an icon from ' + Tools.escapeHTML(user.name) + '.</b>').update();
 		this.privateModCommand("(" + target[0] + " has recieved icon: '" + target[1] + "' from " + user.name + ".)");
