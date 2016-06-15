@@ -952,18 +952,18 @@ exports.commands = {
 			(Config.groups[b] || {rank:0}).rank - (Config.groups[a] || {rank:0}).rank
 		).map(r => {
 			let roomRankList = rankLists[r].sort();
-			roomRankList = roomRankList.map(s => s in targetRoom.users ? "**" + s + "**" : s);
-			return (Config.groups[r] ? Config.groups[r].name + "s (" + r + ")" : r) + ":\n" + roomRankList.join(", ");
+			roomRankList = roomRankList.map(s => s in targetRoom.users ? Gold.nameColor(s, true) : Gold.nameColor(s, false));
+			return (Config.groups[r] ? Tools.escapeHTML(Config.groups[r].name) + "s (" + Tools.escapeHTML(r) + ")" : r) + ":\n" + roomRankList.join(", ");
 		});
 
 		if (!buffer.length) {
 			connection.popup("The room '" + targetRoom.title + "' has no auth." + userLookup);
 			return;
 		}
-		let roomfounder = (targetRoom.founder ? "Room Founder:\n" + targetRoom.founder : false);
-		if (roomfounder) buffer.unshift(roomfounder);
+		let roomfounder = (targetRoom.founder ? (room.founder in targetRoom.users ? Gold.nameColor(targetRoom.founder, true) : Gold.nameColor(room.founder, false)) : false);
+		if (roomfounder) buffer.unshift("Room Founder:<br />" + roomfounder);
 		if (targetRoom !== room) buffer.unshift("" + targetRoom.title + " room auth:");
-		connection.popup(buffer.join("\n\n") + userLookup);
+		connection.send("|popup||html|" + buffer.join("\n\n") + userLookup);
 	},
 
 	userauth: function (target, room, user, connection) {
