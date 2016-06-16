@@ -1068,11 +1068,7 @@ exports.commands = {
 		}
 		let lastid = targetUser.getLastId();
 		this.add('|unlink|roomhide|' + lastid);
-		this.add('|uhtmlchange|' + lastid + '|');
-		if (lastid !== toId(this.inputUsername)) {
-			this.add('|unlink|roomhide|' + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (lastid !== toId(this.inputUsername)) this.add('|unlink|roomhide|' + toId(this.inputUsername));
 	},
 	roombanhelp: ["/roomban [username] - Bans the user from the room you are in. Requires: @ # & ~"],
 
@@ -1296,11 +1292,7 @@ exports.commands = {
 		}
 		let userid = targetUser.getLastId();
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
-		if (userid !== toId(this.inputUsername)) {
-			this.add('|unlink|hide|' + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("LOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -1359,11 +1351,7 @@ exports.commands = {
 			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
-		if (userid !== toId(this.inputUsername)) {
-			this.add('|unlink|hide|' + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("WEEKLOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -1490,14 +1478,12 @@ exports.commands = {
 			this.privateModCommand("(" + targetUser.name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "banned alts: " + alts.join(", ") + (guests ? " [" + guests + " guests]" : "") + ")");
 			for (let i = 0; i < alts.length; ++i) {
 				this.add('|unlink|' + toId(alts[i]));
-				this.add('|uhtmlchange|' + toId(alts[i]) + '|');
 			}
 		} else if (acAccount) {
 			this.privateModCommand("(" + targetUser.name + "'s ac account: " + acAccount + ")");
 		}
 
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
 
 		let options = {'duration': duration, 'by': user.name};
 		if (reason) options.reason = reason;
@@ -1558,18 +1544,13 @@ exports.commands = {
 			this.privateModCommand("(" + name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "banned alts: " + alts.join(", ") + (guests ? " [" + guests + " guests]" : "") + ")");
 			for (let i = 0; i < alts.length; ++i) {
 				this.add('|unlink|' + toId(alts[i]));
-				this.add('|uhtmlchange|' + toId(alts[i]) + '|');
 			}
 		} else if (acAccount) {
 			this.privateModCommand("(" + targetUser.name + "'s ac account: " + acAccount + ")");
 		}
 
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
-		if (userid !== toId(this.inputUsername)) {
-			this.add('|unlink|hide|' + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 		let options = {duration: '14d', 'by': user.name};
 		if (target) options.reason = target;
 		targetUser.ban(false, userid, options);
@@ -2052,7 +2033,7 @@ exports.commands = {
 			return false;
 		}
 
-		if (targetUser.locked || Users.checkBanned(targetUser.latestIp)) {
+		if (targetUser.locked) {
 			hidetype = 'hide|';
 		} else if ((room.bannedUsers[toId(name)] && room.bannedIps[targetUser.latestIp]) || user.can('rangeban')) {
 			hidetype = 'roomhide|';
@@ -2062,11 +2043,7 @@ exports.commands = {
 
 		this.addModCommand("" + targetUser.name + "'s messages were cleared from room " + room.id + " by " + user.name + ".");
 		this.add('|unlink|' + hidetype + userid);
-		this.add('|uhtmlchange|' + userid + '|');
-		if (userid !== toId(this.inputUsername)) {
-			this.add('|unlink|' + hidetype + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (userid !== toId(this.inputUsername)) this.add('|unlink|' + hidetype + toId(this.inputUsername));
 	},
 	hidetexthelp: ["/hidetext [username] - Removes a locked or banned user's messages from chat (includes users banned from the room). Requires: % (global only), @ # & ~"],
 

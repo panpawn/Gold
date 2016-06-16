@@ -55,7 +55,7 @@ exports.commands = {
 			if (Economy.readMoneySync(user.userid) >= price) return true;
 		}
 		function alertStaff(message, staffRoom) {
-			Gold.pmUpperStaff('/html ' + message, '~Server', false);
+			Gold.pmUpperStaff('/raw ' + message, '~Server', false);
 			if (staffRoom) {
 				Rooms.get('staff').add('|raw|<b>' + message + '</b>');
 				Rooms.get('staff').update();

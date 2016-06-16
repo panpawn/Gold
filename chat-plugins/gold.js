@@ -298,14 +298,12 @@ exports.commands = {
 			this.privateModCommand("(" + name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "banned alts: " + alts.join(", ") + (guests ? " [" + guests + " guests]" : "") + ")");
 			for (let i = 0; i < alts.length; ++i) {
 				this.add('|unlink|hide|' + toId(alts[i]));
-				this.add('|uhtmlchange|' + toId(alts[i]) + '|');
 			}
 		} else if (acAccount) {
 			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
 
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
 		let options = {
 			'type': 'pban',
 			'by': user.name,
@@ -1133,11 +1131,7 @@ exports.commands = {
 		}
 		let userid = targetUser.getLastId();
 		this.add('|unlink|hide|' + userid);
-		this.add('|uhtmlchange|' + userid + '|');
-		if (userid !== toId(this.inputUsername)) {
-			this.add('|unlink|hide|' + toId(this.inputUsername));
-			this.add('|uhtmlchange|' + toId(this.inputUsername) + '|');
-		}
+		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("LOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		Punishments.lock(targetUser, Date.now() + 6 * 4 * 7 * 24 * 60 * 60 * 1000);

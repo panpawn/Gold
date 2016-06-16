@@ -72,7 +72,7 @@ function friendsNotify(user) {
 			if (~kek2.indexOf(user)) {
 				if (Users(kek) && Users(kek).connected && Users.getExact(kek)) {
 					if (NotifySetting[kek]) {
-						return Users(kek).send('|pm|~Friendslist Notifications|' + Users(kek).getIdentity() + '|/html <b><font color="' + Gold.hashColor(user) + '">' + getName(user) + '</font></b> has come <font color=green>online</font>!');
+						return Users(kek).send('|pm|~Friendslist Notifications|' + Users(kek).getIdentity() + '|/raw <b><font color="' + Gold.hashColor(user) + '">' + getName(user) + '</font></b> has come <font color=green>online</font>!');
 					}
 				}
 			}

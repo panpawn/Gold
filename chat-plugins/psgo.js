@@ -565,8 +565,8 @@ exports.commands = {
 
 		// send messages
 		this.sendReply("Your trade has been taken submitted.");
-		if (Users.get(targetUser)) Users.get(targetUser).send("|pm|~Card Shop [Do not Reply]|" + targetUser + "|/html <div class=\"broadcast-green\">" + Gold.nameColor(user.name, true) + " has initiated a trade with you.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
-		user.send("|pm|~Card Shop [Do not Reply]|" + user.userid + "|/html <div class=\"broadcast-green\">Your trade with " + Gold.nameColor(targetUser, true) + " has been initiated.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
+		if (Users.get(targetUser)) Users.get(targetUser).send("|pm|~Card Shop [Do not Reply]|" + targetUser + "|/raw <div class=\"broadcast-green\">" + Gold.nameColor(user.name, true) + " has initiated a trade with you.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
+		user.send("|pm|~Card Shop [Do not Reply]|" + user.userid + "|/raw <div class=\"broadcast-green\">Your trade with " + Gold.nameColor(targetUser, true) + " has been initiated.  Click <button name=\"send\" value=\"/trades last\">here</button> or use <b>/trades</b> to view your pending trade requests.</div>");
 	},
 
 	trades: 'viewcardtrades',

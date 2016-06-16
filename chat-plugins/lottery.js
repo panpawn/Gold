@@ -103,7 +103,7 @@ exports.commands = {
 						"A game of Lottery has started in <button name=\"send\" value=\"/join gamechamber\">Game Chamber</button>!<br />" +
 						"The ticket cost to join is <b> " + Gold.lottery.ticketPrice + "</b> Gold Bucks.  For every ticket bought, the server automatically matches that price towards the pot.<br />" +
 						"(For more information, hop in the room and do /lotto or ask for help!)</center>";
-				Gold.pmAll('/html ' + loto_notification, '~Gold Lottery');
+				Gold.pmAll('/raw ' + loto_notification, '~Gold Lottery');
 				Rooms.get('gamechamber').add('|raw|' + room_notification);
 			} else {
 				Rooms.get('gamechamber').add('|raw|' + room_notification);

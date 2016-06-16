@@ -57,10 +57,6 @@ Gold.emoticons = {
 		}
 		return false;
 	},
-	userColor: function (color, text) {
-		if (!text) text = color;
-		return '<font color=' + Gold.hashColor(color) + '>' + Tools.escapeHTML(text) + '</font>';
-	},
 	processChatData: function (user, room, connection, message) {
 		let match = false;
 		let parsed_message = this.processEmoticons(message);
@@ -78,10 +74,7 @@ Gold.emoticons = {
 			let origmsg = message;
 			message = Tools.escapeHTML(message);
 			message = this.processEmoticons(message);
-			user.sendTo(room, '|html|' +
-				' <small>' + user.getIdentity(room).substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;' + message
-			);
-			room.update();
+			user.sendTo(room, '|c:|' + ~~(Date.now() / 1000) + '|' + user.getIdentity(room).substr(0, 1) + user.name + '/html ' + message);
 			Users.ShadowBan.addMessage(user, "To " + room, origmsg);
 			break;
 		case false:
@@ -93,18 +86,9 @@ Gold.emoticons = {
 				if (!match || message.charAt(0) === '!') return true;
 				message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
 				message = this.processEmoticons(message);
-
-				let msg = '<small>' + user.getIdentity(room).substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;' + message;
-				if (nightclubs[room.id]) msg = '<div style = "color: white; background: black; font-size: 11pt; text-shadow: 0px 0px 10px, 0px 0px 10px, 0px 0px 10px; padding:1px; margin:-3px;">' + msg + '</div>';
-				if (room.type === 'chat') {
-					room.add('|uhtml|' + user.userid + '|' + msg);
-					room.update();
-					room.messageCount++;
-				} else {
-					room.addRaw(msg);
-					room.update();
-					room.messageCount++;
-				}
+				let name = user.getIdentity(room).substr(0, 1) + user.name;
+				room.add('|c:|' + ~~(Date.now() / 1000) + '|' + name + '|/html ' + message).update();
+				room.messageCount++;
 				return false;
 			}
 			break;
@@ -112,8 +96,8 @@ Gold.emoticons = {
 	},
 	processPMsParsing: function (user, message) {
 		if (this.processEmoticons(message) === message) return false;
-		let name = '<small>' + user.getIdentity().substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;';
-		return name + this.processEmoticons(message);
+		// let name = '<small>' + user.getIdentity().substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;';
+		return this.processEmoticons(message);
 	},
 };
 
