@@ -74,7 +74,7 @@ Gold.emoticons = {
 			let origmsg = message;
 			message = Tools.escapeHTML(message);
 			message = this.processEmoticons(message);
-			user.sendTo(room, '|c:|' + ~~(Date.now() / 1000) + '|' + user.getIdentity(room).substr(0, 1) + user.name + '/html ' + message);
+			user.sendTo(room, '|c:|' + ~~(Date.now() / 1000) + '|' + user.getIdentity(room).substr(0, 1) + user.name + '|/html ' + message);
 			Users.ShadowBan.addMessage(user, "To " + room, origmsg);
 			break;
 		case false:
