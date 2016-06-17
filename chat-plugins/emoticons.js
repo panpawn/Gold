@@ -74,7 +74,7 @@ Gold.emoticons = {
 			let origmsg = message;
 			message = Tools.escapeHTML(message);
 			message = this.processEmoticons(message);
-			user.sendTo(room, '|c:|' + ~~(Date.now() / 1000) + '|' + user.getIdentity(room).substr(0, 1) + user.name + '|/html ' + message);
+			user.sendTo(room, (room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + user.getIdentity(room).substr(0, 1) + user.name + '|/html ' + message);
 			Users.ShadowBan.addMessage(user, "To " + room, origmsg);
 			break;
 		case false:
@@ -87,7 +87,7 @@ Gold.emoticons = {
 				message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
 				message = this.processEmoticons(message);
 				let name = user.getIdentity(room).substr(0, 1) + user.name;
-				room.add('|c:|' + ~~(Date.now() / 1000) + '|' + name + '|/html ' + message).update();
+				room.add((room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + name + '|/html ' + message).update();
 				room.messageCount++;
 				return false;
 			}
