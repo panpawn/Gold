@@ -1,8 +1,8 @@
 /* Emoticons Plugin
  * This is a chat-plugin for an Emoticons system on PS
- * You will need a line in parser to actually  parse
- * this so that it works.  Also, you will need need to
- * add a few lines to the PM command.
+ * You will need a line in command-parser.js to actually
+ * parse this so that it works.  Also, you will need to
+ * add a few lines to the PM command (commands.js).
  * Credits: panpawn, jd
  */
 'use strict';
@@ -14,9 +14,12 @@ let emotes = {};
 
 
 Gold.emoticons = {
-	maxChatEmotes: 4, //the default maximum number of emoticons in one chat message that gets parsed
-	adminBypassMaxChatEmotes: true, //can administrators use as many emoticons as they wish?
-	chatEmotes: {},
+	maxChatEmotes: 4, // the default maximum number of emoticons in one chat message that gets parsed
+	adminBypassMaxChatEmotes: true, // can administrators use as many emoticons as they wish?
+	chatEmotes: {}, // holds the emoticons, to be merged with json later on
+
+	// handles replacing emoticon messages with the HTML and then PS formats message
+	// this is also used for the PM command (located in commands.js)
 	processEmoticons: function (text) {
 		let patterns = [], metachars = /[[\]{}()*+?.\\|^$\-,&#\s]/g;
 
@@ -40,6 +43,8 @@ Gold.emoticons = {
 		if (message.substr(0, 4) === '&gt;' || message.substr(0, 1) === '>') message = '<span class="greentext">' + message + '</span>'; // greentext
 		return message;
 	},
+
+	// checks what emote modchat level a room is set at vs user's auth in that room
 	checkEmoteModchat: function (user, room) {
 		let rank = (user.group !== ' ' ? user.group : (room.auth ? room.auth[user.userid] : user.group));
 		switch (room.emoteModChat) {
@@ -57,6 +62,8 @@ Gold.emoticons = {
 		}
 		return false;
 	},
+
+	// handles if/when to put an emoticon message to a chat
 	processChatData: function (user, room, connection, message) {
 		let match = false;
 		let parsed_message = this.processEmoticons(message);
@@ -69,15 +76,13 @@ Gold.emoticons = {
 				}
 			}
 		}
-		switch (Users.ShadowBan.checkBanned(user) && match) {
-		case true:
+		if (Users.ShadowBan.checkBanned(user) && match) {
 			let origmsg = message;
 			message = Tools.escapeHTML(message);
 			message = this.processEmoticons(message);
 			user.sendTo(room, (room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + user.getIdentity(room).substr(0, 1) + user.name + '|/html ' + message);
 			Users.ShadowBan.addMessage(user, "To " + room, origmsg);
-			break;
-		case false:
+		} else {
 			if (!this.checkEmoteModchat(user, room)) {
 				let kitty = message = this.processEmoticons(message);
 				message = Tools.escapeHTML(kitty);
@@ -91,7 +96,6 @@ Gold.emoticons = {
 				room.messageCount++;
 				return false;
 			}
-			break;
 		}
 	},
 };
@@ -144,8 +148,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply("The emoticon " + emoteName + " has been added.");
 				this.logModCommand(user.name + " added the emoticon: " + emoteName);
-				Rooms.get('staff').add("The emoticon " + emoteName + " was added by " + Tools.escapeHTML(user.name) + ".");
-				Rooms.get('staff').update();
+				Rooms.get('staff').add("The emoticon " + emoteName + " was added by " + Tools.escapeHTML(user.name) + ".").update();
 				break;
 
 			case 'rem':
@@ -162,8 +165,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply("The emoticon " + emoteName2 + " has been removed.");
 				this.logModCommand(user.name + " removed the emoticon: " + emoteName2);
-				Rooms.get('staff').add("The emoticon " + emoteName2 + " was removed by " + Tools.escapeHTML(user.name) + ".");
-				Rooms.get('staff').update();
+				Rooms.get('staff').add("The emoticon " + emoteName2 + " was removed by " + Tools.escapeHTML(user.name) + ".").update();
 				break;
 
 			case 'list':
@@ -201,7 +203,7 @@ exports.commands = {
 			case 'object':
 				if (!this.runBroadcast()) return;
 				if (this.broadcasting) return this.errorReply("ERROR: this command is too spammy to broadcast.  Use / instead of ! to see it for yourself.");
-				this.sendReplyBox("Gold.emoticons.chatEmotes = " + fs.readFileSync('config/emotes.json', 'utf8'));
+				this.sendReplyBox("Gold.emoticons.chatEmotes = <br />" + fs.readFileSync('config/emotes.json', 'utf8'));
 				break;
 
 			case 'modchat':
@@ -218,8 +220,7 @@ exports.commands = {
 					room.emoteModChat = parts[2];
 					if (room.type === 'chat') room.chatRoomData.emoteModChat = room.emoteModChat;
 					Rooms.global.writeChatRoomData();
-					this.add("|raw|<div class=\"broadcast-red\"><b>Chat Emoticons Moderated Chat has been set!</b><br />To use emoticons in this room, you must be of rank <b>" + parts[2] + "</b> or higher.");
-					room.update();
+					room.add("|raw|<div class=\"broadcast-red\"><b>Chat Emoticons Moderated Chat has been set!</b><br />To use emoticons in this room, you must be of rank <b>" + parts[2] + "</b> or higher.").update();
 					this.privateModCommand("(" + user.name + " has set emoticon moderated chat for rank " + parts[2] + " and up.)");
 					break;
 				case 'off':
@@ -231,8 +232,7 @@ exports.commands = {
 					room.emoteModChat = false;
 					if (room.type === 'chat') room.chatRoomData.emoteModChat = room.emoteModChat;
 					Rooms.global.writeChatRoomData();
-					this.add("|raw|<div class=\"broadcast-blue\"><b>Chat Emoticons Moderated Chat has been disabled!</b><br />Everyone in this room may use chat emoticons.");
-					room.update();
+					room.add("|raw|<div class=\"broadcast-blue\"><b>Chat Emoticons Moderated Chat has been disabled!</b><br />Everyone in this room may use chat emoticons.").update();
 					this.privateModCommand("(" + user.name + " has enabled chat emoticons for everyone in this room.)");
 					break;
 				default:
@@ -272,10 +272,8 @@ exports.commands = {
 				"/emote max, [max emotes / message] - Sets the max emoticon messages per chat message.  Requires ~.",
 				"/emote help - Shows this help command.",
 	],
-	emoticonlist: 'emotelist',
-	emotelist: function (target, room, user) {
-		return this.errorReply("Try /emote view instead.");
-	},
+	emoticonlist: 'ev',
+	emotelist: 'ev',
 	ev: function (target, room, user) {
 		return this.parse("/emote view");
 	},
