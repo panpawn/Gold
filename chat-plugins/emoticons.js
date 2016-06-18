@@ -94,11 +94,6 @@ Gold.emoticons = {
 			break;
 		}
 	},
-	processPMsParsing: function (user, message) {
-		if (this.processEmoticons(message) === message) return false;
-		// let name = '<small>' + user.getIdentity().substr(0, 1) + '</small><strong class="username">' + this.userColor(user.name) + '</strong><b>' + this.userColor(user.name, ":") + '</b> &nbsp;';
-		return this.processEmoticons(message);
-	},
 };
 
 

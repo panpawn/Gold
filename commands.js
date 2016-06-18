@@ -237,7 +237,7 @@ exports.commands = {
 			}
 		}
 		let oldtarg = target;
-		let emotes = Gold.emoticons.processPMsParsing(user, target);
+		let emotes = (Gold.emoticons.processEmoticons(target) !== target ? Gold.emoticons.processEmoticons(target) : false);
 		if (emotes) target = '/html ' + emotes;
 
 		if (!message) message = '|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target;
