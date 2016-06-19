@@ -9,30 +9,67 @@ const MAX_LINES = 1000;
 
 exports.commands = {
 	viewlogs: function (target, room, user) {
+		if (target) {
+			let targets = target.split(',');
+			for (let u in targets) targets[u] = targets[u].trim();
+			if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
+			switch (toId(targets[0])) {
+			case 'month':
+				if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
+				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
+				let months = fs.readdirSync('logs/chat/' + targets[1]);
+				user.send("|popup||html|Choose a month:" + generateTable(months, "/viewlogs date," + targets[1] + ","));
+				return;
+			case 'date':
+				if (!targets[2]) return this.errorReply("Please use /viewlogs with no target.");
+				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
+				let days = fs.readdirSync('logs/chat/' + targets[1] + '/' + targets[2]);
+				user.send("|popup||html|Choose a date:" + generateTable(days, "/viewlogspopup " + targets[1] + ","));
+				return;
+			default:
+				this.errorReply("/viewlogs - Command not recognized.");
+				break;
+			}
+		}
+
+		let rooms = fs.readdirSync('logs/chat');
+		let roomList = [];
+
+		for (let u in rooms) {
+			if (!rooms[u]) continue;
+			if (rooms[u] === 'README.md') continue;
+			if (!permissionCheck(user, rooms[u])) continue;
+			roomList.push(rooms[u]);
+		}
+		if (roomList.length < 1) return this.errorReply("You don't have access to view the logs of any rooms.");
+
+		let output = "Choose a room to view the logs:";
+		output += generateTable(roomList, "/viewlogs month,");
+		user.send("|popup||wide||html|" + output);
+	},
+
+	viewlogspopup: 'viewlogs2',
+	viewlogs2: function (target, room, user, connection, cmd) {
 		if (!target) return this.sendReply("Usage: /viewlogs [room], [year-month-day / 2014-12-08] - Provides you with a temporary link to view the target rooms chat logs.");
 		let targetSplit = target.split(',');
 		if (!targetSplit[1]) return this.sendReply("Usage: /viewlogs [room], [year-month-day / 2014-12-08] -Provides you with a temporary link to view the target rooms chat logs.");
 		for (let u in targetSplit) targetSplit[u] = targetSplit[u].trim();
 		let targetRoom = targetSplit[0];
-		if (!user.can('lock') && !user.can('warn', null, Rooms(targetRoom))) return this.errorReply("/viewlogs - Access denied.");
-		if (toId(targetRoom) === 'staff' && !user.can('warn')) return this.errorReply("/viewlogs - Access denied.");
-		if (toId(targetRoom) === 'administrators' && !user.can('hotpatch')) return this.errorReply("/viewlogs - Access denied.");
-		if (toId(targetRoom) === 'upperstaff' && !user.can('pban')) return this.errorReply("/viewlogs - Access denied.");
-		if (Rooms(targetRoom) && Rooms(targetRoom).isPrivate && !user.can('pban')) {
-			if (Rooms(targetRoom) && Rooms(targetRoom).isPrivate && !user.can('warn', null, Rooms(targetRoom))) return this.errorReply("/viewlogs - Access denied.");
-		}
+		if (!permissionCheck(user, targetRoom)) return this.errorReply("/viewlogs - Access denied.");
 		let date;
 		if (toId(targetSplit[1]) === 'today' || toId(targetSplit[1]) === 'yesterday') {
 			date = new Date();
 			if (toId(targetSplit[1]) === 'yesterday') date.setDate(date.getDate() - 1);
 			targetSplit[1] = date.format('{yyyy}-{MM}-{dd}');
 		}
-		date = targetSplit[1];
+		date = targetSplit[1].replace(/\.txt/, '');
 		let splitDate = date.split('-');
 		if (splitDate.length < 3) return this.sendReply("Usage: /viewlogs [room], [year-month-day / 2014-12-08] -Provides you with a temporary link to view the target rooms chat logs.");
 
-		fs.readFile('logs/chat/' + toId(targetRoom) + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
+		fs.readFile('logs/chat/' + targetRoom.toLowerCase() + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
+			if (err && err.code === "ENOENT") return user.send("|popup||html|<font color=\"red\">No logs found.</font>");
 			if (err) return this.errorReply("/viewlogs - Error: " + err);
+			fs.appendFile('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toId(targetRoom) + ". Date: " + date + '\n');
 			let filename = require('crypto').randomBytes(4).toString('hex');
 
 			if (!user.can('warn', null, Rooms(targetRoom))) {
@@ -41,6 +78,18 @@ exports.commands = {
 					if (lines[line].substr(9).trim().charAt(0) === '(') lines.slice(line, 1);
 				}
 				data = lines.join('\n');
+			}
+
+			if (cmd === 'viewlogspopup') {
+				let output = 'Displaying room logs of room "' + Tools.escapeHTML(targetRoom) + '" on ' + Tools.escapeHTML(date) + '<br />';
+				data = data.split('\n');
+				for (let u in data) {
+					if (data[u].length < 1) continue;
+					let message = parseMessage(data[u], user.userid);
+					if (message.length < 1) continue;
+					output += message + '<br />';
+				}
+				return user.send("|popup||wide||html|" + output);
 			}
 
 			data = targetRoom + "|" + date + "|" + fs.readFileSync('config/customcolors.json', 'utf8') + "\n" + data;
@@ -98,6 +147,39 @@ exports.commands = {
 	},
 	searchlogshelp: ["/searchlogs [room / all], [phrase] - Phrase may contain * wildcards."],
 };
+
+function permissionCheck(user, room) {
+	if (!Rooms(room) && !user.can('seniorstaff')) {
+		return false;
+	}
+	if (!user.can('lock') && !user.can('warn', null, Rooms(room))) {
+		return false;
+	}
+	if (Rooms(room) && Rooms(room).isPrivate && (!user.can('seniorstaff') && !user.can('warn', null, Rooms(room)))) {
+		return false;
+	}
+	if (Rooms(room) && Rooms(room).isPersonal && (!user.can('seniorstaff') && !user.can('warn', null, Rooms(room)))) {
+		return false;
+	}
+	return true;
+}
+
+function generateTable(array, command) {
+	let output = "<table>";
+	let count = 0;
+	for (let u in array) {
+		if (array[u] === 'today.txt') continue;
+		if (count === 0) output += "<tr>";
+		output += '<td><button style="width: 100%" name="send" value="' + command + Tools.escapeHTML(array[u]) + '">' + Tools.escapeHTML(array[u]) + '</button></td>';
+		count++;
+		if (count > 3) {
+			output += '<tr />';
+			count = 0;
+		}
+	}
+	output += '</table>';
+	return output;
+}
 
 function escapeRegExp(s) {
 	return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
