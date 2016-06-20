@@ -33,18 +33,19 @@ exports.commands = {
 		}
 
 		let rooms = fs.readdirSync('logs/chat');
-		let roomList = [];
+		let roomList = [], groupChats = [];
 
 		for (let u in rooms) {
 			if (!rooms[u]) continue;
 			if (rooms[u] === 'README.md') continue;
 			if (!permissionCheck(user, rooms[u])) continue;
-			roomList.push(rooms[u]);
+			rooms[u].substr(0, 9) === 'groupchat' ? groupChats.push(rooms[u]) : roomList.push(rooms[u]);
 		}
 		if (roomList.length < 1) return this.errorReply("You don't have access to view the logs of any rooms.");
 
-		let output = "Choose a room to view the logs:";
-		output += generateTable(roomList, "/viewlogs month,");
+		let output = "Choose a room to view the logs:<br />";
+		output += "<b><u>Chat rooms:</u></b><br />" + generateTable(roomList, "/viewlogs month,");
+		output += "<b><u>Group chats:</u></b><br />" + generateTable(groupChats, "/viewlogs month,");
 		user.send("|popup||wide||html|" + output);
 	},
 
@@ -108,6 +109,7 @@ exports.commands = {
 		});
 	},
 
+	logsearch: 'searchlogs',
 	searchlogs: function (target, room, user) {
 		if (!target) return this.parse('/help searchlogs');
 		let targets = target.split(',');
@@ -123,7 +125,6 @@ exports.commands = {
 		require('child_process').exec(command, function (error, stdout, stderr) {
 			if (error && stderr) {
 				user.popup("/searchlogs doesn't support Windows.");
-				console.log("/searchlogs error: " + error);
 				return false;
 			}
 			if (!stdout) return user.popup('Could not find any logs containing "' + pattern + '".');
@@ -189,17 +190,25 @@ function parseMessage(message, user) {
 	let timestamp = message.substr(0, 9).trim();
 	message = message.substr(9).trim();
 	let lineSplit = message.split('|');
+	let highlight = new RegExp("\\b" + toId(user) + "\\b", 'gi');
+	let div = "chat", name = '';
 
 	switch (lineSplit[1]) {
 	case 'c':
-		let name = lineSplit[2];
+		name = lineSplit[2];
 		if (name === '~') break;
-		let highlight = new RegExp("\\b" + toId(user) + "\\b", 'gi');
-		let div = "chat";
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
 		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b><em>' +
 		parseFormatting(lineSplit.slice(3).join('|')) + '</em></span>';
+		break;
+	case 'c:':
+		name = lineSplit[3];
+		if (name === '~') break;
+		if (lineSplit.slice(4).join('|').match(highlight)) div = "chat highlighted";
+		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
+		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b><em>' +
+		parseFormatting(lineSplit.slice(4).join('|')) + '</em></span>';
 		break;
 	case 'uhtml':
 		message = '<span class="notice">' + lineSplit.slice(3).join('|').trim() + '</span>';
@@ -215,6 +224,7 @@ function parseMessage(message, user) {
 	case 'J':
 	case 'l':
 	case 'L':
+	case 'n':
 	case 'N':
 	case 'unlink':
 	case 'userstats':
