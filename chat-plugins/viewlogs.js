@@ -66,8 +66,8 @@ exports.commands = {
 		let splitDate = date.split('-');
 		if (splitDate.length < 3) return this.sendReply("Usage: /viewlogs [room], [year-month-day / 2014-12-08] -Provides you with a temporary link to view the target rooms chat logs.");
 
-		fs.readFile('logs/chat/' + toId(targetRoom) + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
-			if (err && err.code === "ENOENT") return this.errorReply("No logs found.");
+		fs.readFile('logs/chat/' + targetRoom.toLowerCase() + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
+			if (err && err.code === "ENOENT") return user.send("|popup||html|<font color=\"red\">No logs found.</font>");
 			if (err) return this.errorReply("/viewlogs - Error: " + err);
 			fs.appendFile('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toId(targetRoom) + ". Date: " + date + '\n');
 			let filename = require('crypto').randomBytes(4).toString('hex');
@@ -156,6 +156,9 @@ function permissionCheck(user, room) {
 		return false;
 	}
 	if (Rooms(room) && Rooms(room).isPrivate && (!user.can('seniorstaff') && !user.can('warn', null, Rooms(room)))) {
+		return false;
+	}
+	if (Rooms(room) && Rooms(room).isPersonal && (!user.can('seniorstaff') && !user.can('warn', null, Rooms(room)))) {
 		return false;
 	}
 	return true;
