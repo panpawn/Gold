@@ -656,7 +656,7 @@ exports.commands = {
 		if (!target) return this.parse('/pmall [message] - Sends a PM to every user in a room.');
 		if (!this.can('pban')) return false;
 		Gold.pmAll(target);
-		Rooms('staff').add("(" + Tools.escapeHTML(user.name) + " has PMed all: " + Tools.escapeHTML(target).replace("&apos;", "'") + ")").update();
+		Rooms('staff').add("(" + Tools.escapeHTML(user.name) + " has PMed all: " + target).update();
 	},
 	credit: 'credits',
 	credits: function (target, room, user) {
