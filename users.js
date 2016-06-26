@@ -545,7 +545,7 @@ class User {
 			return '‽' + this.name;
 		}
 		if (this.namelocked) {
-			return '✖' + this.name;
+			return '‽' + this.name;
 		}
 		if (roomid) {
 			let room = Rooms.rooms[roomid];
@@ -923,7 +923,7 @@ class User {
 			} else if (userType === '4') {
 				this.autoconfirmed = userid;
 			} else if (userType === '5') {
-				Punishments.lock(this, Date.now() + PERMALOCK_CACHE_TIME, "Permalock", userid);
+				Punishments.lock(this, Date.now() + PERMALOCK_CACHE_TIME, userid, "Permalocked as " + name);
 			} else if (userType === '6') {
 				this.ban(false, userid, {'reason': 'global banned'});
 			}
@@ -1433,7 +1433,8 @@ class User {
 				}
 				userGroup = room.auth[this.userid] || userGroup;
 			}
-			if (Config.groupsranking.indexOf(userGroup) < Config.groupsranking.indexOf(room.modjoin !== true ? room.modjoin : room.modchat)) {
+			let modjoinGroup = room.modjoin !== true ? room.modjoin : room.modchat;
+			if (Config.groupsranking.indexOf(userGroup) < Config.groupsranking.indexOf(modjoinGroup)) {
 				if (!this.named) {
 					return null;
 				} else if (!this.can('bypassall')) {

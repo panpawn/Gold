@@ -1354,7 +1354,7 @@ exports.commands = {
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("WEEKLOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
-		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
+		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000, null, target);
 		return true;
 	},
 	weeklockhelp: ["/weeklock OR /wl [username], [reason] - Locks the user from talking in all chats for one week. Requires: % @ & ~"],

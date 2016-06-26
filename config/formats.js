@@ -75,14 +75,23 @@ exports.Formats = [
 	{
 		name: "NU",
 		desc: [
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3571975/\">np: NU Stage 13</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575107/\">np: NU Stage 14</a>",
 			"&bullet; <a href=\"https://www.smogon.com/dex/xy/tags/nu/\">NU Banlist</a>",
 			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3555650/\">NU Viability Ranking</a>",
 		],
 		section: "ORAS Singles",
 
+		searchShow: false,
 		ruleset: ['RU'],
 		banlist: ['RU', 'BL3'],
+	},
+	{
+		name: "NU (suspect test)",
+		section: "ORAS Singles",
+
+		challengeShow: false,
+		ruleset: ['NU'],
+		banlist: [],
 	},
 	{
 		name: "PU",
@@ -170,21 +179,11 @@ exports.Formats = [
 		section: "ORAS Doubles",
 
 		gameType: 'doubles',
-		searchShow: false,
 		ruleset: ['Pokemon', 'Standard Doubles', 'Team Preview'],
 		banlist: ['Arceus', 'Dialga', 'Giratina', 'Giratina-Origin', 'Groudon', 'Ho-Oh', 'Kyogre', 'Kyurem-White', 'Lugia',
 			'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Salamence-Mega', 'Salamencite', 'Shaymin-Sky', 'Xerneas', 'Yveltal', 'Zekrom',
 			'Soul Dew', 'Dark Void', 'Gravity ++ Grass Whistle', 'Gravity ++ Hypnosis', 'Gravity ++ Lovely Kiss', 'Gravity ++ Sing', 'Gravity ++ Sleep Powder', 'Gravity ++ Spore',
 		],
-	},
-	{
-		name: "Doubles OU (suspect test)",
-		section: "ORAS Doubles",
-
-		gameType: 'doubles',
-		challengeShow: false,
-		ruleset: ['Doubles OU'],
-		banlist: [],
 	},
 	{
 		name: "Doubles Ubers",
@@ -379,7 +378,7 @@ exports.Formats = [
 		section: "Other Metagames",
 
 		ruleset: ['Pokemon', 'Ability Clause', '-ate Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod'],
-		banlist: ['Groudon-Primal', 'Kyogre-Primal', 'Arena Trap', 'Huge Power', 'Parental Bond', 'Protean', 'Pure Power', 'Shadow Tag', 'Wonder Guard', 'Assist', 'Chatter'],
+		banlist: ['Groudon-Primal', 'Kyogre-Primal', 'Arena Trap', 'Huge Power', 'Moody', 'Parental Bond', 'Protean', 'Pure Power', 'Shadow Tag', 'Wonder Guard', 'Assist', 'Chatter'],
 	},
 	{
 		name: "1v1",
@@ -466,7 +465,7 @@ exports.Formats = [
 
 		mod: 'tiershift',
 		ruleset: ['OU'],
-		banlist: [],
+		banlist: ['Damp Rock'],
 	},
 	{
 		name: "Inverse Battle",

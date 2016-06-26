@@ -464,15 +464,18 @@ exports.BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, distance: 1},
 		onHit: function (pokemon, source, move) {
+			this.add('-cureteam', source, '[from] move: Aromatherapy');
 			let side = pokemon.side;
 			for (let i = 0; i < side.pokemon.length; i++) {
 				if (side.pokemon[i] !== source && ((side.pokemon[i].hasAbility('sapsipper')) ||
 						(side.pokemon[i].volatiles['substitute'] && !move.infiltrates))) {
 					continue;
 				}
-				side.pokemon[i].status = '';
+				if (side.pokemon[i].status && side.pokemon[i].hp) {
+					this.add('-curestatus', side.pokemon[i], side.pokemon[i].status);
+					side.pokemon[i].status = '';
+				}
 			}
-			this.add('-cureteam', source, '[from] move: Aromatherapy');
 		},
 		target: "allyTeam",
 		type: "Grass",
@@ -2168,12 +2171,6 @@ exports.BattleMovedex = {
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
 		boosts: {
 			spe: -2,
-		},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
 		},
 		secondary: false,
 		target: "allAdjacentFoes",
@@ -6087,12 +6084,15 @@ exports.BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, sound: 1, distance: 1, authentic: 1},
 		onHit: function (pokemon, source) {
+			this.add('-cureteam', source, '[from] move: Heal Bell');
 			let side = pokemon.side;
 			for (let i = 0; i < side.pokemon.length; i++) {
 				if (side.pokemon[i].hasAbility('soundproof')) continue;
-				side.pokemon[i].status = '';
+				if (side.pokemon[i].status && side.pokemon[i].hp) {
+					this.add('-curestatus', side.pokemon[i], side.pokemon[i].status);
+					side.pokemon[i].status = '';
+				}
 			}
-			this.add('-cureteam', source, '[from] move: Heal Bell');
 		},
 		target: "allyTeam",
 		type: "Normal",
@@ -10255,12 +10255,6 @@ exports.BattleMovedex = {
 		pp: 35,
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
-		},
 		status: 'psn',
 		secondary: false,
 		target: "normal",
@@ -10337,12 +10331,6 @@ exports.BattleMovedex = {
 		pp: 20,
 		priority: 1,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1, authentic: 1},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
-		},
 		volatileStatus: 'powder',
 		effect: {
 			duration: 1,
@@ -11329,6 +11317,7 @@ exports.BattleMovedex = {
 			this.add('-start', source, 'typechange', '[from] move: Reflect Type', '[of] ' + target);
 			source.types = target.getTypes(true);
 			source.addedType = target.addedType;
+			source.knownType = target.side === source.side && target.knownType;
 		},
 		secondary: false,
 		target: "normal",
@@ -12784,6 +12773,18 @@ exports.BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, charge: 1, protect: 1, mirror: 1, gravity: 1, distance: 1},
+		onModifyMove: function (move, source) {
+			if (!source.volatiles['skydrop']) {
+				move.accuracy = true;
+			}
+		},
+		onMoveFail: function (target, source) {
+			if (source.volatiles['twoturnmove'] && source.volatiles['twoturnmove'].duration === 1) {
+				source.removeVolatile('skydrop');
+				source.removeVolatile('twoturnmove');
+				this.add('-end', target, 'Sky Drop', '[interrupt]');
+			}
+		},
 		onTryHit: function (target, source, move) {
 			if (target.fainted) return false;
 			if (source.removeVolatile(move.id)) {
@@ -12963,12 +12964,6 @@ exports.BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
-		},
 		status: 'slp',
 		secondary: false,
 		target: "normal",
@@ -13613,12 +13608,6 @@ exports.BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
-		},
 		status: 'slp',
 		secondary: false,
 		target: "normal",
@@ -13967,12 +13956,6 @@ exports.BattleMovedex = {
 		pp: 30,
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
-		onTryHit: function (target) {
-			if (!target.runStatusImmunity('powder')) {
-				this.add('-immune', target, '[msg]');
-				return null;
-			}
-		},
 		status: 'par',
 		secondary: false,
 		target: "normal",
@@ -15182,6 +15165,16 @@ exports.BattleMovedex = {
 			if (target.hasType('Ghost')) return false;
 			if (!target.addType('Ghost')) return false;
 			this.add('-start', target, 'typeadd', 'Ghost', '[from] move: Trick-or-Treat');
+
+			if (target.side.active.length === 2 && target.position === 1) {
+				// Curse Glitch
+				const decision = this.willMove(target);
+				if (decision && decision.move.id === 'curse') {
+					decision.targetLoc = -1;
+					decision.targetSide = target.side;
+					decision.targetPosition = 0;
+				}
+			}
 		},
 		secondary: false,
 		target: "normal",
