@@ -1387,6 +1387,16 @@ exports.commands = {
 		'/animals pokemon - Displays a pokemon.',
 		'/animals help - Displays this help box.',
 	],
+	adq: function (target, room, user) {
+		if (!target) return this.parse('/help aqd');
+		return this.parse('/tour autodq ' + target);
+	},
+	adqhelp: ["/adq - A shortened version of /tour autodq [time]"],
+	astart: function (target, room, user) {
+		if (!target) return this.parse('/help astart');
+		return this.parse('/tour autostart ' + target);
+	},
+	astarthelp: ["/astart - A shortened version of /tour autostart [time]"],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
