@@ -90,8 +90,8 @@ exports.commands = {
 
 		case 'reload':
 			if (!this.can('pban')) return false;
-			this.sendReply("Trainer cards have been reloaded.");
 			loadTrainerCards();
+			this.sendReply("Trainer cards have been reloaded.");
 			break;
 
 		case 'source':
