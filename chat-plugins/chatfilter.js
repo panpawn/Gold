@@ -1,14 +1,35 @@
 'use strict';
+/* Chat filter plugin
+ * By: jd, panpawn
+ * Caps/stretching moderating from: https://github.com/Ecuacion/Pokemon-Showdown-Node-Bot/blob/master/features/moderation/index.js
+ */
 
 const fs = require('fs');
 
 let adWhitelist = (Config.adWhitelist ? Config.adWhitelist : []);
 let bannedMessages = (Config.bannedMessages ? Config.bannedMessages : []);
 let adRegex = new RegExp("(play.pokemonshowdown.com\\/~~)(?!(" + adWhitelist.join('|') + "))", "g");
+let MIN_CAPS_LENGTH = 18;
+let MIN_CAPS_PROPORTION = 0.8;
+let MAX_STRETCH = 7;
+let MAX_REPEAT = 4;
 
 Config.chatfilter = function (message, user, room, connection) {
 	user.lastActive = Date.now();
-
+	let capsMatch = message.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
+	capsMatch = capsMatch && toId(message).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(message).length * MIN_CAPS_PROPORTION));
+	let stretchRegExp = new RegExp('(.)\\1{' + MAX_STRETCH.toString() + ',}', 'g');
+	let repeatRegExp = new RegExp('(..+)\\1{' + MAX_REPEAT.toString() + ',}', 'g');
+	let stretchMatch = message.toLowerCase().match(stretchRegExp);
+	let formatError = capsMatch ? "too many capital letters" : "too much stretching";
+	if (capsMatch && stretchMatch) formatError = "too many capital letters and too much streching";
+	if (!user.can('mute', null, room) && room && room.id === 'lobby') {
+		if (capsMatch || stretchMatch) {
+			this.privateModCommand("(" + user.name + "'s message was not sent because it contained: " + formatError + ".  Message: " + message + ")");
+			return this.errorReply("Your message was not sent because it contained " + formatError + ".");
+			return false;
+		}
+	}
 	for (let x in bannedMessages) {
 		if (message.toLowerCase().indexOf(bannedMessages[x]) > -1 && bannedMessages[x] !== '' && message.substr(0, 1) !== '/') {
 			if (user.locked) return false;
