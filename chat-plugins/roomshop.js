@@ -56,7 +56,7 @@ exports.commands = {
 		let item, desc, price, itemName;
 		switch (toId(target[0])) {
 		case 'add':
-			if ((user.userid !== room.founder) && !this.can('declare')) return false;
+			if (user.userid !== room.founder && !this.can('declare') && room.isPrivate) return false;
 			if (RS.length > ITEM_CAP) return this.errorReply("You have reached the item cap of " + ITEM_CAP + " and cannot add any more items.");
 			item = target[1];
 			desc = target[2];
