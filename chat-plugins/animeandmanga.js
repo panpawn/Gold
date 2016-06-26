@@ -92,7 +92,7 @@ exports.commands = {
 
 		search('manga', target).then(data => {
 			amCache.manga[format(target)] = data;
-			if (this.broadcasting && data.genres.includes('Hentai')) return this.errorReply("Hentai manga cannot be broadcasted.");
+			if (data.genres.includes('Hentai')) return this.errorReply("Hentai manga info cannot be viewed.");
 			this.sendReplyBox('<div style = "padding: 5px;min-height: 360px; text-shadow: 1px 1px 1px #777;">' +
 				'<center style = "font-size: 14pt"><b>' + data.title_romaji + '</b></center>' +
 				'<div style = "padding: 2px">' +
