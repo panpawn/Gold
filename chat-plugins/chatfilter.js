@@ -9,6 +9,7 @@ const fs = require('fs');
 let adWhitelist = (Config.adWhitelist ? Config.adWhitelist : []);
 let bannedMessages = (Config.bannedMessages ? Config.bannedMessages : []);
 let adRegex = new RegExp("(play.pokemonshowdown.com\\/~~)(?!(" + adWhitelist.join('|') + "))", "g");
+
 let MIN_CAPS_LENGTH = 18;
 let MIN_CAPS_PROPORTION = 0.8;
 let MAX_STRETCH = 7;
@@ -16,6 +17,8 @@ let MAX_REPEAT = 4;
 
 Config.chatfilter = function (message, user, room, connection) {
 	user.lastActive = Date.now();
+
+	// caps and stretching
 	let capsMatch = message.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 	capsMatch = capsMatch && toId(message).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(message).length * MIN_CAPS_PROPORTION));
 	let stretchRegExp = new RegExp('(.)\\1{' + MAX_STRETCH.toString() + ',}', 'g');
@@ -30,6 +33,8 @@ Config.chatfilter = function (message, user, room, connection) {
 			return false;
 		}
 	}
+
+	// global banned messages
 	for (let x in bannedMessages) {
 		if (message.toLowerCase().indexOf(bannedMessages[x]) > -1 && bannedMessages[x] !== '' && message.substr(0, 1) !== '/') {
 			if (user.locked) return false;
@@ -44,9 +49,10 @@ Config.chatfilter = function (message, user, room, connection) {
 			return false;
 		}
 	}
+
+	// advertising
 	let pre_matches = (message.match(/psim|psim.us|psim us|psm.us|psm us/g) || []).length;
 	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server); }).length : 0);
-
 	if (!user.can('hotpatch') && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
 		if (user.locked) return false;
 		if (!user.advWarns) user.advWarns = 0;
