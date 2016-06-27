@@ -806,8 +806,24 @@ exports.Formats = [
 
 		mod: 'gen4',
 	},
+	{
+		name: "Doubles Monotype",
+		desc: [
+			"All Pok&eacute;mon on a team must share a type.  This is the 'doubles' version of traditional Monotype.",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3565113/\">Monotype Viability Ranking</a>",
+		],
+		section: "Gold Server Tiers",
+		gameType: 'doubles',
 
-	////Gold Inverse Battles///////////////////////////////////////////
+		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
+		banlist: ['Aegislash', 'Arceus', 'Blaziken', 'Darkrai', 'Deoxys', 'Deoxys-Attack', 'Dialga', 'Genesect', 'Giratina', 'Giratina-Origin', 'Greninja', 'Groudon',
+			'Ho-Oh', 'Kyogre', 'Kyurem-White', 'Lugia', 'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Shaymin-Sky', 'Talonflame', 'Xerneas', 'Yveltal', 'Zekrom',
+			'Altarianite', 'Charizardite X', 'Damp Rock', 'Gengarite', 'Kangaskhanite', 'Lucarionite', 'Mawilite', 'Metagrossite', 'Sablenite', 'Salamencite', 'Slowbronite', 'Smooth Rock', 'Soul Dew',
+		],
+	},
+
+	// Gold Inverse Tiers
 	///////////////////////////////////////////////////////////////////
 	{
 		name: "Inverse Random Monotype",
