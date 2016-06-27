@@ -67,27 +67,36 @@ function onLoad () {
 			var timestamp = curLine.substr(0, 9).trim();
 			curLine = curLine.substr(9).trim();
 			var lineSplit = curLine.split('|');
+			var div = "chat";
 
 			switch (lineSplit[1]) {
 				case 'c':
-				var name = lineSplit[2];
-				if (name === '~') break;
-				var highlight = new RegExp("\\b" + toId(headerInfo[2]) + "\\b", 'gi');
-				var div = "chat";
-				if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
-				lines[line] = '<div class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0,1) +
-				'</small><b><font color="' + hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b><em>' +
-				parseMessage(lineSplit.slice(3).join('|')) + '</em></div>'
-				break;
+					var name = lineSplit[2];
+					if (name === '~') break;
+					var highlight = new RegExp("\\b" + toId(headerInfo[2]) + "\\b", 'gi');
+					if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
+					lines[line] = '<div class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0,1) +
+					'</small><b><font color="' + hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
+					parseMessage(lineSplit.slice(3).join('|')) + '</em></div>'
+					break;
+				case 'c:':
+					var name = lineSplit[3];
+					if (name === '~') break;
+					var highlight = new RegExp("\\b" + toId(headerInfo[2]) + "\\b", 'gi');
+					if (lineSplit.slice(4).join('|').match(highlight)) div = "chat highlighted";
+					lines[line] = '<div class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0,1) +
+					'</small><b><font color="' + hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
+					parseMessage(lineSplit.slice(4).join('|')) + '</em></div>'
+					break;
 				case 'uhtml':
-				lines[line] = '<div class="notice">' + sanitizeHTML(lineSplit.slice(3).join('|').trim()) + '</div>';
-				break;
+					lines[line] = '<div class="notice">' + sanitizeHTML(lineSplit.slice(3).join('|').trim()) + '</div>';
+					break;
 				case 'raw':
 				case 'html':
-				lines[line] = '<div class="notice">' + sanitizeHTML(lineSplit.slice(2).join('|').trim()) + '</div>';
-				break;
+					lines[line] = '<div class="notice">' + sanitizeHTML(lineSplit.slice(2).join('|').trim()) + '</div>';
+					break;
 				case '':
-				lines[line] = '<div class="notice">' + escapeHTML(lineSplit.slice(1).join('|')) + '</div>';
+					lines[line] = '<div class="notice">' + escapeHTML(lineSplit.slice(1).join('|')) + '</div>';
 				case 'j':
 				case 'J':
 				case 'l':
@@ -97,11 +106,11 @@ function onLoad () {
 				case 'userstats':
 				case 'tournament':
 				case 'uhtmlchange':
-				lines[line] = "";
-				break;
+					lines[line] = "";
+					break;
 				default:
-				lines[line] = '<div class="notice"><code>' + curLine + '</code></div>';
-				break;
+					lines[line] = '<div class="notice"><code>' + curLine + '</code></div>';
+					break;
 			}
 		}
 

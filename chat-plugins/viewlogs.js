@@ -33,19 +33,26 @@ exports.commands = {
 		}
 
 		let rooms = fs.readdirSync('logs/chat');
-		let roomList = [], groupChats = [];
+		let roomList = [], groupChats = [], chatRooms = [];
 
 		for (let u in rooms) {
 			if (!rooms[u]) continue;
 			if (rooms[u] === 'README.md') continue;
 			if (!permissionCheck(user, rooms[u])) continue;
-			rooms[u].substr(0, 9) === 'groupchat' ? groupChats.push(rooms[u]) : roomList.push(rooms[u]);
+			if (rooms[u].substr(0, 9) === 'groupchat') {
+				groupChats.push(rooms[u]);
+			} else if (Rooms(rooms[u])) {
+				chatRooms.push(rooms[u]);
+			} else {
+				roomList.push(rooms[u]);
+			}
 		}
-		if (roomList.length < 1) return this.errorReply("You don't have access to view the logs of any rooms.");
+		if (roomList.length + groupChats.length + chatRooms.length < 1) return this.errorReply("You don't have access to view the logs of any rooms.");
 
 		let output = "Choose a room to view the logs:<br />";
-		output += "<b><u>Chat rooms:</u></b><br />" + generateTable(roomList, "/viewlogs month,");
-		output += "<b><u>Group chats:</u></b><br />" + generateTable(groupChats, "/viewlogs month,");
+		if (chatRooms.length >= 1) output += "<b><u>Chat rooms currently on the server:</u></b><br />" + generateTable(chatRooms, "/viewlogs month,");
+		if (roomList.length >= 1) output += "<b><u>Rooms formerly on the server:</u></b><br />" + generateTable(roomList, "/viewlogs month,");
+		if (groupChats.length >= 1) output += "<b><u>All Group chats:</u></b><br />" + generateTable(groupChats, "/viewlogs month,");
 		user.send("|popup||wide||html|" + output);
 	},
 
@@ -199,7 +206,7 @@ function parseMessage(message, user) {
 		if (name === '~') break;
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
-		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b><em>' +
+		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
 		parseFormatting(lineSplit.slice(3).join('|')) + '</em></span>';
 		break;
 	case 'c:':
@@ -207,7 +214,7 @@ function parseMessage(message, user) {
 		if (name === '~') break;
 		if (lineSplit.slice(4).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
-		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b><em>' +
+		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
 		parseFormatting(lineSplit.slice(4).join('|')) + '</em></span>';
 		break;
 	case 'uhtml':
