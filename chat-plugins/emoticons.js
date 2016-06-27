@@ -214,6 +214,7 @@ exports.commands = {
 					if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 					if (room.isPersonal) return this.errorReply("You cannot set emoticon moderated chat in personal rooms.");
 					if (!parts[2]) return this.errorReply("Usage: /emote modchat, set, [rank] - Sets modchat for emoticons in the respected room.");
+					if (room.emoteModChat && toId(parts[2]) === 'off' || toId(parts[2]) === 'disable') return this.errorReply("Did you mean /emote modchat, disable?");
 					if (!Config.groups[parts[2]] && toId(parts[2]) !== 'autoconfirmed' && toId(parts[2]) !== 'ac' || parts[2] === '★') return this.errorReply("ERROR: " + parts[2] + " is not a defined group in Config or is not yet optimized for moderated emoticon chat at this time.");
 					if (room.emoteModChat === parts[2]) return this.errorReply("Emoticon modchat is already enabled in this room for the rank you're trying to set it to.");
 					if (toId(parts[2]) === 'ac') parts[2] = 'autoconfirmed';
