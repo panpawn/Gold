@@ -38,9 +38,9 @@ exports.Formats = [
 		banlist: ['Uber', 'Shadow Tag', 'Soul Dew'],
 	},
 	{
-		name: "ORAS 2U",
-						desc: [
-							"&bullet; <a href=\"http://www.pokemonperfect.com/forums/index.php?threads/oras-2u-discussion-thread.3865/\">np: ORAS 2U</a>",
+		 name: "ORAS 2U",
+		desc: [
+	"&bullet; <a href=\"http://www.pokemonperfect.com/forums/index.php?threads/oras-2u-discussion-thread.3865/\">np: ORAS 2U</a>",
                   ],
  		section: "ORAS Singles",
  
