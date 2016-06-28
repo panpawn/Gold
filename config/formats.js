@@ -39,7 +39,7 @@ exports.Formats = [
 	},
 	{
 		name: "ORAS 2U",
-                desc [
+                desc: [
                      "&bullet; <a href=\"http://www.pokemonperfect.com/forums/index.php?threads/oras-2u-discussion-thread.3865/\">np: ORAS 2U</a>"
                 ],
 		section: "ORAS Singles",
