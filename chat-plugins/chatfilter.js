@@ -6,9 +6,11 @@
 
 const fs = require('fs');
 
-let adWhitelist = (Config.adWhitelist ? Config.adWhitelist : []);
-let bannedMessages = (Config.bannedMessages ? Config.bannedMessages : []);
+let adWhitelist = Config.adWhitelist ? Config.adWhitelist : [];
+let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 let adRegex = new RegExp("(play.pokemonshowdown.com\\/~~)(?!(" + adWhitelist.join('|') + "))", "g");
+
+let watchPhrases = Config.watchPhrases ? Config.watchPhrases : [];
 
 let MIN_CAPS_LENGTH = 18;
 let MIN_CAPS_PROPORTION = 0.8;
@@ -32,6 +34,12 @@ Config.chatfilter = function (message, user, room, connection) {
 			return this.errorReply("Your message was not sent because it contained " + formatError + ".");
 			return false;
 		}
+	}
+
+	// watch phrases
+	let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
+	if (watchWords >= 1) {
+		Rooms('upperstaff').add(Tools.escapeHTML(user.name) + " said: " + Tools.escapeHTML(message) + " | " + (room ? "IN ROOM: " + room.id : "IN A PM") + ".").update();
 	}
 
 	// global banned messages
