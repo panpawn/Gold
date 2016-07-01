@@ -7,12 +7,10 @@
 const fs = require('fs');
 
 let adWhitelist = Config.adWhitelist ? Config.adWhitelist : [];
+let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 let adRegex = new RegExp("(play.pokemonshowdown.com\\/~~)(?!(" + adWhitelist.join('|') + "))", "g");
 
-let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
-
 let watchPhrases = Config.watchPhrases ? Config.watchPhrases : [];
-let watchUsers = Config.watchUsers ? Config.watchUsers : [];
 
 let MIN_CAPS_LENGTH = 18;
 let MIN_CAPS_PROPORTION = 0.8;
@@ -42,12 +40,6 @@ Config.chatfilter = function (message, user, room, connection) {
 	let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
 	if (watchWords >= 1) {
 		Rooms('upperstaff').add(Tools.escapeHTML(user.name) + " said: " + Tools.escapeHTML(message) + " | " + (room ? "IN ROOM: " + room.id : "IN A PM") + ".").update();
-	}
-
-	// watch users
-	let watchUsers = watchUsers.filter(name => { return ~user.userid.indexOf(name); }).length;
-	if (watchUser >= 1) {
-		Rooms('upperstaff').add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message") + ")__ " + message).update();
 	}
 
 	// global banned messages
