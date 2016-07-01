@@ -73,6 +73,7 @@ Gold.tourCard = function (tourSize, userid) {
 	if (tourSize > 32) tourSize = 32;
 	let tourRarity = tourCardRarity[Math.floor(tourSize / 3)];
 	let cacheValue = rareCache[cleanCard.indexOf(toId(tourRarity))];
+	if (!cacheValue || !cacheValue.length) return false;
 	let card = cacheValue[Math.round(Math.random() * (cacheValue.length - 1))];
 	if (tourRarity === 'No Card') return;
 	addCard(userid, card);
