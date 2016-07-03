@@ -1123,6 +1123,12 @@ exports.commands = {
 			return this.errorReply("The room '" + target + "' does not exist.");
 		}
 		user.leaveRoom(targetRoom || room, connection);
+		if (user.named && user.registered) {
+			if (Gold.autoJoinRooms[user.userid] && Gold.autoJoinRooms[user.userid].includes((targetRoom ? targetRoom.id : room.id))) {
+				Gold.autoJoinRooms[user.userid].splice(Gold.autoJoinRooms[user.userid].indexOf((targetRoom ? targetRoom.id : room.id)), 1);
+				Gold.saveAutoJoins();
+			}
+		}
 	},
 
 

@@ -1402,6 +1402,10 @@ class User {
 				return null;
 			} else {
 				connection.sendTo(roomid, "|noinit|nonexistent|The room '" + roomid + "' does not exist.");
+				if (Gold.autoJoinRooms[this.userid] && Gold.autoJoinRooms[this.userid].includes(roomid)) {
+					Gold.autoJoinRooms[this.userid].splice(Gold.autoJoinRooms[this.userid].indexOf(roomid), 1);
+					Gold.saveAutoJoins();
+				}
 				return false;
 			}
 		}
@@ -1421,6 +1425,10 @@ class User {
 					return null;
 				} else {
 					connection.sendTo(roomid, "|noinit|nonexistent|The room '" + roomid + "' does not exist.");
+					if (Gold.autoJoinRooms[this.userid] && Gold.autoJoinRooms[this.userid].includes(room.id)) {
+						Gold.autoJoinRooms[this.userid].splice(Gold.autoJoinRooms[this.userid].indexOf(room.id), 1);
+						Gold.saveAutoJoins();
+					}
 					return false;
 				}
 			}
@@ -1437,6 +1445,10 @@ class User {
 
 		let joinResult = this.joinRoom(room, connection);
 		if (!joinResult) {
+			if (Gold.autoJoinRooms[this.userid] && Gold.autoJoinRooms[this.userid].includes(room.id)) {
+				Gold.autoJoinRooms[this.userid].splice(Gold.autoJoinRooms[this.userid].indexOf(room.id), 1);
+				Gold.saveAutoJoins();
+			}
 			if (joinResult === null) {
 				connection.sendTo(roomid, "|noinit|joinfailed|You are banned from the room '" + roomid + "'.");
 				return false;
@@ -1475,6 +1487,15 @@ class User {
 			}
 			connection.joinRoom(room);
 			room.onConnect(this, connection);
+		}
+		if (this.named && this.registered && room.type === 'chat') {
+			if (!Gold.autoJoinRooms[this.userid]) Gold.autoJoinRooms[this.userid] = [];
+			if (Gold.autoJoinRooms[this.userid].length < Config.maxAutoJoinRooms) {
+				if (Gold.autoJoinRooms[this.userid].indexOf(room.id) === -1) {
+					Gold.autoJoinRooms[this.userid].push(room.id);
+					Gold.saveAutoJoins();
+				}
+			}
 		}
 		return true;
 	}

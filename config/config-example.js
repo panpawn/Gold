@@ -200,6 +200,15 @@ try {
 	setTimeout(function () {require('../chat-plugins/chatfilter.js');}, 500);
 } catch (e) {}
 
+// watchUsers - log these user's messages to the upper staff room
+// watchPhrases - log messages that contain the ids of these phrases
+// to the upper staff room
+exports.watchUsers = [];
+exports.watchPhrases = [];
+
+// maxAutoJoinRooms - the maximum number of rooms to be autojoined
+exports.maxAutoJoinRooms = 8;
+
 // replsocketprefix - the prefix for the repl sockets to be listening on
 // replsocketmode - the file mode bits to use for the repl sockets
 exports.replsocketprefix = './logs/repl/';

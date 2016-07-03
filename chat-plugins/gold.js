@@ -1634,4 +1634,13 @@ function formatName(name) {
 	} else {
 		return Gold.nameColor(name, false);
 	}
+};
+
+Gold.autoJoinRooms = {};
+try {
+	Gold.autoJoinRooms = JSON.parse(fs.readFileSync('config/autojoin.json', 'utf8'));
+} catch (e) {};
+
+Gold.saveAutoJoins = function() {
+	fs.writeFileSync('config/autojoin.json', JSON.stringify(Gold.autoJoinRooms));
 }

@@ -767,6 +767,11 @@ let GlobalRoom = (() => {
 				connection.autojoins = '';
 			}
 		}
+		if (Gold.autoJoinRooms[user.userid]) {
+			for (let u = 0; u < Gold.autoJoinRooms[user.userid].length; u++) {
+				user.tryJoinRoom(Gold.autoJoinRooms[user.userid][u], connection);
+			}
+		}
 	};
 	GlobalRoom.prototype.onConnect = function (user, connection) {
 		let initdata = '|updateuser|' + user.name + '|' + (user.named ? '1' : '0') + '|' + user.avatar + '\n';
