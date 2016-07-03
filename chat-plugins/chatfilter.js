@@ -38,15 +38,10 @@ Config.chatfilter = function (message, user, room, connection) {
 		}
 	}
 
-	// watch phrases
+	// watch phrases and watch users
 	let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
-	if (watchWords >= 1) {
-		Rooms('upperstaff').add(Tools.escapeHTML(user.name) + " said: " + Tools.escapeHTML(message) + " | " + (room ? "IN ROOM: " + room.id : "IN A PM") + ".").update();
-	}
-
-	// watch users
 	let watchUserslist = watchUsers.filter(name => { return ~user.userid.indexOf(name); }).length;
-	if (watchUserslist >= 1) {
+	if (watchWords >= 1 || watchUserslist >= 1) {
 		Rooms('upperstaff').add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message") + ")__ " + message).update();
 	}
 
