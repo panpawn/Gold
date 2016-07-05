@@ -1401,7 +1401,7 @@ exports.commands = {
 	// Anime and manga commands by Silveee
 	anime: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (!target) return this.errorReply("No target.");
+		if (!target) return this.parse('/help anime');
 		let targetAnime = Tools.escapeHTML(target.trim());
 		let id = targetAnime.toLowerCase().replace(/ /g, '');
 		if (amCache.anime[id]) return this.sendReply('|raw|' + amCache.anime[id]);
@@ -1436,9 +1436,10 @@ exports.commands = {
 			return this.errorReply("Anime not found.");
 		});
 	},
+	animehelp: ['/anime [query] - Searches for an anime series based on the given search query.'],
 	manga: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (!target) return this.errorReply("No target.");
+		if (!target) return this.parse('/help manga');
 		let targetAnime = Tools.escapeHTML(target.trim());
 		let id = targetAnime.toLowerCase().replace(/ /g, '');
 		if (amCache.anime[id]) return this.sendReply('|raw|' + amCache.anime[id]);
@@ -1473,6 +1474,7 @@ exports.commands = {
 			return this.errorReply("Anime not found.");
 		});
 	},
+	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
