@@ -36,7 +36,7 @@ exports = module.exports = function (err, description, data) {
 		console.error("\nSUBCRASH: " + err.stack + "\n");
 	});
 
-	if (Config.crashguardemail && ((datenow - lastCrashLog) > CRASH_EMAIL_THROTTLE)) {
+	if (Config.crashguardemail) {
 		lastCrashLog = datenow;
 		try {
 			if (!transport) transport = require('nodemailer').createTransport(Config.crashguardemail.options);
