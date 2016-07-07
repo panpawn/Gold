@@ -19,8 +19,9 @@ let MIN_CAPS_PROPORTION = 0.8;
 let MAX_STRETCH = 7;
 let MAX_REPEAT = 4;
 
-Config.chatfilter = function (message, user, room, connection) {
+Config.chatfilter = function (message, user, room, connection, targetUser) {
 	user.lastActive = Date.now();
+	if (!room && !Users(targetUser)) targetUser = { name: 'unknown user', };
 
 	// caps and stretching
 	let capsMatch = message.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
@@ -42,7 +43,7 @@ Config.chatfilter = function (message, user, room, connection) {
 	let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
 	let watchUserslist = watchUsers.filter(name => { return ~user.userid.indexOf(name); }).length;
 	if (watchWords >= 1 || watchUserslist >= 1) {
-		Rooms('upperstaff').add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message") + ")__ " + message).update();
+		Rooms('upperstaff').add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message to " + targetUser.name) + ")__ " + message).update();
 	}
 
 	// global banned messages
@@ -55,7 +56,7 @@ Config.chatfilter = function (message, user, room, connection) {
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server (' +
 			bannedMessages[x] + ') (' + connection.ip + ')\n');
 			Gold.pmUpperStaff(user.name + ' has been automatically locked for sending a message containing a banned word' +
-			(room ? ". **Room:**" + room.id : " in a private message.") + ' **Message:** ' + message, '~Server');
+			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
 			return false;
 		}
 	}
@@ -71,12 +72,12 @@ Config.chatfilter = function (message, user, room, connection) {
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, "Advertising");
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server. (Advertising) (' + connection.ip + ')\n');
 			connection.sendTo(room, '|raw|<strong class="message-throttle-notice">You have been locked for attempting to advertise.</strong>');
-			Gold.pmUpperStaff(user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message.") + " **Message:** " + message, "~Server");
-			Monitor.log(Tools.escapeHTML(user.name) + " has been locked for attempting to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") + " **Message:** " + Tools.escapeHTML(message));
+			Gold.pmUpperStaff(user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
+			Monitor.log(Tools.escapeHTML(user.name) + " has been locked for attempting to advertise" + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + Tools.escapeHTML(message));
 			return false;
 		}
-		Gold.pmUpperStaff(user.name + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") + " **Message:** " + message, "~Server");
-		Monitor.log(Tools.escapeHTML(user.name) + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message.") + " **Message:** " + Tools.escapeHTML(message));
+		Gold.pmUpperStaff(user.name + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
+		Monitor.log(Tools.escapeHTML(user.name) + " has attempted to advertise" + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + Tools.escapeHTML(message));
 		connection.sendTo(room, '|raw|<strong class="message-throttle-notice">Advertising detected, your message has not been sent and upper staff has been notified.' + '<br />Further attempts to advertise will result in being locked</strong>');
 		connection.user.popup("|modal|Advertising detected, your message has not been sent and upper staff has been notified.\n" + "Further attempts to advertise will result in being locked");
 		return false;
