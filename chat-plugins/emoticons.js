@@ -121,6 +121,8 @@ function saveEmotes() {
 }
 
 exports.commands = {
+	emoticons: 'ezemote',
+	emoticon: 'ezemote',
 	emotes: 'ezemote',
 	temotes: 'ezemote',
 	temote: 'ezemote',
