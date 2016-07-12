@@ -42,7 +42,7 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 	// watch phrases and watch users
 	let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
 	let watchUserslist = watchUsers.filter(name => { return ~user.userid.indexOf(name); }).length;
-	if (watchWords >= 1 || watchUserslist >= 1) {
+	if (!user.can('hotpatch') && watchWords >= 1 || watchUserslist >= 1) {
 		Rooms('upperstaff').add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message to " + targetUser.name) + ")__ " + message).update();
 	}
 
