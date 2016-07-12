@@ -574,7 +574,7 @@ exports.commands = {
 				continue;
 			}
 
-			return this.sendReply("No type or move '" + targets[i] + "' found.");
+			return this.errorReply("No type or move '" + targets[i] + "' found.");
 		}
 		if (sources.length === 0) return this.errorReply("No moves using a type table for determining damage were specified.");
 		if (sources.length > 4) return this.errorReply("Specify a maximum of 4 moves or types.");
@@ -1089,7 +1089,7 @@ exports.commands = {
 		let format = Tools.getFormat(targetId);
 		if (format.effectType === 'Format') formatList = [targetId];
 		if (!formatList) {
-			if (this.broadcasting && (cmd !== 'om' && cmd !== 'othermetas')) return this.sendReply("'" + target + "' is not a format. This command's search mode is too spammy to broadcast.");
+			if (this.broadcasting && (cmd !== 'om' && cmd !== 'othermetas')) return this.errorReply("'" + target + "' is not a format. This command's search mode is too spammy to broadcast.");
 			formatList = Object.keys(Tools.data.Formats).filter(formatid => Tools.data.Formats[formatid].effectType === 'Format');
 		}
 
@@ -1109,7 +1109,7 @@ exports.commands = {
 			break;
 		}
 
-		if (!totalMatches) return this.sendReply("No " + (target ? "matched " : "") + "formats found.");
+		if (!totalMatches) return this.errorReply("No " + (target ? "matched " : "") + "formats found.");
 		if (totalMatches === 1) {
 			let format = Tools.getFormat(Object.values(sections)[0].formats[0]);
 			let formatType = (format.gameType || "singles");
@@ -1135,7 +1135,7 @@ exports.commands = {
 
 	roomhelp: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (this.broadcasting && (room.id === 'lobby' || room.battle)) return this.sendReply("This command is too spammy for lobby/battles.");
+		if (this.broadcasting && (room.id === 'lobby' || room.battle)) return this.errorReply("This command is too spammy for lobby/battles.");
 		this.sendReplyBox(
 			"Room drivers (%) can use:<br />" +
 			"- /warn OR /k <em>username</em>: warn a user and show the Pok&eacute;mon Showdown rules<br />" +
@@ -1396,7 +1396,7 @@ exports.commands = {
 		// Pokemon
 		if (pokemon.exists) {
 			atLeastOne = true;
-			if (pokemon.isNonstandard) return this.sendReply(pokemon.species + ' is not a real Pok\u00e9mon.');
+			if (pokemon.isNonstandard) return this.errorReply(pokemon.species + ' is not a real Pok\u00e9mon.');
 
 			let baseSpecies = pokemon.baseSpecies || pokemon.species;
 			let forme = pokemon.forme;
@@ -1432,7 +1432,7 @@ exports.commands = {
 		// Move
 		if (move.exists) {
 			atLeastOne = true;
-			if (move.isNonstandard) return this.sendReply(move.name + ' is not a real move.');
+			if (move.isNonstandard) return this.errorReply(move.name + ' is not a real move.');
 			let link = baseLink + 'moves/' + move.name.toLowerCase();
 			this.sendReplyBox("<a href=\"" + link + "\">" + move.name + " move description</a> by Veekun");
 		}

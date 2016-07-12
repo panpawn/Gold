@@ -509,7 +509,7 @@ exports.BattleScripts = {
 			}
 
 			if (moveData.boosts && !target.fainted) {
-				hitResult = this.boost(moveData.boosts, target, pokemon, move);
+				hitResult = this.boost(moveData.boosts, target, pokemon, move, isSecondary, isSelf);
 				didSomething = didSomething || hitResult;
 			}
 			if (moveData.heal && !target.fainted) {
@@ -1376,6 +1376,9 @@ exports.BattleScripts = {
 				case 'dragonclaw':
 					if (hasMove['outrage'] || hasMove['dragontail']) rejected = true;
 					break;
+				case 'dracometeor':
+					if (counter.setupType === 'Physical' && hasMove['outrage']) rejected = true;
+					break;
 				case 'dragonpulse': case 'spacialrend':
 					if (hasMove['dracometeor'] || hasMove['outrage']) rejected = true;
 					break;
@@ -2087,20 +2090,20 @@ exports.BattleScripts = {
 		};
 	},
 	randomTeam: function (side) {
-		let pokemonLeft = 0;
 		let pokemon = [];
 
 		let excludedTiers = {'NFE':1, 'LC Uber':1, 'LC':1};
 		let allowedNFE = {'Chansey':1, 'Doublade':1, 'Gligar':1, 'Porygon2':1, 'Scyther':1};
 
 		// For Monotype
+		let isMonotype = this.format === 'monotyperandombattle' || this.format === 'inverserandommonotype';
 		let typePool = Object.keys(this.data.TypeChart);
 		let type = typePool[this.random(typePool.length)];
 
 		let pokemonPool = [];
 		for (let id in this.data.FormatsData) {
 			let template = this.getTemplate(id);
-			if (this.format === 'monotyperandombattle' || this.format === 'inverserandommonotype') {
+			if (isMonotype) {
 				let types = template.types;
 				if (template.battleOnly) types = this.getTemplate(template.baseSpecies).types;
 				if (types.indexOf(type) < 0) continue;
@@ -2123,7 +2126,7 @@ exports.BattleScripts = {
 		let puCount = 0;
 		let teamDetails = {};
 
-		while (pokemonPool.length && pokemonLeft < 6) {
+		while (pokemonPool.length && pokemon.length < 6) {
 			let template = this.getTemplate(this.sampleNoReplace(pokemonPool));
 			if (!template.exists) continue;
 
@@ -2205,7 +2208,7 @@ exports.BattleScripts = {
 
 			let types = template.types;
 
-			if (this.format !== 'monotyperandombattle') {
+			if (!isMonotype) {
 				// Limit 2 of any type
 				let skip = false;
 				for (let t = 0; t < types.length; t++) {
@@ -2220,22 +2223,23 @@ exports.BattleScripts = {
 			let set = this.randomSet(template, pokemon.length, teamDetails);
 
 			// Illusion shouldn't be the last Pokemon of the team
-			if (set.ability === 'Illusion' && pokemonLeft > 4) continue;
+			if (set.ability === 'Illusion' && pokemon.length > 4) continue;
 
-			// Limit 1 of any type combination
-			let typeCombo = types.join();
+			// Limit 1 of any type combination, 2 in monotype
+			let typeCombo = types.sort().join();
 			if (set.ability === 'Drought' || set.ability === 'Drizzle' || set.ability === 'Sand Stream') {
 				// Drought, Drizzle and Sand Stream don't count towards the type combo limit
 				typeCombo = set.ability;
+				if (typeCombo in typeComboCount) continue;
+			} else {
+				if (typeComboCount[typeCombo] >= (isMonotype ? 2 : 1)) continue;
 			}
-			if (typeCombo in typeComboCount) continue;
 
 			// Okay, the set passes, add it to our team
 			pokemon.push(set);
 
 			// Now that our Pokemon has passed all checks, we can increment our counters
 			baseFormes[template.baseSpecies] = 1;
-			pokemonLeft++;
 
 			// Increment type counters
 			for (let t = 0; t < types.length; t++) {
@@ -2245,7 +2249,11 @@ exports.BattleScripts = {
 					typeCount[types[t]] = 1;
 				}
 			}
-			typeComboCount[typeCombo] = 1;
+			if (typeCombo in typeComboCount) {
+				typeComboCount[typeCombo]++;
+			} else {
+				typeComboCount[typeCombo] = 1;
+			}
 
 			// Increment Uber/NU counters
 			if (tier === 'Uber') {
@@ -2266,7 +2274,6 @@ exports.BattleScripts = {
 		return pokemon;
 	},
 	randomDoublesTeam: function (side) {
-		let pokemonLeft = 0;
 		let pokemon = [];
 
 		let excludedTiers = {'NFE':1, 'LC Uber':1, 'LC':1};
@@ -2293,7 +2300,7 @@ exports.BattleScripts = {
 		let puCount = 0;
 		let teamDetails = {megaCount: 0, stealthRock: 0, hazardClear: 0};
 
-		while (pokemonPool.length && pokemonLeft < 6) {
+		while (pokemonPool.length && pokemon.length < 6) {
 			let template = this.getTemplate(this.sampleNoReplace(pokemonPool));
 			if (!template.exists) continue;
 
@@ -2371,7 +2378,7 @@ exports.BattleScripts = {
 			let set = this.randomDoublesSet(template, pokemon.length, teamDetails);
 
 			// Illusion shouldn't be on the last pokemon of the team
-			if (set.ability === 'Illusion' && pokemonLeft > 4) continue;
+			if (set.ability === 'Illusion' && pokemon.length > 4) continue;
 
 			// Limit 1 of any type combination
 			let typeCombo = types.join();
@@ -2390,8 +2397,6 @@ exports.BattleScripts = {
 			pokemon.push(set);
 
 			// Now that our Pokemon has passed all checks, we can increment our counters
-			pokemonLeft++;
-
 			// Increment type counters
 			for (let t = 0; t < types.length; t++) {
 				if (types[t] in typeCount) {
@@ -3361,7 +3366,6 @@ exports.BattleScripts = {
 		const chosenTier = availableTiers[this.random(availableTiers.length)];
 		this.seed = prevSeed;
 
-		let pokemonLeft = 0;
 		let pokemon = [];
 
 		let pokemonPool = Object.keys(this.randomFactorySets[chosenTier]);
@@ -3379,7 +3383,7 @@ exports.BattleScripts = {
 			'levitate': ['Ground'],
 		};
 
-		while (pokemonPool.length && pokemonLeft < 6) {
+		while (pokemonPool.length && pokemon.length < 6) {
 			let template = this.getTemplate(this.sampleNoReplace(pokemonPool));
 			if (!template.exists) continue;
 
@@ -3415,7 +3419,6 @@ exports.BattleScripts = {
 
 			// Okay, the set passes, add it to our team
 			pokemon.push(set);
-			pokemonLeft++;
 
 			// Now that our Pokemon has passed all checks, we can update team data:
 			for (let t = 0; t < types.length; t++) {
@@ -3515,9 +3518,8 @@ exports.BattleScripts = {
 		let uberCount = 0;
 		let puCount = 0;
 		let teamDetails = {};
-		let pokemonLeft = 0;
 
-		while (pokemonLeft < 6) {
+		while (team.length < 6) {
 			let pokemon = this.sampleNoReplace(seasonalPokemonList);
 			let template = Object.assign({}, this.getTemplate(pokemon));
 
@@ -3566,7 +3568,7 @@ exports.BattleScripts = {
 				break;
 			}
 
-			let set = this.randomSet(template, pokemonLeft);
+			let set = this.randomSet(template, team.length);
 
 			let types = template.types;
 
@@ -3589,7 +3591,6 @@ exports.BattleScripts = {
 
 			// Now that our Pokemon has passed all checks, we can increment our counters
 			baseFormes[template.baseSpecies] = 1;
-			pokemonLeft++;
 
 			// Increment type counters
 			for (let t = 0; t < types.length; t++) {

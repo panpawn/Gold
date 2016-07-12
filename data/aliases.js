@@ -190,6 +190,8 @@ exports.BattleAliases = {
 	"meowsticmale": "Meowstic",
 
 	// cosmetic formes
+	"burmysandy": "Burmy",
+	"burmytrash": "Burmy",
 	"shelloseast": "Shellos",
 	"shelloswest": "Shellos",
 	"gastrodone": "Gastrodon",
@@ -266,6 +268,7 @@ exports.BattleAliases = {
 	"aegiblade": "Aegislash-Blade",
 	"aegis": "Aegislash",
 	"aero": "Aerodactyl",
+	"amph": "Ampharos",
 	"azu": "Azumarill",
 	"bliss": "Blissey",
 	"bee": "Beedrill",
@@ -287,6 +290,7 @@ exports.BattleAliases = {
 	"gar": "Gengar",
 	"garde": "Gardevoir",
 	"gatr": "Feraligatr",
+	"gyara": "Gyarados",
 	"hera": "Heracross",
 	"hippo": "Hippowdon",
 	"kupochu": "Pikachu",
