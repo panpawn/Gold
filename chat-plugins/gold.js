@@ -14,6 +14,7 @@ const serverIp = '167.114.155.242';
 const formatHex = '#566'; //hex code for the formatting of the command
 const ADVERTISEMENT_COST = 10; // how much does /advertise cost to use?
 
+let amCache = {anime:{}, manga:{}};
 let regdateCache = {};
 fs.createWriteStream('badges.txt', {
 	'flags': 'a',
