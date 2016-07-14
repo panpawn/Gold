@@ -17,17 +17,17 @@ let watchUsers = Config.watchUsers ? Config.watchUsers : [];
 let MIN_CAPS_LENGTH = 18;
 let MIN_CAPS_PROPORTION = 0.8;
 let MAX_STRETCH = 7;
-let MAX_REPEAT = 4;
+//let MAX_REPEAT = 4;
 
 Config.chatfilter = function (message, user, room, connection, targetUser) {
 	user.lastActive = Date.now();
-	if (!room && !Users(targetUser)) targetUser = { name: 'unknown user', };
+	if (!room && !Users(targetUser)) targetUser = {name: 'unknown user'};
 
 	// caps and stretching
 	let capsMatch = message.replace(/[^A-Za-z]/g, '').match(/[A-Z]/g);
 	capsMatch = capsMatch && toId(message).length > MIN_CAPS_LENGTH && (capsMatch.length >= Math.floor(toId(message).length * MIN_CAPS_PROPORTION));
 	let stretchRegExp = new RegExp('(.)\\1{' + MAX_STRETCH.toString() + ',}', 'g');
-	let repeatRegExp = new RegExp('(..+)\\1{' + MAX_REPEAT.toString() + ',}', 'g');
+	//let repeatRegExp = new RegExp('(..+)\\1{' + MAX_REPEAT.toString() + ',}', 'g');
 	let stretchMatch = message.toLowerCase().match(stretchRegExp);
 	let formatError = capsMatch ? "too many capital letters" : "too much stretching";
 	if (capsMatch && stretchMatch) formatError = "too many capital letters and too much streching";
@@ -35,7 +35,6 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 		if (capsMatch || stretchMatch) {
 			this.privateModCommand("(" + user.name + "'s message was not sent because it contained: " + formatError + ".  Message: " + message + ")");
 			return this.errorReply("Your message was not sent because it contained " + formatError + ".");
-			return false;
 		}
 	}
 
