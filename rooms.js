@@ -770,9 +770,12 @@ let GlobalRoom = (() => {
 				connection.autojoins = '';
 			}
 		}
-		if (Gold.autoJoinRooms[user.userid]) {
-			for (let u = 0; u < Gold.autoJoinRooms[user.userid].length; u++) {
-				user.tryJoinRoom(Gold.autoJoinRooms[user.userid][u], connection);
+		for (let i = 0; i < user.connections.length; i++) {
+			connection = user.connections[i];
+			if (Gold.autoJoinRooms[user.userid]) {
+				for (let u = 0; u < Gold.autoJoinRooms[user.userid].length; u++) {
+					user.tryJoinRoom(Gold.autoJoinRooms[user.userid][u], connection);
+				}
 			}
 		}
 	};
