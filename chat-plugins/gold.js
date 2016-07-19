@@ -476,9 +476,9 @@ exports.commands = {
 			res.on('data', chunk => {
 				data += chunk;
 			}).on('end', () => {
-				data = JSON.parse(data);
+				data = JSON.parse(data) ? JSON.parse(data) : false;
 				let output = '<font color=#24678d><b>Definitions for ' + target + ':</b></font><br />';
-				if (!data[0]) {
+				if (!data[0] || !data) {
 					this.sendReplyBox('No results for <b>"' + target + '"</b>.');
 					return room.update();
 				} else {
@@ -514,9 +514,9 @@ exports.commands = {
 			res.on('data', chunk => {
 				data += chunk;
 			}).on('end', () => {
-				data = JSON.parse(data);
+				data = JSON.parse(data) ? JSON.parse(data) : false;
 				let definitions = data['list'];
-				if (data['result_type'] === 'no_results') {
+				if (data['result_type'] === 'no_results' || !data) {
 					this.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
 					return room.update();
 				} else {
