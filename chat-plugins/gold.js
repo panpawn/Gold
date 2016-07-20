@@ -1343,7 +1343,7 @@ exports.commands = {
 			user.lastAdvertisement = Date.now();
 		}
 	},
-	advertisehelp: ['Usage: /advertise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.'],
+	advertisehelp: ['Usage: /advertise [room] | [advertisement] - Be sure to have | seperating the room and the actual advertisement.  Usage of this command costs ' + ADVERTISEMENT_COST + ' Gold bucks each time.'],
 	// Animal command by Kyvn and DNS
 	animal: 'animals',
 	animals: function (target, room, user) {
