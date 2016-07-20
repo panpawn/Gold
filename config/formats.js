@@ -93,29 +93,6 @@ exports.Formats = [
 		searchShow: false,
 		ruleset: ['RU'],
 		banlist: ['RU', 'BL3'],
-		onValidateSet: function (set, format, setHas) {
-			if (!('batonpass' in setHas)) return;
-			let speedBoosted = false;
-			for (let i = 0; i < set.moves.length; i++) {
-				let move = this.getMove(set.moves[i]);
-				if (move.boosts && move.boosts.spe > 0) {
-					speedBoosted = true;
-					break;
-				}
-			}
-			let boostSpeed = ['flamecharge', 'geomancy', 'motordrive', 'rattled', 'speedboost', 'steadfast', 'weakarmor', 'salacberry'];
-			if (!speedBoosted) {
-				for (let i = 0; i < boostSpeed.length; i++) {
-					if (boostSpeed[i] in setHas) {
-						speedBoosted = true;
-						break;
-					}
-				}
-			}
-			if (speedBoosted) {
-				return [(set.name || set.species) + " can Baton Pass Speed boosts, which is banned by NU."];
-			}
-		},
 	},
 	{
 		name: "NU (suspect test)",
@@ -175,6 +152,26 @@ exports.Formats = [
 			battle: 3,
 		},
 		ruleset: ['Pokemon', 'Standard GBU', 'Team Preview'],
+		requirePentagon: true,
+	},
+	{
+		name: "Battle Spot Special 17",
+		desc: ["&bullet; <a href=\"https://www.smogon.com/forums/threads/3576896/\">Battle Spot Special 17</a>"],
+		section: 'ORAS Singles',
+
+		forcedLevel: 50,
+		teamLength: {
+			validate: [1, 6],
+			battle: 1,
+		},
+		ruleset: ['Pokemon', 'Standard GBU', 'Team Preview'],
+		banlist: ['Abomasite', 'Absolite', 'Aerodactylite', 'Aggronite', 'Alakazite', 'Altarianite', 'Ampharosite', 'Audinite',
+			'Banettite', 'Beedrillite', 'Blastoisinite', 'Blazikenite', 'Cameruptite', 'Charizardite X', 'Charizardite Y', 'Diancite',
+			'Galladite', 'Garchompite', 'Gardevoirite', 'Gengarite', 'Glalitite', 'Gyaradosite', 'Heracronite', 'Houndoominite',
+			'Kangaskhanite', 'Latiasite', 'Latiosite', 'Lopunnite', 'Lucarionite', 'Manectite', 'Mawilite', 'Medichamite',
+			'Metagrossite', 'Mewtwonite X', 'Mewtwonite Y', 'Pidgeotite', 'Pinsirite', 'Sablenite', 'Salamencite', 'Sceptilite',
+			'Scizorite', 'Sharpedonite', 'Slowbronite', 'Steelixite', 'Swampertite', 'Tyranitarite', 'Venusaurite', 'Focus Sash',
+		],
 		requirePentagon: true,
 	},
 	{

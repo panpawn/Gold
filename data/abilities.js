@@ -789,12 +789,12 @@ exports.BattleAbilities = {
 			if (this.isWeather(['sunnyday', 'desolateland'])) {
 				if (pokemon.template.speciesid !== 'cherrimsunshine') {
 					pokemon.formeChange('Cherrim-Sunshine');
-					this.add('-formechange', pokemon, 'Cherrim-Sunshine', '[msg]');
+					this.add('-formechange', pokemon, 'Cherrim-Sunshine', '[msg]', '[from] ability: Flower Gift');
 				}
 			} else {
 				if (pokemon.template.speciesid === 'cherrimsunshine') {
 					pokemon.formeChange('Cherrim');
-					this.add('-formechange', pokemon, 'Cherrim', '[msg]');
+					this.add('-formechange', pokemon, 'Cherrim', '[msg]', '[from] ability: Flower Gift');
 				}
 			}
 		},
@@ -866,7 +866,7 @@ exports.BattleAbilities = {
 			}
 			if (pokemon.isActive && forme) {
 				pokemon.formeChange(forme);
-				this.add('-formechange', pokemon, forme, '[msg]');
+				this.add('-formechange', pokemon, forme, '[msg]', '[from] ability: Forecast');
 			}
 		},
 		id: "forecast",
@@ -1887,8 +1887,8 @@ exports.BattleAbilities = {
 				pokemon.removeVolatile('confusion');
 			}
 		},
-		onImmunity: function (type, pokemon) {
-			if (type === 'confusion') return false;
+		onTryAddVolatile: function (status, pokemon) {
+			if (status.id === 'confusion') return null;
 		},
 		onHit: function (target, source, move) {
 			if (move && move.volatileStatus === 'confusion') {
@@ -2900,7 +2900,7 @@ exports.BattleAbilities = {
 			if (effect && effect.id === 'toxicspikes') return;
 			if (status.id === 'slp' || status.id === 'frz') return;
 			this.add('-activate', target, 'ability: Synchronize');
-			source.trySetStatus(status, target, {status: status.id});
+			source.trySetStatus(status, target, {status: status.id, id: 'synchronize'});
 		},
 		id: "synchronize",
 		name: "Synchronize",

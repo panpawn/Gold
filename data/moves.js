@@ -7988,7 +7988,7 @@ exports.BattleMovedex = {
 				if (target !== source && target.side === this.effectData.target && this.getCategory(move) === 'Special') {
 					if (!move.crit && !move.infiltrates) {
 						this.debug('Light Screen weaken');
-						if (target.side.active.length > 1) return this.chainModify([0xA8F, 0x1000]);
+						if (target.side.active.length > 1) return this.chainModify([0xAAC, 0x1000]);
 						return this.chainModify(0.5);
 					}
 				}
@@ -11299,7 +11299,7 @@ exports.BattleMovedex = {
 				if (target !== source && target.side === this.effectData.target && this.getCategory(move) === 'Physical') {
 					if (!move.crit && !move.infiltrates) {
 						this.debug('Reflect weaken');
-						if (target.side.active.length > 1) return this.chainModify([0xA8F, 0x1000]);
+						if (target.side.active.length > 1) return this.chainModify([0xAAC, 0x1000]);
 						return this.chainModify(0.5);
 					}
 				}
@@ -11992,19 +11992,24 @@ exports.BattleMovedex = {
 			onSetStatus: function (status, target, source, effect) {
 				if (source && target !== source && effect && (!effect.infiltrates || target.side === source.side)) {
 					this.debug('interrupting setStatus');
-					return false;
+					if (effect.id === 'synchronize' || (effect.effectType === 'Move' && !effect.secondaries)) {
+						this.add('-activate', target, 'move: Safeguard');
+					}
+					return null;
 				}
 			},
 			onTryConfusion: function (target, source, effect) {
 				if (source && target !== source && effect && (!effect.infiltrates || target.side === source.side)) {
 					this.debug('interrupting addVolatile');
-					return false;
+					if (!effect.secondaries) this.add('-activate', target, 'move: Safeguard');
+					return null;
 				}
 			},
 			onTryHit: function (target, source, move) {
 				if (move && move.id === 'yawn' && target !== source && (!move.infiltrates || target.side === source.side)) {
 					this.debug('blocking yawn');
-					return false;
+					this.add('-activate', target, 'move: Safeguard');
+					return null;
 				}
 			},
 			onStart: function (side) {
