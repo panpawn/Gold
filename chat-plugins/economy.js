@@ -465,7 +465,7 @@ exports.commands = {
 		if (!this.canTalk()) return;
 		if (!target || target.length > 1) return this.errorReply("/customsymbol [symbol] - changes your symbol (usergroup) to the specified symbol. The symbol can only be one character");
 		if (~target.indexOf('\u202e')) return this.errorReply("nono riperino");
-		let bannedSymbols = /[ +<>$%‽!★@&~#卐|A-z0-9]/;
+		let bannedSymbols = /[ +<>$%‽!★@&~#*卐|A-z0-9]/;
 		if (target.match(bannedSymbols)) return this.errorReply("That symbol is banned.");
 
 		user.getIdentity = function (roomid) {
