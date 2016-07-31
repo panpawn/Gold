@@ -51,23 +51,14 @@ exports.Formats = [
 	{
 		name: "UU",
 		desc: [
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3573503/\">np: UU Stage 7.1</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3576546/\">np: UU Stage 7.2</a>",
 			"&bullet; <a href=\"https://www.smogon.com/dex/xy/tags/uu/\">UU Banlist</a>",
 			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3555277/\">UU Viability Ranking</a>",
 		],
 		section: "ORAS Singles",
 
-		searchShow: false,
 		ruleset: ['OU'],
 		banlist: ['OU', 'BL', 'Drizzle', 'Drought'],
-	},
-	{
-		name: "UU (suspect test)",
-		section: "ORAS Singles",
-
-		challengeShow: false,
-		ruleset: ['UU'],
-		banlist: ['Salamence'],
 	},
 	{
 		name: "RU",
@@ -90,17 +81,8 @@ exports.Formats = [
 		],
 		section: "ORAS Singles",
 
-		searchShow: false,
 		ruleset: ['RU'],
 		banlist: ['RU', 'BL3'],
-	},
-	{
-		name: "NU (suspect test)",
-		section: "ORAS Singles",
-
-		challengeShow: false,
-		ruleset: ['NU'],
-		banlist: [],
 	},
 	{
 		name: "PU",
@@ -286,32 +268,6 @@ exports.Formats = [
 		requirePentagon: true,
 	},
 	{
-		name: "Sinnoh Classic",
-		desc: ["&bullet; <a href=\"https://www.smogon.com/forums/threads/3575910/\">Sinnoh Classic</a>"],
-		section: "ORAS Doubles",
-
-		gameType: 'doubles',
-		maxForcedLevel: 50,
-		teamLength: {
-			validate: [4, 6],
-			battle: 4,
-		},
-		ruleset: ['Pokemon', 'Standard GBU', 'Team Preview'],
-		banlist: ['Dragonite', 'Tyranitar', 'Heatran'],
-		onValidateSet: function (set) {
-			let problems = [];
-			let template = this.getTemplate(set.species || set.name);
-			if (template.num > 493) {
-				problems.push(template.species + " is banned by Sinnoh Classic.");
-			}
-			let item = this.getItem(set.item);
-			if (item.megaStone) {
-				problems.push(item.name + " is banned by Sinnoh Classic.");
-			}
-			return problems;
-		},
-	},
-	{
 		name: "Doubles Custom Game",
 		section: "ORAS Doubles",
 
@@ -368,6 +324,31 @@ exports.Formats = [
 		requirePentagon: true,
 	},
 	{
+		name: "Unova Classic",
+		desc: ["&bullet; <a href=\"https://www.smogon.com/forums/threads/3577932/\">Unova Classic</a>"],
+		section: "ORAS Triples",
+
+		gameType: 'triples',
+		maxForcedLevel: 50,
+		teamLength: {
+			validate: [6, 6],
+		},
+		ruleset: ['Pokemon', 'Standard GBU', 'Team Preview'],
+		banlist: [],
+		onValidateSet: function (set) {
+			let problems = [];
+			let template = this.getTemplate(set.species || set.name);
+			if (template.num > 649) {
+				problems.push(template.species + " is banned by Unova Classic.");
+			}
+			let item = this.getItem(set.item);
+			if (item.megaStone) {
+				problems.push(item.name + " is banned by Unova Classic.");
+			}
+			return problems;
+		},
+	},
+	{
 		name: "Triples Custom Game",
 		section: "ORAS Triples",
 
@@ -392,7 +373,7 @@ exports.Formats = [
 
 		mod: 'enchanteditems',
 		ruleset: ['OU'],
-		banlist: ['Kyurem-Black', 'Manaphy', 'Shedinja', 'Togekiss', 'Chatter',
+		banlist: ['Kyurem-Black', 'Manaphy', 'Porygon-Z', 'Shedinja', 'Togekiss', 'Chatter',
 			'Bug Gem', 'Dark Gem', 'Dragon Gem', 'Electric Gem', 'Fairy Gem', 'Fire Gem',
 			'Ice Gem', 'Poison Gem', 'Poke Ball', 'Psychic Gem', 'Steel Gem', 'Wave Incense',
 		],
