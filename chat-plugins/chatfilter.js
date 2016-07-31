@@ -20,7 +20,7 @@ let MAX_STRETCH = 7;
 //let MAX_REPEAT = 4;
 
 Config.chatfilter = function (message, user, room, connection, targetUser) {
-	user.lastActive = Date.now();
+	user.lastActiveTime = Date.now();
 	if (!room && !Users(targetUser)) targetUser = {name: 'unknown user'};
 
 	// caps and stretching
