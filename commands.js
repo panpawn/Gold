@@ -97,7 +97,7 @@ exports.commands = {
 		if (!target) return this.parse('/avatars');
 		let parts = target.split(',');
 		let avatar = parseInt(parts[0]);
-		if (parts[0] === '#bw2elesa' || parts[0] === '#teamrocket' || parts[0] === '#yellow' || parts[0] === '#zinnia') {
+		if (parts[0] === '#bw2elesa' || parts[0] === '#teamrocket' || parts[0] === '#yellow' || parts[0] === '#zinnia' || parts[0] === '#clemont') {
 			avatar = parts[0];
 		}
 		if (typeof avatar === 'number' && (!avatar || avatar > 294 || avatar < 1)) {
