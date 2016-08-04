@@ -25,6 +25,10 @@ const MAX_REASON_LENGTH = 300;
 const MUTE_LENGTH = 7 * 60 * 1000;
 const HOURMUTE_LENGTH = 60 * 60 * 1000;
 
+const SLOWCHAT_MINIMUM = 2;
+const SLOWCHAT_MAXIMUM = 60;
+const SLOWCHAT_USER_REQUIREMENT = 10;
+
 exports.commands = {
 
 	version: function (target, room, user) {
@@ -91,6 +95,13 @@ exports.commands = {
 		if (!target) return;
 
 		return target;
+	},
+
+	'battle!': 'battle',
+	battle: function (target, room, user, connection, cmd) {
+		if (cmd === 'battle') return this.sendReply("What?! How are you not more excited to battle?! Try /battle! to show me you're ready.");
+		if (!target) target = "randombattle";
+		return this.parse("/search " + target);
 	},
 
 	avatar: function (target, room, user) {
@@ -168,7 +179,7 @@ exports.commands = {
 		}
 
 		if (user.locked && !targetUser.can('lock')) {
-			return this.errorReply("You can only private message members of the moderation team (users marked by %, @, *, &, or ~) when locked.");
+			return this.errorReply("You can only private message members of the global moderation team (users marked by @ or above in the Help room) when locked.");
 		}
 		if (targetUser.locked && !user.can('lock')) {
 			return this.errorReply("This user is locked and cannot PM.");
@@ -258,6 +269,35 @@ exports.commands = {
 		user.lastPM = targetUser.userid;
 	},
 	msghelp: ["/msg OR /whisper OR /w [username], [message] - Send a private message."],
+
+	pminfobox: function (target, room, user, connection) {
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (!user.can('addhtml', null, room)) return false;
+		if (!target) return this.parse("/help pminfobox");
+
+		target = this.canHTML(target);
+		if (!target) return;
+
+		target = this.splitTarget(target);
+		let targetUser = this.targetUser;
+
+		if (!targetUser || !targetUser.connected) return this.errorReply("User " + targetUser + " is not currently online.");
+		if (!(targetUser in room.users) && !user.can('addhtml')) return this.errorReply("You do not have permission to use this command to users who are not in this room.");
+		if (targetUser.ignorePMs) return this.errorReply("This user is currently ignoring PMs.");
+		if (targetUser.locked) return this.errorReply("This user is currently locked, so you cannot send them a pminfobox.");
+
+		target = this.canTalk(target, null, targetUser);
+
+		// Apply the infobox to the message
+		target = '/raw <div class="infobox">' + target + '</div>';
+		let message = '|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target;
+
+		user.send(message);
+		if (targetUser !== user) targetUser.send(message);
+		targetUser.lastPM = user.userid;
+		user.lastPM = targetUser.userid;
+	},
+	pminfoboxhelp: ["/pminfobox [user], [html]- PMs an [html] infobox to [user]. Requires * ~"],
 
 	blockpm: 'ignorepms',
 	blockpms: 'ignorepms',
@@ -540,8 +580,21 @@ exports.commands = {
 		}
 
 		if (target === 'off' || !setting) {
+			if (!room.isPrivate) {
+				return this.errorReply("This room is already public.");
+			}
 			if (room.isPersonal) return this.errorReply("This room can't be made public.");
+			if (room.privacySetter && user.can('nooverride', null, room) && !user.can('makeroom')) {
+				if (!room.privacySetter.has(user.userid)) {
+					return this.errorReply("You can't make the room public since you didn't make it private - only " + Array.from(room.privacySetter).join(', ') + " can.");
+				}
+				room.privacySetter.delete(user.userid);
+				if (room.privacySetter.size) {
+					return this.sendReply("You are no longer forcing the room to stay private, but " + Array.from(room.privacySetter).join(', ') + " also needs to use /publicroom to make the room public.");
+				}
+			}
 			delete room.isPrivate;
+			room.privacySetter = null;
 			this.addModCommand("" + user.name + " made this room public.");
 			if (room.chatRoomData) {
 				delete room.chatRoomData.isPrivate;
@@ -549,6 +602,10 @@ exports.commands = {
 			}
 		} else {
 			if (room.isPrivate === setting) {
+				if (room.privacySetter && !room.privacySetter.has(user.userid)) {
+					room.privacySetter.add(user.userid);
+					return this.sendReply("This room is already " + (setting === true ? 'secret' : setting) + ", but is now forced to stay that way until you use /publicroom.");
+				}
 				return this.errorReply("This room is already " + (setting === true ? 'secret' : setting) + ".");
 			}
 			room.isPrivate = setting;
@@ -557,6 +614,7 @@ exports.commands = {
 				room.chatRoomData.isPrivate = setting;
 				Rooms.global.writeChatRoomData();
 			}
+			room.privacySetter = new Set([user.userid]);
 		}
 	},
 	privateroomhelp: ["/secretroom - Makes a room secret. Secret rooms are visible to & and up. Requires: & ~",
@@ -1091,7 +1149,7 @@ exports.commands = {
 		let userid = room.isRoomBanned(targetUser) || toId(target);
 
 		if (!userid) return this.errorReply("User '" + target + "' is an invalid username.");
-		if (targetUser && !this.can('ban', targetUser, room)) return false;
+		if (!this.can('ban', null, room)) return false;
 		let unbannedUserid = room.unRoomBan(userid);
 		if (!unbannedUserid) return this.errorReply("User " + userid + " is not banned from room " + room.id + ".");
 
@@ -1880,7 +1938,7 @@ exports.commands = {
 			let roomGroup = (room.auth && room.isPrivate === true ? ' ' : user.group);
 			if (room.auth && user.userid in room.auth) roomGroup = room.auth[user.userid];
 			if (Config.groupsranking.indexOf(target) > Math.max(1, Config.groupsranking.indexOf(roomGroup)) && !user.can('makeroom')) {
-				return this.errorReply("/modchat - Access denied for setting higher than " + Config.groupsranking[1] + ".");
+				return this.errorReply("/modchat - Access denied for setting higher than " + roomGroup + ".");
 			}
 			room.modchat = target;
 			break;
@@ -1903,6 +1961,82 @@ exports.commands = {
 		}
 	},
 	modchathelp: ["/modchat [off/autoconfirmed/+/%/@/*/#/&/~] - Set the level of moderated chat. Requires: *, @ for off/autoconfirmed/+ options, # & ~ for all the options"],
+
+	slowchat: function (target, room, user) {
+		if (!target) return this.sendReply("Slow chat is currently set to: " + (room.slowchat ? room.slowchat : false));
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (!this.can('editroom', null, room)) return false;
+
+		let targetInt = parseInt(target);
+		if (target === 'off' || target === 'disable') {
+			if (!room.slowchat) return this.errorReply("Slow chat is already disabled in this room.");
+			room.slowchat = false;
+			this.add("|raw|<div class=\"broadcast-blue\"><b>Slow chat was disabled!</b><br />There is no longer a set minimum time between messages.</div>");
+		} else if (targetInt) {
+			if (room.userCount < SLOWCHAT_USER_REQUIREMENT) return this.errorReply("This room must have at least " + SLOWCHAT_USER_REQUIREMENT + " users to set slowchat; it only has " + room.userCount + " right now.");
+			if (room.slowchat === targetInt) return this.errorReply("Slow chat is already set for " + room.slowchat + " seconds in this room.");
+			if (targetInt < SLOWCHAT_MINIMUM) targetInt = SLOWCHAT_MINIMUM;
+			if (targetInt > SLOWCHAT_MAXIMUM) targetInt = SLOWCHAT_MAXIMUM;
+			room.slowchat = targetInt;
+			this.add("|raw|<div class=\"broadcast-red\"><b>Slow chat was enabled!</b><br />Messages must have at least " + room.slowchat + " seconds between them.</div>");
+		} else {
+			return this.parse("/help slowchat");
+		}
+		this.privateModCommand("(" + user.name + " set slowchat to " + room.slowchat + ")");
+
+		if (room.chatRoomData) {
+			room.chatRoomData.slowchat = room.slowchat;
+			Rooms.global.writeChatRoomData();
+		}
+	},
+	slowchathelp: ["/slowchat [number] - Sets a limit on how often users in the room can send messages, between 2 and 60 seconds. Requires @ * # & ~",
+		"/slowchat [off/disable] - Disables slowchat in the room. Requires @ * # & ~"],
+
+	stretching: function (target, room, user) {
+		if (!target) return this.sendReply("Stretching in this room is currently set to: " + (room.stretching ? room.stretching : false));
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (!this.can('editroom', null, room)) return false;
+
+		if (target === 'enable' || target === 'on') {
+			if (room.filterStretching) return this.errorReply("Stretching is already enabled in this room.");
+			room.filterStretching = true;
+		} else if (target === 'disable' || target === 'off') {
+			if (!room.filterStretching) return this.errorReply("Stretching is already disabled in this room.");
+			room.filterStretching = false;
+		} else {
+			return this.parse("/help stretching");
+		}
+		this.privateModCommand("(" + user.name + " set stretching to " + room.stretching + ")");
+
+		if (room.chatRoomData) {
+			room.chatRoomData.filterStretching = room.filterStretching;
+			Rooms.global.writeChatRoomData();
+		}
+	},
+	stretchinghelp: ["/stretching [enable/disable] - Toggles having the server check messages containing too much stretching. Requires "],
+
+	capitals: function (target, room, user) {
+		if (!target) return this.sendReply("Capitals in this room is currently set to: " + (room.capitals ? room.capitals : false));
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (!this.can('editroom', null, room)) return false;
+
+		if (target === 'enable' || target === 'on') {
+			if (room.filterCaps) return this.errorReply("Capitals is already enabled in this room.");
+			room.filterCaps = true;
+		} else if (target === 'disable' || target === 'off') {
+			if (!room.filterCaps) return this.errorReply("Capitals is already disabled in this room.");
+			room.filterCaps = false;
+		} else {
+			return this.parse("/help capitals");
+		}
+		this.privateModCommand("(" + user.name + " set capitals to " + room.capitals + ")");
+
+		if (room.chatRoomData) {
+			room.chatRoomData.filterCaps = room.filterCaps;
+			Rooms.global.writeChatRoomData();
+		}
+	},
+	capitalshelp: ["/capitals [enable/disable] - Toggles having the server check messages containing too many capitals. Requires "],
 
 	declare: function (target, room, user) {
 		if (!target) return this.parse('/help declare');
@@ -2802,6 +2936,7 @@ exports.commands = {
 		room.game.undo(user, target);
 	},
 
+	uploadreplay: 'savereplay',
 	savereplay: function (target, room, user, connection) {
 		if (!room || !room.battle) return;
 		let logidx = Tools.getFormat(room.battle.format).team ? 3 : 0; // retrieve spectator log (0) if there are set privacy concerns
@@ -2814,6 +2949,7 @@ exports.commands = {
 			p1: players[0],
 			p2: players[1],
 			format: room.format,
+			hidden: room.isPrivate ? '1' : '',
 		}, success => {
 			if (success && success.errorip) {
 				connection.popup("This server's request IP " + success.errorip + " is not a registered server.");

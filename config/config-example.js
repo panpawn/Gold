@@ -323,6 +323,7 @@ exports.grouplist = [
 		roomonly: true,
 		editroom: true,
 		joinbattle: true,
+		nooverride: true,
 	},
 	{
 		symbol: '*',
