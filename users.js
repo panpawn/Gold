@@ -1564,11 +1564,12 @@ class User {
 				return Promise.resolve(false);
 			}
 		}
+		/*
 		if (Monitor.countPrepBattle(connection.ip || connection.latestIp, this.name)) {
 			connection.popup("Due to high load, you are limited to 6 battles every 3 minutes.");
 			return Promise.resolve(false);
 		}
-
+		*/
 		let format = Tools.getFormat(formatid);
 		if (!format['' + type + 'Show']) {
 			connection.popup("That format is not available.");
