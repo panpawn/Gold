@@ -24,7 +24,7 @@ class RoomSettings {
 		this.generateDisplay();
 	}
 	modchat() {
-		if (!this.user.can('modchat', null, this.room)) return "(Currently at: <strong>" + (this.room.modchat ? this.room.modchat : false) + "</strong>, but unable to change.)";
+		if (!this.user.can('modchat', null, this.room)) return "<button " + DISABLED + ">" + (this.room.modchat ? this.room.modchat : false) + "</button>";
 		let modchatOutput = [];
 		for (let i = 0; i <= RANKS.length; i++) {
 			if (RANKS[i] === ' ' && !this.room.modchat) {
@@ -49,7 +49,7 @@ class RoomSettings {
 		return modchatOutput.join(" | ");
 	}
 	modjoin() {
-		if (!this.user.can('makeroom') && !this.room.isPersonal) return "(Currently at: <strong>" + (this.room.modjoin ? this.room.modjoin : false) + "</strong>, but unable to change.)";
+		if (!this.user.can('makeroom') && !this.room.isPersonal) return "<button " + DISABLED + ">" + (this.room.modjoin ? this.room.modjoin : false) + "</button>";
 		let modjoinOutput = [];
 		for (let i = 0; i < RANKS.length; i++) {
 			if (RANKS[i] === ' ' && !this.room.modjoin) {
@@ -68,7 +68,7 @@ class RoomSettings {
 		return modjoinOutput.join(" | ");
 	}
 	stretching() {
-		if (!this.user.can('editroom', null, this.room)) return "(Currently at: <strong>" + (this.room.stretching ? this.room.stretching : false) + "</strong>, but unable to change.)";
+		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.stretching ? this.room.stretching : false) + "</button>";
 		if (this.room.filterStretching) {
 			return '<button name="send" value="/roomsetting stretching disable">false</button> | <button ' + DISABLED + '>true</button>';
 		} else {
@@ -76,7 +76,7 @@ class RoomSettings {
 		}
 	}
 	capitals() {
-		if (!this.user.can('editroom', null, this.room)) return "(Currently at: <strong>" + (this.room.capitals ? this.room.capitals : false) + "</strong>, but unable to change.)";
+		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.capitals ? this.room.capitals : false) + "</button>";
 		if (this.room.filterCaps) {
 			return '<button name="send" value="/roomsetting capitals disable">false</button> | <button ' + DISABLED + '>true</button>';
 		} else {
@@ -84,7 +84,7 @@ class RoomSettings {
 		}
 	}
 	slowchat() {
-		if (!this.user.can('editroom', null, this.room) || this.room.userCount < SLOWCHAT_USER_REQUIREMENT) return "(Currently at: <strong>" + (this.room.slowchat ? this.room.slowchat : false) + "</strong>, but unable to change.)";
+		if (!this.user.can('editroom', null, this.room) || this.room.userCount < SLOWCHAT_USER_REQUIREMENT) return "<button " + DISABLED + ">" + (this.room.slowchat ? this.room.slowchat : false) + "</button>";
 
 		let slowchatOutput = [];
 		for (let i = 10; i <= 60; i += 10) {
