@@ -95,9 +95,9 @@ class RoomSettings {
 			}
 		}
 		if (!this.room.slowchat) {
-			slowchatOutput.shift('<button ' + DISABLED + '>false</button>');
+			slowchatOutput.unshift('<button ' + DISABLED + '>false</button>');
 		} else {
-			slowchatOutput.shift('<button name="send" value="/roomsettings slowchat false">false</button>');
+			slowchatOutput.unshift('<button name="send" value="/roomsettings slowchat false">false</button>');
 		}
 		return slowchatOutput.join(" | ");
 	}
