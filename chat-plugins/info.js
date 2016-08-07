@@ -1603,10 +1603,12 @@ exports.commands = {
 
 		let width = targets[1].trim();
 		if (!width) return this.errorReply('No width for the image was provided!');
+		if (width > 1000) return this.errorReply("The width of this image cannot be more than 1,000.");
 		if (!isNaN(width)) width += 'px';
 
 		let height = targets[2].trim();
 		if (!height) return this.errorReply('No height for the image was provided!');
+		if (height > 1000) return this.errorReply("The height of this image cannot be more than 1,000.");
 		if (!isNaN(height)) height += 'px';
 
 		let unitRegex = /^\d+(?:p[xtc]|%|[ecm]m|ex|in)$/;
