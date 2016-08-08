@@ -216,6 +216,7 @@ class Tournament {
 			return;
 		}
 
+		/*
 		let gameCount = 0;
 		for (let i in user.games) { // eslint-disable-line no-unused-vars
 			gameCount++;
@@ -224,6 +225,7 @@ class Tournament {
 			output.errorReply("Due to high load, you are unable to join this tournament.");
 			return;
 		}
+		*/
 
 		if (!isAllowAlts) {
 			let users = this.generator.getUsers();
