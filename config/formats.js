@@ -378,7 +378,7 @@ exports.Formats = [
 		validateSet: function (set, teamHas) {
 			let species = toId(set.species);
 			let template = this.tools.getTemplate(species);
-			if (!template.exists) return ["" + set.species + " is not a real Pok\u00E9mon."];
+			if (!template.exists || template.isNonstandard) return ["" + set.species + " is not a real Pok\u00E9mon."];
 			if (template.battleOnly) template = this.tools.getTemplate(template.baseSpecies);
 			if (this.tools.getBanlistTable(this.format)[template.id] || template.tier in {'Uber': 1, 'Unreleased': 1} && template.species !== 'Aegislash') {
 				return ["" + template.species + " is banned by Follow The Leader."];
@@ -402,7 +402,7 @@ exports.Formats = [
 		section: "OM of the Month",
 
 		ruleset: ['OU'],
-		banlist: ['Talonflame'],
+		banlist: ['Chansey', 'Talonflame'],
 		onBegin: function () {
 			let allPokemon = this.p1.pokemon.concat(this.p2.pokemon);
 			for (let i = 0, len = allPokemon.length; i < len; i++) {
@@ -480,7 +480,7 @@ exports.Formats = [
 
 		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
 		banlist: ['Aegislash', 'Arceus', 'Blaziken', 'Darkrai', 'Deoxys', 'Deoxys-Attack', 'Dialga', 'Genesect', 'Giratina', 'Giratina-Origin', 'Greninja', 'Groudon',
-			'Ho-Oh', 'Kyogre', 'Kyurem-White', 'Lugia', 'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Shaymin-Sky', 'Talonflame', 'Xerneas', 'Yveltal', 'Zekrom',
+			'Ho-Oh', 'Hoopa-Unbound', 'Kyogre', 'Kyurem-White', 'Lugia', 'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Shaymin-Sky', 'Talonflame', 'Xerneas', 'Yveltal', 'Zekrom',
 			'Altarianite', 'Charizardite X', 'Damp Rock', 'Gengarite', 'Kangaskhanite', 'Lucarionite', 'Mawilite', 'Metagrossite', 'Sablenite', 'Salamencite', 'Slowbronite', 'Smooth Rock', 'Soul Dew',
 		],
 	},
@@ -522,7 +522,7 @@ exports.Formats = [
 		section: "Other Metagames",
 
 		ruleset: ['OU'],
-		banlist: ['Ignore STAB Moves', 'Diggersby', 'Kyurem-Black', 'Porygon-Z', 'Aerodactylite', 'Altarianite', "King's Rock", 'Metagrossite', 'Razor Fang'],
+		banlist: ['Ignore STAB Moves', 'Diggersby', 'Kyurem-Black', 'Porygon-Z', 'Thundurus', 'Aerodactylite', 'Altarianite', "King's Rock", 'Metagrossite', 'Razor Fang'],
 	},
 	{
 		name: "Tier Shift",
