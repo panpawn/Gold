@@ -32,10 +32,11 @@ function generateCSS(name, icon) {
 	let css = '';
 	let rooms = [];
 	name = toId(name);
-	for (let room in Rooms.rooms) {
-		if (Rooms.rooms[room].id === 'global' || Rooms.rooms[room].type !== 'chat' || Rooms.rooms[room].isPersonal) continue;
-		rooms.push('#' + Rooms.rooms[room].id + '-userlist-user-' + name);
-	}
+	Rooms.rooms.forEach((curRoom, id) => {
+		if (curRoom.id === 'global' || curRoom.type !== 'chat' || curRoom.isPersonal) return;
+		if (!isNaN(Number(id.charAt(0)))) return;
+		rooms.push('#' + id + '-userlist-user-' + name);
+	});
 	css = rooms.join(', ');
 	css += '{\nbackground: url("' + icon + '") no-repeat right\n}\n';
 	return css;
