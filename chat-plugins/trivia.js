@@ -7,15 +7,11 @@
 
 const fs = require('fs');
 
-// Hack to allow unit tests to run.
-const RoomGame = require('../room-game.js').RoomGame;
-const RoomGamePlayer = require('../room-game.js').RoomGamePlayer;
-
 const CATEGORIES = {
 	ae: 'Arts and Entertainment',
 	pokemon: 'Pok\u00E9mon',
 	sg: 'Science and Geography',
-	sh: 'Society and History',
+	sh: 'Society and Humanities',
 };
 
 const MODES = {
@@ -31,6 +27,10 @@ const SCORE_CAPS = {
 	long: 50,
 };
 
+Object.setPrototypeOf(CATEGORIES, null);
+Object.setPrototypeOf(MODES, null);
+Object.setPrototypeOf(SCORE_CAPS, null);
+
 const SIGNUP_PHASE = 'signups';
 const QUESTION_PHASE = 'question';
 const INTERMISSION_PHASE = 'intermission';
@@ -38,7 +38,7 @@ const INTERMISSION_PHASE = 'intermission';
 const MINIMUM_PLAYERS = 3;
 
 const START_TIMEOUT = 30 * 1000;
-const QUESTION_INTERVAL = 10 * 1000;
+const QUESTION_INTERVAL = 12 * 1000 + 500;
 const INTERMISSION_INTERVAL = 30 * 1000;
 
 const MAX_QUESTION_LENGTH = 252;
@@ -132,7 +132,7 @@ function sliceCategory(category) {
 	return questions.slice(sliceFrom, sliceUpTo);
 }
 
-class TriviaPlayer extends RoomGamePlayer {
+class TriviaPlayer extends Rooms.RoomGamePlayer {
 	constructor(user, game) {
 		super(user, game);
 
@@ -161,7 +161,7 @@ class TriviaPlayer extends RoomGamePlayer {
 	}
 }
 
-class Trivia extends RoomGame {
+class Trivia extends Rooms.RoomGame {
 	constructor(room, mode, category, length, questions) {
 		super(room);
 		this.gameid = 'trivia';

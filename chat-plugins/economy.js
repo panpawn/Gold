@@ -477,7 +477,7 @@ exports.commands = {
 		user.getIdentity = function (roomid) {
 			if (this.locked) return '‽' + this.name;
 			if (roomid) {
-				let room = Rooms.rooms[roomid];
+				let room = Rooms(roomid);
 				if (room.isMuted(this)) return '!' + this.name;
 				if (room && room.auth) {
 					if (room.auth[this.userid]) return room.auth[this.userid] + this.name;

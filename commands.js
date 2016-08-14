@@ -1049,10 +1049,10 @@ exports.commands = {
 		if (!this.can('makeroom')) return false;
 		let alias = toId(target);
 		if (!alias.length) return this.errorReply("Only alphanumeric characters are valid in an alias.");
-		if (Rooms.get(alias) || Rooms.aliases[alias]) return this.errorReply("You cannot set an alias to an existing room or alias.");
+		if (Rooms(alias) || Rooms.aliases.has(alias)) return this.errorReply("You cannot set an alias to an existing room or alias.");
 		if (room.isPersonal) return this.errorReply("Personal rooms can't have aliases.");
 
-		Rooms.aliases[alias] = room.id;
+		Rooms.aliases.set(alias, room.id);
 		this.privateModCommand("(" + user.name + " added the room alias '" + target + "'.)");
 
 		if (!room.aliases) room.aliases = [];
@@ -1067,15 +1067,15 @@ exports.commands = {
 		if (!room.aliases) return this.errorReply("This room does not have any aliases.");
 		if (!this.can('makeroom')) return false;
 		let alias = toId(target);
-		if (!alias.length || !Rooms.aliases[alias]) return this.errorReply("Please specify an existing alias.");
-		if (Rooms.aliases[alias] !== room.id) return this.errorReply("You may only remove an alias from the current room.");
+		if (!alias || !Rooms.aliases.has(alias)) return this.errorReply("Please specify an existing alias.");
+		if (Rooms.aliases.get(alias) !== room.id) return this.errorReply("You may only remove an alias from the current room.");
 
 		this.privateModCommand("(" + user.name + " removed the room alias '" + target + "'.)");
 
 		let aliasIndex = room.aliases.indexOf(alias);
 		if (aliasIndex >= 0) {
 			room.aliases.splice(aliasIndex, 1);
-			delete Rooms.aliases[alias];
+			Rooms.aliases.delete(alias);
 			Rooms.global.writeChatRoomData();
 		}
 	},
@@ -1260,26 +1260,24 @@ exports.commands = {
 		if (group) {
 			buffer.push('Global auth: ' + group.charAt(0));
 		}
-		for (let id in Rooms.rooms) {
-			let curRoom = Rooms.rooms[id];
-			if (!curRoom.auth || curRoom.isPrivate) continue;
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (!curRoom.auth || curRoom.isPrivate) return;
 			group = curRoom.auth[targetId];
-			if (!group) continue;
+			if (!group) return;
 			innerBuffer.push(group + id);
-		}
+		});
 		if (innerBuffer.length) {
 			buffer.push('Room auth: ' + innerBuffer.join(', '));
 		}
 		if (targetId === user.userid || user.can('lock')) {
 			innerBuffer = [];
-			for (let id in Rooms.rooms) {
-				let curRoom = Rooms.rooms[id];
-				if (!curRoom.auth || !curRoom.isPrivate) continue;
-				if (curRoom.isPrivate === true) continue;
+			Rooms.rooms.forEach((curRoom, id) => {
+				if (!curRoom.auth || !curRoom.isPrivate) return;
+				if (curRoom.isPrivate === true) return;
 				let auth = curRoom.auth[targetId];
-				if (!auth) continue;
+				if (!auth) return;
 				innerBuffer.push(auth + id);
-			}
+			});
 			if (innerBuffer.length) {
 				buffer.push('Hidden room auth: ' + innerBuffer.join(', '));
 			}
@@ -1678,121 +1676,7 @@ exports.commands = {
 	},
 	unlockhelp: ["/unlock [username] - Unlocks the user. Requires: % @ * & ~"],
 
-	banlist: function (Target, room, user) {
-		if (!this.can('ban')) return false;
-
-		Users.updateBans();
-
-		if (Object.keys(Users.bans).length < 1) return this.sendReply("The banlist is currently empty.");
-
-		let hiddenNames = [];
-
-		for (let ip in Users.bans) {
-			if (!~ip.indexOf('.')) continue;
-			if (!Users.bans[ip].userid) continue;
-			hiddenNames.push(Users.bans[ip].userid);
-		}
-
-		let reply = '<div style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">' +
-					'Current issued bans:<br /><br /><table border="1" cellspacing ="0" cellpadding="3">' +
-					'<tr><td><b>User:</b></td><td><b>IP:</b></td><td><b>Banned on:</b></td><td><b>Banned by:</b></td><td><b>Expires in:</b></td><td><b>Reason:</b></td></tr>';
-		for (let obj in Users.bans) {
-			if (~hiddenNames.indexOf(obj)) continue;
-
-			reply += "<tr><td>" + (Users.bans[obj].userid ? Gold.nameColor(Users.bans[obj].userid, true) : "N/A") + "</td>";
-			reply += "<td>" + (~obj.indexOf('.') ? obj : "N/A") + "</td>";
-			reply += "<td>" + moment(Users.bans[obj].on).format("YYYY-MM-DD h:mmA ") + String(String(new Date(Users.bans[obj].on)).split("(")[1]).split(")")[0] + "</td>";
-			reply += "<td>" + (Users.bans[obj].by ? Gold.nameColor(Users.bans[obj].by, true) : "Unknown") + "</td>";
-			reply += "<td>" + (Users.bans[obj].expires ? "In " + moment(Users.bans[obj].expires).fromNow(true) : "Never") + "</td>";
-			reply += "<td>" + (Users.bans[obj].reason ? Tools.escapeHTML(Users.bans[obj].reason) : "Not given") + "</td>";
-			reply += "</tr>";
-		}
-		return this.sendReplyBox(reply + "</table></div>");
-	},
-	banlisthelp: ["/banlist - Shows a list of users who are currently banned from the server."],
-
-	timeban: function (target, room, user, connection, cmd) {
-		if (!target) return this.parse('/help timeban');
-
-		let targets = target.split(',');
-		for (let i in targets) targets[i] = targets[i].trim();
-
-		if (!targets[1]) return this.errorReply("Please specify a ban duration");
-
-		let validLetters = ['m', 'h', 'd', 'w'];
-		let durations = {'m': 'minutes', 'h': 'hours', 'd': 'days', 'w': 'weeks'};
-		let targetUser = Users.get(targets[0]);
-		let duration = targets[1].toLowerCase();
-		let durationLetter = duration.substr(-1);
-		let durationNumber = Math.round(Number(duration.substr(0, duration.length - 1)));
-		targets.splice(0, 2);
-		let reason = targets.join(',');
-
-		if (!targetUser) return this.errorReply("User '" + targets[0] + "' not found.");
-
-		if (isNaN(durationNumber) || durationNumber < 1 || !~validLetters.indexOf(durationLetter)) return this.errorReply("Invalid ban duration.");
-
-		if (!user.can('hotpatch') && reason.length > MAX_REASON_LENGTH) {
-			return this.errorReply("The reason is too long. It cannot exceed " + MAX_REASON_LENGTH + " characters.");
-		}
-		if (!this.can('ban', targetUser)) return false;
-
-		let name = targetUser.getLastName();
-		let userid = targetUser.getLastId();
-
-		if (Users.checkBanned(targetUser.latestIp) && !target && !targetUser.connected) {
-			let problem = " but was already banned";
-			return this.privateModCommand("(" + name + " would be banned by " + user.name + problem + ".)");
-		}
-
-		if (targetUser.confirmed) {
-			let from = targetUser.deconfirm();
-			Monitor.log("[CrisisMonitor] " + name + " was banned by " + user.name + " and demoted from " + from.join(", ") + ".");
-		}
-
-		// Destroy personal rooms of the banned user.
-		for (let i in targetUser.roomCount) {
-			if (i === 'global') continue;
-			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[targetUser.userid] && targetRoom.auth[targetUser.userid] === '#') {
-				targetRoom.destroy();
-			}
-		}
-
-		targetUser.popup("|modal|" + user.name + " has banned you." + (reason ? "\n\nReason: " + reason : "") + (Config.appealurl ? "\n\nIf you feel that your ban was unjustified, you can appeal:\n" + Config.appealurl : "") + "\n\nYour ban will expire in " +
-			durationNumber + " " + (durationNumber === 1 ? durations[durationLetter].substr(0, durations[durationLetter].length - 1) : durations[durationLetter]));
-
-		this.addModCommand("" + targetUser.name + " was banned by " + user.name + " for " +
-			durationNumber + " " + (durationNumber === 1 ? durations[durationLetter].substr(0, durations[durationLetter].length - 1) : durations[durationLetter]) +
-			(reason ? ". (" + reason + ")" : "."), " (" + targetUser.latestIp + ")");
-		let alts = targetUser.getAlts();
-		let acAccount = (targetUser.autoconfirmed !== targetUser.userid && targetUser.autoconfirmed);
-		if (alts.length) {
-			let guests = alts.length;
-			alts = alts.filter(alt => alt.substr(0, 6) !== 'Guest ');
-			guests -= alts.length;
-			this.privateModCommand("(" + targetUser.name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "banned alts: " + alts.join(", ") + (guests ? " [" + guests + " guests]" : "") + ")");
-			for (let i = 0; i < alts.length; ++i) {
-				this.add('|unlink|' + toId(alts[i]));
-			}
-		} else if (acAccount) {
-			this.privateModCommand("(" + targetUser.name + "'s ac account: " + acAccount + ")");
-		}
-
-		this.add('|unlink|hide|' + userid);
-
-		let options = {'duration': duration, 'by': user.name};
-		if (reason) options.reason = reason;
-		targetUser.ban(false, userid, options);
-		this.globalModlog("BAN", targetUser, " by " + user.name + (target ? ": " + target : ""));
-		return true;
-	},
-	timebanhelp: [
-		"/timeban [username], [duration], [reason] - Kick user from all rooms and ban user's IP address with reason. Requires: @ & ~",
-		"Valid durations: 'm' for minutes, 'h' for hours, 'd' for days, 'w' for weeks.",
-		"Example: /timeban user, 1d, spamming - Bans [user] for 1 day with the reason 'spamming'",
-	],
-
+	forceban: 'ban',
 	b: 'ban',
 	ban: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help ban');
@@ -1804,35 +1688,40 @@ exports.commands = {
 			return this.errorReply("The reason is too long. It cannot exceed " + MAX_REASON_LENGTH + " characters.");
 		}
 		if (!this.can('ban', targetUser)) return false;
-
 		let name = targetUser.getLastName();
 		let userid = targetUser.getLastId();
 
-		if (Users.checkBanned(targetUser.latestIp) && !target && !targetUser.connected) {
+		if (Punishments.getPunishType(userid) === 'BANNED' && !target && !targetUser.connected) {
 			let problem = " but was already banned";
 			return this.privateModCommand("(" + name + " would be banned by " + user.name + problem + ".)");
 		}
 
 		if (targetUser.confirmed) {
-			let from = targetUser.deconfirm();
-			Monitor.log("[CrisisMonitor] " + name + " was banned by " + user.name + " and demoted from " + from.join(", ") + ".");
-			this.globalModlog("CRISISDEMOTE", targetUser, " from " + from.join(", "));
+			if (cmd === 'forceban') {
+				let from = targetUser.deconfirm();
+				Monitor.log("[CrisisMonitor] " + name + " was banned by " + user.name + " and demoted from " + from.join(", ") + ".");
+				this.globalModlog("CRISISDEMOTE", targetUser, " from " + from.join(", "));
+			} else {
+				return this.sendReply("" + name + " is a confirmed user. If you are sure you would like to ban them use /forceban.");
+			}
+		} else if (cmd === 'forceban') {
+			return this.errorReply("Use /ban; " + name + " is not a confirmed user.");
 		}
 
 		// Destroy personal rooms of the banned user.
 		for (let i in targetUser.roomCount) {
 			if (i === 'global') continue;
 			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[targetUser.userid] && targetRoom.auth[targetUser.userid] === '#') {
+			if (targetRoom.isPersonal && targetRoom.auth[userid] && targetRoom.auth[userid] === '#') {
 				targetRoom.destroy();
 			}
 		}
 
-		targetUser.popup("|modal|" + user.name + " has banned you for 2 weeks." + (target ? "\n\nReason: " + target : "") + (Config.appealurl ? "\n\nIf you feel that your ban was unjustified, you can appeal:\n" + Config.appealurl : "") + "\n\nYour ban will expire in 2 weeks.");
+		targetUser.popup("|modal|" + user.name + " has banned you." + (target ? "\n\nReason: " + target : "") + (Config.appealurl ? "\n\nIf you feel that your ban was unjustified, you can appeal:\n" + Config.appealurl : "") + "\n\nYour ban will expire in a few days.");
 
-		this.addModCommand("" + name + " was banned by " + user.name + " for 2 weeks." + (target ? " (" + target + ")" : ""), " (" + targetUser.latestIp + ")");
+		this.addModCommand("" + name + " was banned by " + user.name + "." + (target ? " (" + target + ")" : ""), " (" + targetUser.latestIp + ")");
 		let alts = targetUser.getAlts();
-		let acAccount = (targetUser.autoconfirmed !== targetUser.userid && targetUser.autoconfirmed);
+		let acAccount = (targetUser.autoconfirmed !== userid && targetUser.autoconfirmed);
 		if (alts.length) {
 			let guests = alts.length;
 			alts = alts.filter(alt => alt.substr(0, 7) !== '[Guest ');
@@ -1842,14 +1731,12 @@ exports.commands = {
 				this.add('|unlink|' + toId(alts[i]));
 			}
 		} else if (acAccount) {
-			this.privateModCommand("(" + targetUser.name + "'s ac account: " + acAccount + ")");
+			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
 
 		this.add('|unlink|hide|' + userid);
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
-		let options = {duration: '14d', 'by': user.name};
-		if (target) options.reason = target;
-		targetUser.ban(false, userid, options);
+		Punishments.ban(targetUser, null, null, target);
 		this.globalModlog("BAN", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		return true;
 	},
@@ -1859,7 +1746,7 @@ exports.commands = {
 		if (!target) return this.parse('/help unban');
 		if (!this.can('ban')) return false;
 
-		let name = Users.unban(target);
+		let name = Punishments.unban(target);
 
 		if (name) {
 			this.addModCommand("" + name + " was unbanned by " + user.name + ".");
@@ -1884,7 +1771,7 @@ exports.commands = {
 		// we have to do this the hard way since it's no longer a global
 		let punishKeys = ['bannedIps', 'bannedUsers', 'lockedIps', 'lockedUsers', 'lockedRanges', 'rangeLockedUsers'];
 		for (let i = 0; i < punishKeys.length; i++) {
-			let dict = Users[punishKeys[i]];
+			let dict = Punishments[punishKeys[i]];
 			for (let entry in dict) delete dict[entry];
 		}
 		this.addModCommand("All bans and locks have been lifted by " + user.name + ".");
@@ -2192,7 +2079,7 @@ exports.commands = {
 		if (!this.can('editroom', null, room)) return false;
 
 		let targetInt = parseInt(target);
-		if (target === 'off' || target === 'disable') {
+		if (target === 'off' || target === 'disable' || target === 'false') {
 			if (!room.slowchat) return this.errorReply("Slow chat is already disabled in this room.");
 			room.slowchat = false;
 			this.add("|raw|<div class=\"broadcast-blue\"><b>Slow chat was disabled!</b><br />There is no longer a set minimum time between messages.</div>");
@@ -2237,7 +2124,7 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 		}
 	},
-	stretchinghelp: ["/stretching [enable/disable] - Toggles having the server check messages containing too much stretching. Requires "],
+	stretchinghelp: ["/stretching [enable/disable] - Toggles having the server check messages containing too much stretching. Requires # & ~"],
 
 	capitals: function (target, room, user) {
 		if (!target) return this.sendReply("Capitals in this room is currently set to: " + (room.filterCaps ? room.filterCaps : false));
@@ -2260,7 +2147,7 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 		}
 	},
-	capitalshelp: ["/capitals [enable/disable] - Toggles having the server check messages containing too many capitals. Requires "],
+	capitalshelp: ["/capitals [enable/disable] - Toggles having the server check messages containing too many capitals. Requires # & ~"],
 
 	declare: function (target, room, user) {
 		if (!target) return this.parse('/help declare');
@@ -2292,9 +2179,9 @@ exports.commands = {
 		target = this.canHTML(target);
 		if (!target) return;
 
-		for (let id in Rooms.rooms) {
-			if (id !== 'global') Rooms.rooms[id].addRaw('<div class="broadcast-blue"><b>' + target + '</b></div>').update();
-		}
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id !== 'global') curRoom.addRaw('<div class="broadcast-blue"><b>' + target + '</b></div>').update();
+		});
 		this.logModCommand(user.name + " globally declared " + target);
 	},
 	globaldeclarehelp: ["/globaldeclare [message] - Anonymously announces a message to every room on the server. Requires: ~"],
@@ -2306,9 +2193,9 @@ exports.commands = {
 		target = this.canHTML(target);
 		if (!target) return;
 
-		for (let id in Rooms.rooms) {
-			if (id !== 'global' && Rooms.rooms[id].type !== 'battle') Rooms.rooms[id].addRaw('<div class="broadcast-blue"><b>' + target + '</b></div>').update();
-		}
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id !== 'global' && curRoom.type !== 'battle') curRoom.addRaw('<div class="broadcast-blue"><b>' + target + '</b></div>').update();
+		});
 		this.logModCommand(user.name + " globally declared (chat level) " + target);
 	},
 	chatdeclarehelp: ["/cdeclare [message] - Anonymously announces a message to all chatrooms on the server. Requires: ~"],
@@ -2426,7 +2313,7 @@ exports.commands = {
 	banwords: 'banword',
 	banword: {
 		add: function (target, room, user) {
-			if (!target) return this.parse('/help banword');
+			if (!target || target === ' ') return this.parse('/help banword');
 			if (!user.can('declare', null, room)) return;
 
 			if (!room.banwords) room.banwords = [];
@@ -2436,7 +2323,7 @@ exports.commands = {
 
 			for (let i = 0; i < words.length; i++) {
 				if (/[\\^$*+?()|{}[\]]/.test(words[i])) {
-					if (!user.can('makechatroom')) return this.errorReply("Regex banwords are only allowed for leaders or above.");
+					if (!user.can('makeroom')) return this.errorReply("Regex banwords are only allowed for leaders or above.");
 
 					try {
 						let test = new RegExp(words[i]); // eslint-disable-line no-unused-vars
@@ -2639,7 +2526,7 @@ exports.commands = {
 		});
 	},
 	modloghelp: ["/modlog [roomid|all], [n] - Roomid defaults to current room.",
-		"If n is a number or omitted, display the last n lines of the moderator log. Defaults to 15.",
+		"If n is a number or omitted, display the last n lines of the moderator log. Defaults to 20.",
 		"If n is not a number, search the moderator log for 'n' on room's log [roomid]. If you set [all] as [roomid], searches for 'n' on all rooms's logs. Requires: % @ * # & ~"],
 
 	/*********************************************************
@@ -2768,9 +2655,8 @@ exports.commands = {
 		if (!this.can('lockdown')) return false;
 
 		Rooms.global.lockdown = true;
-		for (let id in Rooms.rooms) {
-			if (id === 'global') continue;
-			let curRoom = Rooms.rooms[id];
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id === 'global') return;
 			curRoom.addRaw("<div class=\"broadcast-red\"><b>The server is restarting soon.</b><br />Please finish your battles quickly. No new battles can be started until the server resets in a few minutes.</div>").update();
 			if (curRoom.requestKickInactive && !curRoom.battle.ended) {
 				curRoom.requestKickInactive(user, true);
@@ -2779,7 +2665,7 @@ exports.commands = {
 					curRoom.addRaw("<div class=\"broadcast-red\"><b>Moderated chat was set to +!</b><br />Only users of rank + and higher can talk.</div>").update();
 				}
 			}
-		}
+		});
 
 		this.logEntry(user.name + " used /lockdown");
 	},
@@ -2796,12 +2682,11 @@ exports.commands = {
 		if (!this.can('lockdown')) return false;
 
 		Rooms.global.lockdown = true;
-		for (let id in Rooms.rooms) {
-			if (id === 'global') continue;
-			let curRoom = Rooms.rooms[id];
-			if (curRoom.battle) continue;
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id === 'global') return;
+			if (curRoom.battle) return;
 			curRoom.addRaw("<div class=\"broadcast-red\"><b>The server is restarting soon.</b><br />Please finish your battles quickly. No new battles can be started until the server resets in a few minutes.</div>").update();
-		}
+		});
 
 		this.logEntry(user.name + " used /slowlockdown");
 	},
@@ -2813,9 +2698,9 @@ exports.commands = {
 			return this.errorReply("We're not under lockdown right now.");
 		}
 		if (Rooms.global.lockdown === true) {
-			for (let id in Rooms.rooms) {
-				if (id !== 'global') Rooms.rooms[id].addRaw("<div class=\"broadcast-green\"><b>The server restart was canceled.</b></div>").update();
-			}
+			Rooms.rooms.forEach((curRoom, id) => {
+				if (id !== 'global') curRoom.addRaw("<div class=\"broadcast-green\"><b>The server restart was canceled.</b></div>").update();
+			});
 		} else {
 			this.sendReply("Preparation for the server shutdown was canceled.");
 		}
@@ -2831,9 +2716,9 @@ exports.commands = {
 			return this.errorReply("We're already in emergency mode.");
 		}
 		Config.emergency = true;
-		for (let id in Rooms.rooms) {
-			if (id !== 'global') Rooms.rooms[id].addRaw("<div class=\"broadcast-red\">The server has entered emergency mode. Some features might be disabled or limited.</div>").update();
-		}
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id !== 'global') curRoom.addRaw("<div class=\"broadcast-red\">The server has entered emergency mode. Some features might be disabled or limited.</div>").update();
+		});
 
 		this.logEntry(user.name + " used /emergency");
 	},
@@ -2845,9 +2730,9 @@ exports.commands = {
 			return this.errorReply("We're not in emergency mode.");
 		}
 		Config.emergency = false;
-		for (let id in Rooms.rooms) {
-			if (id !== 'global') Rooms.rooms[id].addRaw("<div class=\"broadcast-green\"><b>The server is no longer in emergency mode.</b></div>").update();
-		}
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id !== 'global') curRoom.addRaw("<div class=\"broadcast-green\"><b>The server is no longer in emergency mode.</b></div>").update();
+		});
 
 		this.logEntry(user.name + " used /endemergency");
 	},
@@ -2978,7 +2863,7 @@ exports.commands = {
 			let unitIndex = Math.floor(Math.log2(results[i]) / 10); // 2^10 base log
 			results[i] = "" + (results[i] / Math.pow(2, 10 * unitIndex)).toFixed(2) + " " + units[unitIndex];
 		}
-		this.sendReply("Main process. RSS: " + results[0] + ". Heap: " + results[1] + " / " + results[2] + ".");
+		this.sendReply("||[Main process] RSS: " + results[0] + ", Heap: " + results[1] + " / " + results[2]);
 	},
 
 	bash: function (target, room, user, connection) {
@@ -3340,6 +3225,9 @@ exports.commands = {
 		if (!targetUser || !targetUser.connected) {
 			return this.popupReply("The user '" + this.targetUsername + "' was not found.");
 		}
+		if (user.locked && !targetUser.locked) {
+			return this.popupReply("You are locked and cannot challenge unlocked users.");
+		}
 		if (targetUser.blockChallenges && !user.can('bypassblocks', targetUser)) {
 			return this.popupReply("The user '" + this.targetUsername + "' is not accepting challenges right now.");
 		}
@@ -3471,7 +3359,7 @@ exports.commands = {
 				}
 				roomList[i] = roomData;
 			}
-			if (!targetUser.roomCount['global']) roomList = false;
+			if (!targetUser.connected) roomList = false;
 			let userdetails = {
 				userid: targetUser.userid,
 				avatar: targetUser.avatar,

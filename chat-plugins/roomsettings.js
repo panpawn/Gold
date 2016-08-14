@@ -68,7 +68,7 @@ class RoomSettings {
 		return modjoinOutput.join(" | ");
 	}
 	stretching() {
-		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.stretching ? this.room.stretching : false) + "</button>";
+		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.filterStretching ? this.room.filterStretching : false) + "</button>";
 		if (this.room.filterStretching) {
 			return '<button name="send" value="/roomsetting stretching disable">false</button> | <button ' + DISABLED + '>true</button>';
 		} else {
@@ -76,7 +76,7 @@ class RoomSettings {
 		}
 	}
 	capitals() {
-		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.capitals ? this.room.capitals : false) + "</button>";
+		if (!this.user.can('editroom', null, this.room)) return "<button " + DISABLED + ">" + (this.room.filterCaps ? this.room.filterCaps : false) + "</button>";
 		if (this.room.filterCaps) {
 			return '<button name="send" value="/roomsetting capitals disable">false</button> | <button ' + DISABLED + '>true</button>';
 		} else {
@@ -118,14 +118,14 @@ exports.commands = {
 	roomsetting: 'roomsettings',
 	roomsettings: function (target, room, user, connection) {
 		if (room.battle) return this.errorReply("This command cannot be used in battle rooms.");
-		room.settings = new RoomSettings(user, room, connection);
+		let settings = new RoomSettings(user, room, connection);
 
 		if (!target) {
 			room.update();
-			room.settings.generateDisplay(user, room, connection);
+			settings.generateDisplay(user, room, connection);
 		} else {
-			room.settings.updateSetting(target);
+			settings.updateSetting(target);
 		}
 	},
-	roomsettingshelp: ["/roomsettings - Shows current rom settings with buttons to change them. Requires # & ~"],
+	roomsettingshelp: ["/roomsettings - Shows current room settings with buttons to change them (if you can)."],
 };

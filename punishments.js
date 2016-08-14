@@ -146,7 +146,7 @@ Punishments.loadBanlist = function () {
 					Punishments.ips.set(data[i], ['BAN', '#ipban', Infinity]);
 				}
 			}
-			Punishments.checkRangeBanned = Cidr.checker(rangebans);
+			Punishments.checkRangeBanned = Dnsbl.checker(rangebans);
 			resolve();
 		});
 	});
@@ -464,13 +464,15 @@ Punishments.checkIp = function (user, connection) {
 		if (Config.hostfilter) Config.hostfilter(host, user, connection);
 	});
 
-	Dnsbl.query(connection.ip, isBlocked => {
-		if (isBlocked) {
-			if (connection.user && !connection.user.locked && !connection.user.autoconfirmed) {
-				connection.user.semilocked = '#dnsbl';
+	if (Config.dnsbl) {
+		Dnsbl.query(connection.ip).then(isBlocked => {
+			if (isBlocked) {
+				if (connection.user && !connection.user.locked && !connection.user.autoconfirmed) {
+					connection.user.semilocked = '#dnsbl';
+				}
 			}
-		}
-	});
+		});
+	}
 };
 
 // Connection flood table. Separate table from IP bans.

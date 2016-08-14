@@ -244,7 +244,7 @@ exports.commands = {
 				return '‽' + this.name;
 			}
 			if (roomid) {
-				let room = Rooms.rooms[roomid];
+				let room = Rooms(roomid);
 				if (room.isMuted(this)) {
 					return '!' + this.name;
 				}
@@ -385,42 +385,45 @@ exports.commands = {
 	},
 	roomlist: function (target, room, user) {
 		if (!this.can('pban')) return;
-		let totalUsers = 0;
-		for (let u of Users.users) {
-			u = u[1];
-			if (Users(u).connected) {
-				totalUsers++;
-			}
-		}
-		let rooms = Object.keys(Rooms.rooms),
-			len = rooms.length,
-			header = ['<b><font color="#DA9D01" size="2">Total users connected: ' + totalUsers + '</font></b><br />'],
-			official = ['<b><font color="#1a5e00" size="2">Official chat rooms:</font></b><br />'],
-			nonOfficial = ['<hr><b><font color="#000b5e" size="2">Public chat rooms:</font></b><br />'],
-			privateRoom = ['<hr><b><font color="#ff5cb6" size="2">Private chat rooms:</font></b><br />'],
-			groupChats = ['<hr><b><font color="#740B53" size="2">Group Chats:</font></b><br />'],
-			battleRooms = ['<hr><b><font color="#0191C6" size="2">Battle Rooms:</font></b><br />'];
 
-		while (len--) {
-			let _room = Rooms.rooms[rooms[(rooms.length - len) - 1]];
-			if (_room.type === 'battle') {
-				battleRooms.push('<a href="/' + _room.id + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+		let header = ['<b><font color="#b30000" size="2">Total users connected: ' + Rooms.global.userCount + '</font></b><br />'];
+		let official = ['<b><font color="#1a5e00" size="2">Official chat rooms:</font></b><br />'];
+		let nonOfficial = ['<hr><b><font color="#000b5e" size="2">Public chat rooms:</font></b><br />'];
+		let privateRoom = ['<hr><b><font color="#ff5cb6" size="2">Private chat rooms:</font></b><br />'];
+		let groupChats = ['<hr><b><font color="#740B53" size="2">Group Chats:</font></b><br />'];
+		let battleRooms = ['<hr><b><font color="#0191C6" size="2">Battle Rooms:</font></b><br />'];
+
+		let rooms = [];
+
+		Rooms.rooms.forEach(curRoom => {
+			rooms.push(curRoom.id);
+		});
+
+		rooms.sort(function (a, b) {
+			return a - b;
+		});
+
+		for (let u in rooms) {
+			let curRoom = Rooms(rooms[u]);
+			if (!curRoom || u === 'global') continue;
+			if (curRoom.type === 'battle') {
+				battleRooms.push('<a href="/' + curRoom.id + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 			}
-			if (_room.type === 'chat') {
-				if (_room.isPersonal) {
-					groupChats.push('<a href="/' + _room.id + '" class="ilink">' + _room.id + '</a> (' + _room.userCount + ')');
+			if (curRoom.type === 'chat') {
+				if (curRoom.isPersonal) {
+					groupChats.push('<a href="/' + curRoom.id + '" class="ilink">' + curRoom.id + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
-				if (_room.isOfficial) {
-					official.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+				if (curRoom.isOfficial) {
+					official.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
-				if (_room.isPrivate) {
-					privateRoom.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+				if (curRoom.isPrivate) {
+					privateRoom.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
 			}
-			if (_room.type !== 'battle' && _room.id !== 'global') nonOfficial.push('<a href="/' + toId(_room.title) + '" class="ilink">' + _room.title + '</a> (' + _room.userCount + ')');
+			if (curRoom.type !== 'battle') nonOfficial.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + curRoom.title + '</a> (' + curRoom.userCount + ')');
 		}
 		this.sendReplyBox(header + official.join(' ') + nonOfficial.join(' ') + privateRoom.join(' ') + (groupChats.length > 1 ? groupChats.join(' ') : '') + (battleRooms.length > 1 ? battleRooms.join(' ') : ''));
 	},
@@ -1002,7 +1005,7 @@ exports.commands = {
 		}
 		if (target.length > 15) return this.sendReply('This new room suggestion is too long; it cannot exceed 15 characters.');
 		if (!this.canTalk()) return;
-		Rooms.rooms.room.add('|html|<font size="4"><b>New color guessed!</b></font><br><b>Guessed by:</b> ' + user.userid + '<br><b>Color:</b> ' + target + '');
+		room.add('|html|<font size="4"><b>New color guessed!</b></font><br><b>Guessed by:</b> ' + user.userid + '<br><b>Color:</b> ' + target + '');
 		this.sendReply('Thanks, your new color guess has been sent.  We\'ll review your color soon and get back to you. ("' + target + '")');
 	},
 

@@ -1554,6 +1554,18 @@ exports.BattleFormatsData = {
 		eventPokemon: [
 			{"generation": 3, "level": 30, "shiny": 1, "moves":["pound", "transform", "megapunch", "metronome"]},
 			{"generation": 3, "level": 10, "moves":["pound", "transform"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["fakeout"]},
+			{"generation": 3, "level": 10, "moves":["fakeout"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["feintattack"]},
+			{"generation": 3, "level": 10, "moves":["feintattack"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["hypnosis"]},
+			{"generation": 3, "level": 10, "moves":["hypnosis"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["nightshade"]},
+			{"generation": 3, "level": 10, "moves":["nightshade"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["roleplay"]},
+			{"generation": 3, "level": 10, "moves":["roleplay"]},
+			{"generation": 3, "level": 30, "shiny": 1, "moves":["zapcannon"]},
+			{"generation": 3, "level": 10, "moves":["zapcannon"]},
 			{"generation": 4, "level": 50, "moves":["ancientpower", "metronome", "teleport", "aurasphere"], "pokeball": "cherishball"},
 			{"generation": 4, "level": 50, "moves":["barrier", "metronome", "teleport", "aurasphere"], "pokeball": "cherishball"},
 			{"generation": 4, "level": 50, "moves":["megapunch", "metronome", "teleport", "aurasphere"], "pokeball": "cherishball"},
@@ -4029,7 +4041,7 @@ exports.BattleFormatsData = {
 			{"generation": 6, "level": 100, "moves":["seedflare", "aromatherapy", "substitute", "energyball"], "pokeball": "cherishball"},
 		],
 		eventOnly: true,
-		tier: "RU",
+		tier: "BL2",
 	},
 	shayminsky: {
 		randomBattleMoves: ["seedflare", "earthpower", "airslash", "hiddenpowerfire", "substitute", "leechseed", "healingwish"],
@@ -5360,7 +5372,7 @@ exports.BattleFormatsData = {
 	slurpuff: {
 		randomBattleMoves: ["substitute", "bellydrum", "playrough", "return", "drainpunch", "calmmind", "drainingkiss", "dazzlinggleam", "flamethrower", "surf"],
 		randomDoubleBattleMoves: ["substitute", "bellydrum", "playrough", "return", "drainpunch", "dazzlinggleam", "surf", "psychic", "flamethrower", "protect"],
-		tier: "RU",
+		tier: "BL2",
 	},
 	inkay: {
 		randomBattleMoves: ["topsyturvy", "switcheroo", "superpower", "psychocut", "flamethrower", "rockslide", "trickroom"],

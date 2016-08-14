@@ -1035,7 +1035,7 @@ exports.BattleAbilities = {
 				return;
 			}
 			for (let i = 0; i < allyActive.length; i++) {
-				if (allyActive[i] && allyActive[i].hp && this.isAdjacent(pokemon, allyActive[i]) && allyActive[i].status && this.random(10) < 10) {
+				if (allyActive[i] && allyActive[i].hp && this.isAdjacent(pokemon, allyActive[i]) && allyActive[i].status && this.random(10) < 3) {
 					this.add('-activate', pokemon, 'ability: Healer');
 					allyActive[i].cureStatus();
 				}
@@ -1177,7 +1177,20 @@ exports.BattleAbilities = {
 			if (pokemon === pokemon.side.pokemon[i]) return;
 			pokemon.illusion = pokemon.side.pokemon[i];
 		},
-		// illusion clearing is hardcoded in the damage function
+		// illusion clearing for damage is hardcoded in the damage
+		// function because mold breaker inhibits the damage event
+		onEnd: function (pokemon) {
+			if (pokemon.illusion) {
+				this.debug('illusion cleared');
+				pokemon.illusion = null;
+				let details = pokemon.template.species + (pokemon.level === 100 ? '' : ', L' + pokemon.level) + (pokemon.gender === '' ? '' : ', ' + pokemon.gender) + (pokemon.set.shiny ? ', shiny' : '');
+				this.add('replace', pokemon, details);
+				this.add('-end', pokemon, 'Illusion');
+			}
+		},
+		onFaint: function (pokemon) {
+			pokemon.illusion = null;
+		},
 		id: "illusion",
 		name: "Illusion",
 		rating: 4.5,

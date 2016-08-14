@@ -114,8 +114,6 @@ global.Ladders = require(Config.remoteladder ? './ladders-remote.js' : './ladder
 
 global.Users = require('./users.js');
 
-global.Cidr = require('./cidr.js');
-
 global.Punishments = require('./punishments.js');
 
 global.Rooms = require('./rooms.js');
@@ -135,11 +133,8 @@ global.Simulator = require('./simulator.js');
 
 global.Tournaments = require('./tournaments');
 
-try {
 	global.Dnsbl = require('./dnsbl.js');
-} catch (e) {
-	global.Dnsbl = {query: () => {}, reverse: require('dns').reverse};
-}
+Dnsbl.loadDatacenters();
 
 if (Config.crashguard) {
 	// graceful crash - allow current battles to finish before restarting

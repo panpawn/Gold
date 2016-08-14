@@ -1024,6 +1024,7 @@ exports.BattleMovedex = {
 					this.add('-end', pokemon, 'Bide');
 					target = this.effectData.lastDamageSource;
 					if (!target || !this.effectData.totalDamage) {
+						this.attrLastMove('[still]');
 						this.add('-fail', pokemon);
 						return false;
 					}
@@ -1032,11 +1033,18 @@ exports.BattleMovedex = {
 						this.add('-miss', pokemon, target);
 						return false;
 					}
-					if (!target.runImmunity('Normal')) {
-						this.add('-immune', target, '[msg]');
-						return false;
-					}
-					this.moveHit(target, pokemon, 'bide', {damage: this.effectData.totalDamage * 2});
+					let moveData = {
+						id: 'bide',
+						name: "Bide",
+						accuracy: true,
+						damage: this.effectData.totalDamage * 2,
+						category: "Physical",
+						priority: 1,
+						flags: {contact: 1, protect: 1},
+						effectType: 'Move',
+						type: 'Normal',
+					};
+					this.tryMoveHit(target, pokemon, moveData);
 					return false;
 				}
 				this.add('-activate', pokemon, 'Bide');
@@ -11406,10 +11414,8 @@ exports.BattleMovedex = {
 		effect: {
 			duration: 1,
 			onAfterMoveSecondarySelf: function (pokemon, target, move) {
-				if (pokemon.template.speciesid === 'meloettapirouette' && pokemon.formeChange('Meloetta')) {
-					this.add('-formechange', pokemon, 'Meloetta', '[msg]');
-				} else if (pokemon.formeChange('Meloetta-Pirouette')) {
-					this.add('-formechange', pokemon, 'Meloetta-Pirouette', '[msg]');
+				if (pokemon.formeChange(pokemon.template.speciesid === 'meloettapirouette' ? 'Meloetta' : 'Meloetta-Pirouette')) {
+					this.add('-formechange', pokemon, pokemon.illusion ? pokemon.illusion.template.species : pokemon.template.species, '[msg]');
 				}
 				pokemon.removeVolatile('relicsong');
 			},

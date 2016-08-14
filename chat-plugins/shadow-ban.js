@@ -194,7 +194,7 @@ exports.commands = {
 		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
 		if (!this.can('lock')) return false;
 
-		Users.get(toId(user.name)).send('|popup| Here is a list of sbanned users: \n' + JSON.stringify(Rooms.rooms.shadowbanroom.chatRoomData, null, 2));
+		Users.get(toId(user.name)).send('|popup| Here is a list of sbanned users: \n' + JSON.stringify(Rooms('shadowbanroom').chatRoomData, null, 2));
 	},
 };
 
