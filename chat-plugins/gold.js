@@ -1511,7 +1511,7 @@ exports.commands = {
 				names.forEach(name => {
 					for (var i = 0; i < Gold.userIps[name].length; i++) {
 						if (Gold.userIps[name][i].startsWith(target)) {
-							buff.push(formatName(name));
+							if (!(buff.includes(formatName(name)))) buff.push(formatName(name));
 						}
 					}
 				});
