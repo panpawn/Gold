@@ -1516,7 +1516,7 @@ exports.commands = {
 					}
 				});
 				if (buff.length < 1) return this.errorReply(fallout);
-				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with '" + origtarget + "':<br />" + buff.join(', '));
+				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with an IP in range '" + origtarget + "':<br />" + buff.join(', '));
 			} else {
 				names.forEach(name => {
 					if (Gold.userIps[name].includes(target)) {
@@ -1524,7 +1524,7 @@ exports.commands = {
 					}
 				});
 				if (buff.length < 1) return this.errorReply(fallout);
-				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with '" + target + "':<br />" + buff.join(', '));
+				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with IP '" + target + "':<br />" + buff.join(', '));
 			}
 		} else if (Gold.userIps[toId(target)]) {
 			let results = Gold.userIps[toId(target)];
