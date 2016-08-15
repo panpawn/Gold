@@ -166,7 +166,7 @@ exports.commands = {
 	ipsearch: function (target, room, user, connection, cmd) {
 		if (!target.trim()) return this.parse('/help ipsearch');
 		if (!this.can('rangeban')) return;
-		let results = [];
+		let results = [], origtarget = target;
 
 		let isAll = (cmd === 'ipsearchall');
 
@@ -201,7 +201,10 @@ exports.commands = {
 				}
 			});
 		}
-		if (!results.length) return this.errorReply("No results found.");
+		if (!results.length) {
+			this.sendReply("No results found.  Checking past user IP information...");
+			return this.parse('/goldipsearch ' + origtarget);
+		}
 		return this.sendReply(results.join('; '));
 	},
 	ipsearchhelp: ["/ipsearch [ip|range|host] - Find all users with specified IP, IP range, or host. Requires: & ~"],

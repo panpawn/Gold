@@ -1496,7 +1496,7 @@ exports.commands = {
 	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
 
 	goldipsearch: function (target, room, user) {
-		if (!this.can('hotpatch')) return false;
+		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
 		let searchType = target.includes('.') ? 'IP' : 'name';
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
