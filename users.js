@@ -633,6 +633,7 @@ class User {
 		if (name && userid !== toId(name)) {
 			name = userid;
 		}
+		Gold.addIp(name, connection.ip);
 		if (this.registered) newlyRegistered = false;
 
 		if (!userid) {

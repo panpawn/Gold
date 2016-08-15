@@ -1494,6 +1494,46 @@ exports.commands = {
 		});
 	},
 	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
+
+	goldipsearch: function (target, room, user) {
+		if (!this.can('hotpatch')) return false;
+		if (!target) return this.parse('/help goldipsearch');
+		let searchType = target.includes('.') ? 'IP' : 'name';
+		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
+
+		if (searchType === 'IP') {
+			let names = Object.keys(Gold.userIps), buff = [];
+
+			// wildcards
+			if (target.includes('*')) {
+				let origtarget = target;
+				target = target.slice(0, -1);
+				names.forEach(name => {
+					for (var i = 0; i < Gold.userIps[name].length; i++) {
+						if (Gold.userIps[name][i].startsWith(target)) {
+							buff.push(formatName(name));
+						}
+					}
+				});
+				if (buff.length < 1) return this.errorReply(fallout);
+				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with '" + origtarget + "':<br />" + buff.join(', '));
+			} else {
+				names.forEach(name => {
+					if (Gold.userIps[name].includes(target)) {
+						buff.push(formatName(name));
+					}
+				});
+				if (buff.length < 1) return this.errorReply(fallout);
+				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with '" + target + "':<br />" + buff.join(', '));
+			}
+		} else if (Gold.userIps[toId(target)]) {
+			let results = Gold.userIps[toId(target)];
+			return this.sendReplyBox("IP" + Gold.pluralFormat(results.length, 's') + " previously associated with '" + target + "':<br />" + results.join(', '));
+		} else {
+			return this.errorReply(fallout);
+		}
+	},
+	goldipsearchhelp: ["/goldipsearch [ip|ip range|username] - Find all users with specified IP, name, or IP range. Requires ~"],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
@@ -1740,4 +1780,29 @@ try {
 
 Gold.saveAutoJoins = function () {
 	fs.writeFileSync('config/autojoin.json', JSON.stringify(Gold.autoJoinRooms));
+};
+
+Gold.userIps = Object.create(null);
+
+function loadIps() {
+	fs.readFile('config/userips.json', 'utf8', function (err, file) {
+		if (err) return;
+		Gold.userIps = JSON.parse(file);
+	});
+}
+loadIps();
+
+Gold.addIp = function (user, ip) {
+	user = toId(user);
+
+	if (!Gold.userIps[user]) {
+		Gold.userIps[user] = [];
+		Gold.userIps[user].push(ip);
+	} else {
+		if (Gold.userIps[user].includes(ip)) return false;
+		Gold.userIps[user].push(ip);
+	}
+
+	// update / save
+	fs.writeFileSync('config/userips.json', JSON.stringify(Gold.userIps));
 };
