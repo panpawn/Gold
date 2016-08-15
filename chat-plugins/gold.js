@@ -1794,6 +1794,7 @@ loadIps();
 
 Gold.addIp = function (user, ip) {
 	user = toId(user);
+	if (user.substr(0, 5) === 'guest') return false; // don't record guest numbers
 
 	if (!Gold.userIps[user]) {
 		Gold.userIps[user] = [];
