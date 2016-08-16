@@ -1498,37 +1498,34 @@ exports.commands = {
 	goldipsearch: function (target, room, user) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
-		let searchType = target.includes('.') ? 'IP' : 'name';
+		let searchType = target.includes('.') ? 'IP' : 'User';
+		let wildcard = target.includes('*');
+		let origtarget = target;
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
 
 		if (searchType === 'IP') {
 			let names = Object.keys(Gold.userIps), buff = [];
 
-			// wildcards
-			if (target.includes('*')) {
-				let origtarget = target;
-				target = target.slice(0, -1);
-				names.forEach(name => {
+			if (wildcard) target = target.slice(0, -1);
+
+			names.forEach(name => {
+				if (wildcard) {
 					for (var i = 0; i < Gold.userIps[name].length; i++) {
-						if (Gold.userIps[name][i].startsWith(target)) {
-							if (!(buff.includes(formatName(name)))) buff.push(formatName(name));
+						if (Gold.userIps[name][i].startsWith(target) && !(buff.includes(formatName(name)))) {
+							buff.push(formatName(name));
 						}
 					}
-				});
-				if (buff.length < 1) return this.errorReply(fallout);
-				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with an IP in range '" + origtarget + "':<br />" + buff.join(', '));
-			} else {
-				names.forEach(name => {
-					if (Gold.userIps[name].includes(target)) {
+				} else { // regular IPs
+					if (Gold.userIps[name].includes(target) && !(buff.includes(formatName(name)))) {
 						buff.push(formatName(name));
 					}
-				});
-				if (buff.length < 1) return this.errorReply(fallout);
-				return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with IP '" + target + "':<br />" + buff.join(', '));
-			}
+				}
+			});
+			if (buff.length < 1) return this.errorReply(fallout);
+			return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with an " + searchType + " in range '" + origtarget + "':<br />" + buff.join(', '));
 		} else if (Gold.userIps[toId(target)]) {
 			let results = Gold.userIps[toId(target)];
-			return this.sendReplyBox("IP" + Gold.pluralFormat(results.length, 's') + " previously associated with '" + target + "':<br />" + results.join(', '));
+			return this.sendReplyBox("IP" + Gold.pluralFormat(results.length, 's') + " previously associated with " + searchType + " '" + target + "':<br />" + results.join(', '));
 		} else {
 			return this.errorReply(fallout);
 		}

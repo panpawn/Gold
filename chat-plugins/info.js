@@ -166,6 +166,7 @@ exports.commands = {
 	ipsearch: function (target, room, user, connection, cmd) {
 		if (!target.trim()) return this.parse('/help ipsearch');
 		if (!this.can('rangeban')) return;
+		if (!(target.includes('.'))) return this.parse('/goldipsearch ' + target);
 		let results = [], origtarget = target;
 
 		let isAll = (cmd === 'ipsearchall');
