@@ -1543,7 +1543,9 @@ exports.commands = {
 					buff.push(name);
 				}
 			});
-			this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
+			if (buff.length < 1) {
+				this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
+			}
 		}
 	},
 	/*
