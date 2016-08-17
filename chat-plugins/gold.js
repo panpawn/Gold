@@ -1539,11 +1539,11 @@ exports.commands = {
 		if (this.targetUser && user.can('pban')) {
 			let names = Object.keys(Gold.userIps), buff = [];
 			names.forEach(name => {
-				if (Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
+				if (name !== this.targetUser.userid && Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
 					buff.push(name);
 				}
 			});
-			if (buff.length < 1) {
+			if (buff.length > 0) {
 				this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
 			}
 		}
