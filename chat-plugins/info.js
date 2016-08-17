@@ -28,6 +28,7 @@ exports.commands = {
 			if (user.can('pban')) return this.parse('/offlinewhois ' + target);
 			return this.errorReply("User " + this.targetUsername + " not found.");
 		}
+		if (!targetUser.connected && user.can('pban')) return this.parse('/offlinewhois ' + target);
 		let showAll = (cmd === 'ip' || cmd === 'whoare' || cmd === 'alt' || cmd === 'alts');
 		if (showAll && !user.confirmed && targetUser !== user) {
 			return this.errorReply("/alts - Access denied.");
