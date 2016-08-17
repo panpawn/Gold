@@ -1536,8 +1536,8 @@ exports.commands = {
 
 	whois: function (target, room, user) {
 		baseWhois.apply(this, arguments);
+		let names = Object.keys(Gold.userIps), buff = [];
 		if (this.targetUser && user.can('pban')) {
-			let names = Object.keys(Gold.userIps), buff = [];
 			names.forEach(name => {
 				if (name !== this.targetUser.userid && Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
 					buff.push(name);
@@ -1546,6 +1546,34 @@ exports.commands = {
 			if (buff.length > 0) {
 				this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
 			}
+		} else if (this.target && !Users(this.target) && user.can('pban')) {
+			let ips = [], prevNames = [], targetId = toId(this.target);
+			let prevIps = (Gold.userIps[targetId] ? Gold.userIps[targetId] : false);
+			let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
+			let userGroup = (Config.groups[userSymbol] ? 'Global ' +  Config.groups[userSymbol].name  + ' (' + userSymbol + ')' : false);
+			let none = '<em style="color:gray">(none)</em>';
+
+			// header and last seen
+			buff.push('<strong class="username">' + target + '</strong> <em style="color:gray">(offline)</em>');
+			if (userGroup) buff.push(userGroup);
+			buff.push('Last Seen: ' + (Gold.seenData[targetId] ? moment(Gold.seenData[targetId]).format("MMMM Do YYYY, h:mm A") : '<font color="red">never on this server</font>') + '<br />');
+
+			// get previous names and IPs
+			if (prevIps) prevIps.forEach(f => { ips.push(f); });
+			if (ips.length > 0) {
+				names.forEach(name => {
+					for (var i = 0; i < ips.length; i++) {
+						if (Gold.userIps[name].includes(ips[i]) && targetId !== name) {
+							prevNames.push(name);
+						}
+					}
+				});
+			}
+			buff.push("Previous IP" + Gold.pluralFormat(ips.length, 's') + ": " + (ips.length > 0 ? ips.join(', ') : none));
+			buff.push("Previous alt" + Gold.pluralFormat(prevNames.length, 's') + ": " + (prevNames.length > 0 ? prevNames.join(', ') : none));
+
+			// display offline whois
+			this.sendReplyBox(buff.join('<br />'));
 		}
 	},
 	/*
