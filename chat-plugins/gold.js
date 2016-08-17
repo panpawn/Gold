@@ -1534,10 +1534,13 @@ exports.commands = {
 	},
 	goldipsearchhelp: ["/goldipsearch [ip|ip range|username] - Find all users with specified IP, name, or IP range. Requires ~"],
 
-	whois: function (target, room, user) {
-		baseWhois.apply(this, arguments);
+	offlinewhois: 'whois',
+	whois: function (target, room, user, connection, cmd) {
+		if (cmd !== 'offlinewhois' && this.cmd && this.cmd !== 'offlinewhois') {
+			baseWhois.apply(this, arguments);
+		}
 		let names = Object.keys(Gold.userIps), buff = [];
-		if (this.targetUser && user.can('pban')) {
+		if (this.targetUser && this.targetUser.connected && user.can('pban')) {
 			names.forEach(name => {
 				if (name !== this.targetUser.userid && Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
 					buff.push(name);
@@ -1546,7 +1549,7 @@ exports.commands = {
 			if (buff.length > 0) {
 				this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
 			}
-		} else if (this.target && !Users(this.target) && user.can('pban')) {
+		} else if (this.cmd === 'offlinewhois' && user.can('pban')) {
 			let ips = [], prevNames = [], targetId = toId(this.target);
 			let prevIps = (Gold.userIps[targetId] ? Gold.userIps[targetId] : false);
 			let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
