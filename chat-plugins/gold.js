@@ -21,6 +21,8 @@ fs.createWriteStream('badges.txt', {
 });
 geoip.startWatchingDataUpdate();
 
+let baseWhois = require('./../chat-plugins/info').commands.whois;
+
 const messages = [
 	"ventured into Shrek's Swamp.",
 	"disrespected the OgreLord!",
@@ -1495,12 +1497,12 @@ exports.commands = {
 	},
 	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
 
-	goldipsearch: function (target, room, user) {
+	getalts: 'goldipsearch',
+	goldipsearch: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
 		let searchType = target.includes('.') ? 'IP' : 'User';
-		let wildcard = target.includes('*');
-		let origtarget = target;
+		let origtarget = target, targetId = toId(target), wildcard = target.includes('*');
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
 
 		if (searchType === 'IP') {
@@ -1523,14 +1525,27 @@ exports.commands = {
 			});
 			if (buff.length < 1) return this.errorReply(fallout);
 			return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with an " + searchType + " in range '" + origtarget + "':<br />" + buff.join(', '));
-		} else if (Gold.userIps[toId(target)]) {
-			let results = Gold.userIps[toId(target)];
+		} else if (Gold.userIps[targetId]) {
+			let results = Gold.userIps[targetId];
 			return this.sendReplyBox("IP" + Gold.pluralFormat(results.length, 's') + " previously associated with " + searchType + " '" + target + "':<br />" + results.join(', '));
 		} else {
 			return this.errorReply(fallout);
 		}
 	},
 	goldipsearchhelp: ["/goldipsearch [ip|ip range|username] - Find all users with specified IP, name, or IP range. Requires ~"],
+
+	whois: function (target, room, user) {
+		baseWhois.apply(this, arguments);
+		if (this.targetUser && user.can('pban')) {
+			let names = Object.keys(Gold.userIps), buff = [];
+			names.forEach(name => {
+				if (Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
+					buff.push(name);
+				}
+			});
+			this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
+		}
+	},
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
