@@ -1566,7 +1566,7 @@ exports.commands = {
 			if (ips.length > 0) {
 				names.forEach(name => {
 					for (var i = 0; i < ips.length; i++) {
-						if (Gold.userIps[name].includes(ips[i]) && targetId !== name) {
+						if (Gold.userIps[name].includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
 							prevNames.push(name);
 						}
 					}
