@@ -1539,39 +1539,39 @@ exports.commands = {
 		if (cmd !== 'offlinewhois' && this.cmd && this.cmd !== 'offlinewhois') {
 			baseWhois.apply(this, arguments);
 		}
-		let names = Object.keys(Gold.userIps), buff = [];
-		if (this.targetUser && this.targetUser.connected && user.can('pban')) {
+		if (!user.can('pban')) return;
+
+		// variable declarations
+		let targetId = toId(this.target);
+		let ips = [], prevNames = [];
+		let prevIps = (Gold.userIps[targetId] ? Gold.userIps[targetId] : false);
+		let names = Object.keys(Gold.userIps);
+		let buff = [], none = '<em style="color:gray">(none)</em>';
+		let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
+		let userGroup = (Config.groups[userSymbol] ? 'Global ' +  Config.groups[userSymbol].name  + ' (' + userSymbol + ')' : false);
+
+		// get previous names and IPs
+		if (prevIps) prevIps.forEach(f => { ips.push(f); });
+		if (ips.length > 0) {
 			names.forEach(name => {
-				if (name !== this.targetUser.userid && Gold.userIps[name] && Gold.userIps[name].includes(this.targetUser.latestIp)) {
-					buff.push(name);
+				for (var i = 0; i < ips.length; i++) {
+					if (Gold.userIps[name].includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
+						prevNames.push(name);
+					}
 				}
 			});
-			if (buff.length > 0) {
-				this.sendReplyBox("(All previously known alts used on server: " + buff.join(', ') + ")");
+		}
+		if (this.targetUser && this.targetUser.connected && user.can('pban')) {
+			if (prevNames.length > 0) {
+				this.sendReplyBox("(All previously known alts used on server: " + prevNames.join(', ') + ")");
 			}
 		} else if (this.cmd === 'offlinewhois' && user.can('pban')) {
-			let ips = [], prevNames = [], targetId = toId(this.target);
-			let prevIps = (Gold.userIps[targetId] ? Gold.userIps[targetId] : false);
-			let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
-			let userGroup = (Config.groups[userSymbol] ? 'Global ' +  Config.groups[userSymbol].name  + ' (' + userSymbol + ')' : false);
-			let none = '<em style="color:gray">(none)</em>';
-
 			// header and last seen
 			buff.push('<strong class="username">' + target + '</strong> <em style="color:gray">(offline)</em>');
 			if (userGroup) buff.push(userGroup);
 			buff.push('Last Seen: ' + (Gold.seenData[targetId] ? moment(Gold.seenData[targetId]).format("MMMM Do YYYY, h:mm A") : '<font color="red">never on this server</font>') + '<br />');
 
 			// get previous names and IPs
-			if (prevIps) prevIps.forEach(f => { ips.push(f); });
-			if (ips.length > 0) {
-				names.forEach(name => {
-					for (var i = 0; i < ips.length; i++) {
-						if (Gold.userIps[name].includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
-							prevNames.push(name);
-						}
-					}
-				});
-			}
 			buff.push("Previous IP" + Gold.pluralFormat(ips.length, 's') + ": " + (ips.length > 0 ? ips.join(', ') : none));
 			buff.push("Previous alt" + Gold.pluralFormat(prevNames.length, 's') + ": " + (prevNames.length > 0 ? prevNames.join(', ') : none));
 
