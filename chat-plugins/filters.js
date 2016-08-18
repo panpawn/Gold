@@ -35,7 +35,7 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 	for (let x in bannedMessages) {
 		if (message.toLowerCase().indexOf(bannedMessages[x]) > -1 && bannedMessages[x] !== '' && message.substr(0, 1) !== '/') {
 			if (user.locked) return false;
-			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, "Said a banned word: " + bannedMessages[x]);
+			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Said a banned word: " + bannedMessages[x]);
 			user.popup('You have been automatically locked for sending a message containing a banned word.');
 			Monitor.log('[PornMonitor]' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ was automatically locked for trying to say "' + message + '"');
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server (' +
@@ -54,7 +54,7 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 		if (!user.advWarns) user.advWarns = 0;
 		user.advWarns++;
 		if (user.advWarns > 1) {
-			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, "Advertising");
+			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Advertising");
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server. (Advertising) (' + connection.ip + ')\n');
 			connection.sendTo(room, '|raw|<strong class="message-throttle-notice">You have been locked for attempting to advertise.</strong>');
 			Gold.pmUpperStaff(user.name + " has been locked for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
