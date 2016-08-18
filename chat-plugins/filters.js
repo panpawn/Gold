@@ -108,7 +108,7 @@ Config.namefilter = function (name, user) {
 			if (host.includes(badHost)) {
 				user.locked = '#hostfilter';
 				user.updateIdentity();
-				user.popup("|modal|You have been automatically locked due to being on a blacklisted proxy.  If you feel that this is a mistake, PM an Upper Staff member to discuss it.");
+				user.popup("|modal|You have been automatically locked due to being on a proxy known for spam and abuse.\n\nLog off PS! and try reconnecting without a proxy to be unlocked.");
 				Monitor.log("[ProxyMonitor] " + name + " (" + ip + ") has been automatically locked. (" + host + ")");
 				return;
 			}
