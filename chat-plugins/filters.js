@@ -91,19 +91,26 @@ loadBannedNames();
 
 
 Config.namefilter = function (name, user) {
-	let badNames = Config.bannedNames, badHosts = Object.keys(Gold.lockedHosts);
+	let badNames = Config.bannedNames, badHosts = Object.keys(Gold.lockedHosts), nameId = toId(name);
 	for (let x in badNames) {
-		if (toId(name).indexOf(badNames[x]) > -1 && badNames[x] !== '') {
+		if (nameId.indexOf(badNames[x]) > -1 && badNames[x] !== '') {
 			Monitor.log('[NameFilter] should probably FR: ' + name);
 		}
 	}
 
 	// Hostfilter stuff
 	let ip = user.connections[Object.keys(user.connections).length - 1].ip;
+
+	// deal with global ranked user's manually...
+	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
+	let rankIndex = (Config.groupsranking.indexOf(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
+
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
-		if (Config.proxyWhitelist.includes(toId(name))) return;
+		if (Config.proxyWhitelist.includes(nameId)) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
+		if (rankIndex && rankIndex > 0) return; // a hack for confirmed status from global auth
+
 		badHosts.forEach(badHost => {
 			if (host.includes(badHost)) {
 				user.locked = '#hostfilter';
