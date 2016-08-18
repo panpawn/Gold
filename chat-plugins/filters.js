@@ -1,7 +1,6 @@
 'use strict';
-/* Chat filter plugin
+/* Chatfilter, Namefilter (with hostfilter functionality)
  * By: jd, panpawn
- * Caps/stretching moderating from: https://github.com/Ecuacion/Pokemon-Showdown-Node-Bot/blob/master/features/moderation/index.js
  */
 
 const fs = require('fs');
