@@ -74,7 +74,6 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 /*********************
  * Namefilter Magic *
  * ******************/
-
 try {
 	Config.bannedNames = fs.readFileSync('config/bannednames.txt', 'utf8').toLowerCase().split('\n');
 } catch (e) {
@@ -91,13 +90,31 @@ function loadBannedNames() {
 loadBannedNames();
 
 
-Config.namefilter = function (name) {
-	var badNames = Config.bannedNames;
-	for (var x in badNames) {
+Config.namefilter = function (name, user) {
+	let badNames = Config.bannedNames, badHosts = Object.keys(Gold.lockedHosts);
+	for (let x in badNames) {
 		if (toId(name).indexOf(badNames[x]) > -1 && badNames[x] !== '') {
 			Monitor.log('[NameFilter] should probably FR: ' + name);
 		}
 	}
+
+	// Hostfilter stuff
+	let ip = user.connections[Object.keys(user.connections).length - 1].ip;
+	Dnsbl.reverse(ip).then(host => {
+		if (!host) return;
+		if (Config.proxyWhitelist.includes(toId(name))) return;
+		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
+		badHosts.forEach(badHost => {
+			if (host.includes(badHost)) {
+				user.locked = '#hostfilter';
+				user.updateIdentity();
+				user.popup("|modal|You have been automatically locked due to being on a blacklisted proxy.  If you feel that this is a mistake, PM an Upper Staff member to discuss it.");
+				Monitor.log("[ProxyMonitor] " + name + " (" + ip + ") has been automatically locked. (" + host + ")");
+				return;
+			}
+		});
+	});
+
     return name;
 };
 
@@ -105,21 +122,6 @@ Config.namefilter = function (name) {
 /*********************
  * Hostfilter Magic *
  * ******************/
-
-Config.hostfilter = function (host, user, connection) {
-	let badHosts = Object.keys(Gold.lockedHosts), userHost = user.latestHost.toLowerCase();
-	if (badHosts.length < 0) return false; // no hosts are blacklisted (yet)
-
-	badHosts.forEach(host => {
-		if (userHost.includes(host)) {
-			user.locked = '#hostfilter';
-			user.updateIdentity();
-			user.popup('|modal|You have been automatically locked due to being on a blacklisted proxy.  If you feel that this is a mistake, PM an Upper Staff member to discuss it.');
-			return;
-		}
-	});
-};
-
 Gold.lockedHosts = Object.create(null);
 
 function loadHostBlacklist () {
