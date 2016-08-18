@@ -750,6 +750,7 @@
 69.24.64.0,69.24.95.255,Gearhost,http://www.gearhost.com/
 69.27.32.0,69.27.47.255,EBOUNDHOST.com ADF,http://eboundhost.com/
 69.28.48.0,69.28.63.255,Zenlayer,http://www.zenlayer.com/
+69.28.64.0,69.28.95.255,Atlantic.net,http://atlantic.net
 69.28.128.0,69.28.191.255,Limelight Networks Inc,http://www.limelight.com/
 69.28.192.0,69.28.255.255,PEER 1,http://www.peer1.com/
 69.30.192.0,69.30.255.255,WholeSale Internet Inc,http://www.wholesaleinternet.com/
@@ -1139,6 +1140,7 @@
 88.87.32.0,88.87.63.255,availo.no,http://www.availo.no/
 88.148.0.0,88.148.127.255,ServiHosting Networks S.L.,http://servihosting.es
 88.198.0.0,88.198.255.255,Hetzner Online AG,http://www.hetzner.de/
+88.202.231.0,88.202.231.255,midphase,http://midphase.com
 88.208.0.0,88.208.63.255,advancedhosters.com,http://advancedhosters.com/
 88.208.192.0,88.208.255.255,Fasthosts Internet Ltd,http://www.fasthosts.co.uk/
 88.214.192.0,88.214.255.255,Hqhost.net,http://hqhost.net/en/index.html
@@ -1150,6 +1152,8 @@
 89.32.144.0,89.32.151.255,Elvsoft,http://www.elvsoft.com/
 89.34.237.0,89.34.237.255,Zservers Romania,https://zetservers.com/
 89.36.21.0,89.36.21.255,simpliq.com,http://www.simpliq.com/
+89.38.148.0,89.38.151.255,ArubaCloud,http://arubacloud.com
+89.40.119.0,89.40.119.255,Aruba.it,http://aruba.it
 89.45.192.0,89.45.199.255,xservers.ro,http://www.xservers.ro/
 89.47.16.0,89.47.31.255,everhost.ro,http://everhost.ro/
 89.106.0.0,89.106.31.255,Grid Telekom,http://grid.com.tr/
@@ -1414,6 +1418,7 @@
 103.5.12.0,103.5.13.255,OVH,http://www.ovh.co.uk/
 103.6.192.0,103.6.195.255,easyhost.com.hk,http://easyhost.com.hk/
 103.8.124.0,103.8.127.255,CtrlS,http://www.ctrls.in/
+103.10.197.0,103.10.197.255,LeaseWeb,http://leaseweb.com
 103.11.152.0,103.11.155.255,Web Werks,http://www.web-werks.com/
 103.11.244.0,103.11.247.255,easyhost.com.hk,http://easyhost.com.hk/
 103.21.58.0,103.21.59.255,Confluence Networks Inc,http://confluence-networks.com/
@@ -1470,6 +1475,8 @@
 104.233.64.0,104.233.127.255,KW Datacenter CA,http://www.kwdatacentre.com/
 104.238.128.0,104.238.191.255,Choopa,https://www.choopa.com/
 104.239.192.0,104.239.223.255,Rackspace,http://www.rackspace.com/
+104.245.32.0,104.245.39.255,Atlantic.net,http://atlantic.net
+104.245.37.0,104.245.37.255,Atlantic.net,http://atlantic.net
 104.245.96.0,104.245.103.255,VolumeDrive,http://volumedrive.com/
 104.254.212.0,104.254.215.255,Power Up Hosting,https://poweruphosting.com/
 104.255.64.0,104.255.71.255,Volume Drive,http://volumedrive.com
@@ -1491,6 +1498,7 @@
 108.59.0.0,108.59.15.255,Leaseweb,http://www.leaseweb.com/
 108.59.240.0,108.59.255.255,EarthLink Cloud,http://www.earthlinkcloud.com/
 108.60.64.0,108.60.95.255,Techie Media,http://techiemedia.net/
+108.61.174.0,108.61.174.255,Choopa,http://choopa.com
 108.62.0.0,108.62.255.255,Ubiquity Server Solutions,http://www.ubiquityservers.com/
 108.160.144.0,108.160.159.255,PrivateSystems.net,http://privatesystems.net/
 108.162.192.0,108.162.255.255,CloudFlare Inc,https://www.cloudflare.com/
@@ -1994,7 +2002,9 @@
 185.38.12.0,185.38.15.255,yisp Netherlands,http://yisp.nl/
 185.40.4.0,185.40.4.255,Hostgrad,http://hostgrad.ru/
 185.48.120.0,185.48.123.255,Amazon AWS,http://www.amazon.com/aws/
+185.58.192.0,185.58.195.255,ArubaCloud,http://arubacloud.com
 185.62.190.0,185.62.191.255,BlazingFast,https://blazingfast.io/
+185.73.36.0,185.73.39.255,Atlantic.net,http://atlantic.net
 185.86.148.0,185.86.149.255,Yourserver Sweden,https://www.yourserver.se/
 185.86.151.0,185.86.151.255,Yourserver Latvia,https://www.yourserver.se/
 185.100.84.0,185.100.85.255,FlokiNET Romania,https://www.flokinet.is/en/
@@ -2654,6 +2664,7 @@
 208.82.112.0,208.82.119.255,ndchost.com,http://www.ndchost.com/
 208.82.144.0,208.82.151.255,Datotel,http://www.datotel.com/
 208.82.204.0,208.82.207.255,Connectria,http://www.connectria.com/
+208.83.0.0,208.83.7.255,BroadRiver,http://broadriver.com/
 208.83.76.0,208.83.79.255,Immedion,http://immedion.com/
 208.83.140.0,208.83.143.255,netriplex,http://www.netriplex.com/
 208.83.208.0,208.83.215.255,datacenterscanada.com,http://www.datacenterscanada.com/
