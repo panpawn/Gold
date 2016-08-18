@@ -1538,9 +1538,10 @@ exports.commands = {
 	},
 	unmutehelp: ["/unmute [username] - Removes mute from user. Requires: % @ * # & ~"],
 
+forcelock: 'lock',
 	l: 'lock',
 	ipmute: 'lock',
-	lock: function (target, room, user) {
+	lock: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help lock');
 
 		target = this.splitTarget(target);
@@ -1550,15 +1551,17 @@ exports.commands = {
 			return this.errorReply("The reason is too long. It cannot exceed " + MAX_REASON_LENGTH + " characters.");
 		}
 		if (!this.can('lock', targetUser)) return false;
+		let name = targetUser.getLastName();
+		let userid = targetUser.getLastId();
 
-		if ((targetUser.locked || Users.checkBanned(targetUser.latestIp)) && !target) {
-			let problem = " but was already " + (targetUser.locked ? "locked" : "banned");
-			return this.privateModCommand("(" + targetUser.name + " would be locked by " + user.name + problem + ".)");
+		if (targetUser.locked && !target) {
+			let problem = " but was already locked";
+			return this.privateModCommand("(" + name + " would be locked by " + user.name + problem + ".)");
 		}
 
 		if (targetUser.confirmed) {
 			let from = targetUser.deconfirm();
-			Monitor.log("[CrisisMonitor] " + targetUser.name + " was locked by " + user.name + " and demoted from " + from.join(", ") + ".");
+			Monitor.log("[CrisisMonitor] " + name + " was locked by " + user.name + " and demoted from " + from.join(", ") + ".");
 			this.globalModlog("CRISISDEMOTE", targetUser, " from " + from.join(", "));
 		}
 
@@ -1566,28 +1569,26 @@ exports.commands = {
 		for (let i in targetUser.roomCount) {
 			if (i === 'global') continue;
 			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[targetUser.userid] && targetRoom.auth[targetUser.userid] === '#') {
+			if (targetRoom.isPersonal && targetRoom.auth[userid] && targetRoom.auth[userid] === '#') {
 				targetRoom.destroy();
 			}
 		}
 
 		targetUser.popup("|modal|" + user.name + " has locked you from talking in chats, battles, and PMing regular users." + (target ? "\n\nReason: " + target : "") + "\n\nIf you feel that your lock was unjustified, you can still PM staff members (%, @, &, and ~) to discuss it" + (Config.appealurl ? " or you can appeal:\n" + Config.appealurl : ".") + "\n\nYour lock will expire in a few days.");
 
-		this.addModCommand("" + targetUser.name + " was locked from talking by " + user.name + "." + (target ? " (" + target + ")" : ""), " (" + targetUser.latestIp + ")");
-
+		this.addModCommand("" + name + " was locked from talking by " + user.name + "." + (target ? " (" + target + ")" : ""), " (" + targetUser.latestIp + ")");
 		let alts = targetUser.getAlts();
-		let acAccount = (targetUser.autoconfirmed !== targetUser.userid && targetUser.autoconfirmed);
+		let acAccount = (targetUser.autoconfirmed !== userid && targetUser.autoconfirmed);
 		if (alts.length) {
-			this.privateModCommand("(" + targetUser.name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "locked alts: " + alts.join(", ") + ")");
+			this.privateModCommand("(" + name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "locked alts: " + alts.join(", ") + ")");
 		} else if (acAccount) {
-			this.privateModCommand("(" + targetUser.name + "'s ac account: " + acAccount + ")");
+			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
-		let userid = targetUser.getLastId();
 		this.add('|unlink|hide|' + userid);
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("LOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
-		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
+		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000, null, target);
 		return true;
 	},
 	lockhelp: ["/lock OR /l [username], [reason] - Locks the user from talking in all chats. Requires: % @ * & ~"],
