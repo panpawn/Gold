@@ -14,6 +14,10 @@ let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 let watchPhrases = Config.watchPhrases ? Config.watchPhrases : [];
 let watchUsers = Config.watchUsers ? Config.watchUsers : [];
 
+/*********************
+ * Chatfilter Magic *
+ * ******************/
+
 Config.chatfilter = function (message, user, room, connection, targetUser) {
 	user.lastActiveTime = Date.now();
 	if (!room && !Users(targetUser)) targetUser = {name: 'unknown user'};
@@ -65,4 +69,109 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 		return false;
 	}
 	return message;
+};
+
+/*********************
+ * Namefilter Magic *
+ * ******************/
+
+try {
+	Config.bannedNames = fs.readFileSync('config/bannednames.txt', 'utf8').toLowerCase().split('\n');
+} catch (e) {
+	Config.bannedNames = [];
+}
+
+function loadBannedNames() {
+	try {
+		Config.bannedNames = fs.readFileSync('config/bannednames.txt', 'utf8').toLowerCase().split('\n');
+	} catch (e) {
+		Config.bannedNames = [];
+	}
+}
+loadBannedNames();
+
+
+Config.namefilter = function (name) {
+	var badNames = Config.bannedNames;
+	for (var x in badNames) {
+		if (toId(name).indexOf(badNames[x]) > -1 && badNames[x] !== '') {
+			Monitor.log('[NameFilter] should probably FR: ' + name);
+		}
+	}
+    return name;
+};
+
+
+/*********************
+ * Hostfilter Magic *
+ * ******************/
+
+Config.hostfilter = function (host, user, connection) {
+	let badHosts = Object.keys(Gold.lockedHosts), userHost = user.latestHost.toLowerCase();
+	if (badHosts.length < 0) return false; // no hosts are blacklisted (yet)
+
+	badHosts.forEach(host => {
+		if (userHost.includes(host)) {
+			user.locked = '#hostfilter';
+			user.updateIdentity();
+			user.popup('|modal|You have been automatically locked due to being on a blacklisted proxy.  If you feel that this is a mistake, PM an Upper Staff member to discuss it.');
+			return;
+		}
+	});
+};
+
+Gold.lockedHosts = Object.create(null);
+
+function loadHostBlacklist () {
+	fs.readFile('config/lockedhosts.json', 'utf8', function (err, file) {
+		if (err) return;
+		Gold.lockedHosts = JSON.parse(file);
+	});
+}
+loadHostBlacklist();
+
+function saveHost () {
+	fs.writeFileSync('config/lockedhosts.json', JSON.stringify(Gold.lockedHosts));
+}
+
+exports.commands = {
+	lockhost: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target) return this.parse('/help lockhost');
+		if (Gold.lockedHosts[target]) return this.errorReply("The host '" + target + "' is was already locked by " + Gold.lockedHosts[target].by + ".");
+
+		Gold.lockedHosts[target] = {
+			by: user.name,
+			on: Date.now(),
+		}
+		saveHost();
+
+		this.privateModCommand("(" + user.name + " has blacklisted host: " + target + ")");
+	},
+	lockhosthelp: ["/lockhost [host] - Adds host to server blacklist.  Users connecting with these hosts will be automatically locked from connection, so use this carefully! Requires & ~"],
+
+	unlockhost: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target) return this.parse('/help unlockhost');
+		if (!Gold.lockedHosts[target]) return this.errorReply("The host '" + target + "' is not currently blacklisted.");
+
+		delete Gold.lockedHosts[target];
+		saveHost();
+
+		this.privateModCommand("(" + user.name + " has unblacklisted host: " + target + ")");
+	},
+	unlockhosthelp: ["/unlockhost [host] - Removes a host from the server's blacklist.  Requires & ~"],
+
+	proxylist: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		let badHosts = Object.keys(Gold.lockedHosts);
+		if (badHosts.length < 0) return this.errorReply("Weird, no proxies have been blacklisted (yet).");
+
+		let buff = '<table border="1" cellspacing ="0" cellpadding="3"><tr><td><b>Proxy:</b></td><td><b>Blacklisted By:</b></td><td><b>Blacklisted:</b></td></tr>';
+		badHosts.forEach(proxy => {
+			buff += '<tr><td>' + proxy + '</td><td>' + Gold.lockedHosts[proxy].by + '</td><td>' + Tools.toDurationString(Date.now() - Gold.lockedHosts[proxy].on) + ' ago</td></tr>';
+		});
+
+		return this.sendReplyBox(buff);
+	}
 };
