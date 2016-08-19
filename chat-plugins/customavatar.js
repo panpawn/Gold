@@ -65,6 +65,15 @@ exports.commands = {
 	sca: 'customavatar',
 	customavatars: 'customavatar',
 	customavatar: function (target, room, user) {
+		let globalUpper = user.can('pban');
+		let vipUser = function (targetUser) {
+			if (!targetUser) targetUser = user.userid;
+			if (Gold.hasBadge(user.userid, 'vip') && targetUser === user.userid) {
+				return true;
+			}
+			return false;
+		}
+
 		let parts = target.split(',');
 		let cmd = parts[0].trim().toLowerCase();
 
@@ -76,14 +85,13 @@ exports.commands = {
 			return this.sendReplyBox(message);
 		}
 
-		if (!this.can('pban') && !Gold.hasBadge(toId(user.name), 'vip')) return false;
-
 		switch (cmd) {
 		case 'set':
 			let userid = toId(parts[1]);
 			let targetUser = Users.getExact(userid);
+
 			let avatar = parts.slice(2).join(',').trim();
-			if (!this.can('pban') && Gold.hasBadge(toId(user.name), 'vip') && userid !== user.userid) return false;
+			if (!globalUpper && !vipUser(userid)) return false;
 
 			if (!userid) return this.sendReply("You didn't specify a user.");
 			if (Config.customavatars[userid]) return this.errorReply(userid + " already has a custom avatar.");
@@ -100,7 +108,7 @@ exports.commands = {
 
 	/* falls through */
 		case 'forceset':
-			if (user.avatarCooldown && !this.can('pban')) {
+			if (user.avatarCooldown && !globalUpper) {
 				let milliseconds = (Date.now() - user.avatarCooldown);
 				let seconds = ((milliseconds / 1000) % 60);
 				let remainingTime = Math.round(seconds - (5 * 60));
@@ -138,7 +146,7 @@ exports.commands = {
 		case 'remove':
 		case 'delete':
 			let targetUserid = toId(parts[1]);
-			if (!this.can('pban') && Gold.hasBadge(toId(user.name), 'vip') && targetUserid !== user.userid) return false;
+			if (!globalUpper && !vipUser(targetUserid)) return false;
 			if (!Config.customavatars[targetUserid]) return this.errorReply(targetUserid + " does not have a custom avatar.");
 
 			if (Config.customavatars[targetUserid].toString().split('.').slice(0, -1).join('.') !== targetUserid) {
@@ -156,7 +164,7 @@ exports.commands = {
 			break;
 
 		case 'reload':
-			if (!this.can('pban')) return false;
+			if (!globalUpper) return false;
 			reloadCustomAvatars();
 			for (let leUsers of Users.users) {
 				leUsers = leUsers[1];
@@ -169,6 +177,6 @@ exports.commands = {
 			return this.parse("/help customavatar");
 		}
 	},
-	customavatarhelp: ["/customavatar [set/delete], [user] - Sets to deletes a users custom avatar.  Requires VIP, &, ~",
+	customavatarhelp: ["/customavatar [set/delete], [user], [link] - Sets or deletes a users custom avatar.  Requires VIP, &, ~",
 		"/customavatar reload - Reloads all current set custom avatars on the server. Requires ~"],
 };
