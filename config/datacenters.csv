@@ -333,6 +333,7 @@
 45.32.0.0,45.32.255.255,Choopa,https://www.choopa.com/
 45.33.0.0,45.33.127.255,Linode,http://www.linode.com/
 45.34.0.0,45.35.255.255,Psychz Networks,http://psychz.net/
+45.55.0.0,45.55.255.255,DigitalOcean,https://digitalocean.com/
 45.56.64.0,45.56.127.255,Linode,http://www.linode.com/
 45.59.128.0,45.59.191.255,Roya Hosting,http://www.royahosting.com/
 45.62.192.0,45.62.255.255,KW Datacenter CA,http://www.kwdatacentre.com/
@@ -1481,6 +1482,7 @@
 104.254.212.0,104.254.215.255,Power Up Hosting,https://poweruphosting.com/
 104.255.64.0,104.255.71.255,Volume Drive,http://volumedrive.com
 106.186.120.0,106.186.127.255,Linode Japan,https://www.linode.com/
+104.196.0.0,104.199.255.255,Google Cloud,http://cloud.google.com
 107.6.0.0,107.6.63.255,PEER 1,http://www.peer1.com/
 107.6.64.0,107.6.127.255,Voxel,http://www.voxel.net/
 107.6.128.0,107.6.191.255,SingleHop,http://www.singlehop.com/
@@ -2038,6 +2040,7 @@
 188.190.96.0,188.190.127.255,infiumhost.com,http://infiumhost.com/
 188.214.128.0,188.214.135.255,Duomenu Centras Lithuania,http://www.duomenucentras.lt/lt/
 188.226.128.0,188.226.191.255,DigitalOcean Netherlands,https://www.digitalocean.com/
+188.226.192.0,188.226.255.255,DigitalOcean Netherlands,https://www.digitalocean.com/
 188.227.160.0,188.227.191.255,Redstation Limited,http://redstation.com/
 188.240.2.0,188.240.3.255,mxhost,http://www.mxhost.ro/
 188.240.32.0,188.240.35.255,Ch-center,http://www.ch-center.com/
