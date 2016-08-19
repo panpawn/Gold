@@ -352,6 +352,7 @@ exports.commands = {
 				Users.get(users[len]).joinRoom(room, Users.get(users[len]).connections[0]);
 			}
 		}, 1000);
+		this.privateModCommand("(" + user.name + " used /clearroom)");
 	},
 	hc: function (room, user, cmd) {
 		return this.parse('/hotpatch chat');
