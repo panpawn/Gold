@@ -102,7 +102,7 @@ Config.namefilter = function (name, user) {
 
 	// deal with global ranked user's manually...
 	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
-	let rankIndex = (Config.groupsranking.indexOf(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
+	let rankIndex = (Config.groupsranking.includes(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
