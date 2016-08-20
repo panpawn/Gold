@@ -1750,6 +1750,7 @@
 168.63.160.192,168.63.162.159,Microsoft Azure,http://www.windowsazure.com/en-us/
 168.63.162.176,168.63.255.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 168.235.144.0,168.235.159.255,CLOUD-52 (KW Datacenter),http://www.kwdatacentre.com/
+171.96.128.0,171.96.255.255,True Internet,http://www.trueinternet.co.th
 172.98.64.0,172.98.95.255,Total Server Solutions,http://totalserversolutions.com/
 172.122.0.0,172.123.255.255,KW Datacenter CA,http://www.kwdatacentre.com/
 172.240.0.0,172.241.255.255,Ubiquity Server Solutions,http://www.ubiquityservers.com/
@@ -2031,6 +2032,7 @@
 185.100.86.0,185.100.86.255,FlokiNET Finland,https://www.flokinet.is/en/
 185.101.69.0,185.101.69.255,depo40,http://depo40.ru/
 185.101.107.0,185.101.107.255,ZET servers Romania,https://zetservers.com/
+185.101.219.0,185.101.219.255,HostSlick,https://hostslick.com/
 185.102.27.0,185.102.27.255,Cloudzilla Netherlands,http://cloudzilla.nl/
 185.108.84.0,185.108.85.255,Ardis Russia,https://ardis.ru/
 185.121.120.0,185.121.121.255,Trabia Network,https://www.trabia.com/
