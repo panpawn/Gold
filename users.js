@@ -755,8 +755,6 @@ class User {
 			// This user already exists; let's merge
 			user.merge(this);
 
-			user.updateGroup(registered);
-
 			Users.merge(user, this);
 			for (let i in this.prevNames) {
 				if (!user.prevNames[i]) {
@@ -837,6 +835,8 @@ class User {
 		if (!this.locked && oldUser.locked === '#dnsbl') oldUser.locked = false;
 		if (oldUser.locked) this.locked = oldUser.locked;
 		if (oldUser.autoconfirmed) this.autoconfirmed = oldUser.autoconfirmed;
+
+		this.updateGroup(this.registered);
 
 		for (let i = 0; i < oldUser.connections.length; i++) {
 			this.mergeConnection(oldUser.connections[i]);
@@ -1010,8 +1010,6 @@ class User {
 		let removed = [];
 		if (usergroups[userid]) {
 			removed.push(usergroups[userid].charAt(0));
-			delete usergroups[userid];
-			exportUsergroups();
 		}
 		for (let i = 0; i < Rooms.global.chatRooms.length; i++) {
 			let room = Rooms.global.chatRooms[i];
@@ -1021,6 +1019,7 @@ class User {
 			}
 		}
 		this.confirmed = '';
+		this.setGroup(' ');
 		return removed;
 	}
 	markInactive() {
