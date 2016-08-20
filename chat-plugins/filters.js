@@ -121,7 +121,7 @@ Config.namefilter = function (name, user) {
 		});
 	});
 
-    return name;
+	return name;
 };
 
 
