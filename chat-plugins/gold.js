@@ -13,6 +13,7 @@ const nani = require('nani').init("niisama1-uvake", "llbgsBx3inTdyGizCPMgExBVmQ5
 const serverIp = '167.114.155.242';
 const formatHex = '#566'; //hex code for the formatting of the command
 const ADVERTISEMENT_COST = 10; // how much does /advertise cost to use?
+const MAX_REASON_LENGTH = 300; // pban command usage
 
 let amCache = {anime:{}, manga:{}};
 let regdateCache = {};
