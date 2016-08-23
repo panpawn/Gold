@@ -24,19 +24,19 @@ Gold.emoticons = {
 
 		for (let i in this.chatEmotes) {
 			if (this.chatEmotes.hasOwnProperty(i)) {
-				patterns.push('(' + i.replace(metachars, "\\$&") + ')');
+				patterns.push(`(${i.replace(metachars, "\\$&")})`);
 			}
 		}
 		let message = text.replace(new RegExp(patterns.join('|'), 'g'), match => {
 			return typeof this.chatEmotes[match] !== 'undefined' ?
-				'<img src="' + this.chatEmotes[match] + '" title="' + match + '"/>' :
+				`<img src="${this.chatEmotes[match]}" title="${match}"/>` :
 				match;
 		});
 		if (message === text) return text;
 
 		message = Gold.formatMessage(message); // PS formatting
 
-		if (message.substr(0, 4) === '&gt;' || message.substr(0, 1) === '>') message = '<span class="greentext">' + message + '</span>'; // greentext
+		if (message.substr(0, 4) === '&gt;' || message.substr(0, 1) === '>') message = `<span class="greentext">${message}</span>`; // greentext
 		return message;
 	},
 
@@ -76,8 +76,8 @@ Gold.emoticons = {
 			let origmsg = message;
 			message = Tools.escapeHTML(message);
 			message = this.processEmoticons(message);
-			user.sendTo(room, (room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + user.getIdentity(room).substr(0, 1) + user.name + '|/html ' + message);
-			Users.ShadowBan.addMessage(user, "To " + room, origmsg);
+			user.sendTo(room, `${(room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + user.getIdentity(room).substr(0, 1) + user.name}|/html ${message}`);
+			Users.ShadowBan.addMessage(user, `To ${room}`, origmsg);
 		} else {
 			if (!this.checkEmoteModchat(user, room)) {
 				let kitty = message = this.processEmoticons(message);
@@ -88,7 +88,7 @@ Gold.emoticons = {
 				message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
 				message = this.processEmoticons(message);
 				let name = user.getIdentity(room).substr(0, 1) + user.name;
-				room.add((room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + name + '|/html ' + message).update();
+				room.add(`${(room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + name}|/html ${message}`).update();
 				room.messageCount++;
 				return false;
 			}
@@ -138,15 +138,15 @@ exports.commands = {
 				if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 				if (!(parts[2] || parts[3])) return this.errorReply("Usage: /emote add, [emoticon], [link]");
 				let emoteName = parts[1];
-				if (Gold.emoticons.chatEmotes[emoteName]) return this.errorReply("ERROR - the emoticon: " + emoteName + " already exists.");
+				if (Gold.emoticons.chatEmotes[emoteName]) return this.errorReply(`ERROR - the emoticon: ${emoteName} already exists.`);
 				let link = parts.splice(2, parts.length).join(',');
 				let fileTypes = [".gif", ".png", ".jpg"];
 				if (!~fileTypes.indexOf(link.substr(-4))) return this.errorReply("ERROR: the emoticon you are trying to add must be a gif, png, or jpg.");
 				emotes[emoteName] = Gold.emoticons.chatEmotes[emoteName] = link;
 				saveEmotes();
-				this.sendReply("The emoticon " + emoteName + " has been added.");
-				this.logModCommand(user.name + " added the emoticon: " + emoteName);
-				Rooms.get('staff').add("The emoticon " + emoteName + " was added by " + Tools.escapeHTML(user.name) + ".").update();
+				this.sendReply(`The emoticon ${emoteName} has been added.`);
+				this.logModCommand(`${user.name} added the emoticon: ${emoteName}`);
+				Rooms.get('staff').add(`The emoticon ${emoteName} was added by ${Tools.escapeHTML(user.name)}.`).update();
 				break;
 
 			case 'rem':
@@ -157,23 +157,23 @@ exports.commands = {
 				if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 				if (!parts[1]) return this.errorReply("/emote remove, [emoticon]");
 				let emoteName2 = parts[1];
-				if (!Gold.emoticons.chatEmotes[emoteName2]) return this.errorReply("ERROR - the emoticon: " + emoteName2 + " does not exist.");
+				if (!Gold.emoticons.chatEmotes[emoteName2]) return this.errorReply(`ERROR - the emoticon: ${emoteName2} does not exist.`);
 				delete Gold.emoticons.chatEmotes[emoteName2];
 				delete emotes[emoteName2];
 				saveEmotes();
-				this.sendReply("The emoticon " + emoteName2 + " has been removed.");
-				this.logModCommand(user.name + " removed the emoticon: " + emoteName2);
-				Rooms.get('staff').add("The emoticon " + emoteName2 + " was removed by " + Tools.escapeHTML(user.name) + ".").update();
+				this.sendReply(`The emoticon ${emoteName2} has been removed.`);
+				this.logModCommand(`${user.name} removed the emoticon: ${emoteName2}`);
+				Rooms.get('staff').add(`The emoticon ${emoteName2} was removed by ${Tools.escapeHTML(user.name)}.`).update();
 				break;
 
 			case 'list':
 				if (!this.runBroadcast()) return;
 				if (this.broadcasting) return this.errorReply("ERROR: this command is too spammy to broadcast.  Use / instead of ! to see it for yourself.");
-				let output = "<b>There's a total of " + Object.size(emotes) + " emoticons added with this command:</b><br />";
+				let output = `<b>There's a total of ${Object.size(emotes)} emoticons added with this command:</b><br />`;
 				for (let e in emotes) {
-					output += e + "<br />";
+					output += `${e}<br />`;
 				}
-				this.sendReplyBox("<div class=\"infobox-limited\" target=\"_blank\">" + output + "</div>");
+				this.sendReplyBox(`<div class="infobox-limited" target="_blank">${output}</div>`);
 				break;
 
 			case 'view':
@@ -182,9 +182,9 @@ exports.commands = {
 				let emoticons = [];
 				let len = name.length;
 				while (len--) {
-					emoticons.push((Gold.emoticons.processEmoticons(name[(name.length - 1) - len]) + '&nbsp;' + name[(name.length - 1) - len]));
+					emoticons.push((`${Gold.emoticons.processEmoticons(name[(name.length - 1) - len])}&nbsp;${name[(name.length - 1) - len]}`));
 				}
-				this.sendReplyBox("<div class=\"infobox-limited\" target=\"_blank\"><b><u>List of emoticons (" + Object.keys(emotes).length + "):</b></u> <br/><br/>" + emoticons.join(' ').toString() + "</div>");
+				this.sendReplyBox(`<div class="infobox-limited" target="_blank"><b><u>List of emoticons (${Object.keys(emotes).length}):</b></u> <br/><br/>${emoticons.join(' ').toString()}</div>`);
 				break;
 
 			case 'max':
@@ -195,13 +195,13 @@ exports.commands = {
 				if (isNaN(Number(parts[1]))) return this.errorReply("The max emotes must be a number.");
 				if (~String(parts[1]).indexOf('.')) return this.errorReply("Cannot contain a decimal.");
 				Gold.emoticons.maxChatEmotes = parts[1];
-				this.privateModCommand("(" + user.name + " has set the max emoticons per message to be " + parts[1] + ".)");
+				this.privateModCommand(`(${user.name} has set the max emoticons per message to be ${parts[1]}.)`);
 				break;
 
 			case 'object':
 				if (!this.runBroadcast()) return;
 				if (this.broadcasting) return this.errorReply("ERROR: this command is too spammy to broadcast.  Use / instead of ! to see it for yourself.");
-				this.sendReplyBox("Gold.emoticons.chatEmotes = <br />" + fs.readFileSync('config/emotes.json', 'utf8'));
+				this.sendReplyBox(`Gold.emoticons.chatEmotes = <br />${fs.readFileSync('config/emotes.json', 'utf8')}`);
 				break;
 
 			case 'modchat':
@@ -213,14 +213,14 @@ exports.commands = {
 					if (room.isPersonal) return this.errorReply("You cannot set emoticon moderated chat in personal rooms.");
 					if (!parts[2]) return this.errorReply("Usage: /emote modchat, set, [rank] - Sets modchat for emoticons in the respected room.");
 					if (room.emoteModChat && toId(parts[2]) === 'off' || toId(parts[2]) === 'disable') return this.errorReply("Did you mean /emote modchat, disable?");
-					if (!Config.groups[parts[2]] && toId(parts[2]) !== 'autoconfirmed' && toId(parts[2]) !== 'ac' || parts[2] === '★') return this.errorReply("ERROR: " + parts[2] + " is not a defined group in Config or is not yet optimized for moderated emoticon chat at this time.");
+					if (!Config.groups[parts[2]] && toId(parts[2]) !== 'autoconfirmed' && toId(parts[2]) !== 'ac' || parts[2] === '★') return this.errorReply(`ERROR: ${parts[2]} is not a defined group in Config or is not yet optimized for moderated emoticon chat at this time.`);
 					if (room.emoteModChat === parts[2]) return this.errorReply("Emoticon modchat is already enabled in this room for the rank you're trying to set it to.");
 					if (toId(parts[2]) === 'ac') parts[2] = 'autoconfirmed';
 					room.emoteModChat = parts[2];
 					if (room.type === 'chat') room.chatRoomData.emoteModChat = room.emoteModChat;
 					Rooms.global.writeChatRoomData();
-					room.add("|raw|<div class=\"broadcast-red\"><b>Chat Emoticons Moderated Chat has been set!</b><br />To use emoticons in this room, you must be of rank <b>" + parts[2] + "</b> or higher.").update();
-					this.privateModCommand("(" + user.name + " has set emoticon moderated chat for rank " + parts[2] + " and up.)");
+					room.add(`|raw|<div class="broadcast-red"><b>Chat Emoticons Moderated Chat has been set!</b><br />To use emoticons in this room, you must be of rank <b>${parts[2]}</b> or higher.`).update();
+					this.privateModCommand(`(${user.name} has set emoticon moderated chat for rank ${parts[2]} and up.)`);
 					break;
 				case 'off':
 				case 'disable':
@@ -232,12 +232,12 @@ exports.commands = {
 					if (room.type === 'chat') room.chatRoomData.emoteModChat = room.emoteModChat;
 					Rooms.global.writeChatRoomData();
 					room.add("|raw|<div class=\"broadcast-blue\"><b>Chat Emoticons Moderated Chat has been disabled!</b><br />Everyone in this room may use chat emoticons.").update();
-					this.privateModCommand("(" + user.name + " has enabled chat emoticons for everyone in this room.)");
+					this.privateModCommand(`(${user.name} has enabled chat emoticons for everyone in this room.)`);
 					break;
 				default:
 				case 'status':
 					let status = (room.emoteModChat === undefined || !room.emoteModChat ? false : room.emoteModChat);
-					return this.sendReply("Emoticon moderated chat is currently set to: " + status);
+					return this.sendReply(`Emoticon moderated chat is currently set to: ${status}`);
 				}
 				break;
 
@@ -245,7 +245,7 @@ exports.commands = {
 			case 'hotpatch':
 				if (!this.can('hotpatch')) return false;
 				loadEmotes();
-				this.privateModCommand("(" + user.name + " has reloaded all emoticons on the server.)");
+				this.privateModCommand(`(${user.name} has reloaded all emoticons on the server.)`);
 				break;
 
 			case 'help':
@@ -253,10 +253,10 @@ exports.commands = {
 				break;
 
 			default:
-				this.errorReply("Emoticon command '" + parts[0] + "' not found.  Check spelling?");
+				this.errorReply(`Emoticon command '${parts[0]}' not found.  Check spelling?`);
 			}
 		} catch (e) {
-			console.log("ERROR!  The Emoticon script has crashed!\n" + e.stack);
+			console.log(`ERROR!  The Emoticon script has crashed!\n${e.stack}`);
 		}
 	},
 	ezemotehelp: ["Gold's custom emoticons script commands:",
