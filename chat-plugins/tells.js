@@ -6,7 +6,6 @@
 
 const fs = require('fs');
 const moment = require('moment');
-const Autolinker = require('autolinker');
 const MAX_TELLS_IN_QUEUE = 10;
 const MAX_TELL_LENGTH = 600;
 let tells = {};
@@ -30,11 +29,7 @@ function createTell(sender, reciever, message) {
 	message = Gold.emoticons.processEmoticons(Tools.escapeHTML(message)).replace(/&#x2f;/g, '/');
 	if (!tells[reciever]) tells[reciever] = [];
 
-	//  PS formatting
-	message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
-	message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
-	message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
-	message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
+	message = Gold.formatMessage(message); // PS formatting
 
 	let date = moment().format('MMMM Do YYYY, h:mm A') + " EST";
 	let tell = "<u>" + date + "</u><br />" + Gold.nameColor(sender, true) + ' said: ' + message;

@@ -8,6 +8,7 @@ const https = require('https');
 const geoip = require('geoip-ultralight');
 const forever = require('forever');
 const nani = require('nani').init("niisama1-uvake", "llbgsBx3inTdyGizCPMgExBVmQ5fU");
+const Autolinker = require('autolinker');
 
 // misc
 const serverIp = '167.114.155.242';
@@ -1853,4 +1854,14 @@ Gold.addIp = function (user, ip) {
 
 	// update / save
 	fs.writeFileSync('config/userips.json', JSON.stringify(Gold.userIps));
+};
+
+Gold.formatMessage = function (message) {
+	message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
+	message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
+	message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
+	message = message.replace(/\^\^([^< ](?:[^<]*?[^< ])??)\^\^/g, '<sup>$1</sup>'); // superscript
+	message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
+
+	return message;
 };

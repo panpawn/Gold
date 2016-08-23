@@ -9,7 +9,6 @@
 
 const fs = require('fs');
 const serialize = require('node-serialize');
-const Autolinker = require('autolinker');
 let emotes = {};
 
 
@@ -34,12 +33,9 @@ Gold.emoticons = {
 				match;
 		});
 		if (message === text) return text;
-		// PS Formatting
-		message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
-		message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
-		message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough
-		message = message.replace(/\^\^([^< ](?:[^<]*?[^< ])??)\^\^/g, '<sup>$1</sup>'); // superscript
-		message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false}); // hyperlinking
+
+		message = Gold.formatMessage(message); // PS formatting
+
 		if (message.substr(0, 4) === '&gt;' || message.substr(0, 1) === '>') message = '<span class="greentext">' + message + '</span>'; // greentext
 		return message;
 	},
