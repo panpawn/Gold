@@ -52,13 +52,14 @@ exports.commands = {
 		let publicrooms = "";
 		let hiddenrooms = "";
 		let privaterooms = "";
-		for (let i in targetUser.roomCount) {
-			if (i === 'global') continue;
-			let targetRoom = Rooms.get(i);
+		targetUser.inRooms.forEach(roomid => {
+			if (roomid === 'global') return;
+			let targetRoom = Rooms.get(roomid);
 
-			let output = (targetRoom.auth && targetRoom.auth[targetUser.userid] ? targetRoom.auth[targetUser.userid] : '') + '<a href="/' + i + '">' + i + '</a>';
+			let authSymbol = (targetRoom.auth && targetRoom.auth[targetUser.userid] ? targetRoom.auth[targetUser.userid] : '');
+			let output = `${authSymbol}<a href="/${roomid}">${roomid}</a>`;
 			if (targetRoom.isPrivate === true) {
-				if (targetRoom.modjoin === '~') continue;
+				if (targetRoom.modjoin === '~') return;
 				if (privaterooms) privaterooms += " | ";
 				privaterooms += output;
 			} else if (targetRoom.isPrivate) {
@@ -68,7 +69,7 @@ exports.commands = {
 				if (publicrooms) publicrooms += " | ";
 				publicrooms += output;
 			}
-		}
+		});
 		buf += '<br />Rooms: ' + (targetUser.hidden && !user.can('hotpatch') ? '<em>(no public rooms)</em>' : (publicrooms || '<em>(no public rooms)</em>'));
 		if (!showAll) {
 			return this.sendReplyBox(buf);
@@ -88,8 +89,17 @@ exports.commands = {
 				output = Object.keys(targetAlt.prevNames).join(", ");
 				if (output) buf += "<br />Previous names: " + output;
 			}
-			if (targetUser.locked) {
-				buf += '<br />Locked: ' + targetUser.locked;
+			if (targetUser.namelocked) {
+				buf += '<br />NAMELOCKED: ' + targetUser.namelocked;
+				let punishment = Punishments.userids.get(targetUser.locked);
+				if (punishment) {
+					let expiresIn = new Date(punishment[2]).getTime() - Date.now();
+					let expiresDays = Math.round(expiresIn / 1000 / 60 / 60 / 24);
+					buf += ' (expires in around ' + expiresDays + ' day' + (expiresDays === 1 ? '' : 's') + ')';
+					if (punishment[3]) buf += ' (reason: ' + punishment[3] + ')';
+				}
+			} else if (targetUser.locked) {
+				buf += '<br />LOCKED: ' + targetUser.locked;
 				switch (targetUser.locked) {
 				case '#dnsbl':
 					buf += " - IP is in a DNS-based blacklist";

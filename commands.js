@@ -739,14 +739,14 @@ exports.commands = {
 		if (targetRoom.chatRoomData) {
 			if (targetRoom.isPrivate) {
 				if (Rooms.get('upperstaff')) {
-					Rooms.get('upperstaff').add('|raw|<div class="broadcast-red">Private chat room deleted: <b>' + Tools.escapeHTML(target) + '</b></div>').update();
+					Rooms.get('upperstaff').add(`|raw|<div class="broadcast-red">Private chat room deleted by ${user.userid}: <b>${Tools.escapeHTML(target)}</b></div>`).update();
 				}
 			} else {
 				if (Rooms.get('staff')) {
 					Rooms.get('staff').add('|raw|<div class="broadcast-red">Public chat room deleted: <b>' + Tools.escapeHTML(target) + '</b></div>').update();
 				}
 				if (Rooms.get('upperstaff')) {
-					Rooms.get('upperstaff').add('|raw|<div class="broadcast-red">Public chat room deleted: <b>' + Tools.escapeHTML(target) + '</b></div>').update();
+					Rooms.get('upperstaff').add(`|raw|<div class="broadcast-red">Public chat room deleted by ${user.userid}: <b>${Tools.escapeHTML(target)}</b></div>`).update();
 				}
 			}
 		}
@@ -1374,7 +1374,7 @@ exports.commands = {
 		Rooms.global.autojoinRooms(user, connection);
 		let targets = target.split(',');
 		let autojoins = [];
-		if (targets.length > 11 || Object.keys(connection.rooms).length > 1) return;
+		if (targets.length > 11 || connection.inRooms.size > 1) return;
 		for (let i = 0; i < targets.length; i++) {
 			if (user.tryJoinRoom(targets[i], connection) === null) {
 				autojoins.push(targets[i]);
@@ -1562,13 +1562,13 @@ forcelock: 'lock',
 		}
 
 		// Destroy personal rooms of the locked user.
-		for (let i in targetUser.roomCount) {
-			if (i === 'global') continue;
-			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[userid] && targetRoom.auth[userid] === '#') {
+		targetUser.inRooms.forEach(roomid => {
+			if (roomid === 'global') return;
+			let targetRoom = Rooms.get(roomid);
+			if (targetRoom.isPersonal && targetRoom.auth[userid] === '#') {
 				targetRoom.destroy();
 			}
-		}
+		});
 
 		targetUser.popup("|modal|" + user.name + " has locked you from talking in chats, battles, and PMing regular users." + (target ? "\n\nReason: " + target : "") + "\n\nIf you feel that your lock was unjustified, you can still PM staff members (%, @, &, and ~) to discuss it" + (Config.appealurl ? " or you can appeal:\n" + Config.appealurl : ".") + "\n\nYour lock will expire in a few days.");
 
@@ -1622,13 +1622,13 @@ forcelock: 'lock',
 		}
 
 		// Destroy personal rooms of the locked user.
-		for (let i in targetUser.roomCount) {
-			if (i === 'global') continue;
-			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[userid] && targetRoom.auth[userid] === '#') {
+		targetUser.inRooms.forEach(roomid => {
+			if (roomid === 'global') return;
+			let targetRoom = Rooms.get(roomid);
+			if (targetRoom.isPersonal && targetRoom.auth[userid] === '#') {
 				targetRoom.destroy();
 			}
-		}
+		});
 
 		targetUser.popup("|modal|" + user.name + " has locked you from talking in chats, battles, and PMing regular users for a week." + (target ? "\n\nReason: " + target : "") + "\n\nIf you feel that your lock was unjustified, you can still PM staff members (%, @, &, and ~) to discuss it" + (Config.appealurl ? " or you can appeal:\n" + Config.appealurl : ".") + "\n\nYour lock will expire in a few days.");
 
@@ -1655,6 +1655,9 @@ forcelock: 'lock',
 		if (!this.can('lock')) return false;
 
 		let targetUser = Users.get(target);
+		if (targetUser && targetUser.namelocked) {
+			return this.errorReply(`User ${targetUser.name} is namelocked, not locked. Use /unnamelock to unnamelock them.`);
+		}
 		let reason = '';
 		if (targetUser && targetUser.locked && targetUser.locked.charAt(0) === '#') {
 			reason = ' (' + targetUser.locked + ')';
@@ -1706,13 +1709,13 @@ forcelock: 'lock',
 		}
 
 		// Destroy personal rooms of the banned user.
-		for (let i in targetUser.roomCount) {
-			if (i === 'global') continue;
-			let targetRoom = Rooms.get(i);
-			if (targetRoom.isPersonal && targetRoom.auth[userid] && targetRoom.auth[userid] === '#') {
+		targetUser.inRooms.forEach(roomid => {
+			if (roomid === 'global') return;
+			let targetRoom = Rooms.get(roomid);
+			if (targetRoom.isPersonal && targetRoom.auth[userid] === '#') {
 				targetRoom.destroy();
 			}
-		}
+		});
 
 		targetUser.popup("|modal|" + user.name + " has banned you." + (target ? "\n\nReason: " + target : "") + (Config.appealurl ? "\n\nIf you feel that your ban was unjustified, you can appeal:\n" + Config.appealurl : "") + "\n\nYour ban will expire in a few days.");
 
@@ -1960,7 +1963,7 @@ forcelock: 'lock',
 
 		if (targetUser.confirmed) return this.errorReply("User '" + name + "' is already confirmed.");
 
-		targetUser.setGroup(' ', true);
+		targetUser.setGroup(Config.groupsranking[0], true);
 		this.sendReply("User '" + name + "' is now confirmed.");
 	},
 	confirmuserhelp: ["/confirmuser [username] - Confirms the user (makes them immune to locks). Requires: & ~"],
@@ -2245,6 +2248,7 @@ forcelock: 'lock',
 			return this.errorReply("User '" + this.targetUsername + "' not found.");
 		}
 		if (!this.can('forcerename', targetUser)) return false;
+		if (targetUser.namelocked) return this.errorReply("User '" + target + "' is already namelocked.");
 
 		this.addModCommand("" + targetUser.name + " was namelocked by " + user.name + "." + (reason ? " (" + reason + ")" : ""));
 		this.globalModlog("NAMELOCK", targetUser, " by " + user.name + (reason ? ": " + reason : ""));
@@ -2535,8 +2539,10 @@ forcelock: 'lock',
 		if (!this.can('hotpatch')) return false;
 		if (Monitor.hotpatchLock) return this.errorReply("Hotpatch is currently been disabled. (" + Monitor.hotpatchLock + ")");
 
-		let staff = Rooms('staff');
-		if (staff) staff.add("(" + user.name + " used /hotpatch " + target + ")").update();
+		for (let roomid of ['development', 'staff', 'upperstaff']) {
+			let curRoom = Rooms(roomid);
+			if (curRoom) curRoom.add("|c|~|(" + user.name + " used /hotpatch " + target + ")").update();
+		}
 
 		try {
 			if (target === 'chat' || target === 'commands') {
@@ -3325,7 +3331,6 @@ forcelock: 'lock',
 	query: function (target, room, user, connection) {
 		// Avoid guest users to use the cmd errors to ease the app-layer attacks in emergency mode
 		let trustable = (!Config.emergency || (user.named && user.registered));
-		if (Config.emergency && Monitor.countCmd(connection.ip, user.name)) return false;
 		let spaceIndex = target.indexOf(' ');
 		let cmd = target;
 		if (spaceIndex > 0) {
@@ -3344,13 +3349,13 @@ forcelock: 'lock',
 				return false;
 			}
 			let roomList = {};
-			for (let i in targetUser.roomCount) {
-				if (i === 'global') continue;
-				let targetRoom = Rooms.get(i);
-				if (!targetRoom) continue; // shouldn't happen
+			targetUser.inRooms.forEach(roomid => {
+				if (roomid === 'global') return;
+				let targetRoom = Rooms.get(roomid);
+				if (!targetRoom) return; // shouldn't happen
 				let roomData = {};
 				if (targetRoom.isPrivate) {
-					if (!(i in user.roomCount) && !(i in user.games)) continue;
+					if (!user.inRooms.has(roomid) && !user.games.has(roomid)) return;
 					roomData.isPrivate = true;
 				}
 				if (targetRoom.battle) {
@@ -3358,8 +3363,8 @@ forcelock: 'lock',
 					roomData.p1 = battle.p1 ? ' ' + battle.p1.name : '';
 					roomData.p2 = battle.p2 ? ' ' + battle.p2.name : '';
 				}
-				roomList[i] = roomData;
-			}
+				roomList[roomid] = roomData;
+			});
 			if (!targetUser.connected) roomList = false;
 			let userdetails = {
 				userid: targetUser.userid,
