@@ -42,14 +42,14 @@ exports.commands = {
 				if (Number(parts[1]) < 1) return this.errorReply("Cannot be less than 1.");
 				let bought = parts[1];
 				if (bought > Gold.lottery.maxTicketsPerUser) return this.errorReply("You cannot get this many lottery tickets.");
-				if (bought * Gold.lottery.ticketPrice > Economy.readMoneySync(user.userid)) return this.errorReply("Sorry, you do not have enough bucks to buy that many tickets.");
+				if (bought * Gold.lottery.ticketPrice > Gold.readMoney(user.userid)) return this.errorReply("Sorry, you do not have enough bucks to buy that many tickets.");
 				if (Gold.lottery.playerIPS.length > 1) {
 					let filteredPlayerArray = Gold.lottery.playerIPS.filter(function (ip) {
 						return ip === user.latestIp;
 					});
 					if (Number(Object.keys(filteredPlayerArray).length) + Number(bought) > Gold.lottery.maxTicketsPerUser) return this.errorReply("You cannot get more than " + Gold.lottery.maxTicketsPerUser + " tickets for this game of lotto.");
 				}
-				Economy.writeMoney(toId(user.name), -bought * Gold.lottery.ticketPrice);
+				Gold.updateMoney(user.userid, -bought * Gold.lottery.ticketPrice);
 				Gold.lottery.pot = Math.round(Gold.lottery.pot + (Gold.lottery.ticketPrice * bought * 1.5));
 				Rooms.get('gamechamber').add("|raw|<b><font color=" + Gold.hashColor(user.name) + ">" + user.name + "</font></b> has bought " + bought + " lottery tickets.");
 				for (let x = bought; x > 0; x--) {
@@ -58,14 +58,14 @@ exports.commands = {
 				}
 				saveLottery();
 			} else {
-				if (Economy.readMoneySync(toId(user.name)) < Gold.lottery.ticketPrice) return this.errorReply("You do not have enough bucks to partake in this game of Lottery.  Sorry.");
+				if (Gold.readMoney(user.userid) < Gold.lottery.ticketPrice) return this.errorReply("You do not have enough bucks to partake in this game of Lottery.  Sorry.");
 				if (Gold.lottery.playerIPS.length > 1) {
 					let filteredPlayerArray = Gold.lottery.playerIPS.filter(function (ip) {
 						return ip === user.latestIp;
 					});
 					if (filteredPlayerArray.length >= Gold.lottery.maxTicketsPerUser) return this.errorReply("You cannot get more than " + Gold.lottery.maxTicketsPerUser + " tickets for this game of lotto.");
 				}
-				Economy.writeMoney(toId(user.name), -Gold.lottery.ticketPrice);
+				Gold.updateMoney(user.userid, -Gold.lottery.ticketPrice);
 				Gold.lottery.pot = Math.round(Gold.lottery.pot + (Gold.lottery.ticketPrice * 1.5));
 				Rooms.get('gamechamber').add("|raw|<b><font color=" + Gold.hashColor(user.name) + ">" + user.name + "</font></b> has bought a lottery ticket.");
 				Gold.lottery.players.push(toId(user.name));
@@ -121,11 +121,11 @@ exports.commands = {
 				if (jackpot === 100) {
 					Rooms.get("gamechamber").add('|raw|<b><font size="7" color="green"><blink>JACKPOT!</blink></font></b>');
 					Rooms.get("gamechamber").add('|raw|<b><font size="4" color="' + Gold.hashColor(winner) + '">' + winner + '</b></font><font size="4"> has won the game of lottery for <b>' + (Gold.lottery.pot * 2) + '</b> bucks!</font>');
-					Economy.writeMoney(toId(winner), Gold.lottery.pot * 2);
+					Gold.updateMoney(toId(winner), Gold.lottery.pot * 2);
 					Gold.lottery = {};
 					saveLottery();
 				} else {
-					Economy.writeMoney(toId(winner), Gold.lottery.pot);
+					Gold.updateMoney(toId(winner), Gold.lottery.pot);
 					Rooms.get("gamechamber").add('|raw|<b><font size="4" color="' + Gold.hashColor(winner) + '">' + winner + '</b></font><font size="4"> has won the game of lottery for <b>' + Gold.lottery.pot + '</b> bucks!</font>');
 					Gold.lottery = {};
 					saveLottery();

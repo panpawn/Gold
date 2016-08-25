@@ -19,7 +19,6 @@
 
 const crypto = require('crypto');
 const fs = require('fs');
-const moment = require('moment');
 
 const MAX_REASON_LENGTH = 300;
 const MUTE_LENGTH = 7 * 60 * 1000;
@@ -1534,7 +1533,7 @@ exports.commands = {
 	},
 	unmutehelp: ["/unmute [username] - Removes mute from user. Requires: % @ * # & ~"],
 
-forcelock: 'lock',
+	forcelock: 'lock',
 	l: 'lock',
 	ipmute: 'lock',
 	lock: function (target, room, user, connection, cmd) {

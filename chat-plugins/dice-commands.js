@@ -43,15 +43,13 @@ class Dice {
 
 	join(user, self) {
 		if (this.players.length === 2) return self.errorReply("Two users have already joined this game of dice.");
-		Economy.readMoney(user.userid, money => {
-			if (money < this.bet) return self.sendReply('You don\'t have enough money for this game of dice.');
-			if (this.players.includes(user)) return self.sendReply('You have already joined this game of dice.');
-			if (this.players.length && this.players[0].latestIp === user.latestIp) return self.errorReply("You have already joined this game of dice under the alt '" + this.players[0].name + "'.");
+		if (Gold.readMoney(user.userid) < this.bet) return self.sendReply('You don\'t have enough money for this game of dice.');
+		if (this.players.includes(user)) return self.sendReply('You have already joined this game of dice.');
+		if (this.players.length && this.players[0].latestIp === user.latestIp) return self.errorReply("You have already joined this game of dice under the alt '" + this.players[0].name + "'.");
 
-			this.players.push(user);
-			this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + Gold.nameColor(user.name, false) + ' has joined the game!</center></div>').update();
-			if (this.players.length === 2) this.play();
-		});
+		this.players.push(user);
+		this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + Gold.nameColor(user.name, false) + ' has joined the game!</center></div>').update();
+		if (this.players.length === 2) this.play();
 	}
 
 	leave(user, self) {
@@ -62,46 +60,45 @@ class Dice {
 
 	play() {
 		let p1 = this.players[0], p2 = this.players[1];
-		Economy.readMoney(p1.userid, money1 => {
-			Economy.readMoney(p2.userid, money2 => {
-				if (money1 < this.bet || money2 < this.bet) {
-					let user = (money1 < this.bet ? p1 : p2);
-					let other = (user === p1 ? p2 : p1);
-					user.sendTo(this.room, 'You have been removed from this game of dice, as you do not have enough money.');
-					other.sendTo(this.room, user.name + ' has been removed from this game of dice, as they do not have enough money. Wait for another user to join.');
-					this.players.remove(user);
-					this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + this.players.map(user => Gold.nameColor(user.name, false)) + ' has joined the game!</center>').update();
-					return;
-				}
-				let players = this.players.map(user => Gold.nameColor(user.name, false)).join(' and ');
-				this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + players + ' have joined the game!</center></div>').update();
-				let roll1, roll2;
-				do {
-					roll1 = Math.floor(Math.random() * 6);
-					roll2 = Math.floor(Math.random() * 6);
-				} while (roll1 === roll2);
-				if (roll2 > roll1) this.players.reverse();
-				let winner = this.players[0], loser = this.players[1];
+		let money1 = Gold.readMoney(p1.userid);
+		let money2 = Gold.readMoney(p2.userid);
 
-				let taxedAmt = Math.round(this.bet * TAX);
-				setTimeout(() => {
-					let buck = (this.bet === 1 ? 'buck' : 'bucks');
-					this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class="infobox"><center>' + players + ' have joined the game!<br /><br />' +
-						'The game has been started! Rolling the dice...<br />' +
-						'<img src = "' + diceImg(roll1) + '" align = "left" title = "' + Tools.escapeHTML(p1.name) + '\'s roll"><img src = "' + diceImg(roll2) + '" align = "right" title = "' + p2.name + '\'s roll"><br />' +
-						Gold.nameColor(p1.name, true) + ' rolled ' + (roll1 + 1) + '!<br />' +
-						Gold.nameColor(p2.name, true) + ' rolled ' + (roll2 + 1) + '!<br />' +
-						Gold.nameColor(winner.name, true) + ' has won <b style="color:green">' + (this.bet - taxedAmt) + '</b> ' + buck + '!<br />' +
-						'Better luck next time, ' + Tools.escapeHTML(loser.name) + '!'
-					).update();
-					Economy.writeMoney(winner.userid, (this.bet - taxedAmt), () => {
-						Economy.writeMoney(loser.userid, -this.bet, () => {
-							this.end();
-						});
-					});
-				}, 800);
-			});
-		});
+		if (money1 < this.bet || money2 < this.bet) {
+			let user = (money1 < this.bet ? p1 : p2);
+			let other = (user === p1 ? p2 : p1);
+			user.sendTo(this.room, 'You have been removed from this game of dice, as you do not have enough money.');
+			other.sendTo(this.room, user.name + ' has been removed from this game of dice, as they do not have enough money. Wait for another user to join.');
+			this.players.remove(user);
+			this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + this.players.map(user => Gold.nameColor(user.name, false)) + ' has joined the game!</center>').update();
+			return;
+		}
+		let players = this.players.map(user => Gold.nameColor(user.name, false)).join(' and ');
+		this.room.add('|uhtmlchange|' + this.room.diceCount + '|' + this.startMessage + '<center>' + players + ' have joined the game!</center></div>').update();
+		let roll1, roll2;
+		do {
+			roll1 = Math.floor(Math.random() * 6);
+			roll2 = Math.floor(Math.random() * 6);
+		} while (roll1 === roll2);
+		if (roll2 > roll1) this.players.reverse();
+		let winner = this.players[0], loser = this.players[1];
+
+		let taxedAmt = Math.round(this.bet * TAX);
+		setTimeout(() => {
+			let buck = (this.bet === 1 ? 'buck' : 'bucks');
+			this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class="infobox"><center>' + players + ' have joined the game!<br /><br />' +
+				'The game has been started! Rolling the dice...<br />' +
+				'<img src = "' + diceImg(roll1) + '" align = "left" title = "' + Tools.escapeHTML(p1.name) + '\'s roll"><img src = "' + diceImg(roll2) + '" align = "right" title = "' + p2.name + '\'s roll"><br />' +
+				Gold.nameColor(p1.name, true) + ' rolled ' + (roll1 + 1) + '!<br />' +
+				Gold.nameColor(p2.name, true) + ' rolled ' + (roll2 + 1) + '!<br />' +
+				Gold.nameColor(winner.name, true) + ' has won <b style="color:green">' + (this.bet - taxedAmt) + '</b> ' + buck + '!<br />' +
+				'Better luck next time, ' + Tools.escapeHTML(loser.name) + '!'
+			).update();
+			let winnerMoney = Number(this.bet - taxedAmt);
+			Gold.userData[winner.userid].money += winnerMoney;
+			Gold.userData[loser.userid].money += -this.bet;
+			Gold.saveData();
+			this.end();
+		}, 800);
 	}
 
 	end(user) {

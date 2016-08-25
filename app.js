@@ -134,7 +134,8 @@ global.Simulator = require('./simulator.js');
 
 global.Tournaments = require('./tournaments');
 
-	global.Dnsbl = require('./dnsbl.js');
+global.Dnsbl = require('./dnsbl.js');
+
 Dnsbl.loadDatacenters();
 
 if (Config.crashguard) {

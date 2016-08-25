@@ -130,7 +130,7 @@ Config.namefilter = function (name, user) {
  * ******************/
 Gold.lockedHosts = Object.create(null);
 
-function loadHostBlacklist () {
+function loadHostBlacklist() {
 	fs.readFile('config/lockedhosts.json', 'utf8', function (err, file) {
 		if (err) return;
 		Gold.lockedHosts = JSON.parse(file);
@@ -138,7 +138,7 @@ function loadHostBlacklist () {
 }
 loadHostBlacklist();
 
-function saveHost () {
+function saveHost() {
 	fs.writeFileSync('config/lockedhosts.json', JSON.stringify(Gold.lockedHosts));
 }
 
@@ -151,7 +151,7 @@ exports.commands = {
 		Gold.lockedHosts[target] = {
 			by: user.name,
 			on: Date.now(),
-		}
+		};
 		saveHost();
 
 		this.privateModCommand("(" + user.name + " has blacklisted host: " + target + ")");
@@ -181,5 +181,5 @@ exports.commands = {
 		});
 
 		return this.sendReplyBox(buff);
-	}
+	},
 };

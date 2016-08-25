@@ -60,7 +60,7 @@ let Panagram = (function () {
 	Panagram.prototype.guess = function (user, guess) {
 		if (guess.species === this.answer.species) {
 			this.room.add('|html|' + Gold.nameColor(user.name, true) + ' guessed <b>' + guess.species + '</b>, which was the correct answer! This user has also won 0.25 bucks!');
-			Economy.writeMoney(user.userid, +0.25);
+			Gold.userData[user.userid].money += 0.25; // don't save till end
 			this.end();
 		} else {
 			this.room.add('|html|' + Gold.nameColor(user.name, true) + ' guessed <b>' + guess.species + '</b>, but was not the correct answer...');
@@ -75,6 +75,7 @@ let Panagram = (function () {
 		} else {
 			this.room.chat = Rooms.Room.prototype.chat;
 			delete pGames[this.room.id];
+			Gold.saveData();
 		}
 	};
 	return Panagram;
