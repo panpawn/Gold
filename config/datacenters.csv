@@ -1149,6 +1149,7 @@
 88.87.32.0,88.87.63.255,availo.no,http://www.availo.no/
 88.148.0.0,88.148.127.255,ServiHosting Networks S.L.,http://servihosting.es
 88.198.0.0,88.198.255.255,Hetzner Online AG,http://www.hetzner.de/
+88.202.176.0,88.202.191.255,UK2 Group,https://www.uk2group.com/
 88.202.231.0,88.202.231.255,midphase,http://midphase.com
 88.208.0.0,88.208.63.255,advancedhosters.com,http://advancedhosters.com/
 88.208.192.0,88.208.255.255,Fasthosts Internet Ltd,http://www.fasthosts.co.uk/
@@ -1636,6 +1637,7 @@
 138.91.136.0,138.91.199.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 138.91.224.0,138.91.255.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 138.201.209.192,138.201.209.223,Hetzner Online,http://hetzner.de/
+139.59.0.0,139.59.255.255,Digital Ocean,https://www.digitalocean.com/
 141.0.160.0,141.0.167.255,NuFuture Ltd,http://www.nublue.co.uk/
 141.101.64.0,141.101.127.255,CloudFlare Inc,https://www.cloudflare.com/
 141.105.64.0,141.105.71.255,HostKey,http://www.hostkey.com/
