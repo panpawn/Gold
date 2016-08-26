@@ -29,7 +29,7 @@ exports.commands = {
 
 	mailbox: function (target, room, user) {
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
-
+		let pop = '|popup||wide||html| ';
 		if (!target) {
 			let data = Object.keys(Gold.userData), buff = Object.create(null);
 			let keys, results = Object.create(null), userIdRegEx = new RegExp(user.userid + "#.*", "g");
@@ -53,7 +53,7 @@ exports.commands = {
 				});
 			});
 			if (!midTable) return user.send('|popup||wide||html|<font color="red">You do not currently have any tells pending to be sent at this time.</font>');
-			user.send('|popup||wide||html|' + tableTop + midTable + '</table>');
+			user.send(pop + tableTop + midTable + '</table>');
 		} else {
 			target = target.split(',');
 			for (let u in target) target[u] = target[u].trim();
@@ -61,10 +61,10 @@ exports.commands = {
 			if (!target[1]) return false;
 			if (!Gold.userData[target[0]]) return false;
 			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup('|popup||wide||html| <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />' + mailboxButton);
-			if (!target[1].startsWith(user.userid + '#')) return false;
+			if (!target[1].startsWith(user.userid + '#')) return user.popup(pop + '<font color="red">You do not have permission to delete this tell.</font><br /><br />' + mailboxButton);
 			delete Gold.userData[target[0]].tells[target[1]];
 			Gold.saveData();
-			user.send('|popup||wide||html| You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID: <code>' + target[1] + '</code>.<br /><br />' + mailboxButton);
+			user.send(pop + 'You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID: <code>' + target[1] + '</code>.<br /><br />' + mailboxButton);
 		}
 	},
 };
