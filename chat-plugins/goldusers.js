@@ -102,8 +102,8 @@ try {
 			let userids = new Array(0);
 			let tableStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px; text-align:center;';
 			let tdStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
-			let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<b>The top ' + number + ' richest users are:</b><table style="' + tableStyle + '" border="1" cellspacing ="0" cellpadding="3">';
-			returnText += '<tr><td style="' + tdStyle + '"><b>Rank</b></td><td style="' + tdStyle + '"><b>Name</b></td><td style="' + tdStyle + '"><b>Bucks</b></td></tr>';
+			let returnText = `${number > 10 ? '<div class="infobox-limited">' : '<div>'}<b>The top ${number} richest users are:</b><table style="${tableStyle}" border="1" cellspacing ="0" cellpadding="3">`;
+			returnText += `<tr><td style="${tdStyle}"><b>Rank</b></td><td style="${tdStyle}"><b>Name</b></td><td style="${tdStyle}"><b>Bucks</b></td></tr>`;
 
 			function ResultsArray (id, money) {
 				this.id = id;
@@ -121,7 +121,7 @@ try {
 			});
 
 			for (let i = 0; i < number; i++) {
-				if (userids[i]) returnText += '<tr><td style="' + tdStyle + '">' + (i + 1) + '.</td><td style="' + tdStyle + '">' + Gold.nameColor(userids[i].id, true) + '</td><td style="' + tdStyle + '">' + userids[i].money + '</td></tr>';
+				if (userids[i]) returnText += `<tr><td style="${tdStyle}">${i + 1}.</td><td style="${tdStyle}">${Gold.nameColor(userids[i].id, true)}</td><td style="${tdStyle}">${userids[i].money}</td></tr>`;
 			}
 			returnText += '</table></div>';
 
@@ -198,7 +198,7 @@ try {
 			if (displayall) {
 				let buff = [];
 				Object.keys(badgeList).forEach(badge => {
-					buff.push('<img src="' + badgeList[badge].img + '" title="' + badgeList[badge].title + '">');
+					buff.push(`<img src="${badgeList[badge].img}" title="${badgeList[badge].title}">`);
 				});
 				return buff.join(" | ");
 			}
@@ -212,7 +212,7 @@ try {
 			let badgeObj = this.badgeList();
 			let badgeList = Object.keys(badgeObj);
 			badgeList.forEach(badge => {
-				if (data.badges.includes(badge)) buff.push('<img src="' + badgeObj[badge].img + '" title="' + badgeObj[badge].title + '">');
+				if (data.badges.includes(badge)) buff.push(`<img src="${badgeObj[badge].img}" title="${badgeObj[badge].title}">`);
 			});
 			return buff.join(" ");
 		},
@@ -291,11 +291,11 @@ try {
 
 			message = Gold.formatMessage(message); // Add PS formatting
 
-			let date = moment().format('MMMM Do YYYY, h:mm A') + " EST";
-			let tell = "<u>" + date + "</u><br />" + Gold.nameColor(user, true) + ' said: ' + message;
+			let date = `${moment().format('MMMM Do YYYY, h:mm A')} EST`;
+			let tell = `<u>${date}</u><br />${Gold.nameColor(user, true)} said: ${message}`;
 
 			Gold.userData[user].tellNum++;
-			tells[user + '#' + Gold.userData[user].tellNum] = tell;
+			tells[`${user}#${Gold.userData[user].tellNum}`] = tell;
 			this.saveData();
 		},
 		checkTells: function (user) {
@@ -304,7 +304,7 @@ try {
 			if (Gold.userData[user]) {
 				if (Object.keys(Gold.userData[user].tells).length > 0) {
 					for (let i in Gold.userData[user].tells) {
-						reply.push('|raw|' + Gold.userData[user].tells[i]);
+						reply.push(`|raw|${Gold.userData[user].tells[i]}`);
 						delete Gold.userData[user].tells[i];
 					}
 				}
@@ -316,5 +316,5 @@ try {
 	});
 } catch (e) {
 	let staff = Rooms('staff');
-	if (staff) staff.add('|html|<div class="broadcast-red"><b>CUSTOM PS FUNCTIONALITY HAS CRASHED:</b><br />' + e.stack + '<br /><br /><b>Please report this to a developer... so panpawn.').update();
+	if (staff) staff.add(`|html|<div class="broadcast-red"><b>CUSTOM PS FUNCTIONALITY HAS CRASHED:</b><br />${e.stack}<br /><br /><b>Please report this to a developer... so panpawn.`).update();
 }
