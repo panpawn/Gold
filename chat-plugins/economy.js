@@ -484,7 +484,7 @@ function logTransaction(message) {
 }
 
 function updatePrices() {
-	let avg = this.averageBucks();
+	let avg = Gold.moneyCirculating()[1];
 	prices = {
 		'symbol': Math.round(avg * 0.035),
 		// 'declare': Math.round(avg * 0.19),
