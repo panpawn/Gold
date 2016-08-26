@@ -48,11 +48,8 @@ try {
 				friendcode: '',
 			} // we don't save blank user data objects until next save
 		},
-		saveNum: 0,
 		saveData: function () {
 				fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
-				this.saveNum++;
-				Rooms('staff').add('Save #' + this.saveNum + ' occurred.').update();
 		}.throttle(1 * 1000), // only save once/second - TOPS
 		initiateUser: function (user, ip) {	// when the user connections, this runs
 			user = toId(user);
