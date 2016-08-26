@@ -60,6 +60,7 @@ exports.commands = {
 			if (!target[1]) return false;
 			if (!Gold.userData[target[0]]) return false;
 			if (!Gold.userData[target[0]].tells[target[1]]) return false;
+			if (!target[1].startsWith(user.userid + '#')) return false;
 			delete Gold.userData[target[0]].tells[target[1]];
 			Gold.saveData();
 			user.send('|popup||wide||html| You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID ' + target[1] + '.<br /><br /><button name="send" value="/mailbox">Back to mailbox</button>');
