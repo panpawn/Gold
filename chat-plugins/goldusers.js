@@ -70,9 +70,10 @@ try {
 		updateMoney: function (user, amount) {
 			user = toId(user);
 			if (isNaN(amount)) return false;
+			amount = Number(amount);
 
 			let data = this.checkExisting(user);
-			data.money = data.money + amount;
+			data.money = Number(data.money + amount);
 			this.saveData();
 		},
 		readMoney: function (user) {
