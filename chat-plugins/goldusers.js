@@ -282,6 +282,7 @@ try {
 			this.saveData();
 		},
 		createTell: function (user, reciever, message) { // heavy lifting for /tell
+			let userName = user;
 			reciever = toId(reciever);
 			user = toId(user);
 			message = Gold.emoticons.processEmoticons(Tools.escapeHTML(message)).replace(/&#x2f;/g, '/');
@@ -293,7 +294,7 @@ try {
 			message = Gold.formatMessage(message); // Add PS formatting
 
 			let date = `${moment().format('MMMM Do YYYY, h:mm A')} EST`;
-			let tell = `<u>${date}</u><br />${Gold.nameColor(user, true)} said: ${message}`;
+			let tell = `<u>${date}</u><br />${Gold.nameColor(userName, true)} said: ${message}`;
 
 			Gold.userData[user].tellNum++;
 			tells[`${user}#${Gold.userData[user].tellNum}`] = tell;

@@ -60,7 +60,7 @@ exports.commands = {
 			let mailboxButton = '<button name="send" value="/mailbox">Back to mailbox</button>';
 			if (!target[1]) return false;
 			if (!Gold.userData[target[0]]) return false;
-			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup(`|popup||wide||html| <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />${mailboxButton}`);
+			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup(`${pop} <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />${mailboxButton}`);
 			if (!target[1].startsWith(`${user.userid}#`)) return user.popup(`${pop}<font color="red">You do not have permission to delete this tell.</font><br /><br />${mailboxButton}`);
 			delete Gold.userData[target[0]].tells[target[1]];
 			Gold.saveData();
