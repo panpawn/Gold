@@ -72,7 +72,7 @@ try {
 			if (isNaN(amount)) return false;
 
 			let data = this.checkExisting(user);
-			data.money += amount;
+			data.money = data.money + amount;
 			this.saveData();
 		},
 		readMoney: function (user) {
