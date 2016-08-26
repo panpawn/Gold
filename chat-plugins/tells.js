@@ -48,7 +48,7 @@ exports.commands = {
 				if (Object.keys(results).length > 0) Object.keys(results).forEach(tellid => {
 					if (!Gold.userData[results[tellid]].tells[tellid]) return;
 					if (displayedIds.includes(tellid)) return;
-					midTable += '<tr><td>' + tellid + '</td><td>' + Gold.nameColor(name, true) + '</td><td>' + Gold.userData[name].tells[tellid] + '</td><td><button name="send" value="/mailbox ' + name + ',' + tellid + '">Delete Pending Message</button></td></tr>';
+					midTable += '<tr><td><code>' + tellid + '</code></td><td>' + Gold.nameColor(name, true) + '</td><td>' + Gold.userData[name].tells[tellid] + '</td><td><button name="send" value="/mailbox ' + name + ',' + tellid + '">Delete Pending Message</button></td></tr>';
 					displayedIds.push(tellid);
 				});
 			});
@@ -57,13 +57,14 @@ exports.commands = {
 		} else {
 			target = target.split(',');
 			for (let u in target) target[u] = target[u].trim();
+			let mailboxButton = '<button name="send" value="/mailbox">Back to mailbox</button>';
 			if (!target[1]) return false;
 			if (!Gold.userData[target[0]]) return false;
-			if (!Gold.userData[target[0]].tells[target[1]]) return false;
+			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup('|popup||wide||html| <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />' + mailboxButton);
 			if (!target[1].startsWith(user.userid + '#')) return false;
 			delete Gold.userData[target[0]].tells[target[1]];
 			Gold.saveData();
-			user.send('|popup||wide||html| You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID ' + target[1] + '.<br /><br /><button name="send" value="/mailbox">Back to mailbox</button>');
+			user.send('|popup||wide||html| You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID: <code>' + target[1] + '</code>.<br /><br />' + mailboxButton);
 		}
 	},
 };
