@@ -1386,32 +1386,34 @@ exports.commands = {
 	goldipsearch: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
-		let searchType = target.includes('.') ? 'IP' : 'User';
+		let searchType = target.includes('.') ? 'IP' : 'User', count = 0;
 		let origtarget = target, targetId = toId(target), wildcard = target.includes('*');
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
 
 		if (searchType === 'IP') {
-			let names = Object.keys(Gold.userIps), buff = [];
+			let names = Object.keys(Gold.userData), buff = [];
 
 			if (wildcard) target = target.slice(0, -1);
 
 			names.forEach(name => {
+				if (Gold.userData[name].ips.length < 0) return;
+				count++
 				if (wildcard) {
-					for (var i = 0; i < Gold.userIps[name].length; i++) {
-						if (Gold.userIps[name][i].startsWith(target) && !(buff.includes(formatName(name)))) {
+					for (var i = 0; i < Gold.userData[name].ips.length; i++) {
+						if (Gold.userData[name].ips[i].startsWith(target) && !(buff.includes(formatName(name)))) {
 							buff.push(formatName(name));
 						}
 					}
 				} else { // regular IPs
-					if (Gold.userIps[name].includes(target) && !(buff.includes(formatName(name)))) {
+					if (Gold.userData[name].ips.includes(target) && !(buff.includes(formatName(name)))) {
 						buff.push(formatName(name));
 					}
 				}
 			});
 			if (buff.length < 1) return this.errorReply(fallout);
 			return this.sendReplyBox("User" + Gold.pluralFormat(buff.length, 's') + " previously associated with an " + searchType + " in range '" + origtarget + "':<br />" + buff.join(', '));
-		} else if (Gold.userIps[targetId]) {
-			let results = Gold.userIps[targetId];
+		} else if (Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0) {
+			let results = Gold.userData[targetId].ips;
 			return this.sendReplyBox("IP" + Gold.pluralFormat(results.length, 's') + " previously associated with " + searchType + " '" + target + "':<br />" + results.join(', '));
 		} else {
 			return this.errorReply(fallout);
@@ -1429,8 +1431,8 @@ exports.commands = {
 		// variable declarations
 		let targetId = toId(this.target);
 		let ips = [], prevNames = [];
-		let prevIps = (Gold.userIps[targetId] ? Gold.userIps[targetId] : false);
-		let names = Object.keys(Gold.userIps);
+		let prevIps = (Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0 ? Gold.userData[targetId].ips : false);
+		let names = Object.keys(Gold.userData);
 		let buff = [], none = '<em style="color:gray">(none)</em>';
 		let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
 		let userGroup = (Config.groups[userSymbol] ? 'Global ' +  Config.groups[userSymbol].name  + ' (' + userSymbol + ')' : false);
@@ -1440,7 +1442,7 @@ exports.commands = {
 		if (ips.length > 0) {
 			names.forEach(name => {
 				for (var i = 0; i < ips.length; i++) {
-					if (Gold.userIps[name].includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
+					if (Gold.userData[name].ips.includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
 						prevNames.push(name);
 					}
 				}
@@ -1454,7 +1456,7 @@ exports.commands = {
 			// header and last seen
 			buff.push('<strong class="username">' + target + '</strong> <em style="color:gray">(offline)</em>');
 			if (userGroup) buff.push(userGroup);
-			buff.push('Last Seen: ' + (Gold.seenData[targetId] ? moment(Gold.seenData[targetId]).format("MMMM Do YYYY, h:mm A") : '<font color="red">never on this server</font>') + '<br />');
+			buff.push('Last Seen: ' + (Gold.userData[targetId] && Gold.userData[targetId].lastSeen ? moment(Gold.userData[targetId].lastSeen).format("MMMM Do YYYY, h:mm A") : '<font color="red">never on this server</font>') + '<br />');
 
 			// get previous names and IPs
 			buff.push("Previous IP" + Gold.pluralFormat(ips.length, 's') + ": " + (ips.length > 0 ? ips.join(', ') : none));
