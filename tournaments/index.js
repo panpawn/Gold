@@ -843,18 +843,17 @@ class Tournament {
 		let tourRarity = Gold.tourCard(tourSize, toId(winner));
 		if (this.prizeMoney !== 0) {
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has won the bucks tournament for <font color=#24678d>' + this.prizeMoney + '</font> bucks!');
-			Economy.writeMoney(toId(winner), Number(this.prizeMoney));
+			Gold.updateMoney(toId(winner), Number(this.prizeMoney));
 			if (tourRarity) this.room.addRaw("<b>" + Gold.nameColor(winner, false) + " has also won a <font color=" + tourRarity[0] + ">" + tourRarity[1] + "</font> card: <button class='tourcard-btn' style='border-radius: 20px; box-shadow: 1px 1px rgba(255, 255, 255, 0.3) inset, -1px -1px rgba(0, 0, 0, 0.2) inset, 2px 2px 2px rgba(0, 0, 0, 0.5);' name='send' value='/card " + tourRarity[2] + "'>" + tourRarity[3] + "</button> from the tournament.");
 		} else if (this.room.isOfficial && tourSize >= 3) {
 			let money = (tourSize < 50 ? Math.round(1.5 * tourSize) : 75);
 
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has also won <font color=#24678d>' + money + '</font> bucks for winning the tournament!</b>');
-			Economy.writeMoney(toId(winner), money, () => {
-				if (runnerUp) Economy.writeMoney(toId(runnerUp), Math.round(money / 2));
-			});
+			Gold.updateMoney(winner, money);
 			if (runnerUp) {
 				this.room.add('|raw|<b>' + Gold.nameColor(runnerUp, false) + ' has also won <font color=#24678d>' + Math.round(money / 2) + '</font> bucks for coming in second!</b>');
 				if (tourRarity) this.room.addRaw("<b>" + Gold.nameColor(winner, false) + " has also won a <font color=" + tourRarity[0] + ">" + tourRarity[1] + "</font> card: <button class='tourcard-btn' style='border-radius: 20px; box-shadow: 1px 1px rgba(255, 255, 255, 0.3) inset, -1px -1px rgba(0, 0, 0, 0.2) inset, 2px 2px 2px rgba(0, 0, 0, 0.5);' name='send' value='/card " + tourRarity[2] + "'>" + tourRarity[3] + "</button> from the tournament.");
+				Gold.updateMoney(runnerUp, Math.round(money / 2));
 			}
 		}
 		if (this.autoDisqualifyTimer) clearTimeout(this.autoDisqualifyTimer);

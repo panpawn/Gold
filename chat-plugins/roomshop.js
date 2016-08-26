@@ -86,7 +86,7 @@ exports.commands = {
 			if (!RS[item]) return this.errorReply("This item is not in the room shop. Check spelling?");
 			item = RS[item][0];
 			price = RS[toId(item)][2];
-			if (Economy.readMoneySync(user.userid) < price) return this.errorReply("You do not have enough bucks to buy " + item + ". You need " + (price - Economy.readMoneySync(user.userid)) + " more bucks to buy this item.");
+			if (Gold.readMoney(user.userid) < price) return this.errorReply("You do not have enough bucks to buy " + item + ". You need " + (price - Gold.readMoney(user.userid)) + " more bucks to buy this item.");
 			this.parse('/tb ' + room.founder + ', ' + price);
 			room.add("|raw|<b><u>Room Shop</u>: " + getName(user.name) + "</b> has bought a(n) <u>" + Tools.escapeHTML(item) + "</u> from the room shop for " + price + " buck" + (price > 1 ? "s" : "") + ".").update();
 			this.privateModCommand("(" + user.name + " has bought a(n) " + item + " from the room shop.)");

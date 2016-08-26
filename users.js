@@ -29,12 +29,11 @@ const THROTTLE_DELAY = 600;
 const THROTTLE_BUFFER_LIMIT = 6;
 const THROTTLE_MULTILINE_WARN = 3;
 const THROTTLE_MULTILINE_WARN_STAFF = 6;
-const DEFAULT_BAN_DURATION = "5d";
+//const DEFAULT_BAN_DURATION = "5d";
 
 const PERMALOCK_CACHE_TIME = 30 * 24 * 60 * 60 * 1000;
 
 const fs = require('fs');
-const moment = require('moment');
 
 let Users = module.exports = getUser;
 
@@ -538,20 +537,6 @@ class User {
 	resetName() {
 		return this.forceRename('Guest ' + this.guestNum);
 	}
-	lockName() {
-		let userid = this.userid;
-		for (let ip in this.ips) {
-			nameLockedIps[ip] = userid;
-		}
-		if (this.autoconfirmed) nameLockedUsers[this.autoconfirmed] = userid;
-		nameLockedUsers[this.userid] = userid;
-		this.namelocked = userid;
-		this.forceRename('Guest ' + this.guestNum, false);
-		this.named = true;
-		this.updateIdentity();
-
-		return true;
-	}
 	updateIdentity(roomid) {
 		if (roomid) {
 			return Rooms(roomid).onUpdateIdentity(this);
@@ -645,7 +630,7 @@ class User {
 				userid = '';
 			}
 		}
-		Gold.addIp(name, connection.ip);
+		Gold.initiateUser(name, connection.ip);
 		if (this.registered) newlyRegistered = false;
 
 		if (!userid) {
@@ -782,9 +767,7 @@ class User {
 		return false;
 	}
 	forceRename(name, registered) {
-		try {
-			Gold.updateSeen(name);
-		} catch (e) { }
+		Gold.updateSeen(name);
 		// skip the login server
 		let userid = toId(name);
 
@@ -1041,9 +1024,7 @@ class User {
 		}
 	}
 	onDisconnect(connection) {
-		try {
-			Gold.updateSeen(this.userid);
-		} catch (e) { }
+		Gold.updateSeen(this.userid);
 		for (let i = 0; i < this.connections.length; i++) {
 			if (this.connections[i] === connection) {
 				// console.log('DISCONNECT: ' + this.userid);
@@ -1234,9 +1215,7 @@ class User {
 		room = Rooms(room);
 		if (room.id === 'global' && !force) {
 			// you can't leave the global room except while disconnecting
-			try {
-				Gold.updateSeen(this.userid);
-			} catch (e) {}
+			Gold.updateSeen(this.userid);
 			return false;
 		}
 		if (!this.inRooms.has(room.id)) {

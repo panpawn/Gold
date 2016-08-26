@@ -94,7 +94,7 @@ function formatList(user, by) {
 			let userLastSeen = moment(Gold.seenData[frens]).fromNow();
 			return userLastSeen;
 		}
-		reply += "<tr><td>" + getName(frens, true, true) + "</td><td>" + lastSeen(frens) + "</td><td>" + (Economy.readMoneySync(frens) === 0 ? "None" : Economy.readMoneySync(frens)) + "</td></tr>";
+		reply += "<tr><td>" + getName(frens, true, true) + "</td><td>" + lastSeen(frens) + "</td><td>" + (Gold.readMoney(frens) === 0 ? "None" : Gold.readMoney(frens)) + "</td></tr>";
 	});
 	reply += "</table>";
 	let number = getFriendsNumber(user);

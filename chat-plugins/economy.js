@@ -14,33 +14,33 @@ exports.commands = {
 		if (room.id === 'lobby' && this.broadcasting) {
 			return this.sendReplyBox('<center>Click <button name="send" value="/shop" style="background-color: black; font-color: white;" title="Enter the Shop!"><font color="white"><b>here</button></b></font> to enter our shop!');
 		} else {
-			Economy.updatePrices();
+			updatePrices();
 			let topStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px;';
 			let top = '<center><h3><b><u>Gold Bucks Shop</u></b></h3><table style="' + topStyle + '" border="1" cellspacing ="2" cellpadding="3"><tr><th>Item</th><th>Description</th><th>Cost</th></tr>';
 			let bottom = '</table><br /><b>Prices in the shop go up and down automatically depending on the amount of bucks the average user has at that given time.</b><br />To buy an item from the shop, click the respective button for said item.<br>Do /getbucks to learn more about how to obtain bucks. </center>';
 
 			return this.sendReply('|raw|' +
 				top +
-				Economy.shopTable("Symbol", "Buys a custom symbol to go infront of name and puts you towards the top of userlist (lasts 2 hrs from logout)", prices['symbol']) +
-				// Economy.shopTable("Declare", "Advertisement declare for a room on the server from an Administrator / Leader.", prices['declare']) +
-				Economy.shopTable("Fix", "Ability to modify a custom avatar, trainer card, or userlist icon.", prices['fix']) +
-				Economy.shopTable("Custom", "Buys a custom avatar to be applied to your name (you supply)", prices['custom']) +
-				Economy.shopTable("Animated", "Buys an animated avatar to be applied to your name (you supply)", prices['animated']) +
-				Economy.shopTable("Room", "Buys a public unofficial chat room - will be deleted if inactive. Must have a valid purpose; staff can reject making these.", prices['room']) +
-				Economy.shopTable("Musicbox", "A command that lists / links up to 8 of your favorite songs", prices['musicbox']) +
-				Economy.shopTable("Trainer", "Gives you a custom command - you provide the HTML and command name.", prices['trainer']) +
-				Economy.shopTable("Mystery Box", "Gives you a special surprise gift when you open it! (Could be good or bad!)", prices['pack']) +
-				Economy.shopTable("Emote", "A custom chat emoticon such as \"Kappa\" - must be 30x30", prices['emote']) +
-				Economy.shopTable("Color", "This gives your username a custom color on the userlist and in all rooms (existing at time of purchase)", prices['color']) +
-				Economy.shopTable("Icon", "This gives your username a custom userlist icon on our regular client - MUST be a Pokemon and has to be 32x32.", prices['icon']) +
-				Economy.shopTable("VIP Status", "Gives you the ability to change your custom symbol, avatar, custom color, and userlist icon as much as you wish, and it is also displayed in your profile.", prices['vip']) +
+				shopTable("Symbol", "Buys a custom symbol to go infront of name and puts you towards the top of userlist (lasts 2 hrs from logout)", prices['symbol']) +
+				// shopTable("Declare", "Advertisement declare for a room on the server from an Administrator / Leader.", prices['declare']) +
+				shopTable("Fix", "Ability to modify a custom avatar, trainer card, or userlist icon.", prices['fix']) +
+				shopTable("Custom", "Buys a custom avatar to be applied to your name (you supply)", prices['custom']) +
+				shopTable("Animated", "Buys an animated avatar to be applied to your name (you supply)", prices['animated']) +
+				shopTable("Room", "Buys a public unofficial chat room - will be deleted if inactive. Must have a valid purpose; staff can reject making these.", prices['room']) +
+				shopTable("Musicbox", "A command that lists / links up to 8 of your favorite songs", prices['musicbox']) +
+				shopTable("Trainer", "Gives you a custom command - you provide the HTML and command name.", prices['trainer']) +
+				shopTable("Mystery Box", "Gives you a special surprise gift when you open it! (Could be good or bad!)", prices['pack']) +
+				shopTable("Emote", "A custom chat emoticon such as \"Kappa\" - must be 30x30", prices['emote']) +
+				shopTable("Color", "This gives your username a custom color on the userlist and in all rooms (existing at time of purchase)", prices['color']) +
+				shopTable("Icon", "This gives your username a custom userlist icon on our regular client - MUST be a Pokemon and has to be 32x32.", prices['icon']) +
+				shopTable("VIP Status", "Gives you the ability to change your custom symbol, avatar, custom color, and userlist icon as much as you wish, and it is also displayed in your profile.", prices['vip']) +
 				bottom
 			);
 		}
 	},
 
 	buy: function (target, room, user) {
-		Economy.updatePrices();
+		updatePrices();
 		if (!target) return this.errorReply("You need to pick an item! Type /buy [item] to buy something.");
 
 		let parts = target.split(',');
@@ -51,8 +51,8 @@ exports.commands = {
 			return '<a href="' + link + '" target="_blank">' + formatted + '</a>';
 		}
 		function moneyCheck(price) {
-			if (Economy.readMoneySync(user.userid) < price) return false;
-			if (Economy.readMoneySync(user.userid) >= price) return true;
+			if (Gold.readMoney(user.userid) < price) return false;
+			if (Gold.readMoney(user.userid) >= price) return true;
 		}
 		function alertStaff(message, staffRoom) {
 			Gold.pmUpperStaff('/raw ' + message, '~Server', false);
@@ -63,18 +63,16 @@ exports.commands = {
 		}
 		function processPurchase(price, item, desc) {
 			if (!desc) desc = '';
-			Economy.readMoney(user.userid, amount => {
-				if (amount < price) return false; //this should never happen
-				Economy.writeMoney(user.userid, -price);
-				Economy.logTransaction(user.name + ' has purchased a(n) ' + item + '. ' + desc);
-			});
+			if (Gold.readMoney(user.userid) < price) return false; // this should never happen
+			Gold.updateMoney(user.userid, -price);
+			logTransaction(user.name + ' has purchased a(n) ' + item + '. ' + desc);
 		}
 
 		switch (toId(parts[0])) {
 
 		case 'symbol':
 			price = prices['symbol'];
-			if (Gold.hasBadge(user.userid, 'vip')) return this.errorReply("You are a VIP user - you do not need to buy custom symbols from the shop.  Use /customsymbol to change your symbol.");
+			if (Gold.hasVip(user.userid)) return this.errorReply("You are a VIP user - you do not need to buy custom symbols from the shop.  Use /customsymbol to change your symbol.");
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			processPurchase(price, parts[0]);
 			this.sendReply("You have purchased a custom symbol. You will have this until you log off for more than an hour.");
@@ -86,7 +84,7 @@ exports.commands = {
 		case 'avatar':
 		case 'customavatar':
 			price = prices['custom'];
-			if (Gold.hasBadge(user.userid, 'vip')) return this.errorReply("You are a VIP user - you do not need to buy avatars from the shop.  Use /customavatar to change your avatar.");
+			if (Gold.hasVip(user.userid)) return this.errorReply("You are a VIP user - you do not need to buy avatars from the shop.  Use /customavatar to change your avatar.");
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			if (!parts[1]) return this.errorReply("Usage: /buy avatar, [link to avatar].  Must be a PNG or JPG.");
 			let filepaths = ['.png', '.jpg'];
@@ -101,7 +99,7 @@ exports.commands = {
 		case 'color':
 		case 'customcolor':
 			price = prices['color'];
-			if (Gold.hasBadge(user.userid, 'vip')) price = 0;
+			if (Gold.hasVip(user.userid)) price = 0;
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			if (!parts[1]) return this.errorReply("Usage: /buy color, [hex code OR name of an alt you want the color of]");
 			if (parts[1].length > 20) return this.errorReply("This is not a valid color, try again.");
@@ -126,7 +124,7 @@ exports.commands = {
 
 		case 'animated':
 			price = prices['animated'];
-			if (Gold.hasBadge(user.userid, 'vip')) return this.errorReply("You are a VIP user - you do not need to buy animated avatars from the shop.  Use /customavatar to change your avatar.");
+			if (Gold.hasVip(user.userid)) return this.errorReply("You are a VIP user - you do not need to buy animated avatars from the shop.  Use /customavatar to change your avatar.");
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			if (!parts[1]) return this.errorReply("Usage: /buy animated, [link to avatar].  Must be a GIF.");
 			if (parts[1].split('.').pop() !== 'gif') return this.errorReply("Your animated avatar must be a GIF. (If it's a GIF, the link will end in .gif)");
@@ -172,7 +170,7 @@ exports.commands = {
 
 		case 'fix':
 			price = prices['fix'];
-			if (Gold.hasBadge(user.userid, 'vip')) price = 0;
+			if (Gold.hasVip(user.userid)) price = 0;
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			processPurchase(price, parts[0]);
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a fix from the shop.', true);
@@ -183,7 +181,7 @@ exports.commands = {
 		case 'ad':
 		case 'declare':
 			price = prices['declare'];
-			if (Gold.hasBadge(user.userid, 'vip')) price = 0;
+			if (Gold.hasVip(user.userid)) price = 0;
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			processPurchase(price, parts[0]);
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased the ability to declare from the shop.', true);
@@ -193,7 +191,7 @@ exports.commands = {
 		case 'userlisticon':
 		case 'icon':
 			price = prices['icon'];
-			if (Gold.hasBadge(user.userid, 'vip')) price = 0;
+			if (Gold.hasVip(user.userid)) price = 0;
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			if (!parts[1] || parts[1].length < 3) return this.errorReply("Usage: /buy icon, [32x32 icon image]");
 			let iconFilepaths = ['.png', '.jpg', '.gif'];
@@ -234,13 +232,13 @@ exports.commands = {
 			switch (prize) {
 			// good
 			case '100 bucks':
-				Economy.writeMoney(user.userid, 100);
+				Gold.updateMoney(user.userid, 100);
 				break;
 			case '125 bucks':
-				Economy.writeMoney(user.userid, 125);
+				Gold.updateMoney(user.userid, 125);
 				break;
 			case 'the cost of the mystery box back':
-				Economy.writeMoney(user.userid, prices['pack']);
+				Gold.updateMoney(user.userid, prices['pack']);
 				break;
 			case 'ability to get Dubtrack VIP':
 			case 'ability to have a leader/admin broadcast an image to Lobby':
@@ -313,11 +311,11 @@ exports.commands = {
 		if (amount > 1000) return this.errorReply("You cannot give more than 1,000 bucks at once.");
 
 		//give the bucks
-		Economy.writeMoney(toId(targetUser), amount);
+		Gold.updateMoney(toId(targetUser), amount);
 
 		//send replies
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
-		Economy.logTransaction(user.name + " has given " + amountLbl + " to " + targetUser + ".");
+		logTransaction(user.name + " has given " + amountLbl + " to " + targetUser + ".");
 		this.sendReply("You have given " + amountLbl + " to " + targetUser + ".");
 		if (Users(targetUser)) Users(targetUser).popup("|modal|" + user.name + " has given " + amountLbl + " to you.");
 	},
@@ -331,7 +329,7 @@ exports.commands = {
 		let targetUser = parts[0];
 		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
 		let amount = Math.round(Number(toId(parts[1])));
-		if (amount > Economy.readMoneySync(targetUser)) return this.errorReply("You cannot remove more bucks than the user has.");
+		if (amount > Gold.readMoney(targetUser)) return this.errorReply("You cannot remove more bucks than the user has.");
 
 		//checks
 		if (isNaN(amount)) return this.errorReply("The amount you remove must be a number.");
@@ -339,11 +337,11 @@ exports.commands = {
 		if (amount > 1000) return this.errorReply("You cannot remove more than 1,000 bucks at once.");
 
 		//take the bucks
-		Economy.writeMoney(toId(targetUser), -amount);
+		Gold.updateMoney(toId(targetUser), -amount);
 
 		//send replies
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
-		Economy.logTransaction(user.name + " has removed " + amountLbl + " from " + targetUser + ".");
+		logTransaction(user.name + " has removed " + amountLbl + " from " + targetUser + ".");
 		this.sendReply("You have removed " + amountLbl + " from " + targetUser + ".");
 		if (Users(targetUser)) Users(targetUser).popup("|modal|" + user.name + " has removed " + amountLbl + " from you.");
 	},
@@ -362,16 +360,15 @@ exports.commands = {
 		if (isNaN(amount)) return this.errorReply("The amount you transfer must be a number.");
 		if (amount < 1) return this.errorReply("Cannot be less than 1.");
 		if (toId(targetUser) === user.userid) return this.errorReply("You cannot transfer bucks to yourself.");
-		if (Economy.readMoneySync(user.userid) < amount) return this.errorReply("You cannot transfer more than you have.");
+		if (Gold.readMoney(user.userid) < amount) return this.errorReply("You cannot transfer more than you have.");
 
 		//finally, transfer the bucks
-		Economy.writeMoney(user.userid, -amount, function () {
-			Economy.writeMoney(toId(targetUser), +amount);
-		});
+		Gold.updateMoney(user.userid, -amount);
+		Gold.updateMoney(targetUser, amount);
 
 		//log the transaction
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
-		Economy.logTransaction(user.name + " has transfered " + amountLbl + " to " + targetUser);
+		logTransaction(user.name + " has transfered " + amountLbl + " to " + targetUser);
 
 		//send return messages
 		this.sendReply("You have transfered " + amountLbl + " to " + targetUser + ".");
@@ -393,12 +390,9 @@ exports.commands = {
 	atm: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!target) target = user.name;
-		Economy.readMoney(toId(target), bucks => {
-			let output = "<u>Gold Wallet:</u><br />";
-			output += Gold.nameColor(target, true) + ' ' + (bucks === 0 ? "does not have any Gold bucks." : "has " + bucks + " Gold buck" + Gold.pluralFormat(bucks, 's') + ".");
-			this.sendReplyBox(output);
-			room.update();
-		});
+		let output = "<u>Gold Wallet:</u><br />", bucks = Gold.readMoney(target);
+		output += Gold.nameColor(target, true) + ' ' + (bucks === 0 ? "does not have any Gold bucks." : "has " + bucks + " Gold buck" + Gold.pluralFormat(bucks, 's') + ".");
+		return this.sendReplyBox(output);
 	},
 
 	whosgotthemoneyz: 'richestuser',
@@ -407,34 +401,7 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		let number = (target && !~target.indexOf('.') && target > 1 && !isNaN(target) ? Number(target) : 10);
 		if (this.broadcasting && number > 10) number = 10; // limit to 10 when broadcasting
-		let data = fs.readFileSync('config/money.csv', 'utf8');
-		let row = data.split("\n");
-		if (number > row.length) number = row.length;
-		let userids = [];
-
-		function UserID(ID, Money) {
-			this.id = ID;
-			this.money = Money;
-		}
-		for (let i = row.length; i > -1; i--) {
-			if (!row[i]) continue;
-			let parts = row[i].split(",");
-			if (Number(parts[1]) !== 0) userids.push(new UserID(parts[0], Number(parts[1])));
-			if (isNaN(parts[1]) || parts[1] === 'Infinity') userids[i].money = 0;
-		}
-		userids.sort(function (a, b) {
-			return b.money - a.money;
-		});
-		number = (number > userids.length ? userids.length : number);
-		let tableStyle = 'background: linear-gradient(10deg, #FFF8B5, #eadf7c, #FFF8B5); color: black; border: 1px solid #635b00; padding: 2px; border-radius: 5px; text-align:center;';
-		let tdStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
-		let returnText = (number > 10 ? '<div class="infobox-limited">' : '<div>') + '<b>The top ' + number + ' richest users are:</b><table style="' + tableStyle + '" border="1" cellspacing ="0" cellpadding="3">';
-		returnText += '<tr><td style="' + tdStyle + '"><b>Rank</b></td><td style="' + tdStyle + '"><b>Name</b></td><td style="' + tdStyle + '"><b>Bucks</b></td></tr>';
-		for (let i = 0; i < number; i++) {
-			if (userids[i]) returnText += '<tr><td style="' + tdStyle + '">' + (i + 1) + '</td><td style="' + tdStyle + '">' + Gold.nameColor(userids[i].id, true) + '</td><td style="' + tdStyle + '">' + userids[i].money + '</td></tr>';
-		}
-		returnText += '</table></div>';
-		return this.sendReplyBox(returnText);
+		return this.sendReplyBox(Gold.richestUsers(number));
 	},
 
 	moneylog: function (target, room, user) {
@@ -466,7 +433,7 @@ exports.commands = {
 
 	cs: 'customsymbol',
 	customsymbol: function (target, room, user) {
-		if (!user.canCustomSymbol && !Gold.hasBadge(user.userid, 'vip')) return this.errorReply("You don't have the permission to use this command.");
+		if (!user.canCustomSymbol && !Gold.hasVip(user.userid)) return this.errorReply("You don't have the permission to use this command.");
 		if (user.hasCustomSymbol) return this.errorReply("You currently have a custom symbol, use /resetsymbol if you would like to use this command again.");
 		if (!this.canTalk()) return;
 		if (!target || target.length > 1) return this.errorReply("/customsymbol [symbol] - changes your symbol (usergroup) to the specified symbol. The symbol can only be one character");
@@ -503,162 +470,41 @@ exports.commands = {
 
 	economy: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		return this.sendReplyBox("<b>Total bucks in economy:</b> " + Economy.totalBucks() + "<br /><b>The average user has:</b> " + Economy.averageBucks() + " bucks.");
+		let econ = Gold.moneyCirculating();
+		return this.sendReplyBox("<b>Total bucks in economy:</b> " + econ[0] + "<br /><b>The average user has:</b> " + econ[1] + " bucks.<br />At least " + econ[2] + " users have 1 buck.");
 	},
 };
 
 
-// functions
+// local functions
 
-global.Economy = {
-	writeMoney: function (user, amount, callback) {
-		if (!user || !amount) return false;
-		fs.readFile('config/money.csv', 'utf8', function (err, data) {
-			if (err) return console.log("Error reading money.csv: " + err);
-			if (!data || data === '') return console.log('DEBUG: (' + Date() + ') money.csv appears to be empty...');
-			let row = data.split('\n');
-			let matched = false;
-			let line = '';
-			let userMoney = 0;
-			for (let i = 0; i < row.length; i++) {
-				if (!row[i]) continue;
-				let parts = row[i].split(',');
-				let userid = toId(parts[0]);
-				if (toId(user) === userid) {
-					matched = true;
-					userMoney = Number(parts[1]);
-					line = row[i];
-					break;
-				}
-			}
-			userMoney += amount;
-			if (matched === true) {
-				let re = new RegExp(line, "g");
-				let result = data.replace(re, toId(user) + ',' + userMoney);
-				fs.writeFile('config/money.csv', result, 'utf8', function (err) {
-					if (err) return false;
-					if (callback) return callback(true);
-					return;
-				});
-			} else {
-				fs.appendFile('config/money.csv', '\n' + toId(user) + ',' + userMoney);
-				if (callback) return callback(true);
-				return;
-			}
-		});
-	},
+function logTransaction(message) {
+	if (!message) return false;
+	fs.appendFile('logs/transactions.log', '[' + new Date().toUTCString() + '] ' + message + '\n');
+}
 
-	readMoneySync: function (user) {
-		user = toId(user);
-		let data;
-		try {
-			data = fs.readFileSync('config/money.csv', 'utf8');
-		} catch (e) {
-			return 0;
-		}
+function updatePrices() {
+	let avg = this.averageBucks();
+	prices = {
+		'symbol': Math.round(avg * 0.035),
+		// 'declare': Math.round(avg * 0.19),
+		'fix': Math.round(avg * 0.2),
+		'custom': Math.round(avg * 0.55),
+		'animated': Math.round(avg * 0.65),
+		'room': Math.round(avg * 0.53),
+		'musicbox': Math.round(avg * 0.4),
+		'trainer': Math.round(avg * 0.4),
+		'emote': Math.round(avg * 2.5),
+		'color': Math.round(avg * 4.5),
+		'icon': Math.round(avg * 4.5),
+		'pack': Math.round(avg * 1),
+		'vip': Math.round(avg * 25),
+	};
+}
 
-		let lines = data.split("\n");
-		let amount = 0;
-
-		for (let i = 0; i < lines.length; i++) {
-			if (!lines[i]) continue;
-			let rows = lines[i].split(",");
-
-			if (user === toId(rows[0])) {
-				amount = Number(rows[1]);
-				break;
-			}
-		}
-		return amount;
-	},
-
-	readMoney: function (user, callback) {
-		fs.readFile('config/money.csv', 'utf8', function (err, data) {
-			let amount = 0;
-			let lines = data.split("\n");
-			for (let i = 0; i < lines.length; i++) {
-				if (!lines[i]) continue;
-				let rows = lines[i].split(",");
-				if (user === toId(rows[0])) {
-					amount = Number(rows[1]);
-					break;
-				}
-			}
-			callback(amount);
-		});
-	},
-
-	logTransaction: function (message) {
-		if (!message) return false;
-		fs.appendFile('logs/transactions.log', '[' + new Date().toUTCString() + '] ' + message + '\n');
-	},
-
-	updatePrices: function () {
-		let avg = this.averageBucks();
-		prices = {
-			'symbol': Math.round(avg * 0.035),
-			// 'declare': Math.round(avg * 0.19),
-			'fix': Math.round(avg * 0.2),
-			'custom': Math.round(avg * 0.55),
-			'animated': Math.round(avg * 0.65),
-			'room': Math.round(avg * 0.53),
-			'musicbox': Math.round(avg * 0.4),
-			'trainer': Math.round(avg * 0.4),
-			'emote': Math.round(avg * 2.5),
-			'color': Math.round(avg * 4.5),
-			'icon': Math.round(avg * 4.5),
-			'pack': Math.round(avg * 1),
-			'vip': Math.round(avg * 25),
-		};
-	},
-
-	totalBucks: function () {
-		let data;
-		try {
-			data = fs.readFileSync('config/money.csv', 'utf8');
-		} catch (e) {
-			return 0;
-		}
-		let rows = data.split("\n");
-		let total = 0;
-
-		for (let line in rows) {
-			if (rows[line].length < 1) continue;
-			let lineSplit = rows[line].split(',');
-			let number = Number(lineSplit[1]);
-			if (isNaN(number)) continue;
-			total += number;
-		}
-		return total;
-	},
-
-	averageBucks: function () {
-		let data = '';
-		try {
-			data = fs.readFileSync('config/money.csv', 'utf8');
-		} catch (e) {}
-
-		let lines = data.split('\n');
-		let users = 0;
-		let bucks = 0;
-
-		for (let row in lines) {
-			if (lines[row].length < 1) continue;
-			let lineSplit = lines[row].split(',');
-			if (!lineSplit[1]) continue;
-			let number = Number(lineSplit[1]);
-			if (isNaN(number) || number < 1) continue;
-			users += 1;
-			bucks += number;
-		}
-
-		return Math.round(bucks / users);
-	},
-
-	shopTable: function (item, desc, price) {
-		let buttonStyle = 'border-radius: 5px; background: linear-gradient(-30deg, #fff493, #e8d95a, #fff493); color: black; text-shadow: 0px 0px 5px #d6b600; border-bottom: 2px solid #635b00; border-right: 2px solid #968900; width: 100%;';
-		let descStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
-		let priceStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black; font-weight: bold; text-align: center;';
-		return '<tr><td style="' + descStyle + '"><button title="Click this button to buy a(n) ' + item + ' from the shop." style="' + buttonStyle + '" name="send" value="/buy ' + item + '">' + item + '</button></td><td style="' + descStyle + '">' + desc + '</td><td style="' + priceStyle + '">' + price + '</td></tr>';
-	},
-};
+function shopTable(item, desc, price) {
+	let buttonStyle = 'border-radius: 5px; background: linear-gradient(-30deg, #fff493, #e8d95a, #fff493); color: black; text-shadow: 0px 0px 5px #d6b600; border-bottom: 2px solid #635b00; border-right: 2px solid #968900; width: 100%;';
+	let descStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black;';
+	let priceStyle = 'border-radius: 5px; border: 1px solid #635b00; background: #fff8b5; color: black; font-weight: bold; text-align: center;';
+	return '<tr><td style="' + descStyle + '"><button title="Click this button to buy a(n) ' + item + ' from the shop." style="' + buttonStyle + '" name="send" value="/buy ' + item + '">' + item + '</button></td><td style="' + descStyle + '">' + desc + '</td><td style="' + priceStyle + '">' + price + '</td></tr>';
+}

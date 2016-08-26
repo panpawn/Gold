@@ -69,11 +69,11 @@ exports.commands = {
 		let globalUpper = user.can('pban');
 		let vipUser = function (targetUser) {
 			if (!targetUser) targetUser = user.userid;
-			if (Gold.hasBadge(user.userid, 'vip') && targetUser === user.userid) {
+			if (Gold.hasVip(user.userid) && targetUser === user.userid) {
 				return true;
 			}
 			return false;
-		}
+		};
 
 		let parts = target.split(',');
 		let cmd = parts[0].trim().toLowerCase();

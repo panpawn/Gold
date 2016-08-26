@@ -70,6 +70,7 @@ exports.commands = {
 		}
 		this.logModCommand(user.name + ' used /restart');
 		try {
+			Gold.saveData(); // save user-data right before restarts
 			Rooms.global.send('|refresh|');
 			forever.restart('app.js');
 		} catch (e) {
@@ -710,167 +711,51 @@ exports.commands = {
 			room.update();
 		});
 	},
-	removebadge: function (target, room, user) {
-		if (!this.can('pban')) return false;
-		target = this.splitTarget(target);
-		let targetUser = this.targetUser;
-		if (!target) return this.sendReply('/removebadge [user], [badge] - Removes a badge from a user.');
-		if (!targetUser) return this.sendReply('There is no user named ' + this.targetUsername + '.');
-		let self = this;
-		let type_of_badges = ['admin', 'bot', 'dev', 'vip', 'artist', 'mod', 'leader', 'champ', 'creator', 'comcun', 'twinner', 'goodra', 'league', 'fgs'];
-		if (type_of_badges.indexOf(target) > -1 === false) return this.sendReply('The badge ' + target + ' is not a valid badge.');
-		fs.readFile('badges.txt', 'utf8', function (err, data) {
-			if (err) console.log(err);
-			let match = false;
-			let currentbadges = '';
-			let row = ('' + data).split('\n');
-			let line = '';
-			for (let i = row.length; i > -1; i--) {
-				if (!row[i]) continue;
-				let split = row[i].split(':');
-				if (split[0] === targetUser.userid) {
-					match = true;
-					currentbadges = split[1];
-					line = row[i];
-				}
-			}
-			if (match === true) {
-				if (currentbadges.indexOf(target) > -1 === false) return self.sendReply(currentbadges); //'The user '+targetUser+' does not have the badge.');
-				let re = new RegExp(line, 'g');
-				currentbadges = currentbadges.replace(target, '');
-				let newdata = data.replace(re, targetUser.userid + ':' + currentbadges);
-				fs.writeFile('badges.txt', newdata, 'utf8', function (err, data) {
-					if (err) console.log(err);
-					return self.sendReply('You have removed the badge ' + target + ' from the user ' + targetUser + '.');
-				});
-			} else {
-				return self.sendReply('There is no match for the user ' + targetUser + '.');
-			}
-		});
-	},
-	givevip: function (target, room, user) {
-		if (!target) return this.errorReply("Usage: /givevip [user]");
-		this.parse('/givebadge ' + target + ', vip');
-	},
-	takevip: function (target, room, user) {
-		if (!target) return this.errorReply("Usage: /takevip [user]");
-		this.parse('/removebadge ' + target + ', vip');
-	},
-	givebadge: function (target, room, user) {
-		if (!this.can('pban')) return false;
-		target = this.splitTarget(target);
-		let targetUser = this.targetUser;
-		if (!targetUser) return this.sendReply('There is no user named ' + this.targetUsername + '.');
-		if (!target) return this.sendReply('/givebadge [user], [badge] - Gives a badge to a user. Requires: &~');
-		let self = this;
-		let type_of_badges = ['admin', 'bot', 'dev', 'vip', 'mod', 'artist', 'leader', 'champ', 'creator', 'comcun', 'twinner', 'league', 'fgs'];
-		if (type_of_badges.indexOf(target) > -1 === false) return this.sendReply('Ther is no badge named ' + target + '.');
-		fs.readFile('badges.txt', 'utf8', function (err, data) {
-			if (err) console.log(err);
-			let currentbadges = '';
-			let line = '';
-			let row = ('' + data).split('\n');
-			let match = false;
-			for (let i = row.length; i > -1; i--) {
-				if (!row[i]) continue;
-				let split = row[i].split(':');
-				if (split[0] === targetUser.userid) {
-					match = true;
-					currentbadges = split[1];
-					line = row[i];
-				}
-			}
-			if (match === true) {
-				if (currentbadges.indexOf(target) > -1) return self.errorReply('This user already already has the badge ' + target + '.');
-				let re = new RegExp(line, 'g');
-				let newdata = data.replace(re, targetUser.userid + ':' + currentbadges + target);
-				fs.writeFile('badges.txt', newdata, function (err, data) {
-					if (err) console.log(err);
-					self.sendReply('You have given the badge ' + target + ' to the user ' + targetUser + '.');
-					targetUser.send('You have recieved the badge ' + target + ' from the user ' + user.userid + '.');
-					room.addRaw(targetUser + ' has recieved the ' + target + ' badge from ' + user.name);
-				});
-			} else {
-				fs.appendFile('badges.txt', '\n' + targetUser.userid + ':' + target, function (err) {
-					if (err) console.log(err);
-					self.sendReply('You have given the badge ' + target + ' to the user ' + targetUser + '.');
-					targetUser.send('You have recieved the badge ' + target + ' from the user ' + user.userid + '.');
-				});
-			}
-		});
-	},
-	badgelist: function (target, room, user) {
+	badge: 'badges',
+	badges: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		let fgs = '<img src="http://www.smogon.com/media/forums/images/badges/forummod_alum.png" title="Former Gold Staff">';
-		let admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
-		let dev = '<img src="http://www.smogon.com/media/forums/images/badges/factory_foreman.png" title="Gold Developer">';
-		let creator = '<img src="http://www.smogon.com/media/forums/images/badges/dragon.png" title="Server Creator">';
-		let comcun = '<img src="http://www.smogon.com/media/forums/images/badges/cc.png" title="Community Contributor">';
-		let leader = '<img src="http://www.smogon.com/media/forums/images/badges/aop.png" title="Server Leader">';
-		let mod = '<img src="http://www.smogon.com/media/forums/images/badges/pyramid_king.png" title="Exceptional Staff Member">';
-		let league = '<img src="http://www.smogon.com/media/forums/images/badges/forumsmod.png" title="Successful Room Founder">';
-		let champ = '<img src="http://www.smogon.com/media/forums/images/badges/forumadmin_alum.png" title="Goodra League Champion">';
-		let artist = '<img src="http://www.smogon.com/media/forums/images/badges/ladybug.png" title="Artist">';
-		let twinner = '<img src="http://www.smogon.com/media/forums/images/badges/spl.png" title="Badge Tournament Winner">';
-		let vip = '<img src="http://www.smogon.com/media/forums/images/badges/zeph.png" title="VIP">';
-		let bot = '<img src="http://www.smogon.com/media/forums/images/badges/mind.png" title="Gold Bot Hoster">';
-		return this.sendReplyBox('<b>List of Gold Badges</b>:<br>' + fgs + '  ' + admin + '    ' + dev + '  ' + creator + '   ' + comcun + '    ' + mod + '    ' + leader + '    ' + league + '    ' + champ + '    ' + artist + '    ' + twinner + '    ' + vip + '    ' + bot + ' <br>--Hover over them to see the meaning of each.<br>--Get a badge and get a FREE custom avatar!<br>--Click <a href="http://goldserver.weebly.com/badges.html">here</a> to find out more about how to get a badge.');
+		if (!target) target = user.userid;
+		let parts = target.split(',');
+		for (let u in parts) parts[u] = parts[u].trim();
+		let badgeObj = Gold.badgeList(), data;
+
+		switch (parts[0]) {
+			case 'help':
+				return this.parse('/help badges');
+				break;
+
+			case 'list':
+				return this.sendReplyBox(Gold.badgeList(true));
+				break;
+
+			case 'remove':
+				if (!this.can('pban')) return false;
+				data = Gold.checkExisting(parts[1]);
+				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+				if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
+				Gold.modifyBadge(parts[1], parts[2], 'TAKE');
+				return this.sendReply(`You have removed badge ${parts[2]} from user '${parts[1]}'.`);
+				break;
+
+			case 'give':
+				if (!this.can('pban')) return false;
+				data = Gold.checkExisting(parts[1]);
+				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+				if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
+				Gold.modifyBadge(parts[1], parts[2], 'GIVE');
+				return this.sendReply(`You have given badge ${parts[2]} to user '${parts[1]}'.`);
+				break;
+
+			default:
+				if (!Gold.displayBadges(target)) return this.errorReply(`User '${target}' has no badges at this time.`);
+				return this.sendReplyBox(`${Gold.nameColor(target, true)}'s badges:<br />${Gold.displayBadges(target)}`);
+		}
+
 	},
-	badges: 'badge',
-	badge: function (target, room, user) {
-		if (!this.runBroadcast()) return;
-		if (target === '') target = user.userid;
-		target = this.splitTarget(target);
-		let targetUser = this.targetUser;
-		if (!targetUser) return false;
-		let fgs = '<img src="http://www.smogon.com/media/forums/images/badges/forummod_alum.png" title="Former Gold Staff">';
-		let admin = '<img src="http://www.smogon.com/media/forums/images/badges/sop.png" title="Server Administrator">';
-		let dev = '<img src="http://www.smogon.com/media/forums/images/badges/factory_foreman.png" title="Gold Developer">';
-		let creator = '<img src="http://www.smogon.com/media/forums/images/badges/dragon.png" title="Server Creator">';
-		let comcun = '<img src="http://www.smogon.com/media/forums/images/badges/cc.png" title="Community Contributor">';
-		let leader = '<img src="http://www.smogon.com/media/forums/images/badges/aop.png" title="Server Leader">';
-		let mod = '<img src="http://www.smogon.com/media/forums/images/badges/pyramid_king.png" title="Exceptional Staff Member">';
-		let league = '<img src="http://www.smogon.com/media/forums/images/badges/forumsmod.png" title="Successful League Owner">';
-		let artist = '<img src="http://www.smogon.com/media/forums/images/badges/ladybug.png" title="Artist">';
-		let twinner = '<img src="http://www.smogon.com/media/forums/images/badges/spl.png" title="Badge Tournament Winner">';
-		let vip = '<img src="http://www.smogon.com/media/forums/images/badges/zeph.png" title="VIP">';
-		let bot = '<img src="http://www.smogon.com/media/forums/images/badges/mind.png" title="Gold Bot Hoster">';
-		let self = this;
-		fs.readFile('badges.txt', 'utf8', function (err, data) {
-			if (err) console.log(err);
-			let row = ('' + data).split('\n');
-			let match = false;
-			let currentbadges;
-			for (let i = row.length; i > -1; i--) {
-				if (!row[i]) continue;
-				let split = row[i].split(':');
-				if (split[0] === targetUser.userid) {
-					match = true;
-					currentbadges = split[1];
-				}
-			}
-			if (match === true) {
-				let badgelist = '';
-				if (currentbadges.indexOf('fgs') > -1) badgelist += ' ' + fgs;
-				if (currentbadges.indexOf('admin') > -1) badgelist += ' ' + admin;
-				if (currentbadges.indexOf('dev') > -1) badgelist += ' ' + dev;
-				if (currentbadges.indexOf('creator') > -1) badgelist += ' ' + creator;
-				if (currentbadges.indexOf('comcun') > -1) badgelist += ' ' + comcun;
-				if (currentbadges.indexOf('leader') > -1) badgelist += ' ' + leader;
-				if (currentbadges.indexOf('mod') > -1) badgelist += ' ' + mod;
-				if (currentbadges.indexOf('league') > -1) badgelist += ' ' + league;
-				if (currentbadges.indexOf('artist') > -1) badgelist += ' ' + artist;
-				if (currentbadges.indexOf('twinner') > -1) badgelist += ' ' + twinner;
-				if (currentbadges.indexOf('vip') > -1) badgelist += ' ' + vip;
-				if (currentbadges.indexOf('bot') > -1) badgelist += ' ' + bot;
-				self.sendReplyBox(targetUser.userid + "'s badges: " + badgelist);
-				room.update();
-			} else {
-				self.sendReplyBox('User ' + targetUser.userid + ' has no badges.');
-				room.update();
-			}
-		});
-	},
+	badgeshelp: ["/badges [user] - Views a user's badges.",
+		"/badges list - Displays a list of all badges.",
+		"/badges give, [user], [badge] - Gives a user a badge. Requires & ~",
+		"/badges remove, [user], [badge] - Removes a user's badge. Requires & ~"],
 	helixfossil: 'm8b',
 	helix: 'm8b',
 	magic8ball: 'm8b',
@@ -1299,10 +1184,7 @@ exports.commands = {
 		let userGroup = (Config.groups[userSymbol] ? Config.groups[userSymbol].name : "Regular User");
 
 		let self = this;
-		let bucks = function (user) {
-			user = toId(user);
-			return (Economy.readMoneySync(user) ? Economy.readMoneySync(user) : 0);
-		};
+		let bucks = (Gold.readMoney(target) !== 0 ? Gold.readMoney(target) : false);
 		let regdate = "(Unregistered)";
 		Gold.regdate(userid, date => {
 			if (date) {
@@ -1322,15 +1204,15 @@ exports.commands = {
 			return (user && user.lastActiveTime ? moment(user.lastActiveTime).fromNow() : "hasn't talked yet");
 		}
 		function showProfile() {
-			let seenOutput = (Gold.seenData[userid] ? moment(Gold.seenData[userid]).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.seenData[userid]).fromNow() + ')' : "Never");
+			let seenOutput = (Gold.userData[userid] && Gold.userData[userid].lastSeen !== 0 ? moment(Gold.userData[userid].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')' : "Never");
 			let profile = '';
 			profile += '<img src="' + avatar + '" height=80 width=80 align=left>';
 			if (!getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong><br />';
 			if (getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
-			if (!Gold.hasBadge(userid, 'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + '<br />';
-			if (Gold.hasBadge(userid, 'vip')) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + ' (<font color=#6390F0><b>VIP User</b></font>)<br />';
-			profile += '&nbsp;<font color=' + formatHex + '><b>Bucks: </font></b>' + bucks(username) + '<br />';
+			if (!Gold.hasVip(userid)) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + '<br />';
+			if (Gold.hasVip(userid)) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + ' (<font color=#6390F0><b>VIP User</b></font>)<br />';
+			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks: </font></b>' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </font></b>' + seenOutput + '<br />';
 			profile += '<br clear="all">';
@@ -1341,7 +1223,7 @@ exports.commands = {
 	advertise: 'advertisement',
 	advertisement: function (target, room, user, connection, cmd) {
 		if (room.id !== 'lobby') return this.errorReply("This command can only be used in the Lobby.");
-		if (Economy.readMoneySync(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
+		if (Gold.readMoney(user.userid) < ADVERTISEMENT_COST) return this.errorReply("You do not have enough bucks to buy an advertisement, they cost " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + ".");
 		if (target.length > 600) return this.errorReply("This advertisement is too long.");
 		target = target.split('|');
 		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
@@ -1361,7 +1243,7 @@ exports.commands = {
 		} else if (user.lastCommand === 'advertise') {
 			let buttoncss = 'background: #ff9900; text-shadow: none; padding: 2px 6px; color: black; text-align: center; border: black, solid, 1px;';
 			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + advertisement + '<br /><hr width="80%"><button name="joinRoom" class="button" style="' + buttoncss + '" value="' + toId(targetRoom) + '">Click to join <b>' + Rooms.search(toId(targetRoom)).title + '</b></button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
-			Economy.writeMoney(user.userid, -ADVERTISEMENT_COST);
+			Gold.updateMoney(user.userid, -ADVERTISEMENT_COST);
 			user.lastCommand = '';
 			user.lastAdvertisement = Date.now();
 		}
@@ -1582,6 +1464,19 @@ exports.commands = {
 			this.sendReplyBox(buff.join('<br />'));
 		}
 	},
+	lastseen: 'seen',
+	seen: function (target, room, user) {
+		if (!this.runBroadcast()) return;
+		let userid = toId(target);
+		if (userid.length > 18) return this.errorReply("Usernames cannot be over 18 characters.");
+		if (userid.length < 1) return this.errorReply("/seen - Please specify a name.");
+		let userName = '<strong class="username">' + Gold.nameColor(target, false) + '</strong>';
+		if (userid === user.userid) return this.sendReplyBox(userName + ", have you looked in a mirror lately?");
+		if (Users(target) && Users(target).connected) return this.sendReplyBox(userName + ' is currently <font color="green">online</font>.');
+		if (!Gold.userData[userid] || Gold.userData[userid].lastSeen === 0) return this.sendReplyBox(userName + ' has <font color=\"red\">never</font> been seen online on this server.');
+		let userLastSeen = moment(Gold.userData[userid].lastSeen).format("MMMM Do YYYY, h:mm A");
+		this.sendReplyBox(userName + ' was last seen online on ' + userLastSeen + ' EST. (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')');
+	},
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
@@ -1721,22 +1616,6 @@ function parseStatus(text, encoding) {
 	}
 	return text;
 }
-
-Gold.hasBadge = function (user, badge) {
-	let data = fs.readFileSync('badges.txt', 'utf8');
-	let row = data.split('\n');
-	for (let i = row.length; i > -1; i--) {
-		if (!row[i]) continue;
-		let split = row[i].split(':');
-		if (split[0] === toId(user)) {
-			if (split[1].indexOf(badge) > -1) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-};
 
 Gold.pmAll = function (message, pmName) {
 	pmName = (pmName ? pmName : '~Gold Server [Do not reply]');

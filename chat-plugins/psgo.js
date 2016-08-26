@@ -43,9 +43,9 @@ function cachePacks() {
 	for (let i = 0; i < packShop.length; i++) {
 		cardCache.push([]);
 		for (let key in cards) {
-			if (cards.hasOwnProperty(key)) {
+			if (cards[key]) {
 				let obj = cards[key];
-				if (obj.hasOwnProperty('collection') && obj.collection.indexOf(packShop[i]) > -1) cardCache[i].push(key);
+				if (obj['collection'] && obj.collection.indexOf(packShop[i]) > -1) cardCache[i].push(key);
 			}
 		}
 	}
@@ -58,9 +58,9 @@ function cacheRarity() {
 	for (let i = 0; i < cardRarity.length; i++) {
 		rareCache.push([]);
 		for (let key in cards) {
-			if (cards.hasOwnProperty(key)) {
+			if (cards[key]) {
 				let obj = cards[key];
-				if (obj.hasOwnProperty('rarity') && obj.rarity.indexOf(cardRarity[i]) > -1) rareCache[i].push(key);
+				if (obj['rarity'] && obj.rarity.indexOf(cardRarity[i]) > -1) rareCache[i].push(key);
 			}
 		}
 	}
@@ -203,19 +203,18 @@ exports.commands = {
 		if (!target) return this.sendReply("/buypack - Buys a pack from the pack shop. Alias: /buypacks");
 		let self = this;
 		let packId = toId(target);
-		Economy.readMoney(user.userid, amount => {
-			if (cleanShop.indexOf(packId) < 0) return self.sendReply("This is not a valid pack. Use /packshop to see all packs.");
-			let shopIndex = cleanShop.indexOf(toId(target));
-			if (packId !== 'xybase' && packId !== 'xyfuriousfists' && packId !== 'xyflashfire' && packId !== 'xyphantomforces' && packId !== 'xyroaringskies' && packId !== 'xyprimalclash' && packId !== 'xyancientorigins' && packId !== 'xygenerations' && packId !== 'xypromo') return self.sendReply("This pack is not currently in circulation.  Please use /packshop to see the current packs.");
-			let cost = shop[shopIndex][2];
-			if (cost > amount) return self.sendReply("You need " + (cost - amount) + " more bucks to buy this pack.");
-			Economy.writeMoney(user.userid, -1 * cost);
-			let pack = toId(target);
-			self.sendReply('|raw|You have bought ' + target + ' pack for ' + cost + ' bucks. Use <button name="send" value="/openpack ' + pack + '"><b>/openpack ' + pack + '</b></button> to open your pack.');
-			self.sendReply("You have until the server restarts to open your pack.");
-			if (!userPacks[user.userid]) userPacks[user.userid] = [];
-			userPacks[user.userid].push(pack);
-		});
+		let amount = Gold.readMoney(user.userid);
+		if (cleanShop.indexOf(packId) < 0) return self.sendReply("This is not a valid pack. Use /packshop to see all packs.");
+		let shopIndex = cleanShop.indexOf(toId(target));
+		if (packId !== 'xybase' && packId !== 'xyfuriousfists' && packId !== 'xyflashfire' && packId !== 'xyphantomforces' && packId !== 'xyroaringskies' && packId !== 'xyprimalclash' && packId !== 'xyancientorigins' && packId !== 'xygenerations' && packId !== 'xypromo') return self.sendReply("This pack is not currently in circulation.  Please use /packshop to see the current packs.");
+		let cost = shop[shopIndex][2];
+		if (cost > amount) return self.sendReply("You need " + (cost - amount) + " more bucks to buy this pack.");
+		Gold.writeMoney(user.userid, -cost);
+		let pack = toId(target);
+		self.sendReply('|raw|You have bought ' + target + ' pack for ' + cost + ' bucks. Use <button name="send" value="/openpack ' + pack + '"><b>/openpack ' + pack + '</b></button> to open your pack.');
+		self.sendReply("You have until the server restarts to open your pack.");
+		if (!userPacks[user.userid]) userPacks[user.userid] = [];
+		userPacks[user.userid].push(pack);
 	},
 
 	packshop: function (target, room, user) {
@@ -306,7 +305,7 @@ exports.commands = {
 		if (!target) return this.sendReply("/card [name] - Shows information about a card.");
 		if (!this.runBroadcast()) return;
 		let cardName = toId(target);
-		if (!cards.hasOwnProperty(cardName)) return this.sendReply(target + ": card not found.");
+		if (!cards[cardName]) return this.sendReply(target + ": card not found.");
 		let card = cards[cardName];
 		let html = '<div class="card-div card-td" style="box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.2);"><img src="' + card.card + '" height="220" title="' + card.name + '" align="right">' +
 			'<h1>' + card.name + '</h1>' +
@@ -907,7 +906,7 @@ exports.commands = {
 		let targetUser = parts.shift();
 		let card = parts[0].trim();
 		if (!targetUser || !card) return this.errorReply("/givecard [user], [card ID]");
-		if (!cards.hasOwnProperty(card)) return this.sendReply(target + ": card not found.");
+		if (!cards[card]) return this.sendReply(target + ": card not found.");
 		//Give the card to the user.
 		card = cards[card];
 		addCard(targetUser, card.title);
@@ -923,7 +922,7 @@ exports.commands = {
 		let targetUser = parts.shift();
 		let card = parts[0].trim();
 		if (!targetUser || !card) return this.errorReply("/takecard [user], [card ID]");
-		if (!cards.hasOwnProperty(card)) return this.sendReply(target + ": card not found.");
+		if (!cards[card]) return this.sendReply(target + ": card not found.");
 		//Take the card from the user.
 		card = cards[card];
 		removeCard(card.title, targetUser);

@@ -690,14 +690,13 @@ let parse = exports.parse = function (message, room, user, connection, levelsDee
 	message = context.canTalk(message);
 	if (!message) return false;
 
-	if (user.registered && global.Gold.tells) {
+	if (user.registered) {
 		let alts = user.getAlts();
 		alts.push(user.name);
 		alts.map(toId).forEach(function (user) {
-			if (Gold.tells[user]) {
-				Gold.tells[user].forEach(connection.sendTo.bind(connection, room));
-				delete Gold.tells[user];
-				Gold.saveTells();
+			let reply = Gold.checkTells(user); // returns array of pending tells for user
+			if (reply) {
+				reply.forEach(connection.sendTo.bind(connection, room));
 			}
 		});
 	}

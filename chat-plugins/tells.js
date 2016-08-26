@@ -4,38 +4,9 @@
  ***************************/
 "use strict";
 
-const fs = require('fs');
-const moment = require('moment');
 const MAX_TELLS_IN_QUEUE = 10;
 const MAX_TELL_LENGTH = 600;
-let tells = {};
 
-function loadTells() {
-	try {
-		tells = JSON.parse(fs.readFileSync('config/tells.json'));
-	} catch (e) {
-		tells = {};
-	}
-}
-loadTells();
-
-function saveTells() {
-	fs.writeFile('config/tells.json', JSON.stringify(tells));
-}
-Gold.saveTells = saveTells;
-
-function createTell(sender, reciever, message) {
-	reciever = toId(reciever);
-	message = Gold.emoticons.processEmoticons(Tools.escapeHTML(message)).replace(/&#x2f;/g, '/');
-	if (!tells[reciever]) tells[reciever] = [];
-
-	message = Gold.formatMessage(message); // PS formatting
-
-	let date = moment().format('MMMM Do YYYY, h:mm A') + " EST";
-	let tell = "<u>" + date + "</u><br />" + Gold.nameColor(sender, true) + ' said: ' + message;
-	tells[reciever].push('|raw|' + tell);
-	saveTells();
-}
 
 exports.commands = {
 	tell: function (target, room, user) {
@@ -49,11 +20,49 @@ exports.commands = {
 		if (message.length > MAX_TELL_LENGTH && !user.can('hotpatch')) return this.errorReply("This tell is too large, it cannot exceed " + MAX_TELL_LENGTH + " characters.");
 		if (targetUser.length < 1 || targetUser.length > 18) return this.errorReply("Usernames cannot be this length.  Check spelling?");
 		if (!message || message.length < 1) return this.errorReply("Tell messages must be at least one character.");
-		if (tells[targetUser] && tells[targetUser].length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
-		createTell(user.name, targetUser, message); // function saves when tell is created automatically
+		if (Gold.userData[targetUser] && Gold.userData[targetUser].tells && Gold.userData[targetUser].tells.length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
+		Gold.createTell(user.name, targetUser, message); // function saves when tell is created automatically
+		//createTell(user.name, targetUser, message); // function saves when tell is created automatically
 		return this.sendReply("|raw|Your tell to " + Gold.nameColor(origUser, true) + " has been added to their offline messaging queue." + (Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""));
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
-};
 
-Gold.tells = tells;
+	mailbox: function (target, room, user) {
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+
+		if (!target) {
+			let data = Object.keys(Gold.userData), buff = Object.create(null);
+			let keys, results = Object.create(null), userIdRegEx = new RegExp(user.userid + "#.*", "g");
+			let tableTop = 'Current pending tells queued:<br /><table border="1" cellspacing ="0" cellpadding="3">';
+			tableTop += '<tr><td>Tell ID:</td><td>Tell to:</td><td>Message:</td></tr>';
+			let midTable = '', displayedIds = [];
+
+			data.forEach(name => {
+				if (!Gold.userData[name].tells || Gold.userData[name].tells.length > 0) return;
+				keys = Object.keys(Gold.userData[name].tells);
+				keys.find(arr => {
+					if (arr.match(userIdRegEx)) {
+						results[arr.match(userIdRegEx)] = name;
+					}
+				});
+				if (Object.keys(results).length > 0) Object.keys(results).forEach(tellid => {
+					if (!Gold.userData[results[tellid]].tells[tellid]) return;
+					if (displayedIds.includes(tellid)) return;
+					midTable += '<tr><td>' + tellid + '</td><td>' + Gold.nameColor(name, true) + '</td><td>' + Gold.userData[name].tells[tellid] + '</td><td><button name="send" value="/mailbox ' + name + ',' + tellid + '">Delete Pending Message</button></td></tr>';
+					displayedIds.push(tellid);
+				});
+			});
+			if (!midTable) return this.errorReply("You do not currently have any tells pending to be sent at this time.");
+			user.send('|popup||wide||html|' + tableTop + midTable + '</table>');
+		} else {
+			target = target.split(',');
+			for (let u in target) target[u] = target[u].trim();
+			if (!target[1]) return false;
+			if (!Gold.userData[target[0]]) return false;
+			if (!Gold.userData[target[0]].tells[target[1]]) return false;
+			delete Gold.userData[target[0]].tells[target[1]];
+			Gold.saveData();
+			user.send('|popup||wide||html| You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID ' + target[1] + '.<br /><br /><button name="send" value="/mailbox">Back to mailbox</button>');
+		}
+	},
+};
