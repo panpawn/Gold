@@ -17,13 +17,13 @@ exports.commands = {
 		let targetUser = toId(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
 		let message = target.slice(commaIndex + 1).trim();
 		if (Users(targetUser) && Users(targetUser).ignorePMs && !user.can('hotpatch')) return this.errorReply("Because this user is currently blocking PMs, this tell has failed to be added to their offline messaging queue.");
-		if (message.length > MAX_TELL_LENGTH && !user.can('hotpatch')) return this.errorReply("This tell is too large, it cannot exceed " + MAX_TELL_LENGTH + " characters.");
+		if (message.length > MAX_TELL_LENGTH && !user.can('hotpatch')) return this.errorReply(`This tell is too large, it cannot exceed ${MAX_TELL_LENGTH} characters.`);
 		if (targetUser.length < 1 || targetUser.length > 18) return this.errorReply("Usernames cannot be this length.  Check spelling?");
 		if (!message || message.length < 1) return this.errorReply("Tell messages must be at least one character.");
 		if (Gold.userData[targetUser] && Gold.userData[targetUser].tells && Gold.userData[targetUser].tells.length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
 		Gold.createTell(user.name, targetUser, message); // function saves when tell is created automatically
 		//createTell(user.name, targetUser, message); // function saves when tell is created automatically
-		return this.sendReply("|raw|Your tell to " + Gold.nameColor(origUser, true) + " has been added to their offline messaging queue." + (Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""));
+		return this.sendReply(`|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`);
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
 
@@ -32,7 +32,7 @@ exports.commands = {
 		let pop = '|popup||wide||html| ';
 		if (!target) {
 			let data = Object.keys(Gold.userData), buff = Object.create(null);
-			let keys, results = Object.create(null), userIdRegEx = new RegExp(user.userid + "#.*", "g");
+			let keys, results = Object.create(null), userIdRegEx = new RegExp(`${user.userid}#.*`, "g");
 			let tableTop = 'Current pending tells queued:<br /><table border="1" cellspacing ="0" cellpadding="3">';
 			tableTop += '<tr><td>Tell ID:</td><td>Tell to:</td><td>Message:</td></tr>';
 			let midTable = '', displayedIds = [];
@@ -48,23 +48,23 @@ exports.commands = {
 				if (Object.keys(results).length > 0) Object.keys(results).forEach(tellid => {
 					if (!Gold.userData[results[tellid]].tells[tellid]) return;
 					if (displayedIds.includes(tellid)) return;
-					midTable += '<tr><td><code>' + tellid + '</code></td><td>' + Gold.nameColor(name, true) + '</td><td>' + Gold.userData[name].tells[tellid] + '</td><td><button name="send" value="/mailbox ' + name + ',' + tellid + '">Delete Pending Message</button></td></tr>';
+					midTable += `<tr><td><code>${tellid}</code></td><td>${Gold.nameColor(name, true)}</td><td>${Gold.userData[name].tells[tellid]}</td><td><button name="send" value="/mailbox ${name},${tellid}">Delete Pending Message</button></td></tr>`;
 					displayedIds.push(tellid);
 				});
 			});
 			if (!midTable) return user.send('|popup||wide||html|<font color="red">You do not currently have any tells pending to be sent at this time.</font>');
-			user.send(pop + tableTop + midTable + '</table>');
+			user.send(`${pop + tableTop + midTable}</table>`);
 		} else {
 			target = target.split(',');
 			for (let u in target) target[u] = target[u].trim();
 			let mailboxButton = '<button name="send" value="/mailbox">Back to mailbox</button>';
 			if (!target[1]) return false;
 			if (!Gold.userData[target[0]]) return false;
-			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup('|popup||wide||html| <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />' + mailboxButton);
-			if (!target[1].startsWith(user.userid + '#')) return user.popup(pop + '<font color="red">You do not have permission to delete this tell.</font><br /><br />' + mailboxButton);
+			if (!Gold.userData[target[0]].tells[target[1]]) return user.popup(`|popup||wide||html| <font color="red">This tell does not exist. Perhaps they just got it?</font><br /><br />${mailboxButton}`);
+			if (!target[1].startsWith(`${user.userid}#`)) return user.popup(`${pop}<font color="red">You do not have permission to delete this tell.</font><br /><br />${mailboxButton}`);
 			delete Gold.userData[target[0]].tells[target[1]];
 			Gold.saveData();
-			user.send(pop + 'You have deleted the pending tell to ' + Gold.nameColor(target[0], true) + ' with tell ID: <code>' + target[1] + '</code>.<br /><br />' + mailboxButton);
+			user.send(`${pop}You have deleted the pending tell to ${Gold.nameColor(target[0], true)} with tell ID: <code>${target[1]}</code>.<br /><br />${mailboxButton}`);
 		}
 	},
 };
