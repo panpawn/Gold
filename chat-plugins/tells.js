@@ -52,7 +52,7 @@ exports.commands = {
 					displayedIds.push(tellid);
 				});
 			});
-			if (!midTable) return this.errorReply("You do not currently have any tells pending to be sent at this time.");
+			if (!midTable) return user.send('|popup||wide||html|<font color="red">You do not currently have any tells pending to be sent at this time.</font>');
 			user.send('|popup||wide||html|' + tableTop + midTable + '</table>');
 		} else {
 			target = target.split(',');
