@@ -209,7 +209,7 @@ exports.commands = {
 		if (packId !== 'xybase' && packId !== 'xyfuriousfists' && packId !== 'xyflashfire' && packId !== 'xyphantomforces' && packId !== 'xyroaringskies' && packId !== 'xyprimalclash' && packId !== 'xyancientorigins' && packId !== 'xygenerations' && packId !== 'xypromo') return self.sendReply("This pack is not currently in circulation.  Please use /packshop to see the current packs.");
 		let cost = shop[shopIndex][2];
 		if (cost > amount) return self.sendReply("You need " + (cost - amount) + " more bucks to buy this pack.");
-		Gold.writeMoney(user.userid, -cost);
+		Gold.updateMoney(user.userid, Number(-cost));
 		let pack = toId(target);
 		self.sendReply('|raw|You have bought ' + target + ' pack for ' + cost + ' bucks. Use <button name="send" value="/openpack ' + pack + '"><b>/openpack ' + pack + '</b></button> to open your pack.');
 		self.sendReply("You have until the server restarts to open your pack.");
