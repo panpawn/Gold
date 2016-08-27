@@ -73,8 +73,9 @@ try {
 			amount = Number(amount);
 
 			let data = this.checkExisting(user);
-			data.money = Number(data.money + amount);
+			data.money = Number(Number(data.money) + amount);
 			this.saveData();
+			this.notifyStaff("[DEBUG]" + user + " has recieved " + amount + " bucks.  They now have " + data.money + " bucks.");
 		},
 		readMoney: function (user) {
 			user = toId(user);
@@ -315,6 +316,10 @@ try {
 			if (reply.length > 0) this.saveData();
 			if (reply.length === 0) return false;
 			return reply;
+		},
+		notifyStaff: function(message) {
+			let staff = Rooms('staff');
+			if (staff) staff.add(message).update();
 		},
 	});
 } catch (e) {
