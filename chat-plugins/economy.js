@@ -363,8 +363,8 @@ exports.commands = {
 		if (Gold.readMoney(user.userid) < amount) return this.errorReply("You cannot transfer more than you have.");
 
 		//finally, transfer the bucks
-		Gold.updateMoney(user.userid, -amount);
-		Gold.updateMoney(targetUser, amount);
+		Gold.updateMoney(user.userid, Number(-amount));
+		Gold.updateMoney(targetUser, Number(amount));
 
 		//log the transaction
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
