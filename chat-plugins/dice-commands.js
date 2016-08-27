@@ -94,8 +94,8 @@ class Dice {
 				'Better luck next time, ' + Tools.escapeHTML(loser.name) + '!'
 			).update();
 			let winnerMoney = Number(this.bet - taxedAmt);
-			Gold.userData[winner.userid].money += winnerMoney;
-			Gold.userData[loser.userid].money += -this.bet;
+			Gold.updateMoney(winner.userid, Number(winnerMoney));
+			Gold.updateMoney(loser.userid, Number(-this.bet));
 			Gold.saveData();
 			this.end();
 		}, 800);
