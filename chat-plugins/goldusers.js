@@ -88,7 +88,7 @@ try {
 
 			data.forEach(user => {
 				if (Gold.userData[user].money > 0) {
-					if (isNaN(Gold.userData[user].money)) return;
+					if (isNaN(Gold.userData[user].money) || Gold.userData[user].money === null) return;
 					results[0] += Math.round(Number(Gold.userData[user].money));
 					results[2]++;
 				}
