@@ -113,6 +113,7 @@ try {
 
 			data.forEach(user => {
 				if (Gold.userData[user].money > 0) {
+					if (Gold.userData[user].money === null || isNaN(Gold.userData[user].money)) return; // this should never happen... *coughs*
 					userids.push(new ResultsArray(user, Gold.userData[user].money));
 				}
 			});
