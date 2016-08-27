@@ -690,6 +690,7 @@ let parse = exports.parse = function (message, room, user, connection, levelsDee
 	message = context.canTalk(message);
 	if (!message) return false;
 
+	/*
 	if (user.registered) {
 		let alts = user.getAlts();
 		alts.push(user.name);
@@ -700,6 +701,7 @@ let parse = exports.parse = function (message, room, user, connection, levelsDee
 			}
 		});
 	}
+	*/
 	try {
 		if (!Gold.emoticons.processChatData(user, room, connection, message)) return false;
 	} catch (e) {}
