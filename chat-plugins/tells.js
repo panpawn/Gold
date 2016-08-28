@@ -34,7 +34,7 @@ exports.commands = {
 			let data = Object.keys(Gold.userData), buff = Object.create(null);
 			let keys, results = Object.create(null), userIdRegEx = new RegExp(`${user.userid}#.*`, "g");
 			let tableTop = 'Current pending tells queued:<br /><table border="1" cellspacing ="0" cellpadding="3">';
-			tableTop += '<tr><td>Tell ID:</td><td>Tell to:</td><td>Message:</td></tr>';
+			tableTop += '<tr><td>Tell ID:</td><td>Tell to:</td><td>Message:</td><td></td></tr>';
 			let midTable = '', displayedIds = [];
 
 			data.forEach(name => {
