@@ -77,6 +77,17 @@ try {
 			this.saveData();
 			// if (Rooms('staff')) Rooms('staff').add(`[DEBUG] ${user} has recieved ${amount} bucks.  They now have ${data.money} bucks.`).update();
 		},
+		removeAllMoney: function (user, punisher) {
+			user = toId(user);
+			if (!Gold.userData[user] || Gold.userData[user].money === 0) return false;
+			let data = this.checkExisting(user);
+			let oldMoney = data.money;
+			data.money = 0;
+			this.saveData();
+
+			let staff = Rooms('staff');
+			if (staff) staff.add(`|c|~|[BucksMonitor] ${user} has lost ${oldMoney} buck${Gold.pluralFormat(oldMoney)} due to being globally locked and/or banned by ${punisher}.`).update();
+		},
 		readMoney: function (user) {
 			user = toId(user);
 			let data = this.checkExisting(user);

@@ -329,6 +329,7 @@ exports.commands = {
 
 		this.add('|unlink|hide|' + userid);
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
+		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.ban(targetUser, Infinity, null, target);
 		this.globalModlog("PERMABAN", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		return true;

@@ -1583,6 +1583,7 @@ exports.commands = {
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
 
 		this.globalModlog("LOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
+		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.lock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000, null, target);
 		return true;
 	},
@@ -1735,6 +1736,7 @@ exports.commands = {
 
 		this.add('|unlink|hide|' + userid);
 		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
+		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.ban(targetUser, null, null, target);
 		this.globalModlog("BAN", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		return true;
