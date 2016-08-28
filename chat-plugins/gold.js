@@ -1167,8 +1167,8 @@ exports.commands = {
 	// Profile command by jd, updated by panpawn
 	profile: function (target, room, user) {
 		if (!target) target = user.name;
-		if (toId(target).length > 19) return this.sendReply("Usernames may not be more than 19 characters long.");
-		if (toId(target).length < 1) return this.sendReply(target + " is not a valid username.");
+		if (toId(target).length > 19) return this.errorReply("Usernames may not be more than 19 characters long.");
+		if (toId(target).length < 1) return this.errorReply(target + " is not a valid username.");
 		if (!this.runBroadcast()) return;
 
 		let targetUser = Users.get(target);
@@ -1180,8 +1180,7 @@ exports.commands = {
 		let avatar = (targetUser ? (isNaN(targetUser.avatar) ? "http://" + serverIp + ":" + Config.port + "/avatars/" + targetUser.avatar : "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar + ".png") : (Config.customavatars[userid] ? "http://" + serverIp + ":" + Config.port + "/avatars/" + Config.customavatars[userid] : "http://play.pokemonshowdown.com/sprites/trainers/167.png"));
 		if (targetUser && targetUser.avatar[0] === '#') avatar = "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar.substr(1) + ".png";
 
-		let userSymbol = (Users.usergroups[userid] ? Users.usergroups[userid].substr(0, 1) : "Regular User");
-		let userGroup = (Config.groups[userSymbol] ? Config.groups[userSymbol].name : "Regular User");
+		let userSymbol = (Users.usergroups[userid] ? '<b>' + Users.usergroups[userid].substr(0, 1) + '</b>': "");
 
 		let self = this;
 		let bucks = (Gold.readMoney(target) !== 0 ? Gold.readMoney(target) : false);
@@ -1204,17 +1203,19 @@ exports.commands = {
 			return (user && user.lastActiveTime ? moment(user.lastActiveTime).fromNow() : "hasn't talked yet");
 		}
 		function showProfile() {
-			let seenOutput = (Gold.userData[userid] && Gold.userData[userid].lastSeen !== 0 ? moment(Gold.userData[userid].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')' : "Never");
-			let profile = '';
+			let seenOutput = Gold.userData[userid] && Gold.userData[userid].lastSeen !== 0 ? moment(Gold.userData[userid].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')' : "Never";
+			let profile = '', vip = Gold.hasVip(userid) ? " (<font color=#6390F0><b>VIP User</b></font>)" : "";
+			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
+			let bio = Gold.userData[userid] && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
 			profile += '<img src="' + avatar + '" height=80 width=80 align=left>';
-			if (!getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong><br />';
-			if (getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> <strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + '<br />';
+			if (!getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
+			if (getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
-			if (!Gold.hasVip(userid)) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + '<br />';
-			if (Gold.hasVip(userid)) profile += '&nbsp;<font color=' + formatHex + '><b>Rank:</b></font> ' + userGroup + ' (<font color=#6390F0><b>VIP User</b></font>)<br />';
-			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks: </font></b>' + bucks + '<br />';
+			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
-			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </font></b>' + seenOutput + '<br />';
+			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + seenOutput + '<br />';
+			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />'
+			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid) + '<br /></br />';
 			profile += '<br clear="all">';
 			self.sendReplyBox(profile);
 			room.update();
@@ -1479,6 +1480,31 @@ exports.commands = {
 		let userLastSeen = moment(Gold.userData[userid].lastSeen).format("MMMM Do YYYY, h:mm A");
 		this.sendReplyBox(userName + ' was last seen online on ' + userLastSeen + ' EST. (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')');
 	},
+	bio: 'status',
+	status: function (target, room, user, connection, cmd) {
+		if (!this.canTalk()) return this.sendReply("You cannot do this while unable to talk.");
+		if (target && target === 'delete') {
+			let data = Gold.checkExisting(user.userid);
+			if (!data.status || data.status === '') return this.errorReply("You currently do not have a status set.");
+			data.status = '';
+			Gold.saveData();
+			return this.sendReply("You have deleted your status.");
+		} else if (target) {
+			let data = Gold.checkExisting(user.userid);
+			if (Config.chatfilter) {
+				target = Config.chatfilter(target, user, room, connection);
+				if (!target) return;
+			}
+			if (target.length > 35) return this.errorReply("User statuses must be 35 or less characters.");
+			data.status = target;
+			Gold.saveData();
+			return this.sendReply(`You have set your user status to: "${data.status}".`);
+		} else {
+			return this.parse('/help status');
+		}
+	},
+	statushelp: ["/status [status] - Sets your status. Maximum of 35 characters long.",
+		"/status delete - Deletes your status."],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
