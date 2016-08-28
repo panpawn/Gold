@@ -735,7 +735,7 @@ exports.commands = {
 				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
 				if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
 				Gold.modifyBadge(parts[1], parts[2], 'TAKE');
-				return this.sendReply(`You have removed badge ${parts[2]} from user '${parts[1]}'.`);
+				return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
 				break;
 
 			case 'give':
@@ -744,7 +744,7 @@ exports.commands = {
 				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
 				if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
 				Gold.modifyBadge(parts[1], parts[2], 'GIVE');
-				return this.sendReply(`You have given badge ${parts[2]} to user '${parts[1]}'.`);
+				return this.sendReply(`You have given badge '${badgeObj[parts[2]].title}' to user '${parts[1]}'.`);
 				break;
 
 			default:
