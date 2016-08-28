@@ -207,9 +207,8 @@ exports.commands = {
 			price = prices['vip'];
 			if (!moneyCheck(price)) return this.errorReply("You do not have enough bucks for this item at this time, sorry.");
 			processPurchase(price, parts[0]);
-			alertStaff(Gold.nameColor(user.name, true) + " has purchased VIP Status from the shop.", true);
-			alertStaff('<center><button name="send" value="/givevip ' + user.userid + '" target="_blank" title="Click give the above user VIP status.">Click2Set</button></center>', false);
-			this.sendReply("You have purchased VIP status, congratulations!  Screen cap this message.  An upper staff should be giving you VIP status shortly.");
+			Gold.modifyBadge(user.userid, 'vip', 'GIVE');
+			alertStaff(Gold.nameColor(user.name, true) + " has purchased VIP Status from the shop and they have recieved it automatically from the server.", true);
 			break;
 
 		case 'mysterybox':
