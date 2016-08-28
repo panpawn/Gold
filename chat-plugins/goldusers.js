@@ -75,7 +75,7 @@ try {
 			let data = this.checkExisting(user);
 			data.money = Number(Number(data.money) + amount);
 			this.saveData();
-			this.notifyStaff("[DEBUG]" + user + " has recieved " + amount + " bucks.  They now have " + data.money + " bucks.");
+			// if (Rooms('staff')) Rooms('staff').add(`[DEBUG] ${user} has recieved ${amount} bucks.  They now have ${data.money} bucks.`).update();
 		},
 		readMoney: function (user) {
 			user = toId(user);
@@ -305,21 +305,18 @@ try {
 		checkTells: function (user) {
 			user = toId(user);
 			let reply = [];
-			if (Gold.userData[user]) {
-				if (Object.keys(Gold.userData[user].tells).length > 0) {
+			let data = Gold.checkExisting(user);
+			if (data) {
+				if (Object.keys(data.tells).length > 0) {
 					for (let i in Gold.userData[user].tells) {
-						reply.push(`|raw|${Gold.userData[user].tells[i]}`);
-						delete Gold.userData[user].tells[i];
+						reply.push(`|raw|${data.tells[i]}`);
+						delete data.tells[i];
 					}
 				}
 			}
 			if (reply.length > 0) this.saveData();
 			if (reply.length === 0) return false;
 			return reply;
-		},
-		notifyStaff: function(message) {
-			let staff = Rooms('staff');
-			if (staff) staff.add(message).update();
 		},
 	});
 } catch (e) {
