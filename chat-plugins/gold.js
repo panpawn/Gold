@@ -1484,14 +1484,13 @@ exports.commands = {
 	bio: 'status',
 	status: function (target, room, user, connection, cmd) {
 		if (!this.canTalk()) return this.sendReply("You cannot do this while unable to talk.");
+		let data = Gold.checkExisting(user.userid);
 		if (target && target === 'delete') {
-			let data = Gold.checkExisting(user.userid);
 			if (!data.status || data.status === '') return this.errorReply("You currently do not have a status set.");
 			data.status = '';
 			Gold.saveData();
 			return this.sendReply("You have deleted your status.");
 		} else if (target) {
-			let data = Gold.checkExisting(user.userid);
 			if (Config.chatfilter) {
 				target = Config.chatfilter(target, user, room, connection);
 				if (!target) return;
@@ -1501,7 +1500,8 @@ exports.commands = {
 			Gold.saveData();
 			return this.sendReply(`You have set your user status to: "${data.status}".`);
 		} else {
-			return this.parse('/help status');
+			if (!data.status || data.status === '') return this.parse('/help status');
+			return this.sendReply(`Your current status is set to: ${data.status}`);
 		}
 	},
 	statushelp: ["/status [status] - Sets your status. Maximum of 35 characters long.",
