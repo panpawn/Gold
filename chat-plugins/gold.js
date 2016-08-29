@@ -718,8 +718,9 @@ exports.commands = {
 		if (!target) target = user.userid;
 		let parts = target.split(',');
 		for (let u in parts) parts[u] = parts[u].trim();
-		let badgeObj = Gold.badgeList(), data;
+		let badgeObj = Gold.badgeList(), data, badgeTitle = '';
 
+		if (parts[2] && badgeObj[parts[2]]) badgeTitle = badgeObj[parts[2]].title;
 		switch (parts[0]) {
 			case 'help':
 				return this.parse('/help badges');
@@ -735,7 +736,6 @@ exports.commands = {
 				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
 				if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
 				Gold.modifyBadge(parts[1], parts[2], 'TAKE');
-				let badgeTitle = badgeObj[parts[2]].title;
 				if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have been stripped of the badge '${badgeTitle}' by ${user.name}.`);
 				return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
 				break;
@@ -746,7 +746,6 @@ exports.commands = {
 				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
 				if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
 				Gold.modifyBadge(parts[1], parts[2], 'GIVE');
-				let badgeTitle = badgeObj[parts[2]].title;
 				if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have recieved the badge '${badgeTitle}' from ${user.name}.`);
 				return this.sendReply(`You have given badge '${badgeTitle}' to user '${parts[1]}'.`);
 				break;
