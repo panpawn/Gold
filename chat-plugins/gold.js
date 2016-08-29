@@ -735,6 +735,7 @@ exports.commands = {
 				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
 				if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
 				Gold.modifyBadge(parts[1], parts[2], 'TAKE');
+				let badgeTitle = badgeObj[parts[2]].title;
 				if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have been stripped of the badge '${badgeTitle}' by ${user.name}.`);
 				return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
 				break;
