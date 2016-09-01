@@ -110,6 +110,8 @@ exports.commands = {
 	friend: 'friendslist',
 	friendlist: 'friendslist',
 	friendslist: function (target, room, user) {
+		return this.sendReply("This command has been disabled due to maintenance.  It should be working shortly.");
+		/*
 		target = target.split(',');
 		for (let u in target) target[u] = target[u].trim();
 
@@ -201,6 +203,7 @@ exports.commands = {
 				return this.sendReplyBox(formatList(target[0], user.userid));
 			}
 		}
+		*/
 	},
 	friendslisthelp: ["Gold's friendslist allows users to add friends to their friendslists. The commands include...",
 					"/friendslist add, [user] - Adds a user to your friendslist.",
