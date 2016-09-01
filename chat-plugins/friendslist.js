@@ -87,14 +87,13 @@ function formatList(user, by) {
 	reply += (NotifySetting[user] ? "(<i>does</i> get notified when friends come online)" : "(<i>does NOT</i> get notified when friends come online)");
 	reply += '<table border="1" cellspacing ="0" cellpadding="3">';
 	reply += "<tr><td><u>Friend:</u></td><td><u>Last Online:</u></td><td><u>Bucks:</u></td></tr>";
+	function lastSeen(frens) {
+		if (Users(frens) && Users.getExact(frens) && Users(frens).connected) return "<font color=green>Currently Online</font>";
+		if (!Gold.userData[frens] || Gold.userData[frens].lastSeen === 0) return "<font color=red>Never seen on this server</font>";
+		let userLastSeen = moment(Gold.userData[frens].lastSeen).fromNow();
+		return userLastSeen;
+	}
 	Friends[user].forEach(function (frens) {
-		function lastSeen(frens) {
-			if (Users(frens) && Users.getExact(frens) && Users(frens).connected) return "<font color=green>Currently Online</font>";
-			if (!Gold.seenData[frens]) return "<font color=red>Never seen on this server</font>";
-			let userLastSeen = (Gold.userData[frens] && Gold.userData[frens].lastSeen ? moment(Gold.userData[frens].lastSeen).fromNow() : false);
-			if (!userLastSeen) userLastSeen = "Never Seen.";
-			return userLastSeen;
-		}
 		reply += "<tr><td>" + getName(frens, true, true) + "</td><td>" + lastSeen(frens) + "</td><td>" + (Gold.readMoney(frens) === 0 ? "None" : Gold.readMoney(frens)) + "</td></tr>";
 	});
 	reply += "</table>";
