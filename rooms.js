@@ -593,7 +593,7 @@ let GlobalRoom = (() => {
 	};
 	GlobalRoom.prototype.matchmakingOK = function (search1, search2, user1, user2, formatid) {
 		// This should never happen.
-		if (!user1 || !user2) return void require('./crashlogger.js')(new Error("Matched user " + (user1 ? search2.userid : search1.userid) + " not found"), "The main process");
+		if (!user1 || !user2) return void require('./crashlogger')(new Error("Matched user " + (user1 ? search2.userid : search1.userid) + " not found"), "The main process");
 
 		// users must be different
 		if (user1 === user2) return false;
@@ -1727,8 +1727,8 @@ Rooms.GlobalRoom = GlobalRoom;
 Rooms.BattleRoom = BattleRoom;
 Rooms.ChatRoom = ChatRoom;
 
-Rooms.RoomGame = require('./room-game.js').RoomGame;
-Rooms.RoomGamePlayer = require('./room-game.js').RoomGamePlayer;
+Rooms.RoomGame = require('./room-game').RoomGame;
+Rooms.RoomGamePlayer = require('./room-game').RoomGamePlayer;
 
 // initialize
 
