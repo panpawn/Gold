@@ -1509,6 +1509,16 @@ exports.commands = {
 	},
 	statushelp: ["/status [status] - Sets your status. Maximum of 35 characters long.",
 		"/status delete - Deletes your status."],
+	givevip: function (target, room, user) {
+		if (!target) return this.parse('/help givevip');
+		return this.parse(`/badge give, ${target}, vip`);
+	},
+	giveviphelp: ["/givevip [user] - Gives a user VIP status (and the badge). Requires &, ~"],
+	takevip: function (target, room, user) {
+		if (!target) return this.parse('/help takevip');
+		return this.parse(`/badge remove, ${target}, vip`);
+	},
+	takeviphelp: ["/takevip [user] - Removes VIP status from a user (and the badge). Requires &, ~"],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
