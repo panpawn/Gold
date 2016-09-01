@@ -124,9 +124,9 @@ delete process.send; // in case we're a child process
 global.Verifier = require('./verifier');
 Verifier.PM.spawn();
 
-global.CommandParser = require('./command-parser');
-
 global.Gold = {};
+
+global.CommandParser = require('./command-parser');
 
 global.Db = require('origindb')('config/db');
 
