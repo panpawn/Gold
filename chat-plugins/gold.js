@@ -1523,6 +1523,7 @@ exports.commands = {
 	roompm: function (target, room, user) {
 		if (!target) return this.parse('/help roompm');
 		if (!this.can('declare', null, room)) return false;
+		if (room.isPrivate) return this.errorReply("This command is not allowed in private rooms.");
 		if (room.battle) return this.errorReply("You cannot use this command in a battle room.");
 		let pmName = `#${room.title} Message`;
 		Object.keys(room.users).forEach(usr => {
