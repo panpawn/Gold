@@ -1519,6 +1519,21 @@ exports.commands = {
 		return this.parse(`/badge remove, ${target}, vip`);
 	},
 	takeviphelp: ["/takevip [user] - Removes VIP status from a user (and the badge). Requires &, ~"],
+	pmroom: 'roompm',
+	roompm: function (target, room, user) {
+		if (!target) return this.parse('/help roompm');
+		if (!this.can('declare', null, room)) return false;
+		if (room.battle) return this.errorReply("You cannot use this command in a battle room.");
+		let pmName = `#${room.title} Message`;
+		Object.keys(room.users).forEach(usr => {
+			usr = Users(usr);
+			if (!usr) return;
+			if (!usr.connected) return;
+			usr.send(`|pm|${pmName}|${usr.getIdentity()}|/html ${Tools.escapeHTML(target)}<br /><p style="font-size: 8px;">[Do not reply. This message was sent by ${Gold.nameColor(user.name)}.]</p>`);
+		});
+		this.privateModCommand(`(${user.name} mass room PM'd: ${target})`);
+	},
+	roompmhelp: ["/roompm [message] - PMs everyone in the room. Requires #, &, ~"],
 	/*
 	pr: 'pollremind',
 	pollremind: function(target, room, user) {
