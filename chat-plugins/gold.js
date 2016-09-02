@@ -1526,13 +1526,17 @@ exports.commands = {
 		if (room.isPrivate) return this.errorReply("This command is not allowed in private rooms.");
 		if (room.battle) return this.errorReply("You cannot use this command in a battle room.");
 		let pmName = `#${room.title} Message`;
+		let origtarget = target;
+		target = Tools.escapeHTML(target);
+		target = target.replace(/&#x2f;/g, '/');
+		target = Gold.formatMessage(target);
 		Object.keys(room.users).forEach(usr => {
 			usr = Users(usr);
 			if (!usr) return;
 			if (!usr.connected) return;
-			usr.send(`|pm|${pmName}|${usr.getIdentity()}|/html ${Tools.escapeHTML(target)}<br /><p style="font-size: 8px;">[Do not reply. This message was sent by ${Gold.nameColor(user.name)}.]</p>`);
+			usr.send(`|pm|${pmName}|${usr.getIdentity()}|/html ${target}<br /><p style="font-size: 8px;">[Do not reply. This message was sent by ${Gold.nameColor(user.name)}.]</p>`);
 		});
-		this.privateModCommand(`(${user.name} mass room PM'd: ${target})`);
+		this.privateModCommand(`(${user.name} mass room PM'd: ${origtarget})`);
 	},
 	roompmhelp: ["/roompm [message] - PMs everyone in the room. Requires #, &, ~"],
 	news: 'serverannouncements',
