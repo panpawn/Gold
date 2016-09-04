@@ -336,7 +336,11 @@ try {
 			if (!lobby.news || Object.keys(lobby.news).length < 0) return false;
 			if (!lobby.news) lobby.news = {};
 			let news = lobby.news, newsDisplay = [];
-			Object.keys(news).forEach(announcement => {
+			let newKeys = Object.keys(news);
+			newKeys.sort(function (a, b) {
+				return news[b].posted - news[a].posted;
+			});
+			newKeys.forEach(announcement => {
 				newsDisplay.push(`<h4>${announcement}</h4>${news[announcement].desc}<br /><br /><strong>—${Gold.nameColor(news[announcement].by)}</strong> on ${moment(news[announcement].posted).format("MMM D, YYYY")}<hr>`);
 			});
 			return newsDisplay;
