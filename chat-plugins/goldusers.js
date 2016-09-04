@@ -337,7 +337,7 @@ try {
 			if (!lobby.news) lobby.news = {};
 			let news = lobby.news, newsDisplay = [];
 			Object.keys(news).forEach(announcement => {
-				newsDisplay.push(`<h4>${announcement}</h4>${news[announcement].desc}<br /><br /><strong>—${Gold.nameColor(news[announcement].by)}</strong> on ${moment(news[announcement].posted).format("MMM D, YYYY")}<hr>`);
+				newsDisplay.push(`<h4>${announcement}</h4>${news[announcement].desc}<br /><br /><strong>—${Gold.nameColor(news[announcement].by)}</strong> on ${moment(news[announcement].posted).format("MMM D, YYYY")}`);
 			});
 			return newsDisplay;
 		},
@@ -351,7 +351,7 @@ try {
 			if (newsDis.length === 0) return false;
 
 			if (newsDis.length > 0) {
-				newsDis = newsDis.join(' ');
+				newsDis = newsDis.join('<hr>');
 				Users(user).gotNews = true;
 				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
 			}

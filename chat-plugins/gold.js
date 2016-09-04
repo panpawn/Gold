@@ -1553,7 +1553,7 @@ exports.commands = {
 			if (Object.keys(news).length === 0) return this.sendReply("There are currently no new server announcements at this time.");
 			return this.sendReplyBox(
 				"<center><strong>Current server announcements:</strong></center>" +
-					Gold.generateNews().join(' ')
+					Gold.generateNews().join('<hr>')
 			);
 		},
 		delete: function (target, room, user) {
