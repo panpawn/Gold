@@ -1557,7 +1557,7 @@ exports.commands = {
 			);
 		},
 		delete: function (target, room, user) {
-			if (!this.can('pban')) return false;
+			if (!this.can('ban')) return false;
 			if (!target) return this.parse('/help serverannouncements');
 			if (!Rooms('lobby').news) Rooms('lobby').news = {};
 			let news = Rooms('lobby').news;
@@ -1569,7 +1569,7 @@ exports.commands = {
 			this.privateModCommand(`(${user.name} deleted server announcement titled: ${target}.)`);
 		},
 		add: function (target, room, user) {
-			if (!this.can('pban')) return false;
+			if (!this.can('ban')) return false;
 			if (!target) return this.parse('/help serverannouncements');
 			target = target.split('|');
 			for (let u in target) target[u] = target[u].trim();
@@ -1593,8 +1593,8 @@ exports.commands = {
 		},
 	},
 	serverannouncementshelp: ["/announcements view - Views current server announcements.",
-		"/announcements delete [announcement title] - Deletes announcement with the [title]. Requires &, ~",
-		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires &, ~",
+		"/announcements delete [announcement title] - Deletes announcement with the [title]. Requires @, &, ~",
+		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires @, &, ~",
 		"/announcement toggle - Toggles getting news notifications."],
 };
 
