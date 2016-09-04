@@ -381,6 +381,7 @@ exports.commands = {
 			return this.parse('/help msg');
 		}
 		this.pmTarget = (targetUser || this.targetUsername);
+		if (this.targetUsername === 'goldnews') return this.errorReply("This is the news... don't be silly. xdxd");
 		if (!targetUser) {
 			this.errorReply("User " + this.targetUsername + " not found. Did you misspell their name?");
 			return this.parse('/help msg');
