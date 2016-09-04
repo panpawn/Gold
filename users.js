@@ -343,6 +343,7 @@ class User {
 
 		this.connected = true;
 		this.goldDev = false;
+		this.gotNews = false;
 
 		if (connection.user) connection.user = this;
 		this.connections = [connection];
@@ -1014,6 +1015,7 @@ class User {
 	markInactive() {
 		this.connected = false;
 		this.lastConnected = Date.now();
+		this.gotNews = false;
 		if (!this.registered) {
 			// for "safety"
 			this.group = Config.groupsranking[0];

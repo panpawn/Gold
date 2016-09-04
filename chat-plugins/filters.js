@@ -120,7 +120,9 @@ Config.namefilter = function (name, user) {
 			}
 		});
 	});
-
+	setTimeout(function() {
+		Gold.newsDisplay(name);
+	}, 1000);
 	return name;
 };
 

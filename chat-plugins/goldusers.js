@@ -41,6 +41,7 @@ try {
 				tellNum: 0,
 				money: 0,
 				lastSeen: 0,
+				blockNews: false,
 				color: false,
 				icon: false,
 				vip: false,
@@ -328,6 +329,32 @@ try {
 			if (reply.length > 0) this.saveData();
 			if (reply.length === 0) return false;
 			return reply;
+		},
+		generateNews: function () {
+			let lobby = Rooms('lobby');
+			if (!lobby) return false;
+			if (!lobby.news || Object.keys(lobby.news).length < 0) return false;
+			if (!lobby.news) lobby.news = {};
+			let news = lobby.news, newsDisplay = [];
+			Object.keys(news).forEach(announcement => {
+				newsDisplay.push(`<h4>${announcement}</h4>${news[announcement].desc}<br /><br /><strong>—${Gold.nameColor(news[announcement].by)}</strong> on ${moment(news[announcement].posted).format("MMM D, YYYY")}<hr>`);
+			});
+			return newsDisplay;
+		},
+		newsDisplay: function (user) {
+			user = toId(user);
+			let data = this.checkExisting(user);
+			if (data.blockNews) return false;
+			if (!Users(user)) return false;
+			if (Users(user).gotNews) return false;
+			let newsDis = this.generateNews();
+			if (newsDis.length === 0) return false;
+
+			if (newsDis.length > 0) {
+				newsDis = newsDis.join(' ');
+				Users(user).gotNews = true;
+				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
+			}
 		},
 	});
 } catch (e) {

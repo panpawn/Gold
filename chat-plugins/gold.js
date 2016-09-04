@@ -1548,50 +1548,54 @@ exports.commands = {
 		display: 'view',
 		view: function (target, room, user) {
 			if (!Rooms('lobby') || !Rooms('lobby').news) return this.errorReply("Strange, there are no server announcements...");
-			if (!Rooms('lobby').news && Rooms('lobby')) Rooms('lobby').news = new Array();
+			if (!Rooms('lobby').news && Rooms('lobby')) Rooms('lobby').news = {};
 			let news = Rooms('lobby').news;
-			if (news.length === 0) return this.sendReply("There are currently no new server announcements at this time.");
-			let newsDisplay = new Array();
-			for (let i in news) {
-				let num = `<strong>${Number(i) + 1}</strong>`;
-				newsDisplay.push(`${num}. ${news[i]}`);
-			}
+			if (Object.keys(news).length === 0) return this.sendReply("There are currently no new server announcements at this time.");
 			return this.sendReplyBox(
 				"<center><strong>Current server announcements:</strong></center>" +
-					newsDisplay.join('<br />')
+					Gold.generateNews().join(' ')
 			);
 		},
 		delete: function (target, room, user) {
 			if (!this.can('pban')) return false;
 			if (!target) return this.parse('/help serverannouncements');
-			target = parseInt(target);
-			if (isNaN(target)) return this.errorReply("This is not a number...");
-			if (!Rooms('lobby').news) Rooms('lobby').news = new Array();
+			if (!Rooms('lobby').news) Rooms('lobby').news = {};
 			let news = Rooms('lobby').news;
-			if (!news[Number(target) - 1]) return this.errorReply("This announcement doesn't seem to exist...");
-			news.remove(news[Number(target) - 1]);
+			if (!news[target]) return this.errorReply("This announcement doesn't seem to exist...");
+			delete news[target];
 			Rooms('lobby').news = news;
-			Rooms('lobby').chatRoomData.news = room.news;
+			Rooms('lobby').chatRoomData.news = Rooms('lobby').news;
 			Rooms.global.writeChatRoomData();
-			this.privateModCommand(`(${user.name} deleted server announcement #${target}.)`);
-			return this.sendReply(`You have deleted server announcement #${target}.`);
+			this.privateModCommand(`(${user.name} deleted server announcement titled: ${target}.)`);
 		},
 		add: function (target, room, user) {
 			if (!this.can('pban')) return false;
 			if (!target) return this.parse('/help serverannouncements');
-			if (!Rooms('lobby').news) Rooms('lobby').news = new Array();
+			target = target.split('|');
+			for (let u in target) target[u] = target[u].trim();
+			if (!target[1]) return this.errorReply("Usage: /news add [title]| [desc]");
+			if (!Rooms('lobby').news) Rooms('lobby').news = {};
 			let news = Rooms('lobby').news;
-			news.push(target);
+			news[target[0]] = {
+				desc: target[1],
+				posted: Date.now(),
+				by: user.name,
+			};
 			Rooms('lobby').news = news;
-			Rooms('lobby').chatRoomData.news = room.news;
+			Rooms('lobby').chatRoomData.news = Rooms('lobby').news;
 			Rooms.global.writeChatRoomData();
-			this.privateModCommand(`(${user.name} added server announcement: ${target})`);
-			return this.sendReply("You have added a server announcement.");
+			this.privateModCommand(`(${user.name} added server announcement: ${target[1]})`);
+		},
+		toggle: function (target, room, user) {
+			let data = Gold.checkExisting(user.userid);
+			data.blockNews = !data.blockNews;
+			this.sendReply(`You are now ${data.blockNews ? 'blocking' : 'not blocking'} news notifications.`);
 		},
 	},
 	serverannouncementshelp: ["/announcements view - Views current server announcements.",
-		"/announcements delete [announcement number] - Deletes announcement [number]. Requires &, ~",
-		"/announcements add [announcement] - Adds announcement [announcement]. Requires &, ~"],
+		"/announcements delete [announcement title] - Deletes announcement with the [title]. Requires &, ~",
+		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires &, ~",
+		"/announcement toggle - Toggles getting news notifications."],
 };
 
 function loadRegdateCache() {
