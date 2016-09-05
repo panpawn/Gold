@@ -3312,10 +3312,10 @@ exports.commands = {
 	},
 
 	vtm: function (target, room, user, connection) {
-		if (Monitor.countPrepBattle(connection.ip, user.name)) {
+		/*if (Monitor.countPrepBattle(connection.ip, user.name)) {
 			connection.popup("Due to high load, you are limited to 6 team validations every 3 minutes.");
 			return;
-		}
+		}*/
 		if (!target) return this.errorReply("Provide a valid format.");
 		let originalFormat = Tools.getFormat(target);
 		let format = originalFormat.effectType === 'Format' ? originalFormat : Tools.getFormat('Anything Goes');
