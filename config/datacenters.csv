@@ -837,6 +837,7 @@
 70.40.192.0,70.40.223.255,Bluehost.com,http://www.bluehost.com/
 70.84.0.0,70.87.255.255,SoftLayer,http://www.softlayer.com/
 71.6.128.0,71.6.255.255,cari.net,http://cari.net/
+71.19.240.0,71.19.255.255,eSecureData,https://www.esecuredata.com/
 72.1.96.0,72.1.127.255,latisys,http://www.latisys.com/
 72.1.240.0,72.1.255.255,ndchost.com,http://www.ndchost.com/
 72.3.128.0,72.3.255.255,Rackspace,http://www.rackspace.com/
@@ -1461,6 +1462,7 @@
 104.47.200.0,104.47.215.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 104.130.64.0,104.130.223.255,Rackspace,http://www.rackspace.com/
 104.131.0.0,104.131.255.255,DigitalOcean USA,https://www.digitalocean.com/
+104.143.0.0,104.143.15.255,Versaweb,https://www.versaweb.com/
 104.156.224.0,104.156.255.255,Choopa,https://www.choopa.com/
 104.164.0.0,104.165.255.255,EGIHosting.com,http://www.egihosting.com/
 104.167.96.0,104.167.127.255,KW Datacenter CA,http://www.kwdatacentre.com/
@@ -1736,6 +1738,7 @@
 162.248.72.0,162.248.79.255,Volume Drive,http://volumedrive.com
 162.248.160.0,162.248.167.255,KW Datacenter CA,http://www.kwdatacentre.com/
 162.250.120.0,162.250.127.255,InterServer.net,http://www.interserver.net/
+162.250.169.128,162.250.169.191,4goodhosting,http://4goodhosting.com/
 162.252.240.0,162.252.243.255,KW Datacenter CA,http://www.kwdatacentre.com/
 164.40.133.0,164.40.133.255,GoGrid LLC,http://www.gogrid.com/
 164.40.144.0,164.40.144.255,GoGrid LLC,http://www.gogrid.com/
@@ -2087,6 +2090,7 @@
 190.123.32.0,190.123.47.255,panamaserver.com,http://panamaserver.com/
 190.151.128.0,190.151.131.255,corponetsa.net,http://www.corponetsa.net/
 190.242.28.0,190.242.28.255,corponetsa.net,http://www.corponetsa.net/
+191.101.30.0,191.101.30.255,Digital Energy Technologies,http://digitalenergytech.net/
 191.232.32.0,191.232.63.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 191.233.32.0,191.233.127.255,Microsoft Azure,http://www.windowsazure.com/en-us/
 191.233.144.0,191.233.144.255,Microsoft Azure,http://www.windowsazure.com/en-us/
@@ -2510,6 +2514,7 @@
 200.35.144.0,200.35.151.255,ServerPronto,http://www.serverpronto.com/
 200.50.224.0,200.50.231.255,abdicar.com,http://abdicar.com/
 200.63.40.0,200.63.47.255,panamaserver.com,http://panamaserver.com/
+200.110.156.192,200.110.156.255,tuhosting,http://www.thservidores.com/
 200.115.32.0,200.115.47.255,Teuno,http://www.teuno.com/
 200.124.132.72,200.124.132.79,e-commercepark.com,http://e-commercepark.com/
 200.124.144.240,200.124.144.255,e-commercepark.com,http://e-commercepark.com/
