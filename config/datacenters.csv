@@ -695,6 +695,7 @@
 67.212.224.0,67.212.239.255,westhost,http://www.westhost.com/
 67.213.208.0,67.213.223.255,Midphase,http://www.midphase.com/
 67.214.160.0,67.214.191.255,ColoStore,http://colostore.com/
+67.215.0.0,67.215.15.255,GloboTech Communications,https://www.globo.tech/
 67.215.112.0,67.215.127.255,Peak Web Hosting,http://www.peakwebhosting.com/
 67.215.160.0,67.215.191.255,Webhosting.net,http://www.webhosting.net/
 67.215.224.0,67.215.255.255,Secure Private Network,http://www.securedprivatenetwork.net/
