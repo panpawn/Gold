@@ -1518,7 +1518,8 @@
 108.59.0.0,108.59.15.255,Leaseweb,http://www.leaseweb.com/
 108.59.240.0,108.59.255.255,EarthLink Cloud,http://www.earthlinkcloud.com/
 108.60.64.0,108.60.95.255,Techie Media,http://techiemedia.net/
-108.61.174.0,108.61.174.255,Choopa,http://choopa.com
+108.61.174.0,108.61.174.255,Choopa,http://choopa.com/
+108.61.196.0,108.61.197.255,Choopa,http://choopa.com/
 108.62.0.0,108.62.255.255,Ubiquity Server Solutions,http://www.ubiquityservers.com/
 108.160.144.0,108.160.159.255,PrivateSystems.net,http://privatesystems.net/
 108.162.192.0,108.162.255.255,CloudFlare Inc,https://www.cloudflare.com/
