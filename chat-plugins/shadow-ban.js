@@ -190,11 +190,12 @@ exports.commands = {
 	},
 
 	sbanlist: function (target, room, user) {
-		if (!target && !this.can('lock')) return this.sendReply("The command '/sbanlist' was unrecognized.  To send a message starting with '/sbanlist', type '//sbanlist'.");
-		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
 		if (!this.can('lock')) return false;
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
+		let keys = Object.keys(Rooms('shadowbanroom').addedUsers);
+		if (keys.length < 1) return this.errorReply("There are currently no shadow banned users at this time.");
 
-		Users.get(toId(user.name)).send('|popup| Here is a list of sbanned users: \n' + JSON.stringify(Rooms('shadowbanroom').chatRoomData, null, 2));
+		Users.get(toId(user.name)).send('|popup||wide| Here is a list of sbanned users: \n' + keys.join(', '));
 	},
 };
 
