@@ -773,6 +773,21 @@ exports.Formats = [
 
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
 	},
+	/*
+	{
+		name: "Sp00ky Mons",
+		section: "Gold Server Tiers",
+		column: 3,
+		desc: ["&bullet; This tier only allows Ghost-type Pokemon..."],
+
+		onValidateSet: function (set) {
+			let template = this.getTemplate(set.species || set.name);
+			if (!(template.types.includes('Ghost'))) return [set.species + " is not a Ghost-type."];
+		},
+
+		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
+	},
+	*/
 	{
 		name: "Alpha Tier",
 		section: "Gold Server Tiers",
