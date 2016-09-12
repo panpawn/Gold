@@ -1219,7 +1219,7 @@ exports.commands = {
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + seenOutput + '<br />';
 			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />'
-			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid) + '<br /></br />';
+			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
 			profile += '<br clear="all">';
 			self.sendReplyBox(profile);
 			room.update();
