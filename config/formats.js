@@ -650,18 +650,6 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Standard NEXT', 'Team Preview'],
 		banlist: ['Uber'],
 	},
-	{
-		name: "Better OU",
-		desc: [
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3546114/\">OU Metagame Discussion</a>",
-			"&bullet; <a href=\"https://www.smogon.com/dex/xy/tags/ou/\">OU Banlist</a>",
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3571990/\">OU Viability Ranking</a>",
-		],
-		section: "Other Metagames",
-
-		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
-		banlist: ['Uber', 'Shadow Tag', 'Soul Dew', 'Scald', 'Pursuit', 'Sunkern'],
-	},
 
 	// Randomized Metas
 	///////////////////////////////////////////////////////////////////
@@ -784,6 +772,13 @@ exports.Formats = [
 		},
 
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
+	},
+	{
+		name: "Better OU",
+		section: "Other Metagames",
+
+		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
+		banlist: ['Uber', 'Shadow Tag', 'Soul Dew', 'Scald', 'Pursuit', 'Sunkern'],
 	},
 	{
 		name: "Alpha Tier",
