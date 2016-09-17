@@ -776,7 +776,8 @@ exports.Formats = [
 	{
 		name: "Better OU",
 		section: "Other Metagames",
-
+		column: 3,
+		desc: ["&bullet; Scald (Steam Erupton) and Pursuit: BANNED!."],
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
 		banlist: ['Uber', 'Shadow Tag', 'Soul Dew', 'Scald', 'Pursuit', 'Sunkern', 'Steam Eruption'],
 	},
