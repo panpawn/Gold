@@ -1586,16 +1586,18 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 			this.privateModCommand(`(${user.name} added server announcement: ${target[1]})`);
 		},
+		/*
 		toggle: function (target, room, user) {
 			let data = Gold.checkExisting(user.userid);
 			data.blockNews = !data.blockNews;
 			this.sendReply(`You are now ${data.blockNews ? 'blocking' : 'not blocking'} news notifications.`);
 		},
+		*/
 	},
 	serverannouncementshelp: ["/announcements view - Views current server announcements.",
 		"/announcements delete [announcement title] - Deletes announcement with the [title]. Requires @, &, ~",
-		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires @, &, ~",
-		"/announcement toggle - Toggles getting news notifications."],
+		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires @, &, ~"],
+		// "/announcement toggle - Toggles getting news notifications."],
 };
 
 function loadRegdateCache() {

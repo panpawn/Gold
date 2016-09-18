@@ -1562,6 +1562,7 @@ Users.socketConnect = function (worker, workerid, socketid, ip, protocol) {
 	});
 
 	user.joinRoom('global', connection);
+	Gold.newsDisplay(user.name);
 };
 
 Users.socketDisconnect = function (worker, workerid, socketid) {
