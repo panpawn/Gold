@@ -24,7 +24,7 @@ exports.commands = {
 		if (Gold.userData[targetUser] && Gold.userData[targetUser].tells && Object.keys(Gold.userData[targetUser].tells).length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
 		Gold.createTell(user.name, targetUser, message); // function saves when tell is created automatically
 		//createTell(user.name, targetUser, message); // function saves when tell is created automatically
-		return this.sendReply(`|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`);;
+		return this.sendReply(`|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`);
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
 
