@@ -775,7 +775,7 @@ exports.Formats = [
 	},
 	{
 		name: "Better OU",
-		section: "Other Metagames",
+		section: "Gold Server Tiers",
 		column: 3,
 		desc: ["&bullet; Scald (Steam Erupton) and Pursuit: BANNED!."],
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
