@@ -30,6 +30,7 @@ exports.BattleAliases = {
 	"theorymon": "OU Theorymon",
 	"inverse": "Inverse Battle",
 	"aaa": "Almost Any Ability",
+	"mnm": "Mix and Mega",
 	"monorandom": "Monotype Random Battle",
 
 	// mega evos
@@ -371,6 +372,7 @@ exports.BattleAliases = {
 	"cm": "Calm Mind",
 	"darude": "Sandstorm",
 	"dd": "Dragon Dance",
+	"dv": "Dark Void",
 	"eq": "Earthquake",
 	"espeed": "ExtremeSpeed",
 	"faintattack": "Feint Attack",

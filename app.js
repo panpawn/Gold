@@ -86,7 +86,7 @@ try {
 }
 
 if (Config.watchconfig) {
-	let configPath = require.resolve(__dirname, 'config/config');
+	let configPath = require.resolve('./config/config');
 	fs.watchFile(configPath, (curr, prev) => {
 		if (curr.mtime <= prev.mtime) return;
 		try {
@@ -125,10 +125,11 @@ global.Verifier = require('./verifier');
 Verifier.PM.spawn();
 
 global.Gold = {};
+global.Db = require('origindb')('config/db');
 
 global.CommandParser = require('./command-parser');
 
-global.Db = require('origindb')('config/db');
+global.Messages = require('./messages');
 
 global.Simulator = require('./simulator');
 

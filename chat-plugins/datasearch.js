@@ -15,10 +15,8 @@ const ProcessManager = require('./../process-manager');
 const MAX_PROCESSES = 1;
 const RESULTS_MAX_LENGTH = 10;
 
-const PM = exports.PM = new ProcessManager({
-	maxProcesses: MAX_PROCESSES,
-	execFile: __filename,
-	onMessageUpstream: function (message) {
+class DatasearchManager extends ProcessManager {
+	onMessageUpstream(message) {
 		// Protocol:
 		// "[id]|JSON"
 		let pipeIndex = message.indexOf('|');
@@ -30,8 +28,9 @@ const PM = exports.PM = new ProcessManager({
 			this.pendingTasks.delete(id);
 			this.release();
 		}
-	},
-	onMessageDownstream: function (message) {
+	}
+
+	onMessageDownstream(message) {
 		// protocol:
 		// "[id]|{data, sig}"
 		let pipeIndex = message.indexOf('|');
@@ -39,8 +38,9 @@ const PM = exports.PM = new ProcessManager({
 
 		let data = JSON.parse(message.slice(pipeIndex + 1));
 		process.send(id + '|' + JSON.stringify(this.receive(data)));
-	},
-	receive: function (data) {
+	}
+
+	receive(data) {
 		let result;
 		try {
 			switch (data.cmd) {
@@ -65,11 +65,19 @@ const PM = exports.PM = new ProcessManager({
 			result = {error: "Sorry! Our search engine crashed on your query. We've been automatically notified and will fix this crash."};
 		}
 		return result;
-	},
+	}
+}
+
+exports.DatasearchManager = DatasearchManager;
+
+const PM = exports.PM = new DatasearchManager({
+	execFile: __filename,
+	maxProcesses: MAX_PROCESSES,
 	isChatBased: true,
 });
 
 exports.commands = {
+	'!dexsearch': true,
 	ds: 'dexsearch',
 	dsearch: 'dexsearch',
 	dexsearch: function (target, room, user, connection, cmd, message) {
@@ -106,6 +114,7 @@ exports.commands = {
 		"Parameters separated with '|' will be searched as alternatives for each other, e.g., 'trick | switcheroo' searches for all Pok\u00e9mon that learn either Trick or Switcheroo.",
 		"The order of the parameters does not matter."],
 
+	'!randompokemon': true,
 	rollpokemon: 'randompokemon',
 	randpoke: 'randompokemon',
 	randompokemon: function (target, room, user, connection, cmd, message) {
@@ -148,6 +157,7 @@ exports.commands = {
 		"/randompokemon uses the same parameters as /dexsearch (see '/help ds').",
 		"Adding a number as a parameter returns that many random Pok\u00e9mon, e.g., '/randpoke 6' returns 6 random Pok\u00e9mon."],
 
+	'!movesearch': true,
 	ms: 'movesearch',
 	msearch: 'movesearch',
 	movesearch: function (target, room, user, connection, cmd, message) {
@@ -181,6 +191,7 @@ exports.commands = {
 		"If a Pok\u00e9mon is included as a parameter, moves will be searched from its movepool.",
 		"The order of the parameters does not matter."],
 
+	'!itemsearch': true,
 	isearch: 'itemsearch',
 	itemsearch: function (target, room, user, connection, cmd, message) {
 		if (!this.canBroadcast()) return;
@@ -208,6 +219,7 @@ exports.commands = {
 	"Searches with \"fling\" in them will find items with the specified Fling behavior.",
 	"Searches with \"natural gift\" in them will find items with the specified Natural Gift behavior."],
 
+	'!learn': true,
 	learnset: 'learn',
 	learnall: 'learn',
 	learn5: 'learn',
