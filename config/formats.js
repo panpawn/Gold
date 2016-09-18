@@ -796,6 +796,7 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
 		banlist: ['Uber', 'Shadow Tag', 'Soul Dew', 'Scald', 'Pursuit', 'Sunkern', 'Steam Eruption'],
 	},
+	/*,
 	{
 		name: "Alpha Tier",
 		section: "Gold Server Tiers",
@@ -814,6 +815,7 @@ exports.Formats = [
 		ruleset: 'Alpha Tier',
 		banlist: ['Azumarill', 'Bisharp', 'Chansey', 'Clefable', 'Diggersby', 'Dragonite', 'Excadrill', 'Ferrothorn', 'Garchomp', 'Gengar', 'Gliscor', 'Heatran', 'Jirachi', 'Kyurem-Black', 'Landorus-Therian', 'Latios', 'Rotom-Wash', 'Scizor', 'Serperior', 'Staraptor', 'Talonflame', 'Terrakion', 'Thundurus', 'Thundurus-Therian', 'Tornadus-Therian', 'Tyranitar', 'Victini', 'Weavile', 'Alakazite', 'Altarianite', 'Charizardite X', 'Charizardite Y', 'Diancite', 'Galladite', 'Gardevoirite', 'Gyaradosite', 'Heracronite', 'Latiasite', 'Lopunnite', 'Medichamite', 'Metagrossite', 'Pidgeotite', 'Pinsirite', 'Sablenite', 'Venusaurite'],
 	},
+	*/
 	{
 		name: "Middle Cup PX",
 		section: "Gold Server Tiers",
@@ -844,6 +846,7 @@ exports.Formats = [
 			}
 		},
 	},
+	/*
 	{
 		name: "[Gen 3] Random Battle",
 		section: "Gold Server Tiers",
@@ -864,6 +867,7 @@ exports.Formats = [
 
 		mod: 'gen4',
 	},
+	*/
 	{
 		name: "Doubles Monotype",
 		desc: [
