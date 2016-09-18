@@ -344,7 +344,7 @@ try {
 		newsDisplay: function (user) {
 			user = toId(user);
 			let data = this.checkExisting(user);
-			if (data.blockNews) return false;
+			// if (data.blockNews) return false;
 			if (!Users(user)) return false;
 			if (Users(user).gotNews) return false;
 			let newsDis = this.generateNews();
