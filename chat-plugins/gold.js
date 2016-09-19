@@ -361,10 +361,6 @@ exports.commands = {
 	hc: function (room, user, cmd) {
 		return this.parse('/hotpatch chat');
 	},
-	vault: function (target, room, user, connection) {
-		let money = fs.readFileSync('config/money.csv', 'utf8');
-		return user.send('|popup|' + money);
-	},
 	s: 'spank',
 	spank: function (target, room, user) {
 		if (!target) return this.sendReply('/spank needs a target.');
@@ -482,6 +478,7 @@ exports.commands = {
 		return this.parse('/me licks ' + target + ' excessively!');
 	},
 
+	'!define': true,
 	def: 'define',
 	define: function (target, room, user) {
 		if (!target) return this.sendReply('Usage: /define <word>');
@@ -521,6 +518,7 @@ exports.commands = {
 		});
 	},
 
+	'!urbandefine': true,
 	u: 'urbandefine',
 	ud: 'urbandefine',
 	urbandefine: function (target, room, user) {
@@ -559,6 +557,7 @@ exports.commands = {
 		});
 	},
 
+	'!hex': true,
 	gethex: 'hex',
 	hex: function (target, room, user) {
 		if (!this.runBroadcast()) return;
@@ -576,6 +575,7 @@ exports.commands = {
 	},
 	roomshowimagehelp: ["!rsi [image], [width], [height] - Broadcasts an image to the room"],
 
+	'!usersofrank': true,
 	admins: 'usersofrank',
 	uor: 'usersofrank',
 	usersofrank: function (target, room, user, connection, cmd) {
@@ -669,6 +669,7 @@ exports.commands = {
 		if (!this.can('pban')) return false;
 		Gold.pmUpperStaff(target, false, user.name);
 	},
+	'!client': true,
 	client: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		return this.sendReplyBox('Gold\'s custom client can be found <a href="http://goldservers.info">here</a>.');
@@ -705,6 +706,7 @@ exports.commands = {
 					"- " + Gold.nameColor('PixelatedPaw', true) + " (One of the original administrators)";
 		user.popup(popup);
 	},
+	'!regdate': true,
 	regdate: function (target, room, user, connection) {
 		if (toId(target).length < 1 || toId(target).length > 19) return this.sendReply("Usernames may not be less than one character or longer than 19");
 		if (!this.runBroadcast()) return;
@@ -903,6 +905,7 @@ exports.commands = {
 			}
 		});
 	},
+	'!facebook': true,
 	facebook: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox('Gold\'s Facebook page can be found <a href="https://www.facebook.com/pages/Gold-Showdown/585196564960185">here</a>.');
@@ -919,6 +922,7 @@ exports.commands = {
 		this.sendReply('Thanks, your new color guess has been sent.  We\'ll review your color soon and get back to you. ("' + target + '")');
 	},
 
+	'!dubtrack': true,
 	dub: 'dubtrack',
 	music: 'dubtrack',
 	radio: 'dubtrack',
@@ -1170,6 +1174,7 @@ exports.commands = {
 		return this.sendReply("Poof is now enabled.");
 	},
 	// Profile command by jd, updated by panpawn
+	'!profile': true,
 	profile: function (target, room, user) {
 		if (!target) target = user.name;
 		if (toId(target).length > 19) return this.errorReply("Usernames may not be more than 19 characters long.");

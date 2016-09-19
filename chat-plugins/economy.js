@@ -379,6 +379,7 @@ exports.commands = {
 		}
 	},
 
+	'!atm': true,
 	balance: 'atm',
 	wallet: 'atm',
 	satchel: 'atm',
