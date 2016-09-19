@@ -121,13 +121,12 @@ Messages.send = function (target, context) {
 
 	if (targetUser !== user) {
 		if (Users.ShadowBan.checkBanned(user)) {
-			Users.ShadowBan.addMessage(user, "Private to" + targetUser.getIdentity(), (emotes ? oldtarg : target));
+			Users.ShadowBan.addMessage(user, "Private to " + targetUser.getIdentity(), (emotes ? oldtarg : target));
 		} else {
 			targetUser.send(buf);
 		}
 	}
 
-	if (targetUser !== user) targetUser.send(buf);
 	targetUser.lastPM = user.userid;
 	user.lastPM = targetUser.userid;
 };
