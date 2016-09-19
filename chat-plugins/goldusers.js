@@ -143,8 +143,8 @@ try {
 			return returnText;
 		},
 
-		/*******************
-		 * Misc. Functions *
+		/********************
+		 * Badge Functions *
 		 *******************/
 		hasVip: function (user) {
 			user = toId(user);
@@ -231,6 +231,10 @@ try {
 			});
 			return buff.join(" ");
 		},
+
+		/*******************
+		 * Misc. Functions *
+		 *******************/
 		customColor: function (user, action, color) {
 			user = toId(user);
 			let data = this.checkExisting(user);
