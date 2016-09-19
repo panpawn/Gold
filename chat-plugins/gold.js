@@ -422,7 +422,8 @@ exports.commands = {
 		});
 
 		rooms.sort(function (a, b) {
-			return a - b;
+			if (!Rooms(a) || !Rooms(b)) return false;
+			return Number(Rooms(b).userCount) - Number(Rooms(a).userCount);
 		});
 
 		for (let u in rooms) {
