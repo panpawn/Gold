@@ -427,7 +427,7 @@ exports.commands = {
 
 		for (let u in rooms) {
 			let curRoom = Rooms(rooms[u]);
-			if (!curRoom || u === 'global') continue;
+			if (!curRoom || rooms[u] === 'global') continue;
 			if (curRoom.type === 'battle') {
 				battleRooms.push('<a href="/' + curRoom.id + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 			}
