@@ -1557,6 +1557,7 @@ exports.commands = {
 	},
 	unlockhelp: ["/unlock [username] - Unlocks the user. Requires: % @ * & ~"],
 
+	ban: 'globalban',
 	forceglobalban: 'globalban',
 	gban: 'globalban',
 	globalban: function (target, room, user, connection, cmd) {
@@ -1576,15 +1577,9 @@ exports.commands = {
 		let userid = targetUser.getLastId();
 
 		if (targetUser.confirmed) {
-			if (cmd === 'forceglobalban') {
-				let from = targetUser.deconfirm();
-				Monitor.log("[CrisisMonitor] " + name + " was globally banned by " + user.name + " and demoted from " + from.join(", ") + ".");
-				this.globalModlog("CRISISDEMOTE", targetUser, " from " + from.join(", "));
-			} else {
-				return this.sendReply("" + name + " is a confirmed user. If you are sure you would like to ban them use /forceglobalban.");
-			}
-		} else if (cmd === 'forceglobalban') {
-			return this.errorReply("Use /globalban; " + name + " is not a confirmed user.");
+			let from = targetUser.deconfirm();
+			Monitor.log("[CrisisMonitor] " + name + " was globally banned by " + user.name + " and demoted from " + from.join(", ") + ".");
+			this.globalModlog("CRISISDEMOTE", targetUser, " from " + from.join(", "));
 		}
 
 		// Destroy personal rooms of the banned user.
@@ -1622,6 +1617,8 @@ exports.commands = {
 	},
 	globalbanhelp: ["/globalban OR /gb [username], [reason] - Kick user from all rooms and ban user's IP address with reason. Requires: @ * & ~"],
 
+	unban: 'unglobalunban',
+	globalunban: 'ungloalban',
 	unglobalban: function (target, room, user) {
 		if (!target) return this.parse('/help unglobalban');
 		if (!this.can('ban')) return false;
