@@ -344,15 +344,12 @@ try {
 		newsDisplay: function (user) {
 			user = toId(user);
 			let data = this.checkExisting(user);
-			// if (data.blockNews) return false;
 			if (!Users(user)) return false;
-			if (Users(user).gotNews) return false;
 			let newsDis = this.generateNews();
 			if (newsDis.length === 0) return false;
 
 			if (newsDis.length > 0) {
 				newsDis = newsDis.join('<hr>');
-				Users(user).gotNews = true;
 				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
 			}
 		},
