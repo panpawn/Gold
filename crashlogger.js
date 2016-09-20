@@ -10,14 +10,14 @@
 
 'use strict';
 
-//const CRASH_EMAIL_THROTTLE = 5 * 60 * 1000; // 5 minutes
+const CRASH_EMAIL_THROTTLE = 5 * 60 * 1000; // 5 minutes
 
 const logPath = require('path').resolve(__dirname, 'logs/errors.txt');
-//let lastCrashLog = 0;
+let lastCrashLog = 0;
 let transport;
 
 exports = module.exports = function (err, description, data) {
-	//const datenow = Date.now();
+	const datenow = Date.now();
 
 	let stack = (err.stack || err);
 	if (data) {
@@ -36,8 +36,8 @@ exports = module.exports = function (err, description, data) {
 		console.error(`\nSUBCRASH: ${err.stack}\n`);
 	});
 
-	if (Config.crashguardemail) {
-		//lastCrashLog = datenow;
+	if (Config.crashguardemail && ((datenow - lastCrashLog) > CRASH_EMAIL_THROTTLE)) {
+		lastCrashLog = datenow;
 		try {
 			if (!transport) transport = require('nodemailer').createTransport(Config.crashguardemail.options);
 		} catch (e) {
