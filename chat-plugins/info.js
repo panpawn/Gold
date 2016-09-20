@@ -1707,7 +1707,6 @@ exports.commands = {
 
 		this.addBox(target);
 	},
-	htmlboxhelp: ["/htmlbox [message] - Displays a message, parsing HTML code contained. Requires: ~ # * with global authority OR * with room authority"],
 
 	addhtmlbox: function (target, room, user, connection, cmd, message) {
 		if (!target) return this.parse('/help htmlbox');
@@ -1722,6 +1721,8 @@ exports.commands = {
 
 		this.addBox(target);
 	},
+	htmlboxhelp: ["/htmlbox [message] - Displays a message, parsing HTML code contained.",
+	"!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & * with global authority OR # * with room authority"],
 };
 
 process.nextTick(() => {
