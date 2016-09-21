@@ -1557,6 +1557,7 @@ exports.commands = {
 	},
 	unlockhelp: ["/unlock [username] - Unlocks the user. Requires: % @ * & ~"],
 
+	b: 'globalban',
 	ban: 'globalban',
 	forceglobalban: 'globalban',
 	gban: 'globalban',
