@@ -1548,16 +1548,14 @@ exports.commands = {
 	news: 'serverannouncements',
 	announcements: 'serverannouncements',
 	serverannouncements: {
-		'': function (target, room, user) {
-			return this.parse('/serverannouncements view');
-		},
+		'': 'view',
 		display: 'view',
 		view: function (target, room, user) {
 			if (!Rooms('lobby') || !Rooms('lobby').news) return this.errorReply("Strange, there are no server announcements...");
 			if (!Rooms('lobby').news && Rooms('lobby')) Rooms('lobby').news = {};
 			let news = Rooms('lobby').news;
 			if (Object.keys(news).length === 0) return this.sendReply("There are currently no new server announcements at this time.");
-			return this.sendReplyBox(
+			return user.send('|popup||wide||html|' +
 				"<center><strong>Current server announcements:</strong></center>" +
 					Gold.generateNews().join('<hr>')
 			);
