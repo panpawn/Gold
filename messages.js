@@ -47,8 +47,9 @@ Messages.send = function (target, context) {
 	let buf;
 	if ((target.charAt(0) === '/' && target.charAt(1) !== '/') || (target.charAt(0) === '!' && /[a-z0-9]/.test(target.charAt(1)))) {
 		// PM command
-		if (targetUser === user && target.charAt(0) === '!') {
+		if ((targetUser === user || Users.ShadowBan.checkBanned(user)) && target.charAt(0) === '!') {
 			// Don't allow users to PM broadcast themselves commands
+			if (Users.ShadowBan.checkBanned(user) && targetUser !== user) user.send('|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target);
 			target = target.replace('!', '/');
 		}
 		let innerCmdIndex = target.indexOf(' ');
