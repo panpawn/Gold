@@ -1694,8 +1694,11 @@ exports.commands = {
 		if (!target) return this.parse('/help htmlbox');
 		target = this.canHTML(target);
 		if (!target) return;
+
+		if (!this.canBroadcast('!htmlbox')) return;
+		if (this.broadcastMessage && !this.can('declare', null, room)) return false;
+
 		if (!this.runBroadcast('!htmlbox')) return;
-		if (this.broadcasting && !this.can('declare', null, room)) return;
 
 		if (user.userid === 'ponybot') {
 			if (!this.can('announce', null, room)) return;
