@@ -1218,8 +1218,8 @@ exports.commands = {
 			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
 			let bio = Gold.userData[userid] && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
 			profile += '<td><img src="' + avatar + '" height=80 width=80 align=left></td>';
-			if (!getFlag(toId(username))) profile += '<td>&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
-			if (getFlag(toId(username))) profile += '<td>&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
+			if (!getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
+			if (getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
