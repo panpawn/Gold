@@ -1214,19 +1214,19 @@ exports.commands = {
 		}
 		function showProfile() {
 			let seenOutput = Gold.userData[userid] && Gold.userData[userid].lastSeen !== 0 ? moment(Gold.userData[userid].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')' : "Never";
-			let profile = '', vip = Gold.hasVip(userid) ? " (<font color=#6390F0><b>VIP User</b></font>)" : "";
+			let profile = '<table><tr>', vip = Gold.hasVip(userid) ? " (<font color=#6390F0><b>VIP User</b></font>)" : "";
 			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
 			let bio = Gold.userData[userid] && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
-			profile += '<img src="' + avatar + '" height=80 width=80 align=left>';
-			if (!getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
-			if (getFlag(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
+			profile += '<td><img src="' + avatar + '" height=80 width=80 align=left></td>';
+			if (!getFlag(toId(username))) profile += '<td>&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
+			if (getFlag(toId(username))) profile += '<td>&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + seenOutput + '<br />';
 			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />'
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
-			profile += '<br clear="all">';
+			profile += '<br clear="all"></td></tr></table>';
 			self.sendReplyBox(profile);
 			room.update();
 		}
