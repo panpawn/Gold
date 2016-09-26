@@ -3,6 +3,7 @@
 * By: jd                              *
 **************************************/
 
+/*
 'use strict';
 
 const fs = require('fs');
@@ -99,3 +100,4 @@ exports.commands = {
 	},
 	endanagramhelp: ["/endanagram - Ends the current game of anagrams in the respected room.  Requires +, %, @, #, &, ~"],
 };
+*/
