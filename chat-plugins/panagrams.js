@@ -38,7 +38,7 @@ let Panagram = (function () {
 		} while (this.mixed === toId(this.answer.species));
 
 		this.room.add('|html|<div class = "broadcast-gold"><center>A game of Panagram was started! Scrambled Pokemon: <b>' + this.mixed + '</b><br /> (Remaining Sessions: ' + this.sessions + ')<br />' +
-			'<small>Enter your answer into the chat to guess!</small></center>'
+			'<small>Use /gp [pokemon] to guess!</small></center>'
 		);
 		this.guessed = {};
 		this.hint = ['The scrambled Pokémon is <b>' + this.mixed + '</b>.',
