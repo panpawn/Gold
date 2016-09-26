@@ -13,6 +13,8 @@ let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 let watchPhrases = Config.watchPhrases ? Config.watchPhrases : [];
 let watchUsers = Config.watchUsers ? Config.watchUsers : [];
 
+let proxyWhitelist = Config.proxyWhitelist || false;
+
 /*********************
  * Chatfilter Magic *
  * ******************/
@@ -106,7 +108,7 @@ Config.namefilter = function (name, user) {
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
-		if (Config.proxyWhitelist.includes(nameId)) return;
+		if (proxyWhitelist && proxyWhitelist.includes(nameId)) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
 		if (rankIndex && rankIndex > 0) return; // a hack for confirmed status from global auth
 
