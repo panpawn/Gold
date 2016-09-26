@@ -644,8 +644,8 @@ exports.BattleScripts = {
 			pokemon.ability = ''; // Don't allow Illusion to wear off
 			this.add('-mega', pokemon, pokemon.illusion.template.baseSpecies, template.requiredItem);
 		} else {
-		this.add('detailschange', pokemon, pokemon.details);
-		this.add('-mega', pokemon, template.baseSpecies, template.requiredItem);
+			this.add('detailschange', pokemon, pokemon.details);
+			this.add('-mega', pokemon, template.baseSpecies, template.requiredItem);
 		}
 		pokemon.setAbility(template.abilities['0']);
 		pokemon.baseAbility = pokemon.ability;

@@ -19,7 +19,7 @@ function loadUserData() {
 		if (err) return;
 		Gold.userData = JSON.parse(file);
 	});
-};
+}
 loadUserData();
 
 try {
@@ -47,10 +47,10 @@ try {
 				vip: false,
 				status: '',
 				friendcode: '',
-			} // we don't save blank user data objects until next save
+			}; // we don't save blank user data objects until next save
 		},
 		saveData: function () {
-				fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
+			fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
 		}.throttle(1 * 1000), // only save once/second - TOPS
 		initiateUser: function (user, ip) {	// when the user connections, this runs
 			user = toId(user);
@@ -119,7 +119,7 @@ try {
 			let returnText = `${number > 10 ? '<div class="infobox-limited">' : '<div>'}<b>The top ${number} richest users are:</b><table style="${tableStyle}" border="1" cellspacing ="0" cellpadding="3">`;
 			returnText += `<tr><td style="${tdStyle}"><b>Rank</b></td><td style="${tdStyle}"><b>Name</b></td><td style="${tdStyle}"><b>Bucks</b></td></tr>`;
 
-			function ResultsArray (id, money) {
+			function ResultsArray(id, money) {
 				this.id = id;
 				this.money = money;
 			}
@@ -208,7 +208,7 @@ try {
 				}, 'creator': {
 					title: 'Server Creator',
 					img: 'http://www.smogon.com/media/forums/images/badges/dragon.png',
-				}
+				},
 			};
 			if (displayall) {
 				let buff = [];
@@ -285,7 +285,8 @@ try {
 			this.saveData();
 		},
 		updateFriends: function (user, friend, action) {
-			user = toId(user), friend = toId(friend);
+			user = toId(user);
+			friend = toId(friend);
 			let data = this.checkExisting(user);
 			if (!data.friends) data.friends = [];
 
@@ -347,7 +348,6 @@ try {
 		},
 		newsDisplay: function (user) {
 			user = toId(user);
-			let data = this.checkExisting(user);
 			if (!Users(user)) return false;
 			let newsDis = this.generateNews();
 			if (newsDis.length === 0) return false;

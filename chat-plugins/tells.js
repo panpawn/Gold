@@ -32,7 +32,7 @@ exports.commands = {
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 		let pop = '|popup||wide||html| ';
 		if (!target) {
-			let data = Object.keys(Gold.userData), buff = Object.create(null);
+			let data = Object.keys(Gold.userData);
 			let keys, results = Object.create(null), userIdRegEx = new RegExp(`${user.userid}#.*`, "g");
 			let tableTop = 'Current pending tells queued:<br /><table border="1" cellspacing ="0" cellpadding="3">';
 			tableTop += '<tr><td>Tell ID:</td><td>Tell to:</td><td>Message:</td><td></td></tr>';
@@ -41,17 +41,19 @@ exports.commands = {
 			data.forEach(name => {
 				if (!Gold.userData[name].tells || Gold.userData[name].tells.length > 0) return;
 				keys = Object.keys(Gold.userData[name].tells);
-				keys.find(arr => {
+				keys.find(arr => { // eslint-disable-line array-callback-return
 					if (arr.match(userIdRegEx)) {
 						results[arr.match(userIdRegEx)] = name;
 					}
 				});
-				if (Object.keys(results).length > 0) Object.keys(results).forEach(tellid => {
-					if (!Gold.userData[results[tellid]].tells[tellid]) return;
-					if (displayedIds.includes(tellid)) return;
-					midTable += `<tr><td><code>${tellid}</code></td><td>${Gold.nameColor(name, true)}</td><td>${Gold.userData[name].tells[tellid]}</td><td><button name="send" value="/mailbox ${name},${tellid}">Delete Pending Message</button></td></tr>`;
-					displayedIds.push(tellid);
-				});
+				if (Object.keys(results).length > 0) {
+					Object.keys(results).forEach(tellid => {
+						if (!Gold.userData[results[tellid]].tells[tellid]) return;
+						if (displayedIds.includes(tellid)) return;
+						midTable += `<tr><td><code>${tellid}</code></td><td>${Gold.nameColor(name, true)}</td><td>${Gold.userData[name].tells[tellid]}</td><td><button name="send" value="/mailbox ${name},${tellid}">Delete Pending Message</button></td></tr>`;
+						displayedIds.push(tellid);
+					});
+				}
 			});
 			if (!midTable) return user.send('|popup||wide||html|<font color="red">You do not currently have any tells pending to be sent at this time.</font>');
 			user.send(`${pop + tableTop + midTable}</table>`);

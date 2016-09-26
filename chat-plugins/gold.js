@@ -725,40 +725,36 @@ exports.commands = {
 
 		if (parts[2] && badgeObj[parts[2]]) badgeTitle = badgeObj[parts[2]].title;
 		switch (parts[0]) {
-			case 'help':
-				return this.parse('/help badges');
-				break;
+		case 'help':
+			return this.parse('/help badges');
 
-			case 'list':
-				return this.sendReplyBox(Gold.badgeList(true));
-				break;
+		case 'list':
+			return this.sendReplyBox(Gold.badgeList(true));
 
-			case 'remove':
-				if (!this.can('pban')) return false;
-				data = Gold.checkExisting(parts[1]);
-				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
-				if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
-				Gold.modifyBadge(parts[1], parts[2], 'TAKE');
-				if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have been stripped of the badge '${badgeTitle}' by ${user.name}.`);
-				return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
-				break;
+		case 'remove':
+			if (!this.can('pban')) return false;
+			data = Gold.checkExisting(parts[1]);
+			if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+			if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
+			Gold.modifyBadge(parts[1], parts[2], 'TAKE');
+			if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have been stripped of the badge '${badgeTitle}' by ${user.name}.`);
+			return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
 
-			case 'give':
-				if (!this.can('pban')) return false;
-				data = Gold.checkExisting(parts[1]);
-				if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
-				if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
-				Gold.modifyBadge(parts[1], parts[2], 'GIVE');
-				if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have recieved the badge '${badgeTitle}' from ${user.name}.`);
-				return this.sendReply(`You have given badge '${badgeTitle}' to user '${parts[1]}'.`);
-				break;
+		case 'give':
+			if (!this.can('pban')) return false;
+			data = Gold.checkExisting(parts[1]);
+			if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+			if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
+			Gold.modifyBadge(parts[1], parts[2], 'GIVE');
+			if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have recieved the badge '${badgeTitle}' from ${user.name}.`);
+			return this.sendReply(`You have given badge '${badgeTitle}' to user '${parts[1]}'.`);
 
-			default:
-				if (!Gold.displayBadges(target)) return this.errorReply(`User '${target}' has no badges at this time.`);
-				return this.sendReplyBox(`${Gold.nameColor(target, true)}'s badges:<br />${Gold.displayBadges(target)}`);
+		default:
+			if (!Gold.displayBadges(target)) return this.errorReply(`User '${target}' has no badges at this time.`);
+			return this.sendReplyBox(`${Gold.nameColor(target, true)}'s badges:<br />${Gold.displayBadges(target)}`);
 		}
-
 	},
+
 	badgeshelp: ["/badges [user] - Views a user's badges.",
 		"/badges list - Displays a list of all badges.",
 		"/badges give, [user], [badge] - Gives a user a badge. Requires & ~",
@@ -1190,7 +1186,7 @@ exports.commands = {
 		let avatar = (targetUser ? (isNaN(targetUser.avatar) ? "http://" + serverIp + ":" + Config.port + "/avatars/" + targetUser.avatar : "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar + ".png") : (Config.customavatars[userid] ? "http://" + serverIp + ":" + Config.port + "/avatars/" + Config.customavatars[userid] : "http://play.pokemonshowdown.com/sprites/trainers/167.png"));
 		if (targetUser && targetUser.avatar[0] === '#') avatar = "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar.substr(1) + ".png";
 
-		let userSymbol = (Users.usergroups[userid] ? '<b>' + Users.usergroups[userid].substr(0, 1) + '</b>': "");
+		let userSymbol = Users.usergroups[userid] ? '<b>' + Users.usergroups[userid].substr(0, 1) + '</b>' : "";
 
 		let self = this;
 		let bucks = (Gold.readMoney(target) !== 0 ? Gold.readMoney(target) : false);
@@ -1224,7 +1220,7 @@ exports.commands = {
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + seenOutput + '<br />';
-			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />'
+			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />';
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
 			profile += '<br clear="all"></td></tr></table>';
 			self.sendReplyBox(profile);
@@ -1397,7 +1393,7 @@ exports.commands = {
 	goldipsearch: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
-		let searchType = target.includes('.') ? 'IP' : 'User', count = 0;
+		let searchType = target.includes('.') ? 'IP' : 'User';
 		let origtarget = target, targetId = toId(target), wildcard = target.includes('*');
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
 
@@ -1408,9 +1404,8 @@ exports.commands = {
 
 			names.forEach(name => {
 				if (Gold.userData[name].ips.length < 0) return;
-				count++
 				if (wildcard) {
-					for (var i = 0; i < Gold.userData[name].ips.length; i++) {
+					for (let i = 0; i < Gold.userData[name].ips.length; i++) {
 						if (Gold.userData[name].ips[i].startsWith(target) && !(buff.includes(formatName(name)))) {
 							buff.push(formatName(name));
 						}
@@ -1442,17 +1437,17 @@ exports.commands = {
 		// variable declarations
 		let targetId = toId(this.target);
 		let ips = [], prevNames = [];
-		let prevIps = (Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0 ? Gold.userData[targetId].ips : false);
+		let prevIps = Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0 ? Gold.userData[targetId].ips : false;
 		let names = Object.keys(Gold.userData);
 		let buff = [], none = '<em style="color:gray">(none)</em>';
-		let userSymbol = (Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User');
-		let userGroup = (Config.groups[userSymbol] ? 'Global ' +  Config.groups[userSymbol].name  + ' (' + userSymbol + ')' : false);
+		let userSymbol = Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User';
+		let userGroup = Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
 
 		// get previous names and IPs
 		if (prevIps) prevIps.forEach(f => { ips.push(f); });
 		if (ips.length > 0) {
 			names.forEach(name => {
-				for (var i = 0; i < ips.length; i++) {
+				for (let i = 0; i < ips.length; i++) {
 					if (Gold.userData[name].ips.includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
 						prevNames.push(name);
 					}

@@ -220,7 +220,6 @@ function parseMessage(message, user) {
 	case 'uhtml':
 		message = '<span class="notice">' + lineSplit.slice(3).join('|').trim() + '</span>';
 		break;
-	case '':
 	case 'raw':
 	case 'html':
 		message = '<span class="notice">' + lineSplit.slice(2).join('|').trim() + '</span>';
