@@ -1209,17 +1209,16 @@ exports.commands = {
 			return (user && user.lastActiveTime ? moment(user.lastActiveTime).fromNow() : "hasn't talked yet");
 		}
 		function showProfile() {
-			let seenOutput = Gold.userData[userid] && Gold.userData[userid].lastSeen !== 0 ? moment(Gold.userData[userid].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')' : "Never";
 			let profile = '<table><tr>', vip = Gold.hasVip(userid) ? " (<font color=#6390F0><b>VIP User</b></font>)" : "";
-			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
-			let bio = Gold.userData[userid] && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
+			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
+			let bio = Gold.userData[userid] && Gold.userData[userid].status && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
 			profile += '<td><img src="' + avatar + '" height=80 width=80 align=left></td>';
 			if (!getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
 			if (getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
-			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + seenOutput + '<br />';
+			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + Gold.getLastSeen(userid) + '<br />';
 			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />';
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
 			profile += '<br clear="all"></td></tr></table>';
@@ -1462,7 +1461,7 @@ exports.commands = {
 			// header and last seen
 			buff.push('<strong class="username">' + target + '</strong> <em style="color:gray">(offline)</em>');
 			if (userGroup) buff.push(userGroup);
-			buff.push('Last Seen: ' + (Gold.userData[targetId] && Gold.userData[targetId].lastSeen ? moment(Gold.userData[targetId].lastSeen).format("MMMM Do YYYY, h:mm A") : '<font color="red">never on this server</font>') + '<br />');
+			buff.push('Last Seen: ' + Gold.getLastSeen(targetId) + '<br />');
 
 			// get previous names and IPs
 			buff.push("Previous IP" + Gold.pluralFormat(ips.length, 's') + ": " + (ips.length > 0 ? ips.join(', ') : none));
@@ -1481,9 +1480,9 @@ exports.commands = {
 		let userName = '<strong class="username">' + Gold.nameColor(target, false) + '</strong>';
 		if (userid === user.userid) return this.sendReplyBox(userName + ", have you looked in a mirror lately?");
 		if (Users(target) && Users(target).connected) return this.sendReplyBox(userName + ' is currently <font color="green">online</font>.');
-		if (!Gold.userData[userid] || Gold.userData[userid].lastSeen === 0) return this.sendReplyBox(userName + ' has <font color=\"red\">never</font> been seen online on this server.');
-		let userLastSeen = moment(Gold.userData[userid].lastSeen).format("MMMM Do YYYY, h:mm A");
-		this.sendReplyBox(userName + ' was last seen online on ' + userLastSeen + ' EST. (' + moment(Gold.userData[userid].lastSeen).fromNow() + ')');
+		let seen = Gold.getLastSeen(userid);
+		if (seen === 'Never') return this.sendReplyBox(userName + ' has <font color=\"red\">never</font> been seen online on this server.');
+		this.sendReplyBox(userName + ' was last seen online on ' + seen);
 	},
 	bio: 'status',
 	status: function (target, room, user, connection, cmd) {

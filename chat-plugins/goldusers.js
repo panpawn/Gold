@@ -284,6 +284,15 @@ try {
 			data.lastSeen = Date.now();
 			this.saveData();
 		},
+		getLastSeen: function (user) {
+			let data = Gold.userData[toId(user)] || false;
+
+			if (data && data.lastSeen && data.lastSeen !== 0) {
+				let reply = moment(Gold.userData[toId(user)].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[toId(user)].lastSeen).fromNow() + ')';
+				return reply;
+			}
+			return "Never";
+		},
 		updateFriends: function (user, friend, action) {
 			user = toId(user);
 			friend = toId(friend);
