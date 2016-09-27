@@ -985,23 +985,23 @@ exports.commands = {
 		if (!this.can('hotpatch')) return false;
 		if (user.hidden) return this.errorReply("You are already hiding yourself on the userlist.");
 		user.hidden = true;
-		for (let u in user.roomCount) {
-			if (Rooms(u).id !== 'global') {
-				Rooms(u).add('|L|' + user.getIdentity(Rooms(u))).update();
-			}
-		}
-		return this.sendReply("You are now hiding.");
+		user.inRooms.forEach(id => {
+			let roomid = Rooms(id);
+			if (!roomid || roomid.id === 'global') return;
+			roomid.add('|L|' + user.getIdentity(roomid)).update();
+		});
+		return this.sendReply("You are now hiding your presence.");
 	},
 	showadmin: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
 		if (!user.hidden) return this.errorReply("You are already showing yourself on the userlist.");
 		user.hidden = false;
-		for (let u in user.roomCount) {
-			if (Rooms(u).id !== 'global') {
-				Rooms(u).add('|J|' + user.getIdentity(Rooms(u))).update();
-			}
-		}
-		return this.sendReply("You are no longer hiding.");
+		user.inRooms.forEach(id => {
+			let roomid = Rooms(id);
+			if (!roomid || roomid.id === 'global') return;
+			roomid.add('|J|' + user.getIdentity(roomid)).update();
+		});
+		return this.sendReply("You are no longer hiding your presence.");
 	},
 	permalock: function (target, room, user) {
 		if (!target) return this.parse('/help permalock');
