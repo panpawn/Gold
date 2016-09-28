@@ -1280,7 +1280,7 @@ exports.commands = {
 		if (!target) {
 			if (!this.runBroadcast()) return;
 			this.sendReplyBox("Please follow the rules:<br />" +
-				(room.rulesLink ? "- <a href=\"" + Tools.escapeHTML(room.rulesLink) + "\">" + Tools.escapeHTML(room.title) + " room rules</a><br />" : "") +
+				(room && room.rulesLink ? "- <a href=\"" + Tools.escapeHTML(room.rulesLink) + "\">" + Tools.escapeHTML(room.title) + " room rules</a><br />" : "") +
 				"- <a href=\"http://goldservers.info/forums/showthread.php?tid=116\">" + (room.rulesLink ? "Global rules" : "Rules") + "</a>");
 			return;
 		}
