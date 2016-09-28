@@ -263,7 +263,6 @@ try {
 		 * Misc. Functions *
 		 *******************/
 		customColor: function (user, action, color) {
-			user = toId(user);
 			let data = this.checkExisting(user);
 			if (!data.color) data.color = '';
 
@@ -278,7 +277,6 @@ try {
 			this.saveData();
 		},
 		customIcon: function (user, action, icon) {
-			user = toId(user);
 			let data = this.checkExisting(user);
 			if (!data.icon) data.icon = '';
 
@@ -293,8 +291,7 @@ try {
 			this.saveData();
 		},
 		addIp: function (user, ip) { // sub-function of initialize user
-			user = toId(user);
-			if (user.substr(0, 5) === 'guest') return false;
+			if (toId(user).substr(0, 5) === 'guest') return false;
 
 			let data = this.checkExisting(user);
 			if (!data.ips) data.ips = [];
@@ -302,11 +299,9 @@ try {
 			if (!data.ips.includes(ip)) data.ips.push(ip);
 		},
 		updateSeen: function (user) {
-			user = toId(user);
-			if (user.substr(0, 5) === 'guest') return false;
+			if (toId(user).substr(0, 5) === 'guest') return false;
 
-			let data = Gold.userData[user];
-			if (!data) this.createUser(user);
+			let data = this.checkExisting(user);
 
 			data.lastSeen = Date.now();
 			this.saveData();
@@ -321,7 +316,6 @@ try {
 			return "Never";
 		},
 		updateFriends: function (user, friend, action) {
-			user = toId(user);
 			friend = toId(friend);
 			let data = this.checkExisting(user);
 			if (!data.friends) data.friends = [];
@@ -356,12 +350,11 @@ try {
 			this.saveData();
 		},
 		checkTells: function (user) {
-			user = toId(user);
 			let reply = [];
 			let data = Gold.checkExisting(user);
 			if (data) {
 				if (Object.keys(data.tells).length > 0) {
-					for (let i in Gold.userData[user].tells) {
+					for (let i in Gold.userData[toId(user)].tells) {
 						reply.push(`|raw|${data.tells[i]}`);
 						delete data.tells[i];
 					}
@@ -383,7 +376,6 @@ try {
 			return newsDisplay;
 		},
 		newsDisplay: function (user) {
-			user = toId(user);
 			if (!Users(user)) return false;
 			let newsDis = this.generateNews();
 			if (newsDis.length === 0) return false;
