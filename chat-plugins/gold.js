@@ -1654,30 +1654,6 @@ function parseStatus(text, encoding) {
 	}
 	return text;
 }
-
-Gold.pmAll = function (message, pmName) {
-	pmName = (pmName ? pmName : '~Gold Server [Do not reply]');
-	Users.users.forEach(curUser => {
-		curUser.send('|pm|' + pmName + '|' + curUser.getIdentity() + '|' + message);
-	});
-};
-Gold.pmStaff = function (message, from) {
-	from = (from ? ' (PM from ' + from + ')' : '');
-	Users.users.forEach(curUser => {
-		if (curUser.isStaff) {
-			curUser.send('|pm|~Staff PM|' + curUser.getIdentity() + '|' + message + from);
-		}
-	});
-};
-Gold.pmUpperStaff = function (message, pmName, from) {
-	pmName = (pmName ? pmName : '~Upper Staff PM');
-	from = (from ? ' (PM from ' + from + ')' : '');
-	Users.users.forEach(curUser => {
-		if (curUser.group === '~' || curUser.group === '&') {
-			curUser.send('|pm|' + pmName + '|' + curUser.getIdentity() + '|' + message + from);
-		}
-	});
-};
 Gold.pluralFormat = function (length, ending) {
 	if (!ending) ending = 's';
 	if (isNaN(Number(length))) return false;

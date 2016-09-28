@@ -385,6 +385,29 @@ try {
 				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
 			}
 		},
+		pmAll: function (message, pmName) {
+			if (!pmName) pmName = '~Gold Server [Do not reply]';
+			Users.users.forEach(curUser => {
+				curUser.send('|pm|' + pmName + '|' + curUser.getIdentity() + '|' + message);
+			});
+		},
+		pmStaff: function (message, from) {
+			from = from ? ' (PM from ' + from + ')' : '';
+			Users.users.forEach(curUser => {
+				if (curUser.isStaff) {
+					curUser.send('|pm|~Staff PM|' + curUser.getIdentity() + '|' + message + from);
+				}
+			});
+		},
+		pmUpperStaff: function (message, pmName, from) {
+			if (!pmName) pmName = '~Upper Staff PM';
+			from = from ? ' (PM from ' + from + ')' : '';
+			Users.users.forEach(curUser => {
+				if (curUser.group === '~' || curUser.group === '&') {
+					curUser.send('|pm|' + pmName + '|' + curUser.getIdentity() + '|' + message + from);
+				}
+			});
+		},
 	});
 } catch (e) {
 	let staff = Rooms('staff');
