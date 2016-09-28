@@ -13,7 +13,7 @@ let TeamValidator = module.exports = getValidator;
 let PM;
 
 function banReason(strings, reason) {
-	return reason && typeof reason === 'string' ? ` banned by ${reason}.` : `banned`;
+	return reason && typeof reason === 'string' ? `banned by ${reason}` : `banned`;
 }
 
 class Validator {
@@ -82,6 +82,19 @@ class Validator {
 			}
 		}
 
+		for (let i = 0; i < format.teamLimitTable.length; i++) {
+			let entry = format.teamLimitTable[i];
+			let count = 0;
+			for (let j = 3; j < entry.length; j++) {
+				if (teamHas[entry[j]] > 0) count += teamHas[entry[j]];
+			}
+			let limit = entry[2];
+			if (count > limit) {
+				let clause = entry[1] ? " by " + entry[1] : '';
+				problems.push("You are limited to " + limit + " of " + entry[0] + clause + ".");
+			}
+		}
+
 		if (format.ruleset) {
 			for (let i = 0; i < format.ruleset.length; i++) {
 				let subformat = tools.getFormat(format.ruleset[i]);
@@ -107,12 +120,6 @@ class Validator {
 			return [`This is not a Pokemon.`];
 		}
 
-		if (!template) {
-			template = tools.getTemplate(Tools.getString(set.species));
-			if (!template.exists) {
-				return [`The Pokemon "${set.species}" does not exist.`];
-			}
-		}
 		set.species = Tools.getSpecies(set.species);
 
 		set.name = tools.getName(set.name);
@@ -148,11 +155,6 @@ class Validator {
 
 		let setHas = {};
 
-		if (!template || !template.abilities) {
-			set.species = 'Unown';
-			template = tools.getTemplate('Unown');
-		}
-
 		if (format.ruleset) {
 			for (let i = 0; i < format.ruleset.length; i++) {
 				let subformat = tools.getFormat(format.ruleset[i]);
@@ -164,7 +166,14 @@ class Validator {
 		if (format.onChangeSet) {
 			problems = problems.concat(format.onChangeSet.call(tools, set, format, setHas, teamHas) || []);
 		}
-		if (toId(set.species) !== template.speciesid) template = tools.getTemplate(set.species);
+
+		if (!template) {
+			template = tools.getTemplate(set.species);
+		}
+		if (!template.exists) {
+			return [`The Pokemon "${set.species}" does not exist.`];
+		}
+
 		item = tools.getItem(set.item);
 		if (item.id && !item.exists) {
 			return [`"${set.item}" is an invalid item.`];

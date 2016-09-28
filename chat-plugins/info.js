@@ -23,7 +23,8 @@ exports.commands = {
 	alts: 'whois',
 	whoare: 'whois',
 	whois: function (target, room, user, connection, cmd) {
-		if (room.id === 'staff' && !this.runBroadcast()) return;
+		if (room && room.id === 'staff' && !this.runBroadcast()) return;
+		if (!room) room = Rooms.global;
 		let targetUser = this.targetUserOrSelf(target, user.group === ' ');
 		if (!targetUser) {
 			if (user.can('pban')) return this.parse('/offlinewhois ' + target);
@@ -152,8 +153,8 @@ exports.commands = {
 				let punishDesc = ``;
 				if (punishment) {
 					const [punishType, userid, expireTime, reason] = punishment;
-					punishDesc = `banned`;
-					if (punishType === 'BLACKLIST') punishDesc = `blacklisted`;
+					punishDesc = Punishments.roomPunishmentTypes.get(punishType);
+					if (!punishDesc) punishDesc = `punished`;
 					if (userid !== targetUser.userid) punishDesc += ` as ${userid}`;
 
 					let expiresIn = new Date(expireTime).getTime() - Date.now();
@@ -242,23 +243,14 @@ exports.commands = {
 	ipsearchhelp: ["/ipsearch [ip|range|host] - Find all users with specified IP, IP range, or host. Requires: & ~"],
 
 	/*********************************************************
-	 * Shortcuts
+	 * Client fallback
 	 *********************************************************/
 
-	inv: 'invite',
-	invite: function (target, room, user) {
-		if (!target) return this.parse('/help invite');
-		target = this.splitTarget(target);
-		if (!this.targetUser) {
-			return this.errorReply("User " + this.targetUsername + " not found.");
-		}
-		let targetRoom = (target ? Rooms.search(target) : room);
-		if (!targetRoom) {
-			return this.errorReply("Room " + target + " not found.");
-		}
-		return this.parse('/msg ' + this.targetUsername + ', /invite ' + targetRoom.id);
+	unignore: 'ignore',
+	ignore: function (target, room, user) {
+		if (!room) this.errorReply(`In PMs, this command can only be used by itself to ignore the person you're talking to: "/${this.cmd}", not "/${this.cmd} ${target}"`);
+		this.errorReply(`You're using a custom client that doesn't support the ignore command.`);
 	},
-	invitehelp: ["/invite [username], [roomname] - Invites the player [username] to join the room [roomname]."],
 
 	/*********************************************************
 	 * Data Search Tools
@@ -1138,6 +1130,9 @@ exports.commands = {
 				"<br /><em>Type /formatshelp <strong>[format|section]</strong> to get details about an available format or group of formats.</em>"
 			);
 		}
+
+		const isOMSearch = (cmd === 'om' || cmd === 'othermetas');
+
 		let targetId = toId(target);
 		if (targetId === 'ladder') targetId = 'search';
 		if (targetId === 'all') targetId = '';
@@ -1146,7 +1141,6 @@ exports.commands = {
 		let format = Tools.getFormat(targetId);
 		if (format.effectType === 'Format') formatList = [targetId];
 		if (!formatList) {
-			if (this.broadcasting && (cmd !== 'om' && cmd !== 'othermetas')) return this.errorReply("'" + target + "' is not a format. This command's search mode is too spammy to broadcast.");
 			formatList = Object.keys(Tools.data.Formats).filter(formatid => Tools.data.Formats[formatid].effectType === 'Format');
 		}
 
@@ -1158,6 +1152,8 @@ exports.commands = {
 			let format = Tools.getFormat(formatList[i]);
 			let sectionId = toId(format.section);
 			if (targetId && !format[targetId + 'Show'] && sectionId !== targetId && format.id === formatList[i] && !format.id.startsWith(targetId)) continue;
+			if (isOMSearch && format.id.startsWith('gen') && ['ou', 'uu', 'ru', 'ubers', 'lc', 'customgame', 'doublescustomgame', 'gbusingles', 'gbudoubles'].includes(format.id.slice(4))) continue;
+			if (isOMSearch && (format.id === 'gen5nu')) continue;
 			totalMatches++;
 			if (!sections[sectionId]) sections[sectionId] = {name: format.section, formats: []};
 			sections[sectionId].formats.push(format.id);
@@ -1175,27 +1171,36 @@ exports.commands = {
 			return this.sendReplyBox(format.desc.join("<br />"));
 		}
 
+		let tableStyle = `border:1px solid gray; border-collapse:collapse`;
+
+		if (this.broadcasting) {
+			tableStyle += `; display:inline-block; max-height:240px;" class="scrollable`;
+		}
+
 		// Build tables
-		let buf = [];
+		let buf = [`<table style="${tableStyle}" cellspacing="0" cellpadding="5">`];
 		for (let sectionId in sections) {
 			if (exactMatch && sectionId !== exactMatch) continue;
-			buf.push("<h3>" + Tools.escapeHTML(sections[sectionId].name) + "</h3>");
-			buf.push("<table class=\"scrollable\" style=\"display:inline-block; max-height:200px; border:1px solid gray; border-collapse:collapse\" cellspacing=\"0\" cellpadding=\"5\"><thead><th style=\"border:1px solid gray\" >Name</th><th style=\"border:1px solid gray\" >Description</th></thead><tbody>");
+			buf.push(Tools.html`<th style="border:1px solid gray" colspan="2">${sections[sectionId].name}</th>`);
 			for (let i = 0; i < sections[sectionId].formats.length; i++) {
 				let format = Tools.getFormat(sections[sectionId].formats[i]);
-				buf.push("<tr><td style=\"border:1px solid gray\">" + Tools.escapeHTML(format.name) + "</td><td style=\"border: 1px solid gray; margin-left:10px\">" + (format.desc ? format.desc.join("<br />") : "&mdash;") + "</td></tr>");
+				let nameHTML = Tools.escapeHTML(format.name);
+				let descHTML = format.desc ? format.desc.join("<br />") : "&mdash;";
+				buf.push(`<tr><td style="border:1px solid gray">${nameHTML}</td><td style="border: 1px solid gray; margin-left:10px">${descHTML}</td></tr>`);
 			}
-			buf.push("</tbody></table>");
 		}
-		return this.sendReply("|raw|<center>" + buf.join("") + "</center>");
+		buf.push(`</table>`);
+		return this.sendReply("|raw|" + buf.join("") + "");
 	},
 
 	'!roomhelp': true,
 	roomhelp: function (target, room, user) {
-		if (!this.runBroadcast()) return;
-		if (this.broadcasting && (room.id === 'lobby' || room.battle)) return this.errorReply("This command is too spammy for lobby/battles.");
+		if (!this.canBroadcast('!htmlbox')) return;
+		if (this.broadcastMessage && !this.can('declare', null, room)) return false;
+
+		if (!this.runBroadcast('!htmlbox')) return;
 		this.sendReplyBox(
-			"Room drivers (%) can use:<br />" +
+			"<strong>Room drivers (%)</strong> can use:<br />" +
 			"- /warn OR /k <em>username</em>: warn a user and show the Pok&eacute;mon Showdown rules<br />" +
 			"- /mute OR /m <em>username</em>: 7 minute mute<br />" +
 			"- /hourmute OR /hm <em>username</em>: 60 minute mute<br />" +
@@ -1204,26 +1209,26 @@ exports.commands = {
 			"- /modlog <em>username</em>: search the moderator log of the room<br />" +
 			"- /modnote <em>note</em>: adds a moderator note that can be read through modlog<br />" +
 			"<br />" +
-			"Room moderators (@) can also use:<br />" +
+			"<strong>Room moderators (@)</strong> can also use:<br />" +
 			"- /roomban OR /rb <em>username</em>: bans user from the room<br />" +
 			"- /roomunban <em>username</em>: unbans user from the room<br />" +
 			"- /roomvoice <em>username</em>: appoint a room voice<br />" +
 			"- /roomdevoice <em>username</em>: remove a room voice<br />" +
-			"- /modchat <em>[off/autoconfirmed/+]</em>: set modchat level<br />" +
 			"- /staffintro <em>intro</em>: sets the staff introduction that will be displayed for all staff joining the room<br />" +
+			"- /roomsettings: change a variety of room settings, namely modchat<br />" +
 			"<br />" +
-			"Room owners (#) can also use:<br />" +
+			"<strong>Room owners (#)</strong> can also use:<br />" +
 			"- /roomintro <em>intro</em>: sets the room introduction that will be displayed for all users joining the room<br />" +
 			"- /rules <em>rules link</em>: set the room rules link seen when using /rules<br />" +
 			"- /roommod, /roomdriver <em>username</em>: appoint a room moderator/driver<br />" +
 			"- /roomdemod, /roomdedriver <em>username</em>: remove a room moderator/driver<br />" +
 			"- /roomdeauth <em>username</em>: remove all room auth from a user<br />" +
-			"- /modchat <em>[%/@/#]</em>: set modchat level<br />" +
 			"- /declare <em>message</em>: make a large blue declaration to the room<br />" +
 			"- !htmlbox <em>HTML code</em>: broadcasts a box of HTML code to the room<br />" +
 			"- !showimage <em>[url], [width], [height]</em>: shows an image to the room<br />" +
+			"- /roomsettings: change a variety of room settings, including modchat, capsfilter, etc<br />" +
 			"<br />" +
-			"More detailed help can be found in the <a href=\"https://www.smogon.com/sim/roomauth_guide\">roomauth guide</a><br />" +
+			"More detailed help can be found in the <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6774654\">roomauth guide</a><br />" +
 			"<br />" +
 			"Tournament Help:<br />" +
 			"- /tour create <em>format</em>, elimination: Creates a new single elimination tournament in the current room.<br />" +
@@ -1231,14 +1236,14 @@ exports.commands = {
 			"- /tour end: Forcibly ends the tournament in the current room<br />" +
 			"- /tour start: Starts the tournament in the current room<br />" +
 			"<br />" +
-			"More detailed help can be found <a href=\"https://gist.github.com/verbiage/0846a552595349032fbe\">here</a><br />" +
+			"More detailed help can be found in the <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6777489\">tournaments guide</a><br />" +
 			"</div>"
 		);
 	},
 
 	'!restarthelp': true,
 	restarthelp: function (target, room, user) {
-		if (room.id === 'lobby' && !this.can('lockdown')) return false;
+		if (!Rooms.global.lockdown && !this.can('lockdown')) return false;
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox(
 			"The server is restarting. Things to know:<br />" +
@@ -1730,5 +1735,5 @@ exports.commands = {
 
 process.nextTick(() => {
 	Tools.includeData();
-	CommandParser.globalPattern.register(['/git ', '/uptime ']);
+	CommandParser.globalPattern.register('/git ', '/uptime ');
 });

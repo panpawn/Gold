@@ -65,6 +65,7 @@ class Poll {
 		let count = 0;
 		let output = '<div style="max-height: 310px; overflow-y: auto;  border-top-right-radius: 20px; border-top-left-radius: 20px;"><table cellspacing="0" style="width: 100%; border: 1px solid #79330A; border-bottom: none; border-top-right-radius: 20px; border-top-left-radius: 20px;"><tr><td colspan="4" class="poll-td" style="background: rgba(255, 174, 127, 0.8); background: rgba(255, 153, 0, 1); border-bottom: 1px solid #79330A; border-top-right-radius: 20px; border-top-left-radius: 20px; text-shadow: 0px 0px 2px #EEE; box-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8) inset, 0px 0px 1px rgba(0, 0, 0, 0.5) inset;"><span style="border: 1px solid #3B763B; color: #2D5A2D; border-radius: 4px; padding: 0 3px; box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.8);"><i class="fa fa-bar-chart"></i> Poll</span> <strong style="font-size: 11pt; color: #512106">' + this.getQuestionMarkup() + '</strong>';
 		this.options.forEach((option, number) => {
+<<<<<<< HEAD
 			count++;
 			if (count === 1) output += "<tr>";
 			output += '<td class="poll-td"><button style="border-radius: 20px; transition-duration: 0.5s; transition-timing-function: linear;" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + Tools.escapeHTML(option.name) + '</button></td>';
@@ -72,6 +73,9 @@ class Poll {
 				output += "</tr>";
 				count = 0;
 			}
+=======
+			output += '<div style="margin-top: 5px"><button class="button" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + number + '. <strong>' + this.getOptionMarkup(option) + '</strong></button></div>';
+>>>>>>> upstream/master
 		});
 		output += '</table></div><div style="padding: 8px 0px; text-align: center; border: 1px solid #79330A; border-top: none; border-bottom-right-radius: 20px; border-bottom-left-radius: 20px;"><button value="/poll results" name="send" title="View results - you will not be able to vote after viewing results" class="poll-results-btn" style="border-radius: 20px; transition-duration: 0.5s; transition-timing-function: linear;"><small>(View results)</small></button></div>';
 

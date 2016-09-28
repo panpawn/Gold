@@ -24,7 +24,7 @@ const MAX_REASON_LENGTH = 300;
 const MUTE_LENGTH = 7 * 60 * 1000;
 const HOURMUTE_LENGTH = 60 * 60 * 1000;
 
-exports.commands = {
+let commands = exports.commands = {
 
 	'!version': true,
 	version: function (target, room, user) {
@@ -41,7 +41,7 @@ exports.commands = {
 	authority: function (target, room, user, connection) {
 		if (target) {
 			let targetRoom = Rooms.search(target);
-			let unavailableRoom = targetRoom && (targetRoom !== room && (targetRoom.modjoin || targetRoom.staffRoom) && !user.can('makeroom'));
+			let unavailableRoom = targetRoom && targetRoom.checkModjoin(user);
 			if (targetRoom && !unavailableRoom) return this.parse('/roomauth1 ' + target);
 			return this.parse('/userauth ' + target);
 		}
@@ -72,24 +72,23 @@ exports.commands = {
 		"/auth [user] - Show what global and roomauth a user has."],
 	*/
 
-	me: function (target, room, user, connection) {
-		// By default, /me allows a blank message
-		if (!target) target = '';
-		target = this.canTalk('/me ' + target);
+	'!me': true,
+	mee: 'me',
+	me: function (target, room, user) {
+		target = this.canTalk(`/${this.cmd} ${target || ''}`);
 		if (!target) return;
 
-		return target;
-	},
-
-	mee: function (target, room, user, connection) {
-		// By default, /mee allows a blank message
-		if (!target) target = '';
-		target = target.trim();
-		if (/[A-Za-z0-9]/.test(target.charAt(0))) {
-			return this.errorReply("To prevent confusion, /mee can't start with a letter or number.");
+		if (this.message.startsWith(`/ME`)) {
+			const uppercaseIdentity = user.getIdentity().toUpperCase();
+			if (room) {
+				this.add(`|c|${uppercaseIdentity}|${target}`);
+			} else {
+				let msg = `|pm|${uppercaseIdentity}|${this.pmTarget.getIdentity()}|${target}`;
+				user.send(msg);
+				if (this.pmTarget !== user) this.pmTarget.send(msg);
+			}
+			return;
 		}
-		target = this.canTalk('/mee ' + target);
-		if (!target) return;
 
 		return target;
 	},
@@ -381,16 +380,60 @@ exports.commands = {
 			this.errorReply("You forgot the comma.");
 			return this.parse('/help msg');
 		}
-		this.pmTarget = (targetUser || this.targetUsername);
+		this.pmTarget = targetUser;
 		if (this.targetUsername === 'goldnews') return this.errorReply("This is the news... don't be silly. xdxd");
+
 		if (!targetUser) {
-			this.errorReply("User " + this.targetUsername + " not found. Did you misspell their name?");
-			return this.parse('/help msg');
+			let error = `User ${this.targetUsername} not found. Did you misspell their name?`;
+			error = `|pm|${this.user.getIdentity()}| ${this.targetUsername}|/error ${error}`;
+			connection.send(error);
+			return;
 		}
 
 		return CommandParser.Messages.send(target, this);
 	},
 	msghelp: ["/msg OR /whisper OR /w [username], [message] - Send a private message."],
+
+	'!invite': true,
+	inv: 'invite',
+	invite: function (target, room, user) {
+		if (!target) return this.parse('/help invite');
+		if (room) target = this.splitTarget(target) || room.id;
+		let targetRoom = Rooms.search(target);
+		if (targetRoom && !targetRoom.checkModjoin(user)) {
+			targetRoom = undefined;
+		}
+
+		if (room) {
+			if (!this.targetUser) return this.errorReply(`The user "${this.targetUsername}" was not found.`);
+			if (!targetRoom) return this.errorReply(`The room "${target}" was not found.`);
+
+			return this.parse(`/pm ${this.targetUsername}, /invite ${targetRoom.id}`);
+		}
+
+		let targetUser = this.pmTarget;
+
+		if (!targetRoom || targetRoom === Rooms.global) return this.errorReply(`The room "${target}" was not found.`);
+		if (targetRoom.staffRoom && !targetUser.isStaff) return this.errorReply(`User "${this.targetUsername}" requires global auth to join room "${targetRoom.id}".`);
+		if (!targetUser) return this.errorReply(`The user "${this.targetUsername}" was not found.`);
+
+		if (!targetRoom.checkModjoin(targetUser)) {
+			if (targetRoom.getAuth(targetUser) !== ' ') {
+				return this.errorReply(`The user "${targetUser.name}" does not have permission to join "${targetRoom.title}".`);
+			}
+			this.parse(`/roomvoice ${targetUser.name}`, false, targetRoom);
+			if (!targetRoom.checkModjoin(targetUser)) {
+				if (targetRoom.getAuth(targetUser) !== ' ') {
+					return this.errorReply(`The user "${targetUser.name}" does not have permission to join "${targetRoom.title}".`);
+				}
+				return this.errorReply(`You do not have permission to invite people into this room.`);
+			}
+		}
+
+		return '/invite ' + targetRoom.id;
+	},
+	invitehelp: ["/invite [username] - Invites the player [username] to join the room you sent the command to.",
+		"(in a PM) /invite [roomname] - Invites the player you're PMing to join the room [roomname]."],
 
 	pminfobox: function (target, room, user, connection) {
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
@@ -1087,16 +1130,8 @@ exports.commands = {
 		if (cmd === 'roomauth1') userLookup = '\n\nTo look up auth for a user, use /userauth ' + target;
 		let targetRoom = room;
 		if (target) targetRoom = Rooms.search(target);
-		if (!targetRoom) return this.errorReply("The room '" + target + "' does not exist.");
+		if (!targetRoom || targetRoom.id === 'global' || !targetRoom.checkModjoin(user)) return this.errorReply(`The room "${target}" does not exist.`);
 		if (!targetRoom.auth) return this.sendReply("/roomauth - The room '" + (targetRoom.title || target) + "' isn't designed for per-room moderation and therefore has no auth list." + userLookup);
-
-		let cannotJoin = !user.can('makeroom') && (
-			targetRoom.staffRoom ||
-			targetRoom.isPrivate && targetRoom.modjoin &&
-			(!targetRoom.auth || !targetRoom.auth[user.userid])
-		);
-		let unavailableRoom = !user.inRooms.has(targetRoom.id) && cannotJoin;
-		if (unavailableRoom) return this.errorReply("The room '" + target + "' does not exist.");
 
 		let rankLists = {};
 		for (let u in targetRoom.auth) {
@@ -1940,7 +1975,7 @@ exports.commands = {
 	announce: function (target, room, user) {
 		if (!target) return this.parse('/help announce');
 
-		if (!this.can('announce', null, room)) return false;
+		if (room && !this.can('announce', null, room)) return false;
 
 		target = this.canTalk(target);
 		if (!target) return;
@@ -2046,6 +2081,7 @@ exports.commands = {
 	blacklist: function (target, room, user) {
 		if (!target) return this.parse('/help blacklist');
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (toId(target) === 'show') return this.errorReply("You're looking for /showbl");
 
 		target = this.splitTarget(target);
 		const targetUser = this.targetUser;
@@ -2095,6 +2131,37 @@ exports.commands = {
 	},
 	blacklisthelp: ["/blacklist [username], [reason] - Blacklists the user from the room you are in for a year. Requires: # & ~"],
 
+	blacklistname: function (target, room, user) {
+		if (!target) return this.parse('/help blacklistname');
+		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
+		if (!this.can('editroom', null, room)) return false;
+		if (!room.chatRoomData) {
+			return this.errorReply("This room is not going to last long enough for a blacklist to matter - just ban the user");
+		}
+
+		let parts = target.split('|');
+		if (parts.length < 2) {
+			return this.errorReply("Blacklists require a reason.");
+		}
+		let reason = parts[1];
+		let targets = parts[0].split(',').map(s => toId(s));
+
+		for (let i = 0; i < targets.length; i++) {
+			let userid = targets[i];
+
+			Punishments.roomBlacklist(room, null, null, userid, reason);
+
+			let confirmed = Users.isConfirmed(userid);
+			if (Users.isConfirmed(userid)) {
+				Monitor.log("[CrisisMonitor] Confirmed user " + userid + (confirmed !== userid ? " (" + confirmed + ")" : "") + " was nameblacklisted from " + room.id + " by " + user.name + ", and should probably be demoted.");
+			}
+		}
+
+		this.addModCommand("" + targets.join(', ') + (targets.length > 1 ? " were" : " was") + " nameblacklisted by " + user.name + ".");
+		return true;
+	},
+	blacklistnamehelp: ["/blacklistname [username1, username2, etc.] | reason - Blacklists the given username(s) from the room you are in for a year. Requires: # & ~"],
+
 	unab: 'unblacklist',
 	unblacklist: function (target, room, user) {
 		if (!target) return this.parse('/help unblacklist');
@@ -2113,8 +2180,11 @@ exports.commands = {
 	},
 	unblacklisthelp: ["/unblacklist [username] - Unblacklists the user from the room you are in. Requires: # & ~"],
 
+	blacklists: 'showblacklist',
 	showbl: 'showblacklist',
 	showblacklist: function (target, room, user) {
+		if (target) room = Rooms.search(target);
+		if (!room) return this.errorReply(`The room "${target}" was not found.`);
 		if (!this.can('mute', null, room)) return false;
 
 		if (!user.can('ban', null, room)) return;
@@ -2137,14 +2207,17 @@ exports.commands = {
 
 		if (user.can('ban')) {
 			const subMap = Punishments.roomIps.get(room.id);
-			ips = '/ips';
-			subMap.forEach((punishment, ip) => {
-				const [punishType, id] = punishment;
-				if (punishType === 'BLACKLIST') {
-					if (!blMap.has(id)) blMap.set(id, []);
-					blMap.get(id).push(ip);
-				}
-			});
+
+			if (subMap) {
+				ips = '/ips';
+				subMap.forEach((punishment, ip) => {
+					const [punishType, id] = punishment;
+					if (punishType === 'BLACKLIST') {
+						if (!blMap.has(id)) blMap.set(id, []);
+						blMap.get(id).push(ip);
+					}
+				});
+			}
 		}
 
 		let buf = `Blacklist for room ${room.id}:<br />`;
@@ -2344,7 +2417,7 @@ exports.commands = {
 				// reload tools.js
 				global.Tools = require('./tools')[toolsLoaded ? 'includeData' : 'includeFormats'](); // note: this will lock up the server for a few seconds
 				// rebuild the formats list
-				Rooms.global.formatListText = Rooms.global.getFormatListText();
+				delete Rooms.global.formatList;
 				// respawn validator processes
 				TeamValidator.PM.respawn();
 				// respawn simulator processes
@@ -2659,37 +2732,15 @@ exports.commands = {
 		connection.sendTo(room, "updating...");
 
 		let exec = require('child_process').exec;
-		exec('git diff-index --quiet HEAD --', error => {
-			let cmd = 'git pull --rebase';
-			if (error) {
-				if (error.code === 1) {
-					// The working directory or index have local changes.
-					cmd = 'git stash && ' + cmd + ' && git stash pop';
-				} else {
-					// The most likely case here is that the user does not have
-					// `git` on the PATH (which would be error.code === 127).
-					connection.sendTo(room, "" + error);
-					logQueue.push("" + error);
-					for (let line of logQueue) {
-						room.logEntry(line);
-					}
-					CommandParser.updateServerLock = false;
-					return;
-				}
+		exec(`git fetch && git rebase --autostash FETCH_HEAD`, (error, stdout, stderr) => {
+			for (let s of ("" + stdout + stderr).split("\n")) {
+				connection.sendTo(room, s);
+				logQueue.push(s);
 			}
-			let entry = "Running `" + cmd + "`";
-			connection.sendTo(room, entry);
-			logQueue.push(entry);
-			exec(cmd, (error, stdout, stderr) => {
-				for (let s of ("" + stdout + stderr).split("\n")) {
-					connection.sendTo(room, s);
-					logQueue.push(s);
-				}
-				for (let line of logQueue) {
-					room.logEntry(line);
-				}
-				CommandParser.updateServerLock = false;
-			});
+			for (let line of logQueue) {
+				room.logEntry(line);
+			}
+			CommandParser.updateServerLock = false;
 		});
 	},
 
@@ -3253,6 +3304,8 @@ exports.commands = {
 	},
 
 	trn: function (target, room, user, connection) {
+		if (target === user.name) return false;
+
 		let commaIndex = target.indexOf(',');
 		let targetName = target;
 		let targetRegistered = false;
@@ -3346,13 +3399,19 @@ exports.commands = {
 
 process.nextTick(() => {
 	// We might want to migrate most of this to a JSON schema of command attributes.
-	CommandParser.multiLinePattern.register('>>>? ');
-	CommandParser.multiLinePattern.register('/(room|staff)(topic|intro) ');
-	CommandParser.multiLinePattern.register('/adddatacenters ');
-	CommandParser.globalPattern.register([
-		'/join ', '/leave ', '/cmd ', '/trn ', '/logout ', '/autojoin ', '/utm ', '/vtm ', '/pm ',
-		'/accept ', '/reject ', '/challenge ', '/cancelchallenge ', '/search ', '/cancelsearch ',
-		'/avatar ',
-		'/roomauth ', '/auth ', '/stafflist ', '/globalauth ', '/authlist ', '/authority ',
+	CommandParser.multiLinePattern.register(
+		'>>>? ', '/(?:room|staff)intro ', '/(?:staff)?topic ', '/adddatacenters ', '/bash '
+	);
+
+	let globalCmds = new Set([
+		'/join ', '/part ', '/cmd ', '/trn ', '/logout ', '/autojoin ',
+		'/useteam ', '/vtm ', '/msg ', '/accept ', '/reject ', '/challenge ',
+		'/cancelchallenge ', '/search ', '/avatar ', '/roomauth ', '/authority ',
 	]);
+	for (let cmd in commands) {
+		if (typeof commands[cmd] === 'string' && globalCmds.has('/' + commands[cmd] + ' ')) {
+			globalCmds.add('/' + cmd + ' ');
+		}
+	}
+	CommandParser.globalPattern.register(...globalCmds);
 });
