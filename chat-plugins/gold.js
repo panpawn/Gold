@@ -1738,32 +1738,6 @@ function formatName(name) {
 	}
 }
 
-Gold.userIps = Object.create(null);
-
-function loadIps() {
-	fs.readFile('config/userips.json', 'utf8', function (err, file) {
-		if (err) return;
-		Gold.userIps = JSON.parse(file);
-	});
-}
-loadIps();
-
-Gold.addIp = function (user, ip) {
-	user = toId(user);
-	if (user.substr(0, 5) === 'guest') return false; // don't record guest numbers
-
-	if (!Gold.userIps[user]) {
-		Gold.userIps[user] = [];
-		Gold.userIps[user].push(ip);
-	} else {
-		if (Gold.userIps[user].includes(ip)) return false;
-		Gold.userIps[user].push(ip);
-	}
-
-	// update / save
-	fs.writeFileSync('config/userips.json', JSON.stringify(Gold.userIps));
-};
-
 Gold.formatMessage = function (message) {
 	message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
 	message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
