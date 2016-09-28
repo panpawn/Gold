@@ -699,8 +699,6 @@ class GlobalRoom {
 				connection.autojoins = '';
 			}
 		}
-	}
-	onConnect(user, connection) {
 		for (let i = 0; i < user.connections.length; i++) {
 			connection = user.connections[i];
 			if (Gold.autoJoinRooms[user.userid]) {
@@ -709,6 +707,8 @@ class GlobalRoom {
 				}
 			}
 		}
+	}
+	onConnect(user, connection) {
 		let initdata = '|updateuser|' + user.name + '|' + (user.named ? '1' : '0') + '|' + user.avatar + '\n';
 		connection.send(initdata + this.formatListText);
 		if (this.chatRooms.length > 2) connection.send('|queryresponse|rooms|null'); // should display room list
