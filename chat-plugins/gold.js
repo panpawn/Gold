@@ -1596,6 +1596,23 @@ exports.commands = {
 		"/announcements delete [announcement title] - Deletes announcement with the [title]. Requires @, &, ~",
 		"/announcements add [announcement title]| [announcement desc] - Adds announcement [announcement]. Requires @, &, ~"],
 		// "/announcement toggle - Toggles getting news notifications."],
+	pastelogs: function (target, room, user) {
+		if (!this.can('lock')) return false;
+		if (!target) return this.parse('/help pastelogs');
+		let seperator = '\n';
+		if (target.includes(seperator)) {
+			let params = target.split(seperator).map(param => param.trim());
+			let output = [];
+			if (!this.runBroadcast('!pastelogs')) return;
+			for (let i = 0; i < params.length; i++) {
+				output.push(Gold.formatMessage(params[i]));
+			}
+			this.addBox(output.join('<br />'));
+		} else {
+			return this.parse('/help pastelogs');
+		}
+	},
+	pastelogshelp: ['/pastelogs [logs] - Formats messages to an HTML box. Accepts multiline input. Requires global %, @, *, &, ~'],
 };
 
 function loadRegdateCache() {
@@ -1765,3 +1782,7 @@ Gold.formatMessage = function (message) {
 
 	return message;
 };
+
+process.nextTick(() => {
+	CommandParser.multiLinePattern.register('!pastelogs ');
+});
