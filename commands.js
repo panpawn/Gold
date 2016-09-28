@@ -1321,10 +1321,7 @@ let commands = exports.commands = {
 		}
 		user.leaveRoom(targetRoom, connection);
 		if (user.named && user.registered) {
-			if (Gold.autoJoinRooms[user.userid] && Gold.autoJoinRooms[user.userid].includes((targetRoom ? targetRoom.id : room.id))) {
-				Gold.autoJoinRooms[user.userid].splice(Gold.autoJoinRooms[user.userid].indexOf((targetRoom ? targetRoom.id : room.id)), 1);
-				Gold.saveAutoJoins();
-			}
+			Gold.autoJoin(user.userid, (targetRoom ? targetRoom.id : room.id), 'REMOVE');
 		}
 	},
 

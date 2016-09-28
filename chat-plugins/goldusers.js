@@ -38,6 +38,7 @@ try {
 				tells: Object.create(null),
 				friends: [],
 				badges: [],
+				autojoin: [],
 				tellNum: 0,
 				money: 0,
 				lastSeen: 0,
@@ -232,6 +233,32 @@ try {
 			return buff.join(" ");
 		},
 
+		/********************
+		 * Auto join Magic  *
+		 *******************/
+		autoJoin: function (user, room, action) {
+			let data = this.checkExisting(user);
+			if (!data.autojoin) data.autojoin = [];
+			if (room.startsWith('groupchat-') || room.startsWith('battle-')) return false;
+
+			if (action === 'ADD') {
+				if (!data.autojoin.includes(room)) {
+					data.autojoin.push(room);
+				}
+			} else if (action === 'REMOVE') {
+				if (data.autojoin.includes(room)) {
+					data.autojoin.remove(room);
+				}
+			}
+			this.saveData();
+		},
+		getAutoJoin: function (user) {
+			let data = this.checkExisting(user);
+			if (data.autojoin && data.autojoin.length > 0) {
+				return data.autojoin;
+			}
+			return false;
+		},
 		/*******************
 		 * Misc. Functions *
 		 *******************/

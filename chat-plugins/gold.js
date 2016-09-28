@@ -1738,15 +1738,6 @@ function formatName(name) {
 	}
 }
 
-Gold.autoJoinRooms = {};
-try {
-	Gold.autoJoinRooms = JSON.parse(fs.readFileSync('config/autojoin.json', 'utf8'));
-} catch (e) {}
-
-Gold.saveAutoJoins = function () {
-	fs.writeFileSync('config/autojoin.json', JSON.stringify(Gold.autoJoinRooms));
-};
-
 Gold.userIps = Object.create(null);
 
 function loadIps() {
