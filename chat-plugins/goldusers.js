@@ -241,14 +241,11 @@ try {
 			if (!data.autojoin) data.autojoin = [];
 			if (room.startsWith('groupchat-') || room.startsWith('battle-')) return false;
 
-			if (action === 'ADD') {
-				if (!data.autojoin.includes(room)) {
-					data.autojoin.push(room);
-				}
-			} else if (action === 'REMOVE') {
-				if (data.autojoin.includes(room)) {
-					data.autojoin.remove(room);
-				}
+			if (action === 'ADD' && !data.autojoin.includes(room)) {
+				if (!Rooms(room)) return false;
+				data.autojoin.push(room);
+			} else if (action === 'REMOVE' && data.autojoin.includes(room)) {
+				data.autojoin.remove(room);
 			}
 			this.saveData();
 		},
