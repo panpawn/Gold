@@ -4,11 +4,11 @@ Pokémon Showdown
 Navigation: [Website][1] | **Server repository** | [Client repository][2]
 
   [1]: http://pokemonshowdown.com/
-  [2]: https://github.com/Zarel/Pokemon-Showdown-Client
+  [2]: https://github.com/panpawn/Gold-Client
 
-[![Build Status](https://travis-ci.org/Zarel/Pokemon-Showdown.svg)](https://travis-ci.org/Zarel/Pokemon-Showdown)
-[![Dependency Status](https://david-dm.org/zarel/Pokemon-Showdown.svg)](https://david-dm.org/zarel/Pokemon-Showdown)
-[![devDependency Status](https://david-dm.org/zarel/Pokemon-Showdown/dev-status.svg)](https://david-dm.org/zarel/Pokemon-Showdown#info=devDependencies)
+[![Build Status](https://api.travis-ci.org/panpawn/Gold-Server.svg)](https://travis-ci.org/panpawn/Gold-Server)
+[![Dependency Status](https://david-dm.org/panpawn/Gold-Server.svg)](https://david-dm.org/panpawn/Gold-Server)
+[![devDependency Status](https://david-dm.org/panpawn/Gold-Server/dev-status.svg)](https://david-dm.org/panpawn/Gold-Server#info=devDependencies)
 
 Introduction
 ------------------------------------------------------------------------
