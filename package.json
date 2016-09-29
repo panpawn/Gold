@@ -5,14 +5,14 @@
   "version": "0.10.2",
   "dependencies": {
     "MD5": "^1.3.0",
-    "autolinker": "^0.26.0",
+    "autolinker": "^1.1.0",
     "forever": "^0.15.2",
     "geoip-ultralight": "^0.1.1",
     "moment": "^2.13.0",
     "node-serialize": "0.0.4",
     "request": "^2.72.0",
-    "sockjs": "0.3.17",
-    "sugar": "1.4.1",
+    "sockjs": "0.3.18",
+    "sugar": "2.0.1",
     "nani": "1.2.0",
     "origindb": "^2.6.1",
     "uuid": "^2.0.2"
