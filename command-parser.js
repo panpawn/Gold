@@ -188,7 +188,7 @@ class CommandContext {
 		}).join('\n');
 	}
 	sendReply(data) {
-		if (this.broadcasting) {
+		if (this.broadcasting && !Users.ShadowBan.checkBanned(this.user)) {
 			// broadcasting
 			if (this.pmTarget) {
 				data = this.pmTransform(data);
@@ -318,10 +318,13 @@ class CommandContext {
 			if (!this.canBroadcast(suppressMessage)) return false;
 		}
 
-		if (this.pmTarget) {
-			this.add('|c~|' + (suppressMessage || this.message));
+		let msg = '|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message);
+		if (this.pmTarget) msg = '|c~|' + (suppressMessage || this.message);
+		if (Users.ShadowBan.checkBanned(this.user)) {
+			this.sendReply(msg);
+			Users.ShadowBan.addMessage(this.user, (this.pmTarget ? "Private to " + this.pmTarget.getIdentity() : "To " + this.room.id), (suppressMessage || this.message));
 		} else {
-			this.add('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+			this.add(msg);
 		}
 		if (!this.pmTarget) {
 			this.room.lastBroadcast = this.broadcastMessage;
