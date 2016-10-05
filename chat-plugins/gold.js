@@ -142,6 +142,7 @@ exports.commands = {
 	auth: 'gal',
 	goldauthlist: 'gal',
 	gal: function (target, room, user, connection) {
+		if (target) return this.parse('/userauth ' + target);
 		let ignoreUsers = ['ponybot', 'eltonjohn', 'axews', 'tintins', 'amaterasu'];
 		fs.readFile('config/usergroups.csv', 'utf8', function (err, data) {
 			let staff = {
