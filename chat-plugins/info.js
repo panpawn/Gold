@@ -32,11 +32,11 @@ exports.commands = {
 		}
 		if (!targetUser.connected && user.can('pban')) return this.parse('/offlinewhois ' + target);
 		let showAll = (cmd === 'ip' || cmd === 'whoare' || cmd === 'alt' || cmd === 'alts');
-		if (showAll && !user.confirmed && targetUser !== user) {
+		if (showAll && !user.trusted && targetUser !== user) {
 			return this.errorReply("/alts - Access denied.");
 		}
 
-		let buf = Tools.html`<strong class="username"><small style="display:none">${targetUser.group}</small>${targetUser.name}</strong> `;
+		let buf = Chat.html`<strong class="username"><small style="display:none">${targetUser.group}</small>${targetUser.name}</strong> `;
 		if (!targetUser.connected) buf += ` <em style="color:gray">(offline)</em>`;
 		let roomauth = '';
 		if (room.auth && targetUser.userid in room.auth) roomauth = room.auth[targetUser.userid];
@@ -81,14 +81,14 @@ exports.commands = {
 		if (user.can('alts', targetUser) || user.can('alts') && user === targetUser) {
 			let alts = targetUser.getAltUsers(true);
 			let prevNames = Object.keys(targetUser.prevNames).join(", ");
-			if (prevNames) buf += Tools.html`<br />Previous names: ${prevNames}`;
+			if (prevNames) buf += Chat.html`<br />Previous names: ${prevNames}`;
 
 			for (let j = 0; j < alts.length; ++j) {
 				let targetAlt = alts[j];
 				if (!targetAlt.named && !targetAlt.connected) continue;
 				if (targetAlt.group === '~' && user.group !== '~') continue;
 
-				buf += Tools.html`<br />Alt: <span class="username">${targetAlt.name}</span>`;
+				buf += Chat.html`<br />Alt: <span class="username">${targetAlt.name}</span>`;
 				if (!targetAlt.connected) buf += ` <em style=\"color:gray\">(offline)</em>`;
 				prevNames = Object.keys(targetAlt.prevNames).join(", ");
 				if (prevNames) buf += `<br />Previous names: ${prevNames}`;
@@ -97,9 +97,8 @@ exports.commands = {
 				buf += `<br />NAMELOCKED: ${targetUser.namelocked}`;
 				let punishment = Punishments.userids.get(targetUser.locked);
 				if (punishment) {
-					let expiresIn = new Date(punishment[2]).getTime() - Date.now();
-					let expiresDays = Math.round(expiresIn / 1000 / 60 / 60 / 24);
-					if (expiresIn > 1) buf += ` (expires in around ${expiresDays} day${Tools.plural(expiresDays)})`;
+					let expiresIn = Punishments.checkLockExpiration(targetUser.locked);
+					if (expiresIn) buf += expiresIn;
 					if (punishment[3]) buf += ` (reason: ${punishment[3]})`;
 				}
 			} else if (targetUser.locked) {
@@ -117,9 +116,8 @@ exports.commands = {
 				}
 				let punishment = Punishments.userids.get(targetUser.locked);
 				if (punishment) {
-					let expiresIn = new Date(punishment[2]).getTime() - Date.now();
-					let expiresDays = Math.round(expiresIn / 1000 / 60 / 60 / 24);
-					if (expiresIn > 1) buf += ` (expires in around ${expiresDays} day${Tools.plural(expiresDays)})`;
+					let expiresIn = Punishments.checkLockExpiration(targetUser.locked);
+					if (expiresIn) buf += expiresIn;
 					if (punishment[3]) buf += ` (reason: ${punishment[3]})`;
 				}
 			}
@@ -129,9 +127,9 @@ exports.commands = {
 		}
 		if ((user.can('ip', targetUser) || user === targetUser)) {
 			let ips = Object.keys(targetUser.ips);
-			buf += `<br /> IP${Tools.plural(ips)}: ${ips.join(", ")}`;
+			buf += `<br /> IP${Chat.plural(ips)}: ${ips.join(", ")}`;
 			if (user.group !== ' ' && targetUser.latestHost) {
-				buf += Tools.html`<br />Host: ${targetUser.latestHost}`;
+				buf += Chat.html`<br />Host: ${targetUser.latestHost}`;
 			}
 		}
 		if ((user === targetUser || user.can('alts', targetUser)) && hiddenrooms) {
@@ -159,7 +157,7 @@ exports.commands = {
 
 					let expiresIn = new Date(expireTime).getTime() - Date.now();
 					let expiresDays = Math.round(expiresIn / 1000 / 60 / 60 / 24);
-					if (expiresIn > 1) punishDesc += ` for ${expiresDays} day${Tools.plural(expiresDays)}`;
+					if (expiresIn > 1) punishDesc += ` for ${expiresDays} day${Chat.plural(expiresDays)}`;
 					if (reason) punishDesc += `: ${reason}`;
 				} else {
 					let muted = curRoom.isMuted(targetUser);
@@ -446,7 +444,7 @@ exports.commands = {
 			pokemon = {types: [type1.id]};
 			target = type1.id;
 		} else {
-			return this.sendReplyBox("" + Tools.escapeHTML(target) + " isn't a recognized type or pokemon.");
+			return this.sendReplyBox("" + Chat.escapeHTML(target) + " isn't a recognized type or pokemon.");
 		}
 
 		let weaknesses = [];
@@ -823,7 +821,7 @@ exports.commands = {
 					ivSet = true;
 
 					if (isNaN(iv)) {
-						return this.sendReplyBox('Invalid value for IVs: ' + Tools.escapeHTML(targets[i]));
+						return this.sendReplyBox('Invalid value for IVs: ' + Chat.escapeHTML(targets[i]));
 					}
 
 					continue;
@@ -841,7 +839,7 @@ exports.commands = {
 					evSet = true;
 
 					if (isNaN(ev)) {
-						return this.sendReplyBox('Invalid value for EVs: ' + Tools.escapeHTML(targets[i]));
+						return this.sendReplyBox('Invalid value for EVs: ' + Chat.escapeHTML(targets[i]));
 					}
 					if (ev > 255 || ev < 0) {
 						return this.sendReplyBox('The amount of EVs should be between 0 and 255.');
@@ -874,7 +872,7 @@ exports.commands = {
 					modSet = true;
 				}
 				if (isNaN(modifier)) {
-					return this.sendReplyBox('Invalid value for modifier: ' + Tools.escapeHTML(modifier));
+					return this.sendReplyBox('Invalid value for modifier: ' + Chat.escapeHTML(modifier));
 				}
 				if (modifier > 6) {
 					return this.sendReplyBox('Modifier should be a number between -6 and +6');
@@ -958,7 +956,7 @@ exports.commands = {
 		this.sendReplyBox(
 			"Pok&eacute;mon Showdown is open source:<br />" +
 			"- Language: JavaScript (Node.js)<br />" +
-			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown/commits/master\">What's new?</a><br />" +
+			"- <a href=\"https://github.com/panpawn/Pokemon-Showdown/commits/master\">What's new?</a><br />" +
 			"- <a href=\"https://github.com/panpawn/Pokemon-Showdown\">Gold's source code</a><br />" +
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown\">Main's Client source code</a><br />" +
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown\">Main's Server source code</a>"
@@ -989,7 +987,7 @@ exports.commands = {
 	bugreport: 'bugs',
 	bugs: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		if (room.battle) {
+		if (room && room.battle) {
 			this.sendReplyBox("<center><button name=\"saveReplay\"><i class=\"fa fa-upload\"></i> Save Replay</button> &mdash; <a href=\"https://www.smogon.com/forums/threads/3520646/\">Questions</a> &mdash; <a href=\"https://www.smogon.com/forums/threads/3469932/\">Bug Reports</a></center>");
 		} else {
 			this.sendReplyBox(
@@ -1091,12 +1089,10 @@ exports.commands = {
 			if (!target) return this.sendReplyBox(buffer);
 		}
 		let showMonthly = (target === 'all' || target === 'omofthemonth' || target === 'omotm' || target === 'month');
-		let monthBuffer = "- <a href=\"https://www.smogon.com/forums/threads/3541792/\">Other Metagame of the Month</a>";
 
 		if (target === 'all') {
 			// Display OMotM formats, with forum thread links as caption
 			this.parse('/formathelp omofthemonth');
-			if (showMonthly) this.sendReply('|raw|<center>' + monthBuffer + '</center>');
 
 			// Display the rest of OM formats, with OM hub/index forum links as caption
 			this.parse('/formathelp othermetagames');
@@ -1105,7 +1101,6 @@ exports.commands = {
 		if (showMonthly) {
 			this.target = 'omofthemonth';
 			this.run('formathelp');
-			this.sendReply('|raw|<center>' + monthBuffer + '</center>');
 		} else {
 			this.run('formathelp');
 		}
@@ -1181,10 +1176,10 @@ exports.commands = {
 		let buf = [`<table style="${tableStyle}" cellspacing="0" cellpadding="5">`];
 		for (let sectionId in sections) {
 			if (exactMatch && sectionId !== exactMatch) continue;
-			buf.push(Tools.html`<th style="border:1px solid gray" colspan="2">${sections[sectionId].name}</th>`);
+			buf.push(Chat.html`<th style="border:1px solid gray" colspan="2">${sections[sectionId].name}</th>`);
 			for (let i = 0; i < sections[sectionId].formats.length; i++) {
 				let format = Tools.getFormat(sections[sectionId].formats[i]);
-				let nameHTML = Tools.escapeHTML(format.name);
+				let nameHTML = Chat.escapeHTML(format.name);
 				let descHTML = format.desc ? format.desc.join("<br />") : "&mdash;";
 				buf.push(`<tr><td style="border:1px solid gray">${nameHTML}</td><td style="border: 1px solid gray; margin-left:10px">${descHTML}</td></tr>`);
 			}
@@ -1280,17 +1275,20 @@ exports.commands = {
 		if (!target) {
 			if (!this.runBroadcast()) return;
 			this.sendReplyBox("Please follow the rules:<br />" +
-				(room && room.rulesLink ? "- <a href=\"" + Tools.escapeHTML(room.rulesLink) + "\">" + Tools.escapeHTML(room.title) + " room rules</a><br />" : "") +
+				(room && room.rulesLink ? "- <a href=\"" + Chat.escapeHTML(room.rulesLink) + "\">" + Chat.escapeHTML(room.title) + " room rules</a><br />" : "") +
 				"- <a href=\"http://goldservers.info/forums/showthread.php?tid=116\">" + (room.rulesLink ? "Global rules" : "Rules") + "</a>");
 			return;
 		}
-		if (!this.can('roommod', null, room)) return;
+		if (!room) {
+			this.errorReply("This is not a room you can set the rules of.");
+		}
+		if (!this.can('editroom', null, room)) return;
 		if (target.length > 100) {
 			return this.errorReply("Error: Room rules link is too long (must be under 100 characters). You can use a URL shortener to shorten the link.");
 		}
 
 		room.rulesLink = target.trim();
-		this.sendReply("(The room rules link is now: " + target + ")");
+		this.privateModCommand(`(${user.name} changed the room rules link to: ${target})`);
 
 		if (room.chatRoomData) {
 			room.chatRoomData.rulesLink = room.rulesLink;
@@ -1400,9 +1398,9 @@ exports.commands = {
 			// Special case for Meowstic-M and Hoopa-Unbound
 			if (speciesid === 'meowstic') speciesid = 'meowsticm';
 			if (pokemon.tier === 'CAP') {
-				this.sendReplyBox("<a href=\"https://www.smogon.com/cap/pokemon/strategies/" + speciesid + "\">" + generation.toUpperCase() + " " + Tools.escapeHTML(formatName) + " " + pokemon.name + " analysis preview</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a> <a href=\"https://smogon.com/cap/\">CAP Project</a>");
+				this.sendReplyBox("<a href=\"https://www.smogon.com/cap/pokemon/strategies/" + speciesid + "\">" + generation.toUpperCase() + " " + Chat.escapeHTML(formatName) + " " + pokemon.name + " analysis preview</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a> <a href=\"https://smogon.com/cap/\">CAP Project</a>");
 			} else {
-				this.sendReplyBox("<a href=\"https://www.smogon.com/dex/" + generation + "/pokemon/" + speciesid + (formatId ? '/' + formatId : '') + "\">" + generation.toUpperCase() + " " + Tools.escapeHTML(formatName) + " " + pokemon.name + " analysis</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a>");
+				this.sendReplyBox("<a href=\"https://www.smogon.com/dex/" + generation + "/pokemon/" + speciesid + (formatId ? '/' + formatId : '') + "\">" + generation.toUpperCase() + " " + Chat.escapeHTML(formatName) + " " + pokemon.name + " analysis</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a>");
 			}
 		}
 
@@ -1438,7 +1436,7 @@ exports.commands = {
 			}
 			if (formatName) {
 				atLeastOne = true;
-				this.sendReplyBox("<a href=\"https://www.smogon.com/dex/" + generation + "/formats/" + formatId + "\">" + generation.toUpperCase() + " " + Tools.escapeHTML(formatName) + " format analysis</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a>");
+				this.sendReplyBox("<a href=\"https://www.smogon.com/dex/" + generation + "/formats/" + formatId + "\">" + generation.toUpperCase() + " " + Chat.escapeHTML(formatName) + " format analysis</a>, brought to you by <a href=\"https://www.smogon.com\">Smogon University</a>");
 			}
 		}
 
@@ -1644,7 +1642,7 @@ exports.commands = {
 		if (options.length < 2) return this.parse('/help pick');
 		if (!this.runBroadcast()) return false;
 		const pickedOption = options[Math.floor(Math.random() * options.length)];
-		return this.sendReplyBox('<em>We randomly picked:</em> ' + Tools.escapeHTML(pickedOption).trim());
+		return this.sendReplyBox('<em>We randomly picked:</em> ' + Chat.escapeHTML(pickedOption).trim());
 	},
 	pickrandomhelp: ["/pick [option], [option], ... - Randomly selects an item from a list containing 2 or more elements."],
 
@@ -1689,7 +1687,7 @@ exports.commands = {
 			return this.errorReply('"' + height + '" is not a valid height value!');
 		}
 
-		this.sendReply('|raw|<img src="' + Tools.escapeHTML(image) + '" ' + 'style="width: ' + Tools.escapeHTML(width) + '; height: ' + Tools.escapeHTML(height) + '" />');
+		this.sendReply('|raw|<img src="' + Chat.escapeHTML(image) + '" ' + 'style="width: ' + Chat.escapeHTML(width) + '; height: ' + Chat.escapeHTML(height) + '" />');
 	},
 	showimagehelp: ["/showimage [url], [width], [height] - Show an image. " +
 		"Any CSS units may be used for the width or height (default: px)." +
@@ -1724,7 +1722,7 @@ exports.commands = {
 		if (!this.can('addhtml', null, room)) return;
 
 		if (!user.can('addhtml')) {
-			target += '<div style="float:right;color:#888;font-size:8pt">[' + Tools.escapeHTML(user.name) + ']</div><div style="clear:both"></div>';
+			target += '<div style="float:right;color:#888;font-size:8pt">[' + Chat.escapeHTML(user.name) + ']</div><div style="clear:both"></div>';
 		}
 
 		this.addBox(target);
@@ -1735,5 +1733,4 @@ exports.commands = {
 
 process.nextTick(() => {
 	Tools.includeData();
-	CommandParser.globalPattern.register('/git ', '/uptime ');
 });

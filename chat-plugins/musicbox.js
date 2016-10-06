@@ -131,7 +131,7 @@ exports.commands = {
 				if (toId(target) in {'remove':1, 'delete':1, 'none':1, 'hidden':1}) {
 					delete box2.css;
 				} else {
-					box2.css = Tools.escapeHTML(target.replace(/^["']/, '').replace(/["']$/, ''));
+					box2.css = Chat.escapeHTML(target.replace(/^["']/, '').replace(/["']$/, ''));
 				}
 				fs.writeFileSync(FILE, JSON.stringify(musicboxes, null, 1));
 				this.parse('/musicbox');

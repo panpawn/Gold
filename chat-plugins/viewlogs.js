@@ -89,7 +89,7 @@ exports.commands = {
 			}
 
 			if (cmd === 'viewlogspopup') {
-				let output = 'Displaying room logs of room "' + Tools.escapeHTML(targetRoom) + '" on ' + Tools.escapeHTML(date) + '<br />';
+				let output = 'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
 				data = data.split('\n');
 				for (let u in data) {
 					if (data[u].length < 1) continue;
@@ -146,11 +146,11 @@ exports.commands = {
 				line = line.join(':');
 				let message = parseMessage(line, user.userid);
 				if (message.length < 1) continue;
-				output += '<font color="#970097">' + Tools.escapeHTML(file) + '</font><font color="#00AAAA">:</font><font color="#008700">' + lineNumber +
+				output += '<font color="#970097">' + Chat.escapeHTML(file) + '</font><font color="#00AAAA">:</font><font color="#008700">' + lineNumber +
 					'</font><font color="#00AAAA">:</font>' + message + '<br />';
 			}
-			user.send('|popup||wide||html|Displaying last ' + MAX_LINES + ' lines containing "' + Tools.escapeHTML(pattern) + '"' +
-				(toId(targets[0]) === 'all' ? '' : ' in "' + Tools.escapeHTML(targets[0]) + '"') + ':<br /><br />' + output);
+			user.send('|popup||wide||html|Displaying last ' + MAX_LINES + ' lines containing "' + Chat.escapeHTML(pattern) + '"' +
+				(toId(targets[0]) === 'all' ? '' : ' in "' + Chat.escapeHTML(targets[0]) + '"') + ':<br /><br />' + output);
 		});
 	},
 	searchlogshelp: ["/searchlogs [room / all], [phrase] - Phrase may contain * wildcards."],
@@ -178,7 +178,7 @@ function generateTable(array, command) {
 	for (let u in array) {
 		if (array[u] === 'today.txt') continue;
 		if (count === 0) output += "<tr>";
-		output += '<td><button style="width: 100%" name="send" value="' + command + Tools.escapeHTML(array[u]) + '">' + Tools.escapeHTML(array[u]) + '</button></td>';
+		output += '<td><button style="width: 100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';
@@ -225,7 +225,7 @@ function parseMessage(message, user) {
 		message = '<span class="notice">' + lineSplit.slice(2).join('|').trim() + '</span>';
 		break;
 	case '':
-		message = '<span class="notice">' + Tools.escapeHTML(lineSplit.slice(1).join('|')) + '</span>';
+		message = '<span class="notice">' + Chat.escapeHTML(lineSplit.slice(1).join('|')) + '</span>';
 		break;
 	case 'j':
 	case 'J':
@@ -240,7 +240,7 @@ function parseMessage(message, user) {
 		message = "";
 		break;
 	default:
-		message = '<span class="notice">' + Tools.escapeHTML(message) + '</span>';
+		message = '<span class="notice">' + Chat.escapeHTML(message) + '</span>';
 		break;
 	}
 	return message;
@@ -256,7 +256,7 @@ function parseFormatting(message) {
 		message = Autolinker.link(message.replace(/&#x2f;/g, '/'), {stripPrefix: false, phone: false, twitter: false});
 		return message;
 	}
-	message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
+	message = Chat.escapeHTML(message).replace(/&#x2f;/g, '/');
 	message = message.replace(/\_\_([^< ](?:[^<]*?[^< ])?)\_\_(?![^<]*?<\/a)/g, '<i>$1</i>'); // italics
 	message = message.replace(/\*\*([^< ](?:[^<]*?[^< ])?)\*\*/g, '<b>$1</b>'); // bold
 	message = message.replace(/\~\~([^< ](?:[^<]*?[^< ])?)\~\~/g, '<strike>$1</strike>'); // strikethrough

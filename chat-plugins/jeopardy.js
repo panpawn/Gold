@@ -129,9 +129,7 @@ let Jeopardy = (() => {
 		this.room.add("A new Jeopardy match has been created by " + host.name);
 	}
 
-	Jeopardy.prototype.checkPermission = function (user, output) {
-		let checks = Array.prototype.slice.call(arguments, 2);
-
+	Jeopardy.prototype.checkPermission = function (user, output, ...checks) {
 		let currentCheck = '';
 		while ((currentCheck = checks.pop())) {
 			switch (currentCheck) {
@@ -453,7 +451,7 @@ function renderGrid(questions, mode) {
 
 	buffer += '<tr>';
 	for (let c = 0; c < questions.categoryCount; ++c) {
-		buffer += '<th>' + (Tools.escapeHTML(questions.getCategory(c)) || '&nbsp;') + '</th>';
+		buffer += '<th>' + (Chat.escapeHTML(questions.getCategory(c)) || '&nbsp;') + '</th>';
 	}
 	buffer += '</tr>';
 
@@ -525,9 +523,9 @@ let commands = {
 
 		if (toId(target) === 'final') {
 			this.sendReplyBox(
-				"<strong>Final Category:</strong> " + Tools.escapeHTML(questions.getCategory('final') || "") + '<br />' +
-				"<strong>Final Question:</strong> " + Tools.escapeHTML(questions.getQuestion('final', 0).value || "") + '<br />' +
-				"<strong>Final Answer:</strong> " + Tools.escapeHTML(questions.getQuestion('final', 0).answer || "")
+				"<strong>Final Category:</strong> " + Chat.escapeHTML(questions.getCategory('final') || "") + '<br />' +
+				"<strong>Final Question:</strong> " + Chat.escapeHTML(questions.getQuestion('final', 0).value || "") + '<br />' +
+				"<strong>Final Answer:</strong> " + Chat.escapeHTML(questions.getQuestion('final', 0).answer || "")
 			);
 		} else {
 			this.sendReplyBox(renderGrid(questions, target));

@@ -67,7 +67,7 @@ class Poll {
 		this.options.forEach((option, number) => {
 			count++;
 			if (count === 1) output += "<tr>";
-			output += '<td class="poll-td"><button style="border-radius: 20px; transition-duration: 0.5s; transition-timing-function: linear;" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Tools.escapeHTML(option.name) + '">' + Tools.escapeHTML(option.name) + '</button></td>';
+			output += '<td class="poll-td"><button style="border-radius: 20px; transition-duration: 0.5s; transition-timing-function: linear;" value="/poll vote ' + number + '" name="send" title="Vote for ' + number + '. ' + Chat.escapeHTML(option.name) + '">' + Chat.escapeHTML(option.name) + '</button></td>';
 			if (count >= 4) {
 				output += "</tr>";
 				count = 0;
@@ -93,7 +93,7 @@ class Poll {
 		while (!i.done) {
 			if (i.value[1].votes && i.value[1].votes !== 0) {
 				let percentage = Math.round((i.value[1].votes * 100) / (this.totalVotes || 1));
-				output += '<tr><td><strong>' + (i.value[0] === option ? '<em>' : '') + Tools.escapeHTML(i.value[1].name) + (i.value[0] === option ? '</em>' : '') + '</strong> <small>(' + i.value[1].votes + ' vote' + (i.value[1].votes === 1 ? '' : 's') + ')</small></td><td><span style="font-size: 7pt; background: ' + colors[c % 3] + '; padding-right: ' + (percentage * 3) + 'px; border-radius: 20px;"></span><small>&nbsp;' + percentage + '%</small></td></tr>';
+				output += '<tr><td><strong>' + (i.value[0] === option ? '<em>' : '') + Chat.escapeHTML(i.value[1].name) + (i.value[0] === option ? '</em>' : '') + '</strong> <small>(' + i.value[1].votes + ' vote' + (i.value[1].votes === 1 ? '' : 's') + ')</small></td><td><span style="font-size: 7pt; background: ' + colors[c % 3] + '; padding-right: ' + (percentage * 3) + 'px; border-radius: 20px;"></span><small>&nbsp;' + percentage + '%</small></td></tr>';
 			}
 			i = iter.next();
 			c++;
@@ -106,12 +106,12 @@ class Poll {
 
 	getQuestionMarkup() {
 		if (this.supportHTML) return this.question;
-		return Tools.escapeHTML(this.question);
+		return Chat.escapeHTML(this.question);
 	}
 
 	getOptionMarkup(option) {
 		if (this.supportHTML) return option.name;
-		return Tools.escapeHTML(option.name);
+		return Chat.escapeHTML(option.name);
 	}
 
 	update() {
@@ -386,5 +386,5 @@ exports.commands = {
 };
 
 process.nextTick(() => {
-	CommandParser.multiLinePattern.register('/poll (new|create|htmlcreate) ');
+	Chat.multiLinePattern.register('/poll (new|create|htmlcreate) ');
 });

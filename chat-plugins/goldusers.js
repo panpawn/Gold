@@ -331,7 +331,7 @@ try {
 			let userName = user;
 			reciever = toId(reciever);
 			user = toId(user);
-			message = Gold.emoticons.processEmoticons(Tools.escapeHTML(message)).replace(/&#x2f;/g, '/');
+			message = Gold.emoticons.processEmoticons(Chat.escapeHTML(message)).replace(/&#x2f;/g, '/');
 
 			let data = this.checkExisting(reciever);
 			if (!data.tells) data.tells = Object.create(null);

@@ -23,18 +23,18 @@ function saveShop() {
 }
 
 function getName(user) {
-	return '<font color="' + Gold.hashColor(user) + '">' + Tools.escapeHTML(user) + '</font>';
+	return '<font color="' + Gold.hashColor(user) + '">' + Chat.escapeHTML(user) + '</font>';
 }
 
 function getRoomShop(room) {
-	let output = "<center><b><u>" + Tools.escapeHTML(room.title) + " Room Shop</u></b><br />" +
+	let output = "<center><b><u>" + Chat.escapeHTML(room.title) + " Room Shop</u></b><br />" +
 	'<table border="1" cellspacing ="0" cellpadding="3">' +
 	'<tr><th>Item</th><th>Description</th><th>Price</th></tr>';
 	for (let i in RoomShop[room.id]) {
 		let item = RoomShop[room.id][i];
 		let name = item[0], desc = item[1], price = item[2];
-		output += '<tr><td><button name="send" value="/roomshop buy, ' + Tools.escapeHTML(name) + '">' + Tools.escapeHTML(name) + '</button></td><td>' +
-		Tools.escapeHTML(desc) + '</td><td>' + price + '</td></tr>';
+		output += '<tr><td><button name="send" value="/roomshop buy, ' + Chat.escapeHTML(name) + '">' + Chat.escapeHTML(name) + '</button></td><td>' +
+		Chat.escapeHTML(desc) + '</td><td>' + price + '</td></tr>';
 	}
 	return output + '</table><font size=1>Note: As per server rules, global staff are not responsible for scams via a room shop.  However, if severe enough, report it to a global staff and if there was a rule broken, action will be taken.</font></center>';
 }
@@ -88,7 +88,7 @@ exports.commands = {
 			price = RS[toId(item)][2];
 			if (Gold.readMoney(user.userid) < price) return this.errorReply("You do not have enough bucks to buy " + item + ". You need " + (price - Gold.readMoney(user.userid)) + " more bucks to buy this item.");
 			this.parse('/tb ' + room.founder + ', ' + price);
-			room.add("|raw|<b><u>Room Shop</u>: " + getName(user.name) + "</b> has bought a(n) <u>" + Tools.escapeHTML(item) + "</u> from the room shop for " + price + " buck" + (price > 1 ? "s" : "") + ".").update();
+			room.add("|raw|<b><u>Room Shop</u>: " + getName(user.name) + "</b> has bought a(n) <u>" + Chat.escapeHTML(item) + "</u> from the room shop for " + price + " buck" + (price > 1 ? "s" : "") + ".").update();
 			this.privateModCommand("(" + user.name + " has bought a(n) " + item + " from the room shop.)");
 			break;
 		case 'help':

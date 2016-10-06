@@ -1726,5 +1726,5 @@ Gold.formatMessage = function (message) {
 };
 
 process.nextTick(() => {
-	CommandParser.multiLinePattern.register('!pastelogs ');
+	Chat.multiLinePattern.register('!pastelogs ');
 });

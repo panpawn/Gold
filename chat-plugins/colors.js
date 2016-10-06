@@ -71,8 +71,8 @@ exports.commands = {
 		}
 		if (toId(target[0]) === 'delete') return this.errorReply("Did you mean: /customcolor " + target[1] + ", delete");
 		if (customColors[toId(target[0])]) return this.errorReply("This user already has a custom color.  Do /customcolor [user], delete and then set their new color.");
-		this.sendReply("|raw|You have given <b><font color=" + target[1] + ">" + Tools.escapeHTML(target[0]) + "</font></b> a custom color.");
-		Rooms('staff').add('|raw|' + Tools.escapeHTML(target[0]) + " has recieved a <b><font color=" + target[1] + ">custom color</fon></b> from " + Tools.escapeHTML(user.name) + ".").update();
+		this.sendReply("|raw|You have given <b><font color=" + target[1] + ">" + Chat.escapeHTML(target[0]) + "</font></b> a custom color.");
+		Rooms('staff').add('|raw|' + Chat.escapeHTML(target[0]) + " has recieved a <b><font color=" + target[1] + ">custom color</fon></b> from " + Chat.escapeHTML(user.name) + ".").update();
 		this.privateModCommand("(" + target[0] + " has recieved custom color: '" + target[1] + "' from " + user.name + ".)");
 		customColors[toId(target[0])] = target[1];
 		updateColor();
@@ -86,7 +86,7 @@ exports.commands = {
 		target = target.split(',');
 		for (let u in target) target[u] = target[u].trim();
 		if (!target[1]) return this.parse('/help colorpreview');
-		return this.sendReplyBox('<b><font size="3" color="' + target[1] + '">' + Tools.escapeHTML(target[0]) + '</font></b>');
+		return this.sendReplyBox('<b><font size="3" color="' + target[1] + '">' + Chat.escapeHTML(target[0]) + '</font></b>');
 	},
 	colorpreviewhelp: ["Usage: /colorpreview [user], [color] - Previews what that username looks like with [color] as the color."],
 };

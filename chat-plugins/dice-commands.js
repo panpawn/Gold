@@ -34,7 +34,7 @@ class Dice {
 		}, INACTIVE_END_TIME);
 
 		let buck = (this.bet === 1 ? 'buck' : 'bucks');
-		this.startMessage = '<div class="infobox"><b style="font-size: 14pt; color: #24678d"><center><span style="color: ' + Gold.hashColor(starter) + '">' + Tools.escapeHTML(starter) + '</span> has started a game of dice for <span style = "color: green">' + amount + '</span> ' + buck + '!</center></b><br>' +
+		this.startMessage = '<div class="infobox"><b style="font-size: 14pt; color: #24678d"><center><span style="color: ' + Gold.hashColor(starter) + '">' + Chat.escapeHTML(starter) + '</span> has started a game of dice for <span style = "color: green">' + amount + '</span> ' + buck + '!</center></b><br>' +
 			'<center><img style="margin-right: 30px;" src = "http://i.imgur.com/eywnpqX.png" width="80" height="80">' +
 			'<img style="transform:rotateY(180deg); margin-left: 30px;" src="http://i.imgur.com/eywnpqX.png" width="80" height="80"><br>' +
 			'<button name="send" value="/joindice">Click to join!</button></center>';
@@ -87,22 +87,21 @@ class Dice {
 			let buck = (this.bet === 1 ? 'buck' : 'bucks');
 			this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class="infobox"><center>' + players + ' have joined the game!<br /><br />' +
 				'The game has been started! Rolling the dice...<br />' +
-				'<img src = "' + diceImg(roll1) + '" align = "left" title = "' + Tools.escapeHTML(p1.name) + '\'s roll"><img src = "' + diceImg(roll2) + '" align = "right" title = "' + p2.name + '\'s roll"><br />' +
+				'<img src = "' + diceImg(roll1) + '" align = "left" title = "' + Chat.escapeHTML(p1.name) + '\'s roll"><img src = "' + diceImg(roll2) + '" align = "right" title = "' + p2.name + '\'s roll"><br />' +
 				Gold.nameColor(p1.name, true) + ' rolled ' + (roll1 + 1) + '!<br />' +
 				Gold.nameColor(p2.name, true) + ' rolled ' + (roll2 + 1) + '!<br />' +
 				Gold.nameColor(winner.name, true) + ' has won <b style="color:green">' + (this.bet - taxedAmt) + '</b> ' + buck + '!<br />' +
-				'Better luck next time, ' + Tools.escapeHTML(loser.name) + '!'
+				'Better luck next time, ' + Chat.escapeHTML(loser.name) + '!'
 			).update();
 			let winnerMoney = Number(this.bet - taxedAmt);
 			Gold.updateMoney(winner.userid, Number(winnerMoney));
 			Gold.updateMoney(loser.userid, Number(-this.bet));
-			Gold.saveData();
 			this.end();
 		}, 800);
 	}
 
 	end(user) {
-		if (user) this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class = "infobox">(This game of dice has been forcibly ended by ' + Tools.escapeHTML(user.name) + '.)</div>').update();
+		if (user) this.room.add('|uhtmlchange|' + this.room.diceCount + '|<div class = "infobox">(This game of dice has been forcibly ended by ' + Chat.escapeHTML(user.name) + '.)</div>').update();
 		clearTimeout(this.timer);
 		delete this.room.dice;
 	}

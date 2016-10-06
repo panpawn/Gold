@@ -81,7 +81,7 @@ exports.commands = {
 		if (cmd in {'':1, show:1, view:1, display:1}) {
 			let message = "";
 			for (let a in Config.customavatars) {
-				message += "<strong>" + Tools.escapeHTML(a) + ":</strong> " + Tools.escapeHTML(Config.customavatars[a]) + "<br />";
+				message += "<strong>" + Chat.escapeHTML(a) + ":</strong> " + Chat.escapeHTML(Config.customavatars[a]) + "<br />";
 			}
 			return this.sendReplyBox(message);
 		}
@@ -139,7 +139,7 @@ exports.commands = {
 				this.sendReply(userid + "'s custom avatar has been set.");
 
 				Rooms.get('staff').add('|raw|' + Gold.nameColor(userid, true) + ' has received a custom avatar from ' + Gold.nameColor(user.name, true)).update();
-				Users.get(userid).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Tools.escapeHTML(user.name) + '</font></b>: <img src="' + avatar + '" width="80" height="80">');
+				Users.get(userid).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Chat.escapeHTML(user.name) + '</font></b>: <img src="' + avatar + '" width="80" height="80">');
 				room.update();
 			}.bind(this));
 			break;

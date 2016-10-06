@@ -16,6 +16,8 @@ const TIMEOUT_INACTIVE_DEALLOCATE = 40 * 60 * 1000;
 const REPORT_USER_STATS_INTERVAL = 10 * 60 * 1000;
 const PERIODIC_MATCH_INTERVAL = 60 * 1000;
 
+const CRASH_REPORT_THROTTLE = 60 * 60 * 1000;
+
 const fs = require('fs');
 const path = require('path');
 
@@ -799,6 +801,53 @@ class GlobalRoom {
 	modlog(text) {
 		this.modlogStream.write('[' + (new Date().toJSON()) + '] ' + text + '\n');
 	}
+	startLockdown(err, slow) {
+		if (this.lockdown) return;
+		let devRoom = Rooms('development');
+		const stack = (err ? Chat.escapeHTML(err.stack).split(`\n`).slice(0, 2).join(`<br />`) : ``);
+		Rooms.rooms.forEach((curRoom, id) => {
+			if (id === 'global') return;
+			if (err) {
+				if (id === 'staff' || id === 'development' || (!devRoom && id === 'lobby')) {
+					curRoom.addRaw(`<div class="broadcast-red"><b>The server needs to restart because of a crash:</b> ${stack}<br />Please restart the server.</div>`);
+					curRoom.addRaw(`<div class="broadcast-red">You will not be able to start new battles until the server restarts.</div>`);
+					curRoom.update();
+				} else {
+					curRoom.addRaw(`<div class="broadcast-red"><b>The server needs restart because of a crash.</b><br />No new battles can be started until the server is done restarting.</div>`).update();
+				}
+			} else {
+				curRoom.addRaw(`<div class="broadcast-red"><b>The server is restarting soon.</b><br />Please finish your battles quickly. No new battles can be started until the server resets in a few minutes.</div>`).update();
+			}
+			if (!slow && curRoom.requestKickInactive && !curRoom.battle.ended) {
+				curRoom.requestKickInactive(false, true);
+				if (curRoom.modchat !== '+') {
+					curRoom.modchat = '+';
+					curRoom.addRaw(`<div class="broadcast-red"><b>Moderated chat was set to +!</b><br />Only users of rank + and higher can talk.</div>`).update();
+				}
+			}
+		});
+
+		this.lockdown = true;
+		this.lastReportedCrash = Date.now();
+	}
+	reportCrash(err) {
+		if (this.lockdown) return;
+		const time = Date.now();
+		if (time - this.lastReportedCrash < CRASH_REPORT_THROTTLE) {
+			return;
+		}
+		this.lastReportedCrash = time;
+		const stack = (err ? Chat.escapeHTML(err.stack).split(`\n`).slice(0, 2).join(`<br />`) : ``);
+		const crashMessage = `|html|<div class="broadcast-red"><b>The server has crashed:</b> ${stack}</div>`;
+		const devRoom = Rooms('development');
+		if (devRoom) {
+			devRoom.add(crashMessage).update();
+		} else {
+			if (Rooms.lobby) Rooms.lobby.add(crashMessage).update();
+			const staffRoom = Rooms('staff');
+			if (staffRoom) staffRoom.add(crashMessage).update();
+		}
+	}
 }
 
 class BattleRoom extends Room {
@@ -911,7 +960,7 @@ class BattleRoom extends Room {
 		if (Config.autosavereplays) {
 			let uploader = Users.get(winnerid);
 			if (uploader && uploader.connections[0]) {
-				CommandParser.parse('/savereplay', this, uploader, uploader.connections[0]);
+				Chat.parse('/savereplay', this, uploader, uploader.connections[0]);
 			}
 		}
 		if (this.tour) {
@@ -988,7 +1037,7 @@ class BattleRoom extends Room {
 		logData.timestamp = '' + date;
 		logData.id = this.id;
 		logData.format = this.format;
-		const logsubfolder = Tools.toTimeStamp(date).split(' ')[0];
+		const logsubfolder = Chat.toTimestamp(date).split(' ')[0];
 		const logfolder = logsubfolder.split('-', 2).join('-');
 
 		let curpath = 'logs/' + logfolder;
@@ -1328,7 +1377,7 @@ class ChatRoom extends Room {
 		if (Config.logchat) {
 			this.rollLogFile(true);
 			this.logEntry = function (entry, date) {
-				const timestamp = Tools.toTimeStamp(new Date()).split(' ')[1] + ' ';
+				const timestamp = Chat.toTimestamp(new Date()).split(' ')[1] + ' ';
 				entry = entry.replace(/<img[^>]* src="data:image\/png;base64,[^">]+"[^>]*>/g, '');
 				this.logFile.write(timestamp + entry + '\n');
 			};
@@ -1381,7 +1430,7 @@ class ChatRoom extends Room {
 		let date = new Date();
 		let basepath = 'logs/chat/' + this.id + '/';
 		mkdir(basepath, '0755', () => {
-			const dateString = Tools.toTimeStamp(date).split(' ')[0];
+			const dateString = Chat.toTimestamp(date).split(' ')[0];
 			let path = dateString.split('-', 2).join('-');
 			mkdir(basepath + path, '0755', () => {
 				if (this.destroyingLog) return;
@@ -1608,6 +1657,12 @@ class ChatRoom extends Room {
 			clearInterval(this.logUserStatsInterval);
 		}
 		this.logUserStatsInterval = null;
+
+		if (!this.isPersonal) {
+			this.modlogStream.destroySoon();
+			this.modlogStream.removeAllListeners('finish');
+		}
+		this.modlogStream = null;
 
 		// get rid of some possibly-circular references
 		Rooms.rooms.delete(this.id);
