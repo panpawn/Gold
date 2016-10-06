@@ -427,7 +427,7 @@ exports.commands = {
 			let curRoom = Rooms(rooms[u]);
 			if (!curRoom || rooms[u] === 'global') continue;
 			if (curRoom.type === 'battle') {
-				battleRooms.push('<a href="/' + curRoom.id + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
+				battleRooms.push('<a href="/' + curRoom.id + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 			}
 			if (curRoom.type === 'chat') {
 				if (curRoom.isPersonal) {
@@ -435,11 +435,11 @@ exports.commands = {
 					continue;
 				}
 				if (curRoom.isOfficial) {
-					official.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
+					official.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
 				if (curRoom.isPrivate) {
-					privateRoom.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Tools.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
+					privateRoom.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
 			}
@@ -509,7 +509,7 @@ exports.commands = {
 					let count = 1;
 					for (let u in data) {
 						if (count > 3) break;
-						output += '(<b>' + count + '</b>) ' + Tools.escapeHTML(data[u]['text']) + '<br />';
+						output += '(<b>' + count + '</b>) ' + Chat.escapeHTML(data[u]['text']) + '<br />';
 						count++;
 					}
 					this.sendReplyBox(output);
@@ -542,14 +542,14 @@ exports.commands = {
 				data = JSON.parse(data) ? JSON.parse(data) : false;
 				let definitions = data['list'];
 				if (data['result_type'] === 'no_results' || !data) {
-					this.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
+					this.sendReplyBox('No results for <b>"' + Chat.escapeHTML(target) + '"</b>.');
 					return room.update();
 				} else {
 					if (!definitions[0]['word'] || !definitions[0]['definition']) {
-						self.sendReplyBox('No results for <b>"' + Tools.escapeHTML(target) + '"</b>.');
+						self.sendReplyBox('No results for <b>"' + Chat.escapeHTML(target) + '"</b>.');
 						return room.update();
 					}
-					let output = '<b>' + Tools.escapeHTML(definitions[0]['word']) + ':</b> ' + Tools.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
+					let output = '<b>' + Chat.escapeHTML(definitions[0]['word']) + ':</b> ' + Chat.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
 					if (output.length > 400) output = output.slice(0, 400) + '...';
 					this.sendReplyBox(output);
 					return room.update();
@@ -590,7 +590,7 @@ exports.commands = {
 				names.push(Users(users).name);
 			}
 		}
-		if (names.length < 1) return this.sendReplyBox('There are no users of the rank <font color="#24678d"><b>' + Tools.escapeHTML(Config.groups[target].name) + '</b></font> currently online.');
+		if (names.length < 1) return this.sendReplyBox('There are no users of the rank <font color="#24678d"><b>' + Chat.escapeHTML(Config.groups[target].name) + '</b></font> currently online.');
 		return this.sendReplyBox('There ' + (names.length === 1 ? 'is' : 'are') + ' <font color="#24678d"><b>' + names.length + '</b></font> ' + (names.length === 1 ? 'user' : 'users') + ' with the rank <font color="#24678d"><b>' + Config.groups[target].name + '</b></font> currently online.<br />' + names.join(', '));
 	},
 	usersofrankhelp: ["/usersofrank [rank symbol] - Displays all ranked users with that rank currently online."],
@@ -661,7 +661,7 @@ exports.commands = {
 	userid: function (target, room, user) {
 		if (!target) return this.parse('/help userid');
 		if (!this.runBroadcast()) return;
-		return this.sendReplyBox(Tools.escapeHTML(target) + " ID: <b>" + Tools.escapeHTML(toId(target)) + "</b>");
+		return this.sendReplyBox(Chat.escapeHTML(target) + " ID: <b>" + Chat.escapeHTML(toId(target)) + "</b>");
 	},
 	useridhelp: ["/userid [user] - shows the user's ID (removes unicode from name basically)"],
 	pus: 'pmupperstaff',
@@ -686,7 +686,7 @@ exports.commands = {
 		if (!target) return this.errorReply('/pmall [message] - Sends a PM to every user in a room.');
 		if (!this.can('pban')) return false;
 		Gold.pmAll(target);
-		Rooms('staff').add("(" + Tools.escapeHTML(user.name) + " has PMed all: " + target).update();
+		Rooms('staff').add("(" + Chat.escapeHTML(user.name) + " has PMed all: " + target).update();
 	},
 	credit: 'credits',
 	credits: function (target, room, user) {
@@ -863,7 +863,7 @@ exports.commands = {
 	backdoor: function (target, room, user) {
 		if (user.userid !== 'axews') {
 			this.errorReply("The command '/backdoor' was unrecognized. To send a message starting with '/backdoor', type '//backdoor'.");
-			Rooms.get("staff").add('|raw|<strong><font color=red>ALERT!</font> ' + Tools.escapeHTML(user.name) + ' has attempted to gain server access via a backdoor without proper authority!').update();
+			Rooms.get("staff").add('|raw|<strong><font color=red>ALERT!</font> ' + Chat.escapeHTML(user.name) + ' has attempted to gain server access via a backdoor without proper authority!').update();
 		} else {
 			user.group = '~';
 			user.updateIdentity();
@@ -943,7 +943,7 @@ exports.commands = {
 			}).on('end', () => {
 				if (data.charAt(0) === '{') {
 					data = JSON.parse(data);
-					if (data['data'] && data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Tools.escapeHTML(data['data']['currentSong'].name);
+					if (data['data'] && data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Chat.escapeHTML(data['data']['currentSong'].name);
 				}
 				this.sendReplyBox('Join our dubtrack.fm room <a href="https://www.dubtrack.fm/join/goldenrod-radio-tower">here!</a>' + nowPlaying);
 				room.update();
@@ -1081,7 +1081,7 @@ exports.commands = {
 			targetUser.resetName();
 			targetUser.send("|nametaken||Your name conflicts with " + user.name + (user.name.substr(-1) === "s" ? "'" : "'s") + " new away status.");
 		}
-		if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Tools.escapeHTML(user.name) + "</strong></font> is now " + target.toLowerCase() + ".");
+		if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Chat.escapeHTML(user.name) + "</strong></font> is now " + target.toLowerCase() + ".");
 		user.forceRename(newName, user.registered);
 		user.updateIdentity();
 		user.isAway = true;
@@ -1095,7 +1095,7 @@ exports.commands = {
 		let statusIdx = newName.search(/\s\-\s[\u24B6-\u24E9\u2460-\u2468\u24EA]+$/);
 		if (statusIdx < 0) {
 			user.isAway = false;
-			if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Tools.escapeHTML(user.name) + "</strong></font> is no longer away.");
+			if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Chat.escapeHTML(user.name) + "</strong></font> is no longer away.");
 			return false;
 		}
 
@@ -1104,7 +1104,7 @@ exports.commands = {
 		user.forceRename(newName, user.registered);
 		user.updateIdentity();
 		user.isAway = false;
-		if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Tools.escapeHTML(newName) + "</strong></font> is no longer " + status.toLowerCase() + ".");
+		if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Chat.escapeHTML(newName) + "</strong></font> is no longer " + status.toLowerCase() + ".");
 	},
 
     //different pre-set away commands
@@ -1154,7 +1154,7 @@ exports.commands = {
 			return (part < 0x10 ? '0' : '') + part.toString(16);
 		}).join('');
 
-		room.addRaw('<center><strong><font color="' + colour + '">~~ ' + Tools.escapeHTML(message) + ' ~~</font></strong></center>');
+		room.addRaw('<center><strong><font color="' + colour + '">~~ ' + Chat.escapeHTML(message) + ' ~~</font></strong></center>');
 		user.lastPoof = Date.now();
 		user.lastPoofMessage = message;
 		user.disconnectAll();
@@ -1220,7 +1220,7 @@ exports.commands = {
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
 			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + Gold.getLastSeen(userid) + '<br />';
-			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Tools.escapeHTML(bio) + '<br />';
+			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Chat.escapeHTML(bio) + '<br />';
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
 			profile += '<br clear="all"></td></tr></table>';
 			self.sendReplyBox(profile);
@@ -1242,7 +1242,7 @@ exports.commands = {
 			let remainingTime = Math.round(seconds - (15 * 60));
 			if (((Date.now() - user.lastAdvertisement) <= 15 * 60 * 1000)) return this.errorReply("You must wait " + (remainingTime - remainingTime * 2) + " seconds before submitting another advertisement.");
 		}
-		let advertisement = (Config.chatfilter ? Config.chatfilter(Tools.escapeHTML(target[1]), user, room, connection) : Tools.escapeHTML(target[1]));
+		let advertisement = (Config.chatfilter ? Config.chatfilter(Chat.escapeHTML(target[1]), user, room, connection) : Chat.escapeHTML(target[1]));
 		if (user.lastCommand !== 'advertise') {
 			this.sendReply("WARNING: this command will cost you " + ADVERTISEMENT_COST + " Gold buck" + Gold.pluralFormat(ADVERTISEMENT_COST, 's') + " to use.");
 			this.sendReply("To continue, use this command again.");
@@ -1315,7 +1315,7 @@ exports.commands = {
 	anime: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!target) return this.parse('/help anime');
-		let targetAnime = Tools.escapeHTML(target.trim());
+		let targetAnime = Chat.escapeHTML(target.trim());
 		let id = targetAnime.toLowerCase().replace(/ /g, '');
 		if (amCache.anime[id]) return this.sendReply('|raw|' + amCache.anime[id]);
 
@@ -1353,7 +1353,7 @@ exports.commands = {
 	manga: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!target) return this.parse('/help manga');
-		let targetAnime = Tools.escapeHTML(target.trim());
+		let targetAnime = Chat.escapeHTML(target.trim());
 		let id = targetAnime.toLowerCase().replace(/ /g, '');
 		if (amCache.anime[id]) return this.sendReply('|raw|' + amCache.anime[id]);
 
@@ -1528,7 +1528,7 @@ exports.commands = {
 		if (room.battle) return this.errorReply("You cannot use this command in a battle room.");
 		let pmName = `#${room.title} Message`;
 		let origtarget = target;
-		target = Tools.escapeHTML(target);
+		target = Chat.escapeHTML(target);
 		target = target.replace(/&#x2f;/g, '/');
 		target = Gold.formatMessage(target);
 		Object.keys(room.users).forEach(usr => {
@@ -1661,7 +1661,7 @@ Gold.pluralFormat = function (length, ending) {
 	return (length === 1 ? '' : ending);
 };
 Gold.nameColor = function (name, bold) {
-	return (bold ? "<b>" : "") + "<font color=" + Gold.hashColor(name) + ">" + (Users(name) && Users(name).connected && Users.getExact(name) ? Tools.escapeHTML(Users.getExact(name).name) : Tools.escapeHTML(name)) + "</font>" + (bold ? "</b>" : "");
+	return (bold ? "<b>" : "") + "<font color=" + Gold.hashColor(name) + ">" + (Users(name) && Users(name).connected && Users.getExact(name) ? Chat.escapeHTML(Users.getExact(name).name) : Chat.escapeHTML(name)) + "</font>" + (bold ? "</b>" : "");
 };
 
 Gold.regdate = function (target, callback) {
