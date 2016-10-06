@@ -164,11 +164,24 @@ class CommandContext {
 			message = this.canTalk(message);
 		}
 
+		// emoticons and offline messaging (tells)
+		if (message && this.room) {
+			if (!Gold.emoticons.processChatData(this.user, this.room, this.connection, message)) return false;
+			if (Gold.userData[this.user.userid]) {
+				let reply = Gold.checkTells(this.user.userid); // returns array of pending tells for user
+				if (reply) {
+					reply.forEach(tell => {
+						this.user.sendTo(this.room.id, tell);
+					});
+				}
+			}
+		}
+
 		// Output the message
 
 		if (message && message !== true && typeof message.then !== 'function') {
 			if (this.pmTarget) {
-				let emotes = (Gold.emoticons.processEmoticons(target) !== target ? Gold.emoticons.processEmoticons(Tools.escapeHTML(target)) : false);
+				let emotes = (Gold.emoticons.processEmoticons(message) !== message ? Gold.emoticons.processEmoticons(Chat.escapeHTML(message)) : false);
 				let oldMessage = message;
 				if (emotes) message = `/html ${emotes}`;
 
@@ -186,8 +199,8 @@ class CommandContext {
 				this.user.lastPM = this.pmTarget.userid;
 			} else {
 				if (Users.ShadowBan.checkBanned(this.user)) {
-					Users.ShadowBan.addMessage(user, `To ${this.room.id}`, message);
-					connection.sendTo(this.room.id, `|c|${this.user.getIdentity(this.room.id)}|${message}`);
+					Users.ShadowBan.addMessage(this.user, `To ${this.room.id}`, message);
+					this.user.sendTo(this.room.id, `|c|${this.user.getIdentity(this.room.id)}|${message}`);
 				} else {
 					this.room.add(`|c|${this.user.getIdentity(this.room.id)}|${message}`);
 					this.room.messageCount++;

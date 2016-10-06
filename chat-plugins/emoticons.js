@@ -74,18 +74,18 @@ Gold.emoticons = {
 		}
 		if (Users.ShadowBan.checkBanned(user) && match) {
 			let origmsg = message;
-			message = Tools.escapeHTML(message);
+			message = Chat.escapeHTML(message);
 			message = this.processEmoticons(message);
 			user.sendTo(room, `${(room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + user.getIdentity(room).substr(0, 1) + user.name}|/html ${message}`);
 			Users.ShadowBan.addMessage(user, `To ${room}`, origmsg);
 		} else {
 			if (!this.checkEmoteModchat(user, room)) {
 				let kitty = message = this.processEmoticons(message);
-				message = Tools.escapeHTML(kitty);
+				message = Chat.escapeHTML(kitty);
 				return message;
 			} else if (this.checkEmoteModchat(user, room)) {
 				if (!match || message.charAt(0) === '!') return true;
-				message = Tools.escapeHTML(message).replace(/&#x2f;/g, '/');
+				message = Chat.escapeHTML(message).replace(/&#x2f;/g, '/');
 				message = this.processEmoticons(message);
 				let name = user.getIdentity(room).substr(0, 1) + user.name;
 				room.add(`${(room.type === 'chat' ? '|c:|' + ~~(Date.now() / 1000) + '|' : '|c|') + name}|/html ${message}`).update();
@@ -146,7 +146,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName} has been added.`);
 				this.logModCommand(`${user.name} added the emoticon: ${emoteName}`);
-				Rooms.get('staff').add(`The emoticon ${emoteName} was added by ${Tools.escapeHTML(user.name)}.`).update();
+				Rooms.get('staff').add(`The emoticon ${emoteName} was added by ${Chat.escapeHTML(user.name)}.`).update();
 				break;
 
 			case 'rem':
@@ -163,7 +163,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName2} has been removed.`);
 				this.logModCommand(`${user.name} removed the emoticon: ${emoteName2}`);
-				Rooms.get('staff').add(`The emoticon ${emoteName2} was removed by ${Tools.escapeHTML(user.name)}.`).update();
+				Rooms.get('staff').add(`The emoticon ${emoteName2} was removed by ${Chat.escapeHTML(user.name)}.`).update();
 				break;
 
 			case 'list':
