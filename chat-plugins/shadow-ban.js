@@ -155,12 +155,7 @@ exports.commands = {
 		if (!target) return this.sendReply("/shadowban OR /sban [username], [secondary command], [reason] - Sends all the user's messages to the shadow ban room.");
 
 		let params = this.splitTarget(target).split(',');
-		let action = params[0].trim().toLowerCase();
 		let reason = params.slice(1).join(',').trim();
-		if (!(action in CommandParser.commands)) {
-			action = 'mute';
-			reason = params.join(',').trim();
-		}
 
 		if (!this.targetUser) return this.sendReply("User '" + this.targetUsername + "' not found.");
 		if (!this.can('lock', this.targetUser)) return;
@@ -170,8 +165,6 @@ exports.commands = {
 			return this.sendReply('||' + this.targetUsername + " is already shadow banned or isn't named.");
 		}
 		this.privateModCommand("(" + user.name + " has shadow banned: " + targets.join(", ") + (reason ? " (" + reason + ")" : "") + ")");
-
-		//return this.parse('/' + action + ' ' + toId(this.targetUser) + ',' + reason);
 	},
 
 	unspam: 'unshadowban',
