@@ -1254,6 +1254,7 @@ exports.commands = {
 			return this.errorReply("The reason is too long. It cannot exceed " + MAX_REASON_LENGTH + " characters.");
 		}
 		if (!this.can('ban', targetUser, room)) return false;
+		if (targetUser.can('pban')) return this.errorReply("Global upper staff cannot be roombanned.");
 		let name = targetUser.getLastName();
 		let userid = targetUser.getLastId();
 
@@ -2116,6 +2117,7 @@ exports.commands = {
 		const targetUser = this.targetUser;
 		if (!targetUser) return this.errorReply("User '" + this.targetUsername + "' not found.");
 		if (!this.can('editroom', targetUser, room)) return false;
+		if (targetUser.can('pban')) return this.errorReply("Global upper staff cannot be blacklisted.");
 		if (!room.chatRoomData) {
 			return this.errorReply("This room is not going to last long enough for a blacklist to matter - just ban the user");
 		}
