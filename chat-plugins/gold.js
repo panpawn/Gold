@@ -513,7 +513,7 @@ exports.commands = {
 						count++;
 					}
 					this.sendReplyBox(output);
-					return room.update;
+					if (room) return room.update;
 				}
 			});
 		});
@@ -552,7 +552,7 @@ exports.commands = {
 					let output = '<b>' + Chat.escapeHTML(definitions[0]['word']) + ':</b> ' + Chat.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
 					if (output.length > 400) output = output.slice(0, 400) + '...';
 					this.sendReplyBox(output);
-					return room.update();
+					if (room) return room.update();
 				}
 			});
 		});
