@@ -1225,7 +1225,7 @@ exports.commands = {
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
 			profile += '<br clear="all"></td></tr></table>';
 			self.sendReplyBox(profile);
-			room.update();
+			if (room) room.update();
 		}
 	},
 	advertise: 'advertisement',
