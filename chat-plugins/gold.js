@@ -1473,6 +1473,7 @@ exports.commands = {
 			this.sendReplyBox(buff.join('<br />'));
 		}
 	},
+	'!seen': true,
 	lastseen: 'seen',
 	seen: function (target, room, user) {
 		if (!this.runBroadcast()) return;
