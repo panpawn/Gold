@@ -628,19 +628,19 @@ exports.commands = {
 	kick: function (target, room, user) {
 		if (!target) return this.parse('/help kick');
 		if (!this.canTalk()) return false;
-		let kickBlock = (Gold.kick === undefined ? false : Gold.kick);
+		let kickBlock = room.kickBlock;
 		switch (target) {
 		case 'disable':
 			if (!this.can('hotpatch')) return false;
-			if (kickBlock) return this.errorReply("Kick is already disabled.");
-			Gold.kick = true;
-			this.privateModCommand("(" + user.name + " has disabled kick.)");
+			if (kickBlock) return this.errorReply("Kick is already disabled for this room.");
+			kickBlock = true;
+			this.privateModCommand("(" + user.name + " has disabled kick for this room.)");
 			break;
 		case 'enable':
 			if (!this.can('hotpatch')) return false;
-			if (!kickBlock) return this.errorReply("Kick is already enabled.");
-			Gold.kick = false;
-			this.privateModCommand("(" + user.name + " has enabled kick.)");
+			if (!kickBlock) return this.errorReply("Kick is already enabled for this room.");
+			kickBlock = false;
+			this.privateModCommand("(" + user.name + " has enabled kick for this room.)");
 			break;
 		default:
 			target = this.splitTarget(target);
@@ -651,13 +651,14 @@ exports.commands = {
 			if (!(targetUser in room.users)) return this.errorReply("User '" + targetUser + "' is not in this room.  Check spelling?");
 			if (!this.can('mute', targetUser, room)) return false;
 			if (kickBlock) return this.errorReply("Kick is currently disabled.");
+			if (targetUser.can('pban') && !user.can('hotpatch')) return this.errorReply("You cannot kick upper staff from this room.");
 			this.addModCommand(targetUser.name + ' was kicked from the room by ' + user.name + '.');
 			targetUser.popup('You were kicked from ' + room.id + ' by ' + user.name + '.');
 			targetUser.leaveRoom(room.id);
 		}
 	},
 	kickhelp: ["Usage: /kick [user] - kicks a user from the room",
-				"/kick [enable/disable] - enables or disables kick. Requires ~."],
+				"/kick [enable/disable] - enables or disables kick for that room. Requires ~."],
 	userid: function (target, room, user) {
 		if (!target) return this.parse('/help userid');
 		if (!this.runBroadcast()) return;
