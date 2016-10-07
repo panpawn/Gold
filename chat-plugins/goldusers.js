@@ -52,7 +52,7 @@ try {
 		},
 		saveData: function () {
 			fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
-		}.throttle(1 * 1000), // only save once/second - TOPS
+		}.throttle(1.25 * 1000), // only save every 1.25 seconds - TOPS
 		initiateUser: function (user, ip) {	// when the user connections, this runs
 			user = toId(user);
 			if (!Gold.userData[user]) Gold.createUser(user);
