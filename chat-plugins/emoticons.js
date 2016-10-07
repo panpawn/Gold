@@ -27,6 +27,9 @@ Gold.emoticons = {
 				patterns.push(`(${i.replace(metachars, "\\$&")})`);
 			}
 		}
+
+		if (typeof text !== 'string') return text;
+
 		let message = text.replace(new RegExp(patterns.join('|'), 'g'), match => {
 			return typeof this.chatEmotes[match] !== 'undefined' ?
 				`<img src="${this.chatEmotes[match]}" title="${match}"/>` :
