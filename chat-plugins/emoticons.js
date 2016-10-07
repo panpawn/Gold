@@ -67,7 +67,7 @@ Gold.emoticons = {
 		let match = false;
 		let parsed_message = this.processEmoticons(message);
 		for (let i in this.chatEmotes) {
-			if (~message.indexOf(i)) {
+			if (typeof message === 'string' && ~message.indexOf(i)) {
 				if ((parsed_message.match(/<img/g) || []).length <= this.maxChatEmotes || (this.adminBypassMaxChatEmotes && user.can('hotpatch'))) {
 					match = true;
 				} else {
