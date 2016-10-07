@@ -42,7 +42,6 @@ try {
 				tellNum: 0,
 				money: 0,
 				lastSeen: 0,
-				blockNews: false,
 				color: false,
 				icon: false,
 				vip: false,
