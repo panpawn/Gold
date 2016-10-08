@@ -1327,6 +1327,7 @@ exports.commands = {
 			}
 			nani.get('anime/' + data[0].id)
 				.then(data => {
+					if (!data) return;
 					let css = 'text-shadow: 1px 1px 1px #CCC; padding: 3px 8px;';
 					let output = '<div class="infobox"><table width="100%"><tr>';
 					let description = data.description.replace(/(\r\n|\n|\r)/gm, "").split('<br><br>').join('<br>');
