@@ -165,7 +165,7 @@ class CommandContext {
 		}
 
 		// emoticons and offline messaging (tells)
-		if (message && this.room) {
+		if (message && typeof message === 'string' && this.room) {
 			if (!Gold.emoticons.processChatData(this.user, this.room, this.connection, message)) return false;
 			if (Gold.userData[this.user.userid]) {
 				let reply = Gold.checkTells(this.user.userid); // returns array of pending tells for user

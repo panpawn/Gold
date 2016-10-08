@@ -28,8 +28,6 @@ Gold.emoticons = {
 			}
 		}
 
-		if (typeof text !== 'string') return text;
-
 		let message = text.replace(new RegExp(patterns.join('|'), 'g'), match => {
 			return typeof this.chatEmotes[match] !== 'undefined' ?
 				`<img src="${this.chatEmotes[match]}" title="${match}"/>` :
@@ -67,7 +65,7 @@ Gold.emoticons = {
 		let match = false;
 		let parsed_message = this.processEmoticons(message);
 		for (let i in this.chatEmotes) {
-			if (typeof message === 'string' && ~message.indexOf(i)) {
+			if (~message.indexOf(i)) {
 				if ((parsed_message.match(/<img/g) || []).length <= this.maxChatEmotes || (this.adminBypassMaxChatEmotes && user.can('hotpatch'))) {
 					match = true;
 				} else {
