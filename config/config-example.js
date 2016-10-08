@@ -198,7 +198,7 @@ try {
 	exports.bannedMessages = [];
 }
 try {
-	CommandParser.uncacheTree('./chat-plugins/chatfilter.js');
+	Chat.uncacheTree('./chat-plugins/chatfilter.js');
 	setTimeout(function () {require('../chat-plugins/chatfilter.js');}, 500);
 } catch (e) {}
 

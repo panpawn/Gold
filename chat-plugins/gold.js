@@ -65,7 +65,7 @@ exports.commands = {
 		if (!Rooms.global.lockdown) {
 			return this.errorReply("For safety reasons, /restart can only be used during lockdown.");
 		}
-		if (CommandParser.updateServerLock) {
+		if (Chat.updateServerLock) {
 			return this.errorReply("Wait for /updateserver to finish before using /restart.");
 		}
 		this.logModCommand(user.name + ' used /restart');
