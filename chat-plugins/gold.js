@@ -1185,7 +1185,7 @@ exports.commands = {
 		let username = (targetUser ? targetUser.name : target);
 		let userid = (targetUser ? targetUser.userid : toId(target));
 
-		let avatar = (targetUser ? (isNaN(targetUser.avatar) ? "http://" + serverIp + ":" + Config.port + "/avatars/" + targetUser.avatar : "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar + ".png") : (Config.customavatars[userid] ? "http://" + serverIp + ":" + Config.port + "/avatars/" + Config.customavatars[userid] : "http://play.pokemonshowdown.com/sprites/trainers/167.png"));
+		let avatar = (targetUser ? (isNaN(targetUser.avatar) ? "http://" + serverIp + ":" + Config.port + "/avatars/" + targetUser.avatar : "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar + ".png") : (Config.customavatars[userid] && userid !== 'constructor' ? "http://" + serverIp + ":" + Config.port + "/avatars/" + Config.customavatars[userid] : "http://play.pokemonshowdown.com/sprites/trainers/167.png"));
 		if (targetUser && targetUser.avatar[0] === '#') avatar = "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar.substr(1) + ".png";
 
 		let userSymbol = Users.usergroups[userid] ? '<b>' + Users.usergroups[userid].substr(0, 1) + '</b>' : "";
@@ -1398,6 +1398,7 @@ exports.commands = {
 		let searchType = target.includes('.') ? 'IP' : 'User';
 		let origtarget = target, targetId = toId(target), wildcard = target.includes('*');
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
+		if (targetId === 'constructor') return this.errorReply(fallout);
 
 		if (searchType === 'IP') {
 			let names = Object.keys(Gold.userData), buff = [];
@@ -1435,6 +1436,7 @@ exports.commands = {
 			baseWhois.apply(this, arguments);
 		}
 		if (!user.can('pban')) return;
+		if (toId(this.target) == 'constructor') return;
 
 		// variable declarations
 		let targetId = toId(this.target);
@@ -1669,6 +1671,7 @@ Gold.nameColor = function (name, bold) {
 
 Gold.regdate = function (target, callback) {
 	target = toId(target);
+	if (target === 'constructor') return callback(0);
 	if (regdateCache[target]) return callback(regdateCache[target]);
 
 	let options = {

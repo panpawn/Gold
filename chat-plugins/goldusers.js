@@ -92,6 +92,7 @@ try {
 		},
 		readMoney: function (user) {
 			user = toId(user);
+			if (user === 'constructor') return 0;
 			let data = this.checkExisting(user);
 			return data.money;
 		},
