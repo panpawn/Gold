@@ -1904,6 +1904,7 @@ exports.commands = {
 		if (targetUser.trusted) return this.errorReply("User '" + name + "' is already trusted.");
 
 		targetUser.setGroup(Config.groupsranking[0], true);
+		Gold.trustUser(name, 'TRUST');
 		this.sendReply("User '" + name + "' is now trusted.");
 	},
 	trustuserhelp: ["/trustuser [username] - Trusts the user (makes them immune to locks). Requires: & ~"],

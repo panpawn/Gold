@@ -45,6 +45,7 @@ try {
 				color: false,
 				icon: false,
 				vip: false,
+				proxywhitelist: false,
 				status: '',
 				friendcode: '',
 			}; // we don't save blank user data objects until next save
@@ -347,7 +348,7 @@ try {
 		},
 		checkTells: function (user) {
 			let reply = [];
-			let data = Gold.checkExisting(user);
+			let data = this.checkExisting(user);
 			if (data) {
 				if (Object.keys(data.tells).length > 0) {
 					for (let i in Gold.userData[toId(user)].tells) {
@@ -359,6 +360,15 @@ try {
 			if (reply.length > 0) this.saveData();
 			if (reply.length === 0) return false;
 			return reply;
+		},
+		trustUser: function (user, action) {
+			let data = this.checkExisting(user);
+			if (!data.proxywhitelist) data.proxywhitelist = false;
+
+			action = (action === 'TRUST' ? true : false);
+			data.proxywhitelist = action;
+
+			this.saveData();
 		},
 		generateNews: function () {
 			let lobby = Rooms('lobby');

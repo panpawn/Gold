@@ -108,9 +108,12 @@ Config.namefilter = function (name, user) {
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
-		if (proxyWhitelist && proxyWhitelist.includes(nameId)) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
-		if (rankIndex && rankIndex > 0) return; // a hack for confirmed status from global auth
+
+		// handling "trusted" users...
+		if (rankIndex && rankIndex > 0) return;
+		if (Gold.userData[toId(name)] && Gold.userData[toId(name)].proxywhitelist) return;
+		if (proxyWhitelist && proxyWhitelist.includes(nameId)) return;
 
 		badHosts.forEach(badHost => {
 			if (host.includes(badHost)) {
