@@ -294,7 +294,7 @@ exports.commands = {
 		let userid = user.userid;
 		if (target) userid = toId(target);
 		const cards = Db('cards').get(userid, []);
-		if (!cards.length) return this.sendReplyBox(Gold.nameColor(userid, false) + " has no cards.");
+		if (!cards.length || userid === "constructor") return this.sendReplyBox(Gold.nameColor(userid, false) + " has no cards.");
 		const cardsMapping = cards.map(function (card) {
 			return '<button name="send" value="/card ' + card.title + '" style="border-radius: 12px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2) inset;" class="card-button"><img src="' + card.card + '" width="80" title="' + card.name + '"></button>';
 		});
@@ -463,7 +463,7 @@ exports.commands = {
 			break;
 		case 'card':
 			let backButton = '<button name="send" value="/cardsearch ' + user.lastCardSearch + '" style="background-color:aliceblue;height:30px;width:35">&lt;&nbsp;Back</button><br /><br />';
-			if (!parts[0] || !(toId(parts[0]) in cards)) {
+			if (!parts[0] || !(toId(parts[0]) in cards) || toId(parts[0]) === "constructor") {
 				return user.popup(definePopup + backButton + '<center><font color="red"><b>Invalid Card</b></font></center>');
 			}
 
