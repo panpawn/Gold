@@ -1,3 +1,12 @@
+/**
+ * Custom Avatar Script
+ * Gold Server - http://gold.psim.us/
+ *
+ * Deals with the handling of custom avatars.
+ * Credits: kota, panpawn
+ *
+ * @license MIT license
+ */
 'use strict';
 
 const fs = require('fs');

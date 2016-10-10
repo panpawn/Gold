@@ -1,7 +1,14 @@
-'use strict';
-/* Chatfilter, Namefilter (with hostfilter functionality)
- * By: jd, panpawn
+/**
+ * Filters
+ * Gold Server - http://gold.psim.us/
+ *
+ * Manually sets filters for chatting and names.
+ * In this, we also handle proxy connections with a blacklist feature.
+ * Credits: jd, panpawn
+ *
+ * @license MIT license
  */
+'use strict';
 
 const fs = require('fs');
 

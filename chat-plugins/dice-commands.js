@@ -1,5 +1,12 @@
-/*Dice Game plugin by SilverTactic (Silveee)*/
-
+/**
+ * Dice Game Plugin
+ * Gold Server - http://gold.psim.us/
+ *
+ * Gamling script, allowing users to wager bucks against each other.
+ * Credits: SilverTactic (Silveee), panpawn
+ *
+ * @license MIT license
+ */
 'use strict';
 
 const INACTIVE_END_TIME = 1 * 60 * 1000; // 1 minute

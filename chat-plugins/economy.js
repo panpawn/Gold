@@ -1,7 +1,12 @@
-/************************
-* Economy file for gold *
-************************/
-
+/**
+ * Economy
+ * Gold Server - http://gold.psim.us/
+ *
+ * Deals with economy commands, mostly.
+ * Functions for a lot of this can be found in: ./chat-plugins/goldusers.js
+ *
+ * @license MIT license
+ */
 'use strict';
 
 const fs = require('fs');

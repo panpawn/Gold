@@ -1,5 +1,11 @@
-/*
- * Chat log viewer plugin by jd
+/**
+ * Room Log Viewer
+ * Gold Server - http://gold.psim.us/
+ *
+ * Allows for staff and ROs to view logs of chat rooms.
+ * Credits: jd
+ *
+ * @license MIT license
  */
 'use strict';
 

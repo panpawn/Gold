@@ -1,7 +1,12 @@
-/********************************
-* EZ-TC Plugin by jd            *
-* Makes adding trainer cards EZ *
-********************************/
+/**
+ * EZ-TC Plugin
+ * Gold Server - http://gold.psim.us/
+ *
+ * Allows for adding custom trainer cards to be easier.
+ * Credits: jd
+ *
+ * @license MIT license
+ */
 'use strict';
 
 const fs = require('fs');

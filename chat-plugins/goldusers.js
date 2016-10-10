@@ -1,12 +1,11 @@
-/*************************************************
- * User Data Functions - by panpawn              *
- *                                               *
- *  This system includes features that store:    *
- *   - last seen data                            *
- *   - economy (bucks)                           *
- *   - tells (offline messaging)                 *
- *   - and more!                                 *
- *************************************************/
+/**
+ * Gold Users Functions
+ * Gold Server - http://gold.psim.us/
+ *
+ * Various utility functions pertaining to custom user functions.
+ *
+ * @license MIT license
+ */
 'use strict';
 
 const fs = require('fs');
