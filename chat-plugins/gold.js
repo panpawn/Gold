@@ -1445,7 +1445,7 @@ exports.commands = {
 		let names = Object.keys(Gold.userData);
 		let buff = [], none = '<em style="color:gray">(none)</em>';
 		let userSymbol = Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User';
-		let userGroup = Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
+		let userGroup = userSymbol !== ' ' && Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
 
 		// get previous names and IPs
 		if (prevIps) prevIps.forEach(f => { ips.push(f); });
