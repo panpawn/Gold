@@ -4,6 +4,19 @@
  *
  * Various utility functions pertaining to custom user functions.
  *
+ * This currently handles features such as:
+ * Economy - "bucks," used to buy things from the "shop"
+ * Offline Messaging (tells) - Offline private messaging system
+ * Last seen - When a user was last on the server
+ * Badges - Various acomplisments
+ * VIP Status - Lets a user use specific features other user's can't
+ * Proxy whitelisting - Trusting specific users to not get locked when using a proxy
+ * User Statuses - Appears on user's profiles
+ * User IP Logging - Used for various disiplinary actions
+ * News - Much like main's news system appeared while connecting
+ *
+ * Credits: panpawn
+ *
  * @license MIT license
  */
 'use strict';
