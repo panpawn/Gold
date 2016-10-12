@@ -1436,7 +1436,7 @@ exports.commands = {
 			baseWhois.apply(this, arguments);
 		}
 		if (!user.can('pban')) return;
-		if (toId(this.target) == 'constructor') return;
+		if (toId(this.target) === 'constructor') return;
 
 		// variable declarations
 		let targetId = toId(this.target);

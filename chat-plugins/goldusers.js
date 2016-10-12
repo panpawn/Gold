@@ -376,9 +376,9 @@ try {
 		},
 		trustUser: function (user, action) {
 			let data = this.checkExisting(user);
+			if (!action) action = false;
 			if (!data.proxywhitelist) data.proxywhitelist = false;
 
-			action = (action === 'TRUST' ? true : false);
 			data.proxywhitelist = action;
 
 			this.saveData();

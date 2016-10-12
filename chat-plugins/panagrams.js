@@ -49,7 +49,7 @@ let Panagram = (function () {
 
 		this.room.chat = function (user, message, connection) {
 			if (Tools.data.Pokedex[toId(message)] && message.match(/^[a-z ]/i)) message = '/gp ' + message;
-			message = CommandParser.parse(message, this, user, connection);
+			message = Chat.parse(message, this, user, connection);
 
 			if (message && message !== true) {
 				this.add('|c|' + user.getIdentity(this.id) + '|' + message);
