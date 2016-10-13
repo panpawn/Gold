@@ -18,6 +18,8 @@ const MAX_REASON_LENGTH = 300; // pban command usage
 
 let amCache = {anime:{}, manga:{}};
 let regdateCache = {};
+let udCache = {};
+
 fs.createWriteStream('badges.txt', {
 	'flags': 'a',
 });
@@ -526,7 +528,13 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		if (!target) return this.parse('/help urbandefine');
 		if (target.toString() > 50) return this.sendReply('Phrase can not be longer than 50 characters.');
-		let self = this;
+
+		if (udCache[toId(target)]) {
+			this.sendReplyBox(udCache[toId(target)]);
+			if (room) room.update();
+			return;
+		}
+
 		let options = {
 			host: 'api.urbandictionary.com',
 			port: 80,
@@ -539,20 +547,29 @@ exports.commands = {
 			res.on('data', chunk => {
 				data += chunk;
 			}).on('end', () => {
-				data = JSON.parse(data) ? JSON.parse(data) : false;
+				if (data.charAt(0) !== '{') {
+					this.sendReplyBox('Error retrieving definition for <b>"' + Chat.escapeHTML(target) + '"</b>.');
+					if (room) room.update();
+					return;
+				}
+				data = JSON.parse(data);
 				let definitions = data['list'];
 				if (data['result_type'] === 'no_results' || !data) {
 					this.sendReplyBox('No results for <b>"' + Chat.escapeHTML(target) + '"</b>.');
-					return room.update();
+					if (room) room.update();
+					return;
 				} else {
 					if (!definitions[0]['word'] || !definitions[0]['definition']) {
-						self.sendReplyBox('No results for <b>"' + Chat.escapeHTML(target) + '"</b>.');
-						return room.update();
+						this.sendReplyBox('No results for <b>"' + Chat.escapeHTML(target) + '"</b>.');
+						if (room) room.update();
+						return;
 					}
 					let output = '<b>' + Chat.escapeHTML(definitions[0]['word']) + ':</b> ' + Chat.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
 					if (output.length > 400) output = output.slice(0, 400) + '...';
 					this.sendReplyBox(output);
-					if (room) return room.update();
+					udCache[toId(target)] = output;
+					if (room) room.update();
+					return;
 				}
 			});
 		});
