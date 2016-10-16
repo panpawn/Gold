@@ -794,6 +794,7 @@ exports.Formats = [
 
 		maxForcedLevel: 50,
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
+		mod: 'mcpx',
 		banlist: ['Uber', 'Shadow Tag', 'DeepSeaTooth', 'Light Ball', 'Teeter Dance', 'Flatter', 'Supersonic', 'Dynamic Punch', 'Flatter', 'Confuse Ray', 'Chatter'],
 		onValidateSet: function (set) {
 			let tier = this.getTemplate(set.species).tier;
