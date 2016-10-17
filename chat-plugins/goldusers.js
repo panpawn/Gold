@@ -222,6 +222,9 @@ try {
 				}, 'creator': {
 					title: 'Server Creator',
 					img: 'http://www.smogon.com/media/forums/images/badges/dragon.png',
+				}, 'udc': {
+					title: 'UDC Winner',
+					img: 'http://www.smogon.com/media/forums/images/badges/worldcup.png',
 				},
 			};
 			if (displayall) {
