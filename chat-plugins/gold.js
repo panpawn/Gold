@@ -1481,7 +1481,7 @@ exports.commands = {
 			}
 		} else if (this.cmd === 'offlinewhois' && user.can('pban')) {
 			// header and last seen
-			buff.push('<strong class="username">' + target + '</strong> <em style="color:gray">(offline)</em>');
+			buff.push('<strong class="username" style="color:' + Gold.hashColor(target) + '">' + Chat.escapeHTML(target) + '</strong> <em style="color:gray">(offline)</em>');
 			if (userGroup) buff.push(userGroup);
 			buff.push('Last Seen: ' + Gold.getLastSeen(targetId) + '<br />');
 

@@ -36,7 +36,7 @@ exports.commands = {
 			return this.errorReply("/alts - Access denied.");
 		}
 
-		let buf = Chat.html`<strong class="username"><small style="display:none">${targetUser.group}</small>${targetUser.name}</strong> `;
+		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(targetUser.userid)}"><small style="display:none">${targetUser.group}</small>${targetUser.name}</strong> `;
 		if (!targetUser.connected) buf += ` <em style="color:gray">(offline)</em>`;
 		let roomauth = '';
 		if (room.auth && targetUser.userid in room.auth) roomauth = room.auth[targetUser.userid];
@@ -48,6 +48,9 @@ exports.commands = {
 		}
 		if (targetUser.isSysop) {
 			buf += `<br />(Pok&eacute;mon Showdown System Operator)`;
+		}
+		if (Gold.isDev(targetUser.userid)) {
+			buf += `<br />(Gold Systems Developer)`;
 		}
 		if (!targetUser.registered) {
 			buf += `<br />(Unregistered)`;

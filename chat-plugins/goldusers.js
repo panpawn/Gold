@@ -386,6 +386,11 @@ try {
 
 			this.saveData();
 		},
+		isDev: function (user) {
+			user = toId(user);
+			let devs = ['panpawn', 'jd'];
+			return devs.includes(user);
+		},
 		generateNews: function () {
 			let lobby = Rooms('lobby');
 			if (!lobby) return false;
