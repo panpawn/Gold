@@ -1067,7 +1067,7 @@ let commands = {
 			}
 			if (tournament.setBanlist(params, this)) {
 				const banlist = tournament.banlist.join(', ');
-				this.room.addRaw("<b>The tournament's banlist now includes:</b> " + banlist + ".");
+				this.room.addRaw("<b>The tournament's banlist is now:</b> " + Chat.escapeHTML(banlist) + ".");
 				this.privateModCommand("(" + user.name + " set the tournament's banlist to " + banlist + ".)");
 			}
 		},
@@ -1151,9 +1151,10 @@ let commands = {
 				this.privateModCommand("(The tournament auto disqualify timer was set to " + params[0] + " by " + user.name + ")");
 			}
 		},
-		runautodq: function (tournament) {
+		runautodq: function (tournament, user) {
 			if (tournament.autoDisqualifyTimeout === Infinity) return this.errorReply("The automatic tournament disqualify timer is not set.");
 			tournament.runAutoDisqualify(this);
+			this.logEntry(user.name + " used /tour runautodq");
 		},
 		scout: 'setscouting',
 		scouting: 'setscouting',
@@ -1371,7 +1372,8 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		"- scouting &lt;allow|disallow>: Specifies whether joining tournament matches while in a tournament is allowed.<br />" +
 		"- modjoin &lt;allow|disallow>: Specifies whether players can modjoin their battles.<br />" +
 		"- getusers: Lists the users in the current tournament.<br />" +
-		"- on/off: Enables/disables allowing mods to start tournaments in the current room.<br />" +
+		"- on/enable &lt;%|@>: Enables allowing drivers or mods to start tournaments in the current room.<br />" +
+		"- off/disable: Disables allowing drivers and mods to start tournaments in the current room.<br />" +
 		"- announce/announcements &lt;on|off>: Enables/disables tournament announcements for the current room.<br />" +
 		"- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />" +
 		"- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />" +
