@@ -1050,7 +1050,7 @@ exports.commands = {
 		if (!userid || userid === '') return this.sendReply("User '" + name + "' does not exist.");
 
 		if (room.auth[userid] !== '#') return this.sendReply("User '" + name + "' is not a room owner.");
-		if (room.founder !== user.userid && !this.can('pban')) return this.sendReply('/roomowner - Access denied.');
+		if (room.founder !== user.userid && !user.can('pban')) return this.sendReply('/roomowner - Access denied.');
 
 		delete room.auth[userid];
 		this.sendReply('(' + name + ' is no longer Room Owner.)');
@@ -1104,6 +1104,9 @@ exports.commands = {
 		}
 
 		let groupName = Config.groups[nextGroup].name || "regular user";
+		if (room.auth[userid] && room.auth[userid] === '#' && !user.can('pban')) {
+			if (room.founder && room.founder !== user.userid) return this.errorReply("You do not have permission to use this command.  If you are the Room Founder and trying to demote another RO, try /deroomowner [user].");
+		}
 		if ((room.auth[userid] || Config.groupsranking[0]) === nextGroup) {
 			return this.errorReply("User '" + name + "' is already a " + groupName + " in this room.");
 		}
