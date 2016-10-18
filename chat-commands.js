@@ -1104,7 +1104,9 @@ exports.commands = {
 		}
 
 		let groupName = Config.groups[nextGroup].name || "regular user";
-		if (room.auth[userid] === '#' && (room.founder && room.founder !== user.userid) || !user.can('pban')) return this.errorReply("You do not have permission to use this command.  If you are the Room Founder and trying to demote another RO, try /deroomowner [user].");
+		if (room.auth[userid] && room.auth[userid] === '#' && !user.can('pban')) {
+			if (room.founder && room.founder !== user.userid) return this.errorReply("You do not have permission to use this command.  If you are the Room Founder and trying to demote another RO, try /deroomowner [user].");
+		}
 		if ((room.auth[userid] || Config.groupsranking[0]) === nextGroup) {
 			return this.errorReply("User '" + name + "' is already a " + groupName + " in this room.");
 		}
@@ -2783,15 +2785,37 @@ exports.commands = {
 		connection.sendTo(room, "updating...");
 
 		let exec = require('child_process').exec;
-		exec(`git fetch && git rebase --autostash FETCH_HEAD`, (error, stdout, stderr) => {
-			for (let s of ("" + stdout + stderr).split("\n")) {
-				connection.sendTo(room, s);
-				logQueue.push(s);
+		exec('git diff-index --quiet HEAD --', error => {
+			let cmd = 'git pull --rebase';
+			if (error) {
+				if (error.code === 1) {
+					// The working directory or index have local changes.
+					cmd = 'git stash && ' + cmd + ' && git stash pop';
+				} else {
+					// The most likely case here is that the user does not have
+					// `git` on the PATH (which would be error.code === 127).
+					connection.sendTo(room, "" + error);
+					logQueue.push("" + error);
+					for (let line of logQueue) {
+						room.logEntry(line);
+					}
+					Chat.updateServerLock = false;
+					return;
+				}
 			}
-			for (let line of logQueue) {
-				room.logEntry(line);
-			}
-			Chat.updateServerLock = false;
+			let entry = "Running `" + cmd + "`";
+			connection.sendTo(room, entry);
+			logQueue.push(entry);
+			exec(cmd, (error, stdout, stderr) => {
+				for (let s of ("" + stdout + stderr).split("\n")) {
+					connection.sendTo(room, s);
+					logQueue.push(s);
+				}
+				for (let line of logQueue) {
+					room.logEntry(line);
+				}
+				Chat.updateServerLock = false;
+			});
 		});
 	},
 
