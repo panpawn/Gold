@@ -1258,6 +1258,7 @@ Chat.commands.tournament = function (paramString, room, user) {
 			room.chatRoomData.toursEnabled = true;
 			Rooms.global.writeChatRoomData();
 		}
+		return this.sendReply("Tournament are now enabled.");
 	} else if (cmd === 'off' || cmd === 'disable') {
 		if (!this.can('tournamentsmanagement', null, room)) return;
 		if (!room.toursEnabled) {
@@ -1372,8 +1373,8 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		"- scouting &lt;allow|disallow>: Specifies whether joining tournament matches while in a tournament is allowed.<br />" +
 		"- modjoin &lt;allow|disallow>: Specifies whether players can modjoin their battles.<br />" +
 		"- getusers: Lists the users in the current tournament.<br />" +
-		"- on/enable &lt;%|@>: Enables allowing drivers or mods to start tournaments in the current room.<br />" +
-		"- off/disable: Disables allowing drivers and mods to start tournaments in the current room.<br />" +
+		"- on/enable: Enables allowing voices or up to start tournaments in the current room.<br />" +
+		"- off/disable: Disables allowing anyone but ROs and up to start tournaments in the current room.<br />" +
 		"- announce/announcements &lt;on|off>: Enables/disables tournament announcements for the current room.<br />" +
 		"- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />" +
 		"- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />" +
