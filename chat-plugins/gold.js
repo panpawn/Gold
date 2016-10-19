@@ -1636,6 +1636,9 @@ exports.commands = {
 		}
 	},
 	pastelogshelp: ['/pastelogs [logs] - Formats messages to an HTML box. Accepts multiline input. Requires global %, @, *, &, ~'],
+	rppoll: function (target, room, user) {
+		return this.parse(`/poll new Choose your poison:, CL, Schooling, Trainer, Custom`);
+	},
 };
 
 function loadRegdateCache() {
