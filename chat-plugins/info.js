@@ -50,7 +50,7 @@ exports.commands = {
 			buf += `<br />(Pok&eacute;mon Showdown System Operator)`;
 		}
 		if (Gold.isDev(targetUser.userid)) {
-			buf += `<br />(Gold Systems Developer)`;
+			buf += `<br />(Gold System Operator)`;
 		}
 		if (!targetUser.registered) {
 			buf += `<br />(Unregistered)`;
