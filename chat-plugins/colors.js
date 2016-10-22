@@ -103,7 +103,6 @@ let colorCache = {};
 // Mains custom username colors
 // https://play.pokemonshowdown.com/js/config.js
 let mainCustomColors = {
-
 	'theimmortal': 'taco',
 	'bmelts': 'testmelts',
 	'zarel': 'aeo',
@@ -243,7 +242,7 @@ let mainCustomColors = {
 	'nv': 'larvitar',
 	'iyarito': 'gengarito',
 	'speks': 'goojna',
-	'cathy': '' //{color: '#ff5cb6'}
+	'cathy': '', //{color: '#ff5cb6'}
 };
 
 // hashColor function
