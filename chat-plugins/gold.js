@@ -982,6 +982,7 @@ exports.commands = {
 			});
 		});
 	},
+	'!uptime': true,
 	uptime: (function () {
 		function formatUptime(uptime) {
 			if (uptime > 24 * 60 * 60) {
