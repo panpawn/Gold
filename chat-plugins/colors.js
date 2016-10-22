@@ -103,12 +103,11 @@ let colorCache = {};
 // Mains custom username colors
 // https://play.pokemonshowdown.com/js/config.js
 let mainCustomColors = {
+
 	'theimmortal': 'taco',
 	'bmelts': 'testmelts',
 	'zarel': 'aeo',
-	'zarell': 'aeo',
 	'greatsage': 'test454',
-	// 'snowflakes': 'snowflake',
 	'jumpluff': 'zacchaeus',
 	'zacchaeus': 'jumpluff',
 	'kraw': 'kraw1',
@@ -123,7 +122,6 @@ let mainCustomColors = {
 	'mikedecishere': 'mikedec3boobs',
 	'heartsonfire': 'haatsuonfaiyaa',
 	'royalty': 'wonder9',
-	// 'osiris': 'yamraiha',
 	'limi': 'azure2',
 	'haunter': 'cathy',
 	'ginganinja': 'piratesandninjas',
@@ -134,23 +132,19 @@ let mainCustomColors = {
 	'queenofrandoms': 'hahaqor',
 	'jelandee': 'thejelandee',
 	'diatom': 'dledledlewhooop',
-	// 'waterbomb': 'wb0',
 	'texascloverleaf': 'aggronsmash',
 	'treecko': 'treecko56',
 	'treecko37': 'treecko56',
 	'violatic': 'violatic92',
 	'exeggutor': 'ironmanatee',
 	'ironmanatee': 'exeggutor',
-	// 'shamethat': 'aaa10',
 	'skylight': 'aerithass',
-	// 'prem': 'premisapieceofshit',
 	'goddessbriyella': 'jolteonxvii', // third color change
 	'nekonay': 'catbot20',
 	'coronis': 'kowonis',
 	'vaxter': 'anvaxter',
 	'mattl': 'mattl34',
 	'shaymin': 'test33',
-	// 'orphic': 'dmt6922',
 	'kayo': 'endedinariot',
 	'tgmd': 'greatmightydoom',
 	'vacate': 'vacatetest',
@@ -193,10 +187,8 @@ let mainCustomColors = {
 	'maomiraen': 'aaaaaa',
 	'trickster': 'sunako',
 	'articuno': 'bluekitteh177',
-	// 'antemortem': 'abc11092345678',
 	'scene': 'aspire',
 	'barton': 'hollywood15',
-	// 'psych': 'epicwome',
 	'zodiax': 'coldeann',
 	'ninetynine': 'blackkkk',
 	'kasumi': 'scooter4000',
@@ -238,7 +230,20 @@ let mainCustomColors = {
 	'vexeniv': 'vexenx',
 	'ayanosredscarf': 'ezichqog',
 	'penquin': 'privatepenquin',
-	'cathy': '', //{color: '#ff5cb6'}
+	'mraldo': 'mraldopls',
+	'sawsbuck': 'deerling',
+	'litten': 'samurott',
+	'samurott': 'litten',
+	'lunala': 'lunalavioleif',
+	'wishes': 'unfixable',
+	'nerd': 'eee4444444',
+	'blaziken': 'knmfksdnf',
+	'andy': 'agkoemv',
+	'kris': 'flogged',
+	'nv': 'larvitar',
+	'iyarito': 'gengarito',
+	'speks': 'goojna',
+	'cathy': '' //{color: '#ff5cb6'}
 };
 
 // hashColor function
