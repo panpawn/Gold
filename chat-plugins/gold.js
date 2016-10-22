@@ -19,6 +19,7 @@ const MAX_REASON_LENGTH = 300; // pban command usage
 let amCache = {anime:{}, manga:{}};
 let regdateCache = {};
 let udCache = {};
+let defCache = {};
 
 fs.createWriteStream('badges.txt', {
 	'flags': 'a',
@@ -489,6 +490,12 @@ exports.commands = {
 		if (target > 50) return this.sendReply('/define <word> - word can not be longer than 50 characters.');
 		if (!this.runBroadcast()) return;
 
+		if (toId(target) !== 'constructor' && defCache[toId(target)]) {
+			this.sendReplyBox(defCache[toId(target)]);
+			if (room) room.update();
+			return;
+		}
+
 		let options = {
 			host: 'api.wordnik.com',
 			port: 80,
@@ -502,11 +509,17 @@ exports.commands = {
 			res.on('data', chunk => {
 				data += chunk;
 			}).on('end', () => {
-				data = JSON.parse(data) ? JSON.parse(data) : false;
+				if (data.charAt(0) !== '{') {
+					this.sendReplyBox('Error retrieving definition for <b>"' + Chat.escapeHTML(target) + '"</b>.');
+					if (room) room.update();
+					return;
+				}
+				data = JSON.parse(data);
 				let output = '<font color=#24678d><b>Definitions for ' + target + ':</b></font><br />';
 				if (!data[0] || !data) {
 					this.sendReplyBox('No results for <b>"' + target + '"</b>.');
-					return room.update();
+					if (room) room.update();
+					return;
 				} else {
 					let count = 1;
 					for (let u in data) {
@@ -515,7 +528,8 @@ exports.commands = {
 						count++;
 					}
 					this.sendReplyBox(output);
-					if (room) return room.update;
+					if (room) room.update;
+					return;
 				}
 			});
 		});
