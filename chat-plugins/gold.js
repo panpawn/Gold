@@ -543,7 +543,7 @@ exports.commands = {
 		if (!target) return this.parse('/help urbandefine');
 		if (target.toString() > 50) return this.sendReply('Phrase can not be longer than 50 characters.');
 
-		if (udCache[toId(target)]) {
+		if (toId(target) !== 'constructor' && udCache[toId(target)]) {
 			this.sendReplyBox(udCache[toId(target)]);
 			if (room) room.update();
 			return;
