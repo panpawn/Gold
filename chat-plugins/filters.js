@@ -180,7 +180,7 @@ exports.commands = {
 
 		let buff = '<table border="1" cellspacing ="0" cellpadding="3"><tr><td><b>Proxy:</b></td><td><b>Blacklisted By:</b></td><td><b>Blacklisted:</b></td></tr>';
 		badHosts.forEach(proxy => {
-			buff += '<tr><td>' + proxy + '</td><td>' + Gold.nameColor(Gold.lockedHosts[proxy].by, false) + '</td><td>' + Tools.toDurationString(Date.now() - Gold.lockedHosts[proxy].on) + ' ago</td></tr>';
+			buff += '<tr><td>' + proxy + '</td><td>' + Gold.nameColor(Gold.lockedHosts[proxy].by, false) + '</td><td>' + Chat.toDurationString(Date.now() - Gold.lockedHosts[proxy].on) + ' ago</td></tr>';
 		});
 
 		return this.sendReplyBox(buff);
