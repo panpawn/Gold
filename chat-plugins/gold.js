@@ -528,7 +528,7 @@ exports.commands = {
 						count++;
 					}
 					this.sendReplyBox(output);
-					if (room) room.update;
+					if (room) room.update();
 					return;
 				}
 			});
