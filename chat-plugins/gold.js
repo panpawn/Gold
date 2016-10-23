@@ -1476,6 +1476,7 @@ exports.commands = {
 		let prevIps = Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0 ? Gold.userData[targetId].ips : false;
 		let names = Object.keys(Gold.userData);
 		let buff = [], none = '<em style="color:gray">(none)</em>';
+		const scrollDiv = '<div style="max-height: 150px; overflow: auto; overflow-x: hidden;">';
 		let userSymbol = Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User';
 		let userGroup = userSymbol !== ' ' && Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
 
@@ -1492,7 +1493,7 @@ exports.commands = {
 		}
 		if (this.targetUser && this.targetUser.connected && user.can('pban')) {
 			if (prevNames.length > 0) {
-				this.sendReplyBox("(All previously known alts used on server: " + prevNames.join(', ') + ")");
+				this.sendReplyBox(`${scrollDiv}(All previously known alts used on server: ${prevNames.join(', ')})</div>`);
 			}
 		} else if (this.cmd === 'offlinewhois' && user.can('pban')) {
 			// header and last seen
@@ -1505,7 +1506,7 @@ exports.commands = {
 			buff.push("Previous alt" + Gold.pluralFormat(prevNames.length, 's') + ": " + (prevNames.length > 0 ? prevNames.join(', ') : none));
 
 			// display offline whois
-			this.sendReplyBox(buff.join('<br />'));
+			this.sendReplyBox(`${scrollDiv + buff.join('<br />')}</div>`);
 		}
 	},
 	'!seen': true,
