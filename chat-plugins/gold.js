@@ -509,7 +509,7 @@ exports.commands = {
 			res.on('data', chunk => {
 				data += chunk;
 			}).on('end', () => {
-				if (data.charAt(0) !== '{') {
+				if (data.charAt(1) !== '{') {
 					this.sendReplyBox('Error retrieving definition for <b>"' + Chat.escapeHTML(target) + '"</b>.');
 					if (room) room.update();
 					return;
@@ -528,7 +528,8 @@ exports.commands = {
 						count++;
 					}
 					this.sendReplyBox(output);
-					if (room) room.update();
+					defCache[target] = output;
+					if (room) room.update;
 					return;
 				}
 			});
