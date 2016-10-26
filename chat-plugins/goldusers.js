@@ -217,7 +217,7 @@ try {
 					title: 'VIP User',
 					img: 'http://www.smogon.com/media/forums/images/badges/zeph.png',
 				}, 'twinner': {
-					title: 'Event Tournament Winner',
+					title: 'Special Event Winner',
 					img: 'http://www.smogon.com/media/forums/images/badges/spl.png',
 				}, 'creator': {
 					title: 'Server Creator',
