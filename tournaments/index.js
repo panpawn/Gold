@@ -500,13 +500,13 @@ class Tournament {
 		}
 
 		if (!(userid in this.players)) {
-			sendReply('|tournament|error|UserNotAdded');
+			sendReply('|tournament|error|UserNotAdded|' + userid);
 			return false;
 		}
 
 		let player = this.players[userid];
 		if (this.disqualifiedUsers.get(player)) {
-			sendReply('|tournament|error|AlreadyDisqualified');
+			sendReply('|tournament|error|AlreadyDisqualified|' + userid);
 			return false;
 		}
 

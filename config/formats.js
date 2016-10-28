@@ -329,7 +329,7 @@ exports.Formats = [
 		column: 2,
 
 		ruleset: ['Ubers', 'Baton Pass Clause'],
-		banlist: ['Uber > 1', 'AG ++ Uber', 'Blissey', 'Chansey', 'Eviolite', 'Mawilite', 'Medichamite', 'Sablenite', 'Soul Dew', 'Huge Power', 'Pure Power', 'Shadow Tag'],
+		banlist: ['Uber > 1', 'AG ++ Uber', 'Blissey', 'Chansey', 'Mawilite', 'Medichamite', 'Sablenite', 'Soul Dew', 'Huge Power', 'Pure Power', 'Shadow Tag'],
 		onBegin: function () {
 			let stats = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
 			for (let j = 0; j < this.sides.length; j++) {
@@ -559,8 +559,8 @@ exports.Formats = [
 
 		searchShow: false,
 		mod: 'mixandmega',
-		ruleset: ['Ubers', 'Baton Pass Clause'],
-		banlist: ['Dynamic Punch', 'Electrify', 'Zap Cannon'],
+		ruleset: ['Ubers'],
+		banlist: ['Baton Pass', 'Dynamic Punch', 'Electrify', 'Zap Cannon'],
 		onValidateTeam: function (team) {
 			let itemTable = {};
 			for (let i = 0; i < team.length; i++) {

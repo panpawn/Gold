@@ -28,10 +28,6 @@
  *
  *   Handles Elo rating tracking for players.
  *
- * Simulator - from simulator.js
- *
- *   Used to access the simulator itself.
- *
  * Chat - from chat.js
  *
  *   Handles chat and parses chat commands like /me and /ban
@@ -128,8 +124,6 @@ Verifier.PM.spawn();
 
 global.Gold = {};
 global.Db = require('origindb')('config/db');
-
-global.Simulator = require('./simulator');
 
 global.Tournaments = require('./tournaments');
 
