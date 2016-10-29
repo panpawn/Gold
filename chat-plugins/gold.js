@@ -366,32 +366,32 @@ exports.commands = {
 	s: 'spank',
 	spank: function (target, room, user) {
 		if (!target) return this.sendReply('/spank needs a target.');
-		return this.parse('/me spanks ' + target + '!');
+		this.parse('/me spanks ' + target + '!');
 	},
 	punt: function (target, room, user) {
 		if (!target) return this.sendReply('/punt needs a target.');
-		return this.parse('/me punts ' + target + ' to the moon!');
+		this.parse('/me punts ' + target + ' to the moon!');
 	},
 	crai: 'cry',
 	cry: function (target, room, user) {
-		return this.parse('/me starts tearbending dramatically like Katara~!');
+		this.parse('/me starts tearbending dramatically like Katara~!');
 	},
 	dk: 'dropkick',
 	dropkick: function (target, room, user) {
 		if (!target) return this.sendReply('/dropkick needs a target.');
-		return this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
+		this.parse('/me dropkicks ' + target + ' across the Pok\u00E9mon Stadium!');
 	},
 	fart: function (target, room, user) {
 		if (!target) return this.sendReply('/fart needs a target.');
-		return this.parse('/me farts on ' + target + '\'s face!');
+		this.parse('/me farts on ' + target + '\'s face!');
 	},
 	poke: function (target, room, user) {
 		if (!target) return this.sendReply('/poke needs a target.');
-		return this.parse('/me pokes ' + target + '.');
+		this.parse('/me pokes ' + target + '.');
 	},
 	pet: function (target, room, user) {
 		if (!target) return this.sendReply('/pet needs a target.');
-		return this.parse('/me pets ' + target + ' lavishly.');
+		this.parse('/me pets ' + target + ' lavishly.');
 	},
 	utube: function (target, room, user) {
 		if (user.userid !== 'ponybot') return false;
@@ -465,19 +465,19 @@ exports.commands = {
 	pic: 'image',
 	image: function (target, room, user) {
 		if (!target) return this.sendReply('/image [url] - Shows an image using /a. Requires ~.');
-		return this.parse('/a |raw|<center><img src="' + target + '">');
+		this.parse('/a |raw|<center><img src="' + target + '">');
 	},
 	halloween: function (target, room, user) {
 		if (!target) return this.sendReply('/halloween needs a target.');
-		return this.parse('/me takes ' + target + '\'s pumpkin and smashes it all over the Pok\u00E9mon Stadium!');
+		this.parse('/me takes ' + target + '\'s pumpkin and smashes it all over the Pok\u00E9mon Stadium!');
 	},
 	barn: function (target, room, user) {
 		if (!target) return this.sendReply('/barn needs a target.');
-		return this.parse('/me has barned ' + target + ' from the entire server!');
+		this.parse('/me has barned ' + target + ' from the entire server!');
 	},
 	lick: function (target, room, user) {
 		if (!target) return this.sendReply('/lick needs a target.');
-		return this.parse('/me licks ' + target + ' excessively!');
+		this.parse('/me licks ' + target + ' excessively!');
 	},
 
 	'!define': true,
