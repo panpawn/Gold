@@ -26,6 +26,7 @@ exports.commands = {
 		if (room && room.id === 'staff' && !this.runBroadcast()) return;
 		if (!room) room = Rooms.global;
 		let targetUser = this.targetUserOrSelf(target, user.group === ' ');
+		let customCode = Gold.whois(toId(target), true)
 		let showAll = (cmd === 'ip' || cmd === 'whoare' || cmd === 'alt' || cmd === 'alts');
 		if (!targetUser) {
 			if (showAll) return this.parse('/checkpunishment ' + target);
@@ -174,18 +175,23 @@ exports.commands = {
 			}
 			if (roomPunishments) buf += `<br />Room punishments: ` + roomPunishments;
 		}
+		if (user.can('pban') && customCode) {
+			buf += '<br />' + customCode;
+		}
 		this.sendReplyBox(buf);
 	},
 	whoishelp: ["/whois - Get details on yourself: alts, group, IP address, and rooms.",
 		"/whois [username] - Get details on a username: alts (Requires: % @ * & ~), group, IP address (Requires: @ * & ~), and rooms."],
 
 	'!checkpunishment': true,
+	offlinewhois: 'checkpunishment',
 	checkpunishment: function (target, room, user) {
 		if (!user.trusted) {
 			return this.errorReply("/checkpunishment - Access denied.");
 		}
 		let userid = toId(target);
-		let buf = Chat.html`<strong class="username">${userid}</strong> <em style="color:gray">(offline)</em><br /><br />`;
+		let customCode = Gold.whois(userid, false);
+		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${Chat.escapeHTML(target)}</strong> <em style="color:gray">(offline)</em><br />`;
 		let atLeastOne = false;
 
 		let punishment = Punishments.userids.get(userid);
@@ -228,6 +234,9 @@ exports.commands = {
 			if (roomPunishments) roomPunishments += `, `;
 			roomPunishments += `<a href="/${curRoom}">${curRoom}</a> (${punishDesc})`;
 		}
+		if (customCode && user.can('pban')) {
+			buf += customCode;
+		}
 		if (roomPunishments) {
 			buf += `Room punishments: ` + roomPunishments;
 			atLeastOne = true;
@@ -235,6 +244,7 @@ exports.commands = {
 		if (!atLeastOne) {
 			buf += `This username has no punishments associated with it.`;
 		}
+
 		this.sendReplyBox(buf);
 	},
 

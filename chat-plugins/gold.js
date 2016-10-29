@@ -26,8 +26,6 @@ fs.createWriteStream('badges.txt', {
 });
 geoip.startWatchingDataUpdate();
 
-let baseWhois = require('./../chat-plugins/info').commands.whois;
-
 const messages = [
 	"ventured into Shrek's Swamp.",
 	"disrespected the OgreLord!",
@@ -1463,53 +1461,6 @@ exports.commands = {
 	},
 	goldipsearchhelp: ["/goldipsearch [ip|ip range|username] - Find all users with specified IP, name, or IP range. Requires ~"],
 
-	offlinewhois: 'whois',
-	whois: function (target, room, user, connection, cmd) {
-		if (cmd !== 'offlinewhois' && this.cmd && this.cmd !== 'offlinewhois') {
-			baseWhois.apply(this, arguments);
-		}
-		if (!user.can('pban')) return;
-		if (toId(this.target) === 'constructor') return;
-
-		// variable declarations
-		let targetId = toId(this.target);
-		let ips = [], prevNames = [];
-		let prevIps = Gold.userData[targetId] && Gold.userData[targetId].ips.length > 0 ? Gold.userData[targetId].ips : false;
-		let names = Object.keys(Gold.userData);
-		let buff = [], none = '<em style="color:gray">(none)</em>';
-		const scrollDiv = '<div style="max-height: 150px; overflow: auto; overflow-x: hidden;">';
-		let userSymbol = Users.usergroups[targetId] ? Users.usergroups[targetId].substr(0, 1) : 'Regular User';
-		let userGroup = userSymbol !== ' ' && Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
-
-		// get previous names and IPs
-		if (prevIps) prevIps.forEach(f => { ips.push(f); });
-		if (ips.length > 0) {
-			names.forEach(name => {
-				for (let i = 0; i < ips.length; i++) {
-					if (Gold.userData[name].ips.includes(ips[i]) && !prevNames.includes(name) && targetId !== name) {
-						prevNames.push(name);
-					}
-				}
-			});
-		}
-		if (this.targetUser && this.targetUser.connected && user.can('pban')) {
-			if (prevNames.length > 0) {
-				this.sendReplyBox(`${scrollDiv}(All previously known alts used on server: ${prevNames.join(', ')})</div>`);
-			}
-		} else if (this.cmd === 'offlinewhois' && user.can('pban')) {
-			// header and last seen
-			buff.push('<strong class="username" style="color:' + Gold.hashColor(target) + '">' + Chat.escapeHTML(target) + '</strong> <em style="color:gray">(offline)</em>');
-			if (userGroup) buff.push(userGroup);
-			buff.push('Last Seen: ' + Gold.getLastSeen(targetId) + '<br />');
-
-			// get previous names and IPs
-			buff.push("Previous IP" + Gold.pluralFormat(ips.length, 's') + ": " + (ips.length > 0 ? ips.join(', ') : none));
-			buff.push("Previous alt" + Gold.pluralFormat(prevNames.length, 's') + ": " + (prevNames.length > 0 ? prevNames.join(', ') : none));
-
-			// display offline whois
-			this.sendReplyBox(`${scrollDiv + buff.join('<br />')}</div>`);
-		}
-	},
 	'!seen': true,
 	lastseen: 'seen',
 	seen: function (target, room, user) {

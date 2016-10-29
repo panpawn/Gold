@@ -412,6 +412,48 @@ try {
 				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
 			}
 		},
+		whois: function (user, online) {
+			user = toId(user);
+			if (user === 'constructor') return false;
+
+			// variable declarations
+			let ips = [], prevNames = [];
+			let prevIps = Gold.userData[user] && Gold.userData[user].ips.length > 0 ? Gold.userData[user].ips : false;
+			let names = Object.keys(Gold.userData);
+			let buff = [], none = '<em style="color:gray">(none)</em>';
+			let userSymbol = Users.usergroups[user] ? Users.usergroups[user].substr(0, 1) : 'Regular User';
+			let userGroup = userSymbol !== ' ' && Config.groups[userSymbol] ? 'Global ' + Config.groups[userSymbol].name + ' (' + userSymbol + ')' : false;
+
+			// get previous names and IPs
+			if (prevIps) prevIps.forEach(f => { ips.push(f); });
+			if (ips.length > 0) {
+				names.forEach(name => {
+					for (let i = 0; i < ips.length; i++) {
+						if (Gold.userData[name].ips.includes(ips[i]) && !prevNames.includes(name) && user !== name) {
+							prevNames.push(name);
+						}
+					}
+				});
+			}
+			if (online) {
+				let altsDisplay = prevNames.length > 0;
+				let ipsDisplay = ips.length > 0;
+				if (altsDisplay) buff.push(`(All previously known alts used: ${prevNames.join(', ')})`);
+				if (ipsDisplay) buff.push(`(All previously known IPs used: ${ips.join(', ')})`);
+				if (altsDisplay || ipsDisplay) return buff.join('<br />');
+			} else if (!online) {
+				// header and last seen
+				if (userGroup) buff.push(userGroup);
+				buff.push('Last Seen: ' + this.getLastSeen(user) + '<br />');
+
+				// get previous names and IPs
+				buff.push(`Previous IP${Chat.plural(ips.length)}: ${ips.length > 0 ? ips.join(', ') : none}`);
+				buff.push(`Previous alt${Chat.plural(prevNames.length)}: ${prevNames.length > 0 ? prevNames.join(', ') : none}`);
+
+				return `${buff.join('<br />')}<br />`;
+			}
+			return false;
+		},
 		pmAll: function (message, pmName) {
 			if (!pmName) pmName = '~Gold Server [Do not reply]';
 			Users.users.forEach(curUser => {
