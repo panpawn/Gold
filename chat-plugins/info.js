@@ -26,7 +26,7 @@ exports.commands = {
 		if (room && room.id === 'staff' && !this.runBroadcast()) return;
 		if (!room) room = Rooms.global;
 		let targetUser = this.targetUserOrSelf(target, user.group === ' ');
-		let customCode = Gold.whois(toId(target), true)
+		let customCode = Gold.whois(toId(target), true);
 		let showAll = (cmd === 'ip' || cmd === 'whoare' || cmd === 'alt' || cmd === 'alts');
 		if (!targetUser) {
 			if (showAll) return this.parse('/checkpunishment ' + target);

@@ -527,7 +527,7 @@ exports.commands = {
 					}
 					this.sendReplyBox(output);
 					defCache[target] = output;
-					if (room) room.update;
+					if (room) room.update();
 					return;
 				}
 			});
