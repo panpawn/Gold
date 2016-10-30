@@ -19,18 +19,21 @@ exports.commands = {
 			let targets = target.split(',');
 			for (let u in targets) targets[u] = targets[u].trim();
 			if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
+			let back = '';
 			switch (toId(targets[0])) {
 			case 'month':
 				if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
 				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
 				let months = fs.readdirSync('logs/chat/' + targets[1]);
-				user.send("|popup||html|Choose a month:" + generateTable(months, "/viewlogs date," + targets[1] + ","));
+				back = '<button name="send" value="/viewlogs">Back</button> | ';
+				user.send("|popup||html|" + back + "Choose a month:" + generateTable(months, "/viewlogs date," + targets[1] + ","));
 				return;
 			case 'date':
 				if (!targets[2]) return this.errorReply("Please use /viewlogs with no target.");
 				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
 				let days = fs.readdirSync('logs/chat/' + targets[1] + '/' + targets[2]);
-				user.send("|popup||html|Choose a date:" + generateTable(days, "/viewlogspopup " + targets[1] + ","));
+				back = '<button name="send" value="/viewlogs month,' + targets[1] + '">Back</button> | ';
+				user.send("|popup||html|" + back + "Choose a date:" + generateTable(days, "/viewlogspopup " + targets[1] + ","));
 				return;
 			default:
 				this.errorReply("/viewlogs - Command not recognized.");
@@ -95,7 +98,8 @@ exports.commands = {
 			}
 
 			if (cmd === 'viewlogspopup') {
-				let output = 'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
+				let back = '<button name="send" value="/viewlogs date,' + targetRoom + ',' + date.substr(0, 7) + '">Back</button> | ';
+				let output = back +  'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
 				data = data.split('\n');
 				for (let u in data) {
 					if (data[u].length < 1) continue;
@@ -179,12 +183,13 @@ function permissionCheck(user, room) {
 }
 
 function generateTable(array, command) {
-	let output = "<table>";
+	let output = '';
+	output += "<table>";
 	let count = 0;
 	for (let u in array) {
 		if (array[u] === 'today.txt') continue;
 		if (count === 0) output += "<tr>";
-		output += '<td><button style="width: 100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
+		output += '<td><button style="width:100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';
