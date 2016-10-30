@@ -106,12 +106,12 @@ class RoomSettings {
 		return slowchatOutput.join(" ");
 	}
 	tourStatus() {
-		if (!this.user.can('tournamentsmanagement', null, this.room)) return "<button " + DISABLED + ">" + (this.room.toursEnabled ? '@' : '#') + "</button>";
+		if (!this.user.can('tournamentsmanagement', null, this.room)) return "<button " + DISABLED + ">" + (this.room.toursEnabled ? '+' : '#') + "</button>";
 
 		if (this.room.toursEnabled) {
-			return '<button class="button" name="send" value="/roomsetting tournament disable">#</button> <button ' + DISABLED + '>@</button>';
+			return '<button class="button" name="send" value="/roomsetting tournament disable">#</button> <button ' + DISABLED + '>+</button>';
 		} else {
-			return '<button ' + DISABLED + '>#</button> <button class="button" name="send" value="/roomsetting tournament enable">@</button> ';
+			return '<button ' + DISABLED + '>#</button> <button class="button" name="send" value="/roomsetting tournament enable">+</button> ';
 		}
 	}
 	generateDisplay(user, room, connection) {
