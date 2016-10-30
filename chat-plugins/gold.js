@@ -232,8 +232,8 @@ exports.commands = {
 	},
 	hide: 'hideauth',
 	hideauth: function (target, room, user) {
-		if (!user.can('lock')) return this.sendReply("/hideauth - access denied.");
-		let tar = ' ';
+		if (!user.can('lock')) return this.errorReply("/hideauth - access denied.");
+		let tar = Config.groupsranking[0];
 		if (target) {
 			target = target.trim();
 			if (Config.groupsranking.indexOf(target) > -1 && target !== '#') {
@@ -243,7 +243,7 @@ exports.commands = {
 					this.sendReply('The group symbol you have tried to use is of a higher authority than you have access to. Defaulting to \' \' instead.');
 				}
 			} else {
-				this.sendReply('You have tried to use an invalid character as your auth symbol. Defaulting to \' \' instead.');
+				this.sendReply(`You have tried to use an invalid character as your auth symbol. Defaulting to '${tar}' instead.`);
 			}
 		}
 		user.getIdentity = function (roomid) {
@@ -271,7 +271,7 @@ exports.commands = {
 	},
 	show: 'showauth',
 	showauth: function (target, room, user) {
-		if (!user.can('lock')) return this.sendReply("/showauth - access denied.");
+		if (!user.can('lock')) return this.errorReply("/showauth - access denied.");
 		delete user.getIdentity;
 		user.updateIdentity();
 		user.isHiding = false;
@@ -642,18 +642,19 @@ exports.commands = {
 		}
 		this.logModCommand(user.name + ' declared ' + target);
 	},
-	sd: 'declaremod',
-	staffdeclare: 'declaremod',
-	modmsg: 'declaremod',
-	moddeclare: 'declaremod',
-	declaremod: function (target, room, user) {
-		if (!target) return this.parse('/help declaremod');
+	staffdeclare: 'moddeclare',
+	modmsg: 'moddeclare',
+	declaremod: 'moddeclare',
+	moddeclare: function (target, room, user) {
+		if (!target) return this.parse('/help moddeclare');
 		if (!this.can('declare', null, room)) return false;
 		if (!this.canTalk()) return;
-		this.privateModCommand('|raw|<div class="broadcast-red"><b><font size=1><i>Private Auth (Driver +) declare from ' + user.name + '<br /></i></font size>' + target + '</b></div>');
-		this.logModCommand(user.name + ' mod declared ' + target);
+		let declareHTML = Chat.html`<div class="broadcast-red"><i>Private Staff Message (Driver+) from ${user.name}:</i><br /><strong>${target}</strong></div>`;
+		this.privateModCommand(`|raw|${declareHTML}`);
+		this.logModCommand(`${user.name} mod declared ${target}`);
 	},
-	declaremodhelp: ['/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires #, &, ~'],
+	moddeclarehelp: ["/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires * # & ~"],
+
 	k: 'kick',
 	kick: function (target, room, user) {
 		if (!target) return this.parse('/help kick');
