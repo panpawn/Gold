@@ -25,14 +25,14 @@ exports.commands = {
 				if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
 				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
 				let months = fs.readdirSync('logs/chat/' + targets[1]);
-				back = '<button name="send" value="/viewlogs">Back</button> | ';
+				back = '<button class="button" name="send" value="/viewlogs">Back</button> | ';
 				user.send("|popup||html|" + back + "Choose a month:" + generateTable(months, "/viewlogs date," + targets[1] + ","));
 				return;
 			case 'date':
 				if (!targets[2]) return this.errorReply("Please use /viewlogs with no target.");
 				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
 				let days = fs.readdirSync('logs/chat/' + targets[1] + '/' + targets[2]);
-				back = '<button name="send" value="/viewlogs month,' + targets[1] + '">Back</button> | ';
+				back = '<button class="button" name="send" value="/viewlogs month,' + targets[1] + '">Back</button> | ';
 				user.send("|popup||html|" + back + "Choose a date:" + generateTable(days, "/viewlogspopup " + targets[1] + ","));
 				return;
 			default:
@@ -59,9 +59,29 @@ exports.commands = {
 		if (roomList.length + groupChats.length + chatRooms.length < 1) return this.errorReply("You don't have access to view the logs of any rooms.");
 
 		let output = "Choose a room to view the logs:<br />";
-		if (chatRooms.length >= 1) output += "<b><u>Chat rooms currently on the server:</u></b><br />" + generateTable(chatRooms, "/viewlogs month,");
-		if (roomList.length >= 1) output += "<b><u>Rooms formerly on the server:</u></b><br />" + generateTable(roomList, "/viewlogs month,");
-		if (groupChats.length >= 1) output += "<b><u>All Group chats:</u></b><br />" + generateTable(groupChats, "/viewlogs month,");
+		let official = [];
+		let unofficial = [];
+		let hidden = [];
+		let secret = [];
+		chatRooms.forEach(roomid => {
+			let tarRoom = Rooms(roomid)
+			if (!tarRoom) return;
+			if (tarRoom.isOfficial) {
+				official.push(roomid);
+			} else if (tarRoom.isPrivate && tarRoom.isPrivate === 'hidden') {
+				if (user.can('pban')) hidden.push(roomid);
+			} else if (tarRoom.isPrivate === true) {
+				if (user.can('pban')) secret.push(roomid);
+			} else {
+				unofficial.push(roomid);
+			}
+		});
+		if (official.length >= 1) output += roomHeader('Official Chatrooms:') + generateTable(official, '/viewlogs month,');
+		if (unofficial.length >= 1) output += roomHeader('Unofficial Chatrooms:') + generateTable(unofficial, '/viewlogs month,');
+		if (hidden.length >= 1) output += roomHeader('Hidden Chatrooms:') + generateTable(hidden, '/viewlogs month,');
+		if (secret.length >= 1) output += roomHeader('Secret Chatrooms:') + generateTable(secret, '/viewlogs month,');
+		if (roomList.length >= 1) output += roomHeader('Rooms formerly on the server:') + generateTable(roomList, '/viewlogs month,');
+		if (groupChats.length >= 1) output += roomHeader('All Group chats:') + generateTable(groupChats, '/viewlogs month,');
 		user.send("|popup||wide||html|" + output);
 	},
 
@@ -98,7 +118,7 @@ exports.commands = {
 			}
 
 			if (cmd === 'viewlogspopup') {
-				let back = '<button name="send" value="/viewlogs date,' + targetRoom + ',' + date.substr(0, 7) + '">Back</button> | ';
+				let back = '<button class="button" name="send" value="/viewlogs date,' + targetRoom + ',' + date.substr(0, 7) + '">Back</button> | ';
 				let output = back +  'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
 				data = data.split('\n');
 				for (let u in data) {
@@ -189,7 +209,7 @@ function generateTable(array, command) {
 	for (let u in array) {
 		if (array[u] === 'today.txt') continue;
 		if (count === 0) output += "<tr>";
-		output += '<td><button style="width:100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
+		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';
@@ -274,4 +294,8 @@ function parseFormatting(message) {
 	message = message.replace(/&lt;&lt;([a-z0-9-]+)&gt;&gt;/g, '&laquo;<a href="/$1" target="_blank">$1</a>&raquo;'); // <<roomid>>
 	message = Autolinker.link(message, {stripPrefix: false, phone: false, twitter: false});
 	return message;
+}
+
+function roomHeader(message) {
+	return `<strong><u>${message}</u></strong><br />`;
 }
