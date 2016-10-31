@@ -76,12 +76,12 @@ exports.commands = {
 				unofficial.push(tarRoom.title);
 			}
 		});
-		if (official.length >= 1) output += roomHeader('Official Chatrooms:') + generateTable(official, '/viewlogs month,');
-		if (unofficial.length >= 1) output += roomHeader('Unofficial Chatrooms:') + generateTable(unofficial, '/viewlogs month,');
-		if (hidden.length >= 1) output += roomHeader('Hidden Chatrooms:') + generateTable(hidden, '/viewlogs month,');
-		if (secret.length >= 1) output += roomHeader('Secret Chatrooms:') + generateTable(secret, '/viewlogs month,');
-		if (roomList.length >= 1) output += roomHeader('Rooms formerly on the server:') + generateTable(roomList, '/viewlogs month,');
-		if (groupChats.length >= 1) output += roomHeader('All Group chats:') + generateTable(groupChats, '/viewlogs month,');
+		if (official.length >= 1) output += roomHeader('Official Chatrooms:') + generateTable(official, '/viewlogs month,', true);
+		if (unofficial.length >= 1) output += roomHeader('Unofficial Chatrooms:') + generateTable(unofficial, '/viewlogs month,', true);
+		if (hidden.length >= 1) output += roomHeader('Hidden Chatrooms:') + generateTable(hidden, '/viewlogs month,', true);
+		if (secret.length >= 1) output += roomHeader('Secret Chatrooms:') + generateTable(secret, '/viewlogs month,', true);
+		if (roomList.length >= 1) output += roomHeader('Rooms formerly on the server:') + generateTable(roomList, '/viewlogs month,', true);
+		if (groupChats.length >= 1) output += roomHeader('All Group chats:') + generateTable(groupChats, '/viewlogs month,', true);
 		user.send("|popup||wide||html|" + output);
 	},
 
@@ -202,14 +202,16 @@ function permissionCheck(user, room) {
 	return true;
 }
 
-function generateTable(array, command) {
+function generateTable(array, command, isRoom) {
 	let output = '';
 	output += "<table>";
 	let count = 0;
 	for (let u in array) {
 		if (array[u] === 'today.txt') continue;
 		if (count === 0) output += "<tr>";
-		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(array[u]) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
+		let cmdText = array[u];
+		if (isRoom) cmdText = toId(array[u]);
+		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';
