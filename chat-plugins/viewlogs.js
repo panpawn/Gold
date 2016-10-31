@@ -67,13 +67,13 @@ exports.commands = {
 			let tarRoom = Rooms(roomid)
 			if (!tarRoom) return;
 			if (tarRoom.isOfficial) {
-				official.push(roomid);
+				official.push(tarRoom.title);
 			} else if (tarRoom.isPrivate && tarRoom.isPrivate === 'hidden') {
-				if (user.can('pban')) hidden.push(roomid);
+				if (user.can('pban')) hidden.push(tarRoom.title);
 			} else if (tarRoom.isPrivate === true) {
-				if (user.can('pban')) secret.push(roomid);
+				if (user.can('pban')) secret.push(tarRoom.title);
 			} else {
-				unofficial.push(roomid);
+				unofficial.push(tarRoom.title);
 			}
 		});
 		if (official.length >= 1) output += roomHeader('Official Chatrooms:') + generateTable(official, '/viewlogs month,');
