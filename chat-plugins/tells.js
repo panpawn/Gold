@@ -15,6 +15,8 @@ exports.commands = {
 		let commaIndex = target.indexOf(',');
 		if (commaIndex < 0) return this.errorReply("You forgot the comma.");
 		let targetUser = toId(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
+		let sentReply = `|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`;
+		if (Users.ShadowBan.checkBanned(user)) return this.sendReply(sentReply);
 		if (targetUser === user.userid) return this.errorReply("You cannot send a tell to yourself.");
 		let message = target.slice(commaIndex + 1).trim();
 		if (Users(targetUser) && Users(targetUser).ignorePMs && !user.can('hotpatch')) return this.errorReply("Because this user is currently blocking PMs, this tell has failed to be added to their offline messaging queue.");
@@ -24,7 +26,7 @@ exports.commands = {
 		if (Gold.userData[targetUser] && Gold.userData[targetUser].tells && Object.keys(Gold.userData[targetUser].tells).length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
 		Gold.createTell(user.name, targetUser, message); // function saves when tell is created automatically
 		//createTell(user.name, targetUser, message); // function saves when tell is created automatically
-		return this.sendReply(`|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`);
+		return this.sendReply(sentReply);
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
 
