@@ -448,7 +448,6 @@ exports.commands = {
 		}
 		this.sendReplyBox(header + official.join(' ') + nonOfficial.join(' ') + privateRoom.join(' ') + (groupChats.length > 1 ? groupChats.join(' ') : '') + (battleRooms.length > 1 ? battleRooms.join(' ') : ''));
 	},
-
 	mt: 'mktour',
 	mktour: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /mktour [tier] - creates a tournament in single elimination.");
@@ -479,7 +478,6 @@ exports.commands = {
 		if (!target) return this.sendReply('/lick needs a target.');
 		this.parse('/me licks ' + target + ' excessively!');
 	},
-
 	'!define': true,
 	def: 'define',
 	define: function (target, room, user) {
@@ -533,7 +531,6 @@ exports.commands = {
 			});
 		});
 	},
-
 	'!urbandefine': true,
 	u: 'urbandefine',
 	ud: 'urbandefine',
@@ -587,7 +584,6 @@ exports.commands = {
 			});
 		});
 	},
-
 	'!hex': true,
 	gethex: 'hex',
 	hex: function (target, room, user) {
@@ -605,7 +601,6 @@ exports.commands = {
 		this.sendReplyBox("<img src=" + parts[0] + " width=" + parts[1] + " height=" + parts[1]);
 	},
 	roomshowimagehelp: ["!rsi [image], [width], [height] - Broadcasts an image to the room"],
-
 	'!usersofrank': true,
 	admins: 'usersofrank',
 	uor: 'usersofrank',
@@ -654,7 +649,6 @@ exports.commands = {
 		this.logModCommand(`${user.name} mod declared ${target}`);
 	},
 	moddeclarehelp: ["/declaremod [message] - Displays a red [message] to all authority in the respected room.  Requires * # & ~"],
-
 	k: 'kick',
 	kick: function (target, room, user) {
 		if (!target) return this.parse('/help kick');
@@ -787,7 +781,6 @@ exports.commands = {
 			return this.sendReplyBox(`${Gold.nameColor(target, true)}'s badges:<br />${Gold.displayBadges(target)}`);
 		}
 	},
-
 	badgeshelp: ["/badges [user] - Views a user's badges.",
 		"/badges list - Displays a list of all badges.",
 		"/badges give, [user], [badge] - Gives a user a badge. Requires & ~",
@@ -950,7 +943,6 @@ exports.commands = {
 		room.add('|html|<font size="4"><b>New color guessed!</b></font><br><b>Guessed by:</b> ' + user.userid + '<br><b>Color:</b> ' + target + '');
 		this.sendReply('Thanks, your new color guess has been sent.  We\'ll review your color soon and get back to you. ("' + target + '")');
 	},
-
 	'!dubtrack': true,
 	dub: 'dubtrack',
 	music: 'dubtrack',
@@ -1087,7 +1079,6 @@ exports.commands = {
 		return true;
 	},
 	permalockhelp: ["/permalock [username], [reason] - Locks the user from talking in all chats for six months. Requires: @ & ~"],
-
 	// Away commands: by Morfent
 	away: function (target, room, user) {
 		if (!user.isAway && user.name.length > 19) return this.errorReply("Your username is too long for any kind of use of this command.");
@@ -1119,7 +1110,6 @@ exports.commands = {
 		user.updateIdentity();
 		user.isAway = true;
 	},
-
 	back: function (target, room, user) {
 		if (!user.isAway) return this.errorReply("You are not set as away.");
 		user.isAway = false;
@@ -1139,7 +1129,6 @@ exports.commands = {
 		user.isAway = false;
 		if (user.can('lock')) this.add("|raw|-- <font color='" + Gold.hashColor(user.userid) + "'><strong>" + Chat.escapeHTML(newName) + "</strong></font> is no longer " + status.toLowerCase() + ".");
 	},
-
     //different pre-set away commands
 	afk: function (target, room, user) {
 		if (!target) {
@@ -1422,7 +1411,6 @@ exports.commands = {
 		});
 	},
 	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
-
 	getalts: 'goldipsearch',
 	goldipsearch: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
@@ -1461,7 +1449,6 @@ exports.commands = {
 		}
 	},
 	goldipsearchhelp: ["/goldipsearch [ip|ip range|username] - Find all users with specified IP, name, or IP range. Requires ~"],
-
 	'!seen': true,
 	lastseen: 'seen',
 	seen: function (target, room, user) {
