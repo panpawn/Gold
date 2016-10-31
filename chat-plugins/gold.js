@@ -1411,7 +1411,6 @@ exports.commands = {
 		});
 	},
 	mangahelp: ['/manga [query] - Searches for a manga series based on the given search query.'],
-	getalts: 'goldipsearch',
 	goldipsearch: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
