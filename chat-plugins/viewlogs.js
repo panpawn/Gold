@@ -65,7 +65,7 @@ exports.commands = {
 		let hidden = [];
 		let secret = [];
 		chatRooms.forEach(roomid => {
-			let tarRoom = Rooms(roomid)
+			let tarRoom = Rooms(roomid);
 			if (!tarRoom) return;
 			if (tarRoom.isOfficial) {
 				official.push(tarRoom.title);
@@ -120,7 +120,7 @@ exports.commands = {
 
 			if (cmd === 'viewlogspopup') {
 				let back = '<button class="button" name="send" value="/viewlogs date,' + targetRoom + ',' + date.substr(0, 7) + '">Back</button> | ';
-				let output = back +  'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
+				let output = back + 'Displaying room logs of room "' + Chat.escapeHTML(targetRoom) + '" on ' + Chat.escapeHTML(date) + '<br />';
 				data = data.split('\n');
 				for (let u in data) {
 					if (data[u].length < 1) continue;
@@ -248,7 +248,10 @@ function parseMessage(message, user) {
 	case 'c':
 		name = lineSplit[2];
 		if (name === '~') break;
-		if (lineSplit.slice(3).join('|').startsWith('/log ')) return message = '<span class="notice">' + lineSplit.slice(3).join('|').trim().remove('/log ') + '</span>';
+		if (lineSplit.slice(3).join('|').startsWith('/log ')) {
+			message = '<span class="notice">' + lineSplit.slice(3).join('|').trim().remove('/log ') + '</span>';
+			return;
+		}
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
 		'</small><strong class="username" style="color:' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</strong> <em>' +
