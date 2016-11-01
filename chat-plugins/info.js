@@ -191,7 +191,7 @@ exports.commands = {
 		}
 		let userid = toId(target);
 		let customCode = Gold.whois(userid, false);
-		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${Chat.escapeHTML(target)}</strong> <em style="color:gray">(offline)</em><br />`;
+		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${target}</strong> <em style="color:gray">(offline)</em><br />`;
 		let atLeastOne = false;
 
 		let punishment = Punishments.userids.get(userid);
