@@ -250,7 +250,7 @@ function parseMessage(message, user) {
 		if (name === '~') break;
 		if (lineSplit.slice(3).join('|').startsWith('/log ')) {
 			message = '<span class="notice">' + lineSplit.slice(3).join('|').trim().remove('/log ') + '</span>';
-			return;
+			break;
 		}
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
