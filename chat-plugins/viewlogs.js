@@ -81,7 +81,7 @@ exports.commands = {
 		if (hidden.length >= 1) output += roomHeader('Hidden Chatrooms:') + generateTable(hidden, '/viewlogs month,', true);
 		if (secret.length >= 1) output += roomHeader('Secret Chatrooms:') + generateTable(secret, '/viewlogs month,', true);
 		if (roomList.length >= 1) output += roomHeader('Rooms formerly on the server:') + generateTable(roomList, '/viewlogs month,', true);
-		if (groupChats.length >= 1) output += roomHeader('All Group chats:') + generateTable(groupChats, '/viewlogs month,', true);
+		if (groupChats.length >= 1) output += roomHeader('All Group chats:') + generateTable(groupChats, '/viewlogs month,');
 		user.send("|popup||wide||html|" + output);
 	},
 
