@@ -10,6 +10,7 @@
 'use strict';
 
 const fs = require('fs');
+const moment = require('moment');
 const Autolinker = require('autolinker');
 const MAX_LINES = 1000;
 
@@ -184,6 +185,16 @@ exports.commands = {
 		});
 	},
 	searchlogshelp: ["/searchlogs [room / all], [phrase] - Phrase may contain * wildcards."],
+
+	roomlog: 'roomlogs',
+	roomlogs: function (target, room, user) {
+		if (!this.can('lock')) return false;
+		if (!room || room.id === 'global') return this.errorReply("You must be in a room to use this command.");
+		if (room.battle) return this.errorReply("This room's logs are not saved.");
+		let today = `<button class="button" name="send" value="/viewlogspopup ${room.id},${moment().format('YYYY-MM-DD')}.txt">${room.id} roomlog for today</button>`;
+		let past = `<button class="button" name="send" value="/viewlogs month,${(room.isPrimal ? room.title : room.id)}">past</button>`;
+		return this.sendReplyBox(today + ' | ' + past);
+	},
 };
 
 function permissionCheck(user, room) {
