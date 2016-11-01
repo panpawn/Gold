@@ -239,7 +239,7 @@ function parseMessage(message, user) {
 		if (name === '~') break;
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
-		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
+		'</small><strong class="username" style="color:' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</strong> <em>' +
 		parseFormatting(lineSplit.slice(3).join('|')) + '</em></span>';
 		break;
 	case 'c:':
@@ -247,7 +247,7 @@ function parseMessage(message, user) {
 		if (name === '~') break;
 		if (lineSplit.slice(4).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
-		'</small><b><font color="' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</font></b> <em>' +
+		'</small><strong class="username" style="color:' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</strong> <em>' +
 		parseFormatting(lineSplit.slice(4).join('|')) + '</em></span>';
 		break;
 	case 'uhtml':
