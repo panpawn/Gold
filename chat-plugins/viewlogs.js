@@ -237,6 +237,7 @@ function parseMessage(message, user) {
 	case 'c':
 		name = lineSplit[2];
 		if (name === '~') break;
+		if (lineSplit.slice(3).join('|').startsWith('/log ')) return message = '<span class="notice">' + lineSplit.slice(3).join('|').trim().remove('/log ') + '</span>';
 		if (lineSplit.slice(3).join('|').match(highlight)) div = "chat highlighted";
 		message = '<span class="' + div + '"><small>[' + timestamp + ']</small> ' + '<small>' + name.substr(0, 1) +
 		'</small><strong class="username" style="color:' + Gold.hashColor(name.substr(1)) + '">' + name.substr(1, name.length) + ':</strong> <em>' +
