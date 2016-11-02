@@ -2064,6 +2064,7 @@ exports.commands = {
 		this.addModCommand("" + targetUser.name + " was namelocked by " + user.name + "." + (reason ? " (" + reason + ")" : ""));
 		this.globalModlog("NAMELOCK", targetUser, " by " + user.name + (reason ? ": " + reason : ""));
 		Rooms.global.cancelSearch(targetUser);
+		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.namelock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
 		targetUser.popup("|modal|" + user.name + " has locked your name and you can't change names anymore" + (reason ? ": " + reason : "."));
 		return true;
