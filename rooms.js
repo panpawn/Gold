@@ -1500,7 +1500,11 @@ class ChatRoom extends Room {
 		let buffer = '';
 		let counter = 0;
 		for (let i in this.users) {
-			if (!Users(this.users[i]) || !this.users[i].named || this.users[i].hidden) {
+			// handles some ghost user incidents on userlist
+			if (this.users[i].startsWith('guest') && (!Users(this.users[i]) || !Users(this.users[i]).connected)) {
+				continue;
+			}
+			if (!this.users[i].named || this.users[i].hidden) {
 				continue;
 			}
 			counter++;
