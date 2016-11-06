@@ -266,11 +266,16 @@ try {
 			this.saveData();
 		},
 		getAutoJoin: function (user) {
-			let data = this.checkExisting(user);
-			if (data.autojoin && data.autojoin.length > 0) {
-				return data.autojoin;
+			try {
+				let data = this.checkExisting(user);
+				if (data.autojoin && data.autojoin.length > 0) {
+					return data.autojoin;
+				}
+				return false;
+			} catch (e) {
+				logCrash(e.stack, 'Gold#getAutoJoin on user: ' + user);
+				return false;
 			}
-			return false;
 		},
 		/*******************
 		 * Misc. Functions *
@@ -477,8 +482,14 @@ try {
 				}
 			});
 		},
+		logCrash: function (stack, message) {
+			for (let roomid of ['development', 'staff']) {
+				let curRoom = Rooms(roomid);
+				if (curRoom) curRoom.add(`|html|<div class="broadcast-red"><b>CUSTOM GOLD FUNCTIONALITY HAS CRASHED:</b><br />${stack}<br />Detailed message: ${message}<br /><br /><b>Please report this to a developer... so panpawn.`).update();
+			}
+		},
 	});
 } catch (e) {
 	let staff = Rooms('staff');
-	if (staff) staff.add(`|html|<div class="broadcast-red"><b>CUSTOM PS FUNCTIONALITY HAS CRASHED:</b><br />${e.stack}<br /><br /><b>Please report this to a developer... so panpawn.`).update();
+	if (staff) staff.add(`|html|<div class="broadcast-red"><b>CUSTOM GOLD FUNCTIONALITY HAS CRASHED:</b><br />${e.stack}<br /><br /><b>Please report this to a developer... so panpawn.`).update();
 }
