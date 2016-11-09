@@ -2127,7 +2127,11 @@ exports.commands = {
 		target = this.splitTarget(target);
 		const targetUser = this.targetUser;
 		if (!targetUser) return this.errorReply("User '" + this.targetUsername + "' not found.");
-		if (!this.can('editroom', targetUser, room)) return false;
+		if (room.blacklistPermission === '@') {
+			if (!this.can('ban', targetUser, room)) return false;
+		} else {
+			if (!this.can('editroom', targetUser, room)) return false;
+		}
 		if (targetUser.can('pban')) return this.errorReply("Global upper staff cannot be blacklisted.");
 		if (!room.chatRoomData) {
 			return this.errorReply("This room is not going to last long enough for a blacklist to matter - just ban the user");
@@ -2176,12 +2180,16 @@ exports.commands = {
 		Punishments.roomBlacklist(room, targetUser, null, null, target);
 		return true;
 	},
-	blacklisthelp: ["/blacklist [username], [reason] - Blacklists the user from the room you are in for a year. Requires: # & ~"],
+	blacklisthelp: ["/blacklist [username], [reason] - Blacklists the user from the room you are in for a year. Requires: # & ~ (@ settable via /roomsettings)"],
 
 	blacklistname: function (target, room, user) {
 		if (!target) return this.parse('/help blacklistname');
 		if (!this.canTalk()) return;
-		if (!this.can('editroom', null, room)) return false;
+		if (room.blacklistPermission === '@') {
+			if (!this.can('ban', null, room)) return false;
+		} else {
+			if (!this.can('editroom', null, room)) return false;
+		}
 		if (!room.chatRoomData) {
 			return this.errorReply("This room is not going to last long enough for a blacklist to matter - just ban the user");
 		}
@@ -2212,12 +2220,16 @@ exports.commands = {
 		this.addModCommand("" + targets.join(', ') + (targets.length > 1 ? " were" : " was") + " nameblacklisted by " + user.name + ".");
 		return true;
 	},
-	blacklistnamehelp: ["/blacklistname [username1, username2, etc.] | reason - Blacklists the given username(s) from the room you are in for a year. Requires: # & ~"],
+	blacklistnamehelp: ["/blacklistname [username1, username2, etc.] | reason - Blacklists the given username(s) from the room you are in for a year. Requires: # & ~ (@ settable via /roomsettings)"],
 
 	unab: 'unblacklist',
 	unblacklist: function (target, room, user) {
 		if (!target) return this.parse('/help unblacklist');
-		if (!this.can('editroom', null, room)) return false;
+		if (room.blacklistPermission === '@') {
+			if (!this.can('ban', null, room)) return false;
+		} else {
+			if (!this.can('editroom', null, room)) return false;
+		}
 
 		const name = Punishments.roomUnblacklist(room, target);
 
@@ -2230,7 +2242,7 @@ exports.commands = {
 			this.errorReply("User '" + target + "' is not blacklisted.");
 		}
 	},
-	unblacklisthelp: ["/unblacklist [username] - Unblacklists the user from the room you are in. Requires: # & ~"],
+	unblacklisthelp: ["/unblacklist [username] - Unblacklists the user from the room you are in. Requires: # & ~ (@ settable via /roomsettings)"],
 
 	unblacklistall: function (target, room, user) {
 		if (!this.can('editroom', null, room)) return false;
