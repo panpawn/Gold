@@ -1501,7 +1501,7 @@ class ChatRoom extends Room {
 		let counter = 0;
 		for (let i in this.users) {
 			// handles some ghost user incidents on userlist
-			if (this.users[i].startsWith('guest') && (!Users(this.users[i]) || !Users(this.users[i]).connected)) {
+			if (!Users(this.users[i]) || !Users(this.users[i]).connected) {
 				continue;
 			}
 			if (!this.users[i].named || this.users[i].hidden) {
