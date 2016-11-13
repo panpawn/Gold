@@ -273,7 +273,7 @@ try {
 				}
 				return false;
 			} catch (e) {
-				logCrash(e.stack, 'Gold#getAutoJoin on user: ' + user);
+				this.logCrash(e.stack, 'Gold#getAutoJoin on user: ' + user);
 				return false;
 			}
 		},
