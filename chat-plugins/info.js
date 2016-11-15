@@ -33,7 +33,7 @@ exports.commands = {
 			return this.errorReply("User " + this.targetUsername + " not found.");
 		}
 		if (showAll && !user.trusted && targetUser !== user) {
-			return this.errorReply("/alts - Access denied.");
+			return this.errorReply(`/${cmd} - Access denied.`);
 		}
 
 		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(targetUser.userid)}"><small style="display:none">${targetUser.group}</small>${targetUser.name}</strong> `;
@@ -190,6 +190,7 @@ exports.commands = {
 			return this.errorReply("/checkpunishment - Access denied.");
 		}
 		let userid = toId(target);
+		if (!userid) return this.errorReply("Please enter a valid username.");
 		let customCode = Gold.whois(userid, false);
 		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${target}</strong> <em style="color:gray">(offline)</em><br />`;
 		let atLeastOne = false;
@@ -1009,7 +1010,6 @@ exports.commands = {
 		}
 		return this.sendReplyBox('Base ' + statValue + (calcHP ? ' HP ' : ' ') + 'at level ' + level + ' with ' + iv + ' IVs, ' + ev + (nature === 1.1 ? '+' : (nature === 0.9 ? '-' : '')) + ' EVs' + (modifier > 0 && !calcHP ? ' at ' + (positiveMod ? '+' : '-') + modifier : '') + ': <b>' + Math.floor(output) + '</b>.');
 	},
-
 	statcalchelp: ["/statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Calculates what the actual stat of a Pokémon is with the given parameters. For example, '/statcalc lv50 100 30iv positive 252ev scarf' calculates the speed of a base 100 scarfer with HP Ice in Battle Spot, and '/statcalc uninvested 90 neutral' calculates the attack of an uninvested Crobat.",
 		"!statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Shows this information to everyone.",
 		"Inputing 'hp' as an argument makes it use the formula for HP. Instead of giving nature, '+' and '-' can be appended to the EV amount (e.g. 252+ev) to signify a boosting or inhibiting nature."],
@@ -1037,8 +1037,7 @@ exports.commands = {
 			"~ <b>Global Administrator</b> -  They can do anything, like change what this message says"
 		);
 	},
-
-	groupshelp: ["/groups - Explains what the + % @ # & next to people's names mean.",
+	groupshelp: ["/groups - Explains what the symbols (like % and @) before people's names mean.",
 		"!groups - Shows everyone that information. Requires: + % @ * # & ~"],
 
 	'!opensource': true,

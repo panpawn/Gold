@@ -885,7 +885,8 @@ exports.commands = {
 			return;
 		}
 		if (!this.can('declare', null, room)) return false;
-		//if (!this.canHTML(target)) return;
+		// if (!this.canHTML(target)) return;
+		if (target === 'off' || target === 'disable' || target === 'delete') return this.errorReply('Did you mean "/deleteroomintro"?');
 		if (!/</.test(target)) {
 			// not HTML, do some simple URL linking
 			let re = /(https?:\/\/(([-\w\.]+)+(:\d+)?(\/([\w/_\.]*(\?\S+)?)?)?))/g;
@@ -937,6 +938,7 @@ exports.commands = {
 			return;
 		}
 		if (!this.can('ban', null, room)) return false;
+		if (target === 'off' || target === 'disable' || target === 'delete') return this.errorReply('Did you mean "/deletestaffintro"?');
 		target = this.canHTML(target);
 		if (!target) return;
 		if (!/</.test(target)) {
@@ -2274,7 +2276,7 @@ exports.commands = {
 		if (!room.chatRoomData) return this.errorReply("This room does not support blacklists.");
 
 		const subMap = Punishments.roomUserids.get(room.id);
-		if (!subMap) {
+		if (!subMap || subMap.size === 0) {
 			return this.sendReply("This room has no blacklisted users.");
 		}
 		let blMap = new Map();
@@ -3044,7 +3046,8 @@ exports.commands = {
 	uploadreplay: 'savereplay',
 	savereplay: function (target, room, user, connection) {
 		if (!room || !room.battle) return;
-		let logidx = Tools.getFormat(room.battle.format).team ? 3 : 0; // retrieve spectator log (0) if there are set privacy concerns
+		// retrieve spectator log (0) if there are privacy concerns
+		let logidx = room.battle.ended ? 3 : 0;
 		let data = room.getLog(logidx).join("\n");
 		let datahash = crypto.createHash('md5').update(data.replace(/[^(\x20-\x7F)]+/g, '')).digest('hex');
 		let players = room.battle.playerNames;
