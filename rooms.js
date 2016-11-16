@@ -1578,7 +1578,8 @@ class ChatRoom extends Room {
 	}
 	onConnect(user, connection) {
 		let userList = this.userList ? this.userList : this.getUserList();
-		this.sendUser(connection, '|init|chat\n|title|' + this.title + '\n' + userList + '\n' + this.getLogSlice(-100).join('\n') + this.getIntroMessage(user));
+		let title = this.title2 ? this.title2 : this.title;
+		this.sendUser(connection, '|init|chat\n|title|' + title + '\n' + userList + '\n' + this.getLogSlice(-100).join('\n') + this.getIntroMessage(user));
 		if (this.poll) this.poll.onConnect(user, connection);
 		if (this.game && this.game.onConnect) this.game.onConnect(user, connection);
 	}
