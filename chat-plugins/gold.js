@@ -1603,7 +1603,7 @@ exports.commands = {
 				if (!room.title2) return this.errorReply("This room does not have custom roomtab text.");
 				delete room.title2;
 			}
-			if (Rooms.search(target)) return this.errorReply("A room with this title already exists...");
+			if (Rooms(target)) return this.errorReply("A room with this title already exists...");
 			if (target !== 'delete' && target !== 'remove') room.title2 = target;
 		} else {
 			return this.parse('/help roomtab');
@@ -1617,7 +1617,9 @@ exports.commands = {
 		if (!room.title2) return this.privateModCommand(`(${user.name} has removed this room's custom roomtab name.)`);
 		this.privateModCommand(`(${user.name} has set this room's roomtab name to: ${room.title2})`);
 	},
-	roomtabhelp: ["/roomtab [name] - Sets a room's roomtab text to [name]."],
+	roomtabhelp: [
+		"/roomtab [name] - Sets a room's roomtab text to [name]. Requires: ~",
+		"/roomtab [delete|remove|] - Delete's a room's custom roomtab text. Requires: ~"],
 };
 
 function loadRegdateCache() {
