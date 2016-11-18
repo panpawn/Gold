@@ -374,6 +374,19 @@ exports.Formats = [
 		},
 	},
 	{
+		name: "[Gen 7] Monotype",
+		section: "Sun/Moon (beta)",
+		column: 2,
+		desc: [
+			"All Pok&eacute;mon on a team must share a type. (This is gen7 monotype!)",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575778/\">Monotype Viability Ranking</a>",
+		],
+		mod: 'gen7',
+		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
+		banlist: ['Monotype'],
+	},
+	{
 		name: "STABmons",
 		desc: [
 			"Pok&eacute;mon can use any move of their typing, in addition to the moves they can normally learn.",
@@ -616,7 +629,7 @@ exports.Formats = [
 	{
 		name: "Battle Factory",
 		section: "Randomized Metas",
-		column: 2,
+		column: 3,
 
 		team: 'randomFactory',
 		ruleset: ['Pokemon', 'Sleep Clause Mod', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Mega Rayquaza Clause'],
@@ -645,24 +658,6 @@ exports.Formats = [
 		section: "Randomized Metas",
 
 		team: 'randomHC',
-		ruleset: ['Pokemon', 'HP Percentage Mod', 'Cancel Mod'],
-	},
-	{
-		name: "Doubles Hackmons Cup",
-		section: "Randomized Metas",
-
-		gameType: 'doubles',
-		team: 'randomHC',
-		searchShow: false,
-		ruleset: ['Pokemon', 'HP Percentage Mod', 'Cancel Mod'],
-	},
-	{
-		name: "Triples Hackmons Cup",
-		section: "Randomized Metas",
-
-		gameType: 'triples',
-		team: 'randomHC',
-		searchShow: false,
 		ruleset: ['Pokemon', 'HP Percentage Mod', 'Cancel Mod'],
 	},
 	{
@@ -834,6 +829,7 @@ exports.Formats = [
 
 	// Gold Inverse Tiers
 	///////////////////////////////////////////////////////////////////
+	/*
 	{
 		name: "Inverse Random Monotype",
 		column: 2,
@@ -959,6 +955,7 @@ exports.Formats = [
 			return -typeMod;
 		},
 	},
+	*/
 
 	// BW2 Singles
 	///////////////////////////////////////////////////////////////////
