@@ -374,7 +374,7 @@ exports.Formats = [
 		},
 	},
 	{
-		name: "[Gen 7] Monotype",
+		name: "[Gen 7] Monotype (beta)",
 		section: "Sun/Moon (beta)",
 		column: 2,
 		desc: [
