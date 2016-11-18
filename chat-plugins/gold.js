@@ -1620,6 +1620,32 @@ exports.commands = {
 	roomtabhelp: [
 		"/roomtab [name] - Sets a room's roomtab text to [name]. Requires: ~",
 		"/roomtab [delete|remove|] - Delete's a room's custom roomtab text. Requires: ~"],
+	'!goldintro': true,
+	goldintro: function () {
+		if (!this.runBroadcast()) return;
+
+		let buff = faq(`What is this place, "Gold"?`, `Gold is a PS! (Pokemon Showdown!) sideserver. Much like main, we have all of the features of the main PS server and more. This server is owned by panpawn, whose a programmer which made us some pretty cool features that set us apart from main and other sideservers.`, true) +
+			faq(`How do you get a rank (staff) on this server?`, `You can get a rank on here just like you would in many other online communities; stick around and be a good chat presence. Do not ask for a rank, or that will make you come off as powerhungry, which will do the opposite of helping you.`, true) +
+			faq(`How do you get perks on here, such as a custom avatar?`, `Gold has a currency system known as "bucks". To learn more about how you can get bucks, do /getbucks. To see what you can get with bucks, do /shop`, true) +
+			faq(`How do I get back here?`, `You can get back here by going back to <a href="http://gold.psim.us">http://gold.psim.us</a>`, true) +
+			faq( // there's a lot of command FAQs in this
+				`What are some of your custom commands?`, `We have a lot, so this is going to be split in two categories:` +
+				faq(`Misc Commands:`,
+					faq(`<code>/tell [user], [message]</code>`, `This sends an offline message to a user. When they come back on the server, they'll recieve the message. To view your currently pending offline messages, you can do <code>/mailbox</code>`) +
+					faq(`<code>/seen [user]</code>`, `This tells you when a user was last seen online on this server, Gold.`) +
+					faq(`<code>/profile [user]</code>`, `This shows a user's profile. Example: <code>/profile panpawn</code>`)
+				, true) +
+				faq(`Economy Commands:`,
+					faq(`<code>/atm [user]</code>`, `Shows how many Gold bucks [user] has.`) +
+					faq(`<code>/transferbucks [user], [amount]</code>`, `Transfers [amount] Gold bucks to [user].`) +
+					faq(`<code>/shop</code>`, `Shows you the things that you can buy with our Gold "bucks".`) +
+					faq(`<code>/richestusers</code>`, `Shows you a list of the user's with the most bucks on the server.`)
+				, true)
+			, true);
+
+		return this.sendReplyBox(buff);
+	},
+	goldintrohelp: ["/goldintro - Shows a list of common FAQs specific to Gold."],
 };
 
 function loadRegdateCache() {
@@ -1659,6 +1685,11 @@ function parseStatus(text, encoding) {
 			return asciiMap.get(char);
 		}).join('');
 	}
+	return text;
+}
+function faq(summary, details, isHeader) {
+	let indent = (!isHeader ? `&nbsp;&nbsp;&nbsp;&nbsp;` : ``);
+	let text = `<details><summary>${indent}${summary}</summary>${details}</details>`;
 	return text;
 }
 Gold.pluralFormat = function (length, ending) {
