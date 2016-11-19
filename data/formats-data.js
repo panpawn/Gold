@@ -5675,6 +5675,13 @@ exports.BattleFormatsData = {
 		eventOnly: true,
 		tier: "BL",
 	},
+	zygarde10: {
+		eventPokemon: [
+			{"generation": 7, "level": 30, "moves":["safeguard", "dig", "bind", "landswrath"]},
+		],
+		eventOnly: true,
+		tier: "OU",
+	},
 	zygardecomplete: {
 		requiredAbility: "Power Construct",
 		battleOnly: true,
@@ -5721,33 +5728,42 @@ exports.BattleFormatsData = {
 		tier: "OU",
 	},
 	rowlet: {
+		unreleasedHidden: true,
 		tier: "LC",
 	},
 	dartrix: {
+		unreleasedHidden: true,
 		tier: "NFE",
 	},
 	decidueye: {
 		randomBattleMoves: ["spiritshackle", "uturn", "leafblade", "roost", "swordsdance", "suckerpunch"],
+		unreleasedHidden: true,
 		tier: "OU",
 	},
 	litten: {
+		unreleasedHidden: true,
 		tier: "LC",
 	},
 	torracat: {
+		unreleasedHidden: true,
 		tier: "NFE",
 	},
 	incineroar: {
 		randomBattleMoves: ["fakeout", "darkestlariat", "flareblitz", "uturn", "earthquake"],
+		unreleasedHidden: true,
 		tier: "OU",
 	},
 	popplio: {
+		unreleasedHidden: true,
 		tier: "LC",
 	},
 	brionne: {
+		unreleasedHidden: true,
 		tier: "NFE",
 	},
 	primarina: {
 		randomBattleMoves: ["hypervoice", "moonblast", "icebeam", "encore", "reflect", "lightscreen", "scald"],
+		unreleasedHidden: true,
 		tier: "OU",
 	},
 	pikipek: {
@@ -5808,7 +5824,7 @@ exports.BattleFormatsData = {
 		tier: "LC",
 	},
 	lycanroc: {
-		randomBattleMoves: ["swordsdance", "accelrock", "stoneedge", "crunch", "firefang"],
+		randomBattleMoves: ["swordsdance", "accelerock", "stoneedge", "crunch", "firefang"],
 		tier: "OU",
 	},
 	lycanrocmidnight: {
@@ -5818,6 +5834,9 @@ exports.BattleFormatsData = {
 	wishiwashi: {
 		randomBattleMoves: ["scald", "hydropump", "icebeam", "hiddenpowergrass", "earthquake"],
 		tier: "OU",
+	},
+	wishiwashischool: {
+		battleOnly: true,
 	},
 	mareanie: {
 		tier: "LC",
@@ -5987,6 +6006,9 @@ exports.BattleFormatsData = {
 		randomBattleMoves: ["shellsmash", "powergem", "acrobatics", "earthquake"],
 		tier: "OU",
 	},
+	miniorred: {
+		battleOnly: true,
+	},
 	komala: {
 		randomBattleMoves: ["return", "suckerpunch", "woodhammer", "earthquake", "playrough", "uturn"],
 		tier: "OU",
@@ -6002,6 +6024,9 @@ exports.BattleFormatsData = {
 	mimikyu: {
 		randomBattleMoves: ["swordsdance", "shadowsneak", "playrough", "woodhammer", "shadowclaw"],
 		tier: "OU",
+	},
+	mimikyubusted: {
+		battleOnly: true,
 	},
 	bruxish: {
 		randomBattleMoves: ["psychicfangs", "crunch", "waterfall", "icefang", "aquajet", "swordsdance"],
@@ -6053,7 +6078,7 @@ exports.BattleFormatsData = {
 		tier: "OU",
 	},
 	tapufini: {
-		randomBattleMoves: ["calmmind", "moonblast", "scald", "rest", "sleeptalk"],
+		randomBattleMoves: ["calmmind", "moonblast", "scald", "substitute", "icebeam"],
 		eventPokemon: [
 			{"generation": 7, "level": 60, "isHidden": false, "moves":["naturesmadness", "muddywater", "aquaring", "hydropump"]},
 		],
