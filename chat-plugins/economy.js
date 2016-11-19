@@ -400,6 +400,7 @@ exports.commands = {
 		return this.sendReplyBox(output);
 	},
 
+	'!richestuser': true,
 	whosgotthemoneyz: 'richestuser',
 	richestusers: 'richestuser',
 	richestuser: function (target, room, user) {
@@ -473,6 +474,7 @@ exports.commands = {
 		this.sendReply('Your symbol has been reset.');
 	},
 
+	'!economy': true,
 	economy: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		let econ = Gold.moneyCirculating();
