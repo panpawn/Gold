@@ -85,6 +85,16 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
 		banlist: ['Monotype'],
 	},
+	{
+		name: "[Gen 7] Random Monotype",
+		section: "Randomized Metas",
+		desc: ["A random-generated monotype team with Gen 7 Pokèmon!"],
+
+		mod: 'gen7',
+		team: 'random',
+		searchShow: false,
+		ruleset: ['Pokemon', 'Same Type Clause', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+	},
 
 	// SM Doubles
 	///////////////////////////////////////////////////////////////////
@@ -694,14 +704,6 @@ exports.Formats = [
 			battle: 1,
 		},
 		ruleset: ['Pokemon', 'HP Percentage Mod', 'Cancel Mod', 'Team Preview'],
-	},
-	{
-		name: "Monotype Random Battle",
-		section: "Randomized Metas",
-
-		team: 'random',
-		searchShow: false,
-		ruleset: ['Pokemon', 'Same Type Clause', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
 	},
 	{
 		name: "Hackmons Cup",
