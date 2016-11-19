@@ -73,6 +73,18 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Endless Battle Clause', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod'],
 		banlist: ['Illegal', 'Unreleased'],
 	},
+	{
+		name: "[Gen 7] Monotype",
+		section: "SM Singles (beta)",
+		desc: [
+			"All Pok&eacute;mon on a team must share a type. (This is gen7 monotype!)",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575778/\">Monotype Viability Ranking</a>",
+		],
+		mod: 'gen7',
+		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
+		banlist: ['Monotype'],
+	},
 
 	// SM Doubles
 	///////////////////////////////////////////////////////////////////
@@ -415,19 +427,6 @@ exports.Formats = [
 		mod: 'gen7',
 		ruleset: ['Pokemon', 'Ability Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod'],
 		banlist: ['Arena Trap', 'Huge Power', 'Moody', 'Parental Bond', 'Protean', 'Pure Power', 'Shadow Tag', 'Wonder Guard', 'Chatter'],
-	},
-	{
-		name: "[Gen 7] Monotype (beta)",
-		section: "Sun/Moon (beta)",
-		column: 2,
-		desc: [
-			"All Pok&eacute;mon on a team must share a type. (This is gen7 monotype!)",
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575778/\">Monotype Viability Ranking</a>",
-		],
-		mod: 'gen7',
-		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
-		banlist: ['Monotype'],
 	},
 	{
 		name: "STABmons",
