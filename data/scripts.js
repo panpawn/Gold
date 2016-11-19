@@ -914,7 +914,7 @@ exports.BattleScripts = {
 			} while (this.data.Items[item].gen > this.gen || this.data.Items[item].isNonstandard);
 
 			// Make sure forme is legal
-			if (template.battleOnly || template.requiredItem && item !== toId(template.requiredItem)) {
+			if (template.battleOnly || template.requiredItems && !template.requiredItems.some(req => toId(req) === item)) {
 				template = this.getTemplate(template.baseSpecies);
 				poke = template.name;
 			}
@@ -1042,9 +1042,10 @@ exports.BattleScripts = {
 		// Unreleased are okay but no CAP
 
 		let num;
+		let last = [0, 151, 251, 386, 493, 649, 721, 802][this.gen];
 		for (let i = 0; i < 6; i++) {
 			do {
-				num = this.random(802) + 1;
+				num = this.random(last) + 1;
 			} while (num in hasDexNumber);
 			hasDexNumber[num] = i;
 		}
@@ -2014,8 +2015,8 @@ exports.BattleScripts = {
 		}
 
 		item = 'Leftovers';
-		if (template.requiredItem) {
-			item = template.requiredItem;
+		if (template.requiredItems) {
+			item = template.requiredItems[this.random(template.requiredItems.length)];
 		} else if (hasMove['magikarpsrevenge']) {
 			// PoTD Magikarp
 			item = 'Choice Band';
@@ -3076,8 +3077,8 @@ exports.BattleScripts = {
 		}
 
 		item = 'Sitrus Berry';
-		if (template.requiredItem) {
-			item = template.requiredItem;
+		if (template.requiredItems) {
+			item = template.requiredItems[this.random(template.requiredItems.length)];
 		// First, the extra high-priority items
 		} else if (ability === 'Imposter') {
 			item = 'Choice Scarf';
