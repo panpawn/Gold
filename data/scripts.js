@@ -359,7 +359,21 @@ exports.BattleScripts = {
 			}
 		}
 
-		let totalDamage = 0;
+		if (move.stealsBoosts) {
+			let boosts = {};
+			for (let statName in target.boosts) {
+				let stage = target.boosts[statName];
+				if (stage > 0) boosts[statName] = -stage;
+			}
+			this.boost(boosts, target);
+
+			for (let statName in boosts) {
+				boosts[statName] = -boosts[statName];
+			}
+			this.boost(boosts, pokemon);
+		}
+
+		move.totalDamage = 0;
 		let damage = 0;
 		pokemon.lastDamage = 0;
 		if (move.multihit) {
@@ -421,7 +435,7 @@ exports.BattleScripts = {
 				// purposes of Counter, Metal Burst, and Mirror Coat.
 				damage = (moveDamage || 0);
 				// Total damage dealt is accumulated for the purposes of recoil (Parental Bond).
-				totalDamage += damage;
+				move.totalDamage += damage;
 				this.eachEvent('Update');
 			}
 			if (i === 0) return true;
@@ -429,11 +443,11 @@ exports.BattleScripts = {
 			this.add('-hitcount', target, i);
 		} else {
 			damage = this.moveHit(target, pokemon, move);
-			totalDamage = damage;
+			move.totalDamage = damage;
 		}
 
-		if (move.recoil && totalDamage) {
-			this.damage(this.calcRecoilDamage(totalDamage, move), pokemon, target, 'recoil');
+		if (move.recoil && move.totalDamage) {
+			this.damage(this.calcRecoilDamage(move.totalDamage, move), pokemon, target, 'recoil');
 		}
 
 		if (move.struggleRecoil) {
@@ -693,7 +707,7 @@ exports.BattleScripts = {
 	getZMove: function (move, pokemon, skipChecks) {
 		let item = pokemon.getItem();
 		if (!skipChecks) {
-			if (this.zMoveUsed) return;
+			if (pokemon.side.zMoveUsed) return;
 			if (!item.zMove) return;
 			if (item.zMoveUser && !item.zMoveUser.includes(pokemon.species)) return;
 		}
@@ -712,7 +726,7 @@ exports.BattleScripts = {
 	},
 
 	canZMove: function (pokemon) {
-		if (this.zMoveUsed) return;
+		if (pokemon.side.zMoveUsed) return;
 		let item = pokemon.getItem();
 		if (!item.zMove) return;
 		if (item.zMoveUser && !item.zMoveUser.includes(pokemon.species)) return;
@@ -728,10 +742,10 @@ exports.BattleScripts = {
 	},
 
 	runZMove: function (move, pokemon, target, sourceEffect) {
-		// Limit one Z move
+		// Limit one Z move per side
 		let zMove = this.getZMove(move, pokemon);
 		if (zMove) {
-			this.zMoveUsed = true;
+			pokemon.side.zMoveUsed = true;
 		}
 		this.runMove(move, pokemon, target, sourceEffect, zMove);
 	},

@@ -65,8 +65,8 @@ exports.BattleAbilities = {
 		num: 106,
 	},
 	"aerilate": {
-		desc: "This Pokemon's Normal-type moves become Flying-type moves and have their power multiplied by 1.3. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
-		shortDesc: "This Pokemon's Normal-type moves become Flying type and have 1.3x power.",
+		desc: "This Pokemon's Normal-type moves become Flying-type moves and have their power multiplied by 1.2. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
+		shortDesc: "This Pokemon's Normal-type moves become Flying type and have 1.2x power.",
 		onModifyMovePriority: -1,
 		onModifyMove: function (move, pokemon) {
 			if (move.type === 'Normal' && move.id !== 'naturalgift') {
@@ -78,7 +78,7 @@ exports.BattleAbilities = {
 			duration: 1,
 			onBasePowerPriority: 8,
 			onBasePower: function (basePower, pokemon, target, move) {
-				return this.chainModify([0x14CD, 0x1000]);
+				return this.chainModify([0x1333, 0x1000]);
 			},
 		},
 		id: "aerilate",
@@ -288,7 +288,12 @@ exports.BattleAbilities = {
 	"berserk": {
 		desc: "This Pokemon's Special Attack is raised by 1 stage when it reaches 1/2 or less of its maximum HP.",
 		shortDesc: "This Pokemon's Sp. Atk is raised by 1 when it reaches 1/2 or less of its max HP.",
-		// TODO
+		onAfterDamage: function (damage, target, source, move) {
+			if (!target.hp || !damage || move.effectType !== 'Move') return;
+			if (target.hp <= target.maxhp / 2 && target.hp + damage > target.maxhp / 2) {
+				this.boost({spa: 1});
+			}
+		},
 		id: "berserk",
 		name: "Berserk",
 		rating: 3,
@@ -844,11 +849,12 @@ exports.BattleAbilities = {
 		name: "Emergency Exit",
 		rating: 3,
 		num: 194,
-		onAfterDamage: function (damage, target, source) {
-			if (!this.canSwitch(target.side) || target.forceSwitchFlag) return;
-			if (target.hp <= target.maxhp / 2 && target.hp > 0 && target.hp + damage > target.maxhp / 2) {
+		onAfterMoveSecondary: function (target, source, move) {
+			if (!source || source === target || !target.hp || !move.totalDamage) return;
+			if (target.hp <= target.maxhp / 2 && target.hp + move.totalDamage > target.maxhp / 2) {
+				if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag) return;
 				target.switchFlag = true;
-				if (source) source.switchFlag = false;
+				source.switchFlag = false;
 				this.add('-activate', target, 'ability: Emergency Exit');
 			}
 		},
@@ -1167,8 +1173,8 @@ exports.BattleAbilities = {
 		num: 177,
 	},
 	"galvanize": {
-		desc: "This Pokemon's Normal-type moves become Electric-type moves and have their power multiplied by 1.3. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
-		shortDesc: "This Pokemon's Normal-type moves become Electric type and have 1.3x power.",
+		desc: "This Pokemon's Normal-type moves become Electric-type moves and have their power multiplied by 1.2. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
+		shortDesc: "This Pokemon's Normal-type moves become Electric type and have 1.2x power.",
 		onModifyMovePriority: -1,
 		onModifyMove: function (move, pokemon) {
 			if (move.type === 'Normal' && move.id !== 'naturalgift') {
@@ -1180,7 +1186,7 @@ exports.BattleAbilities = {
 			duration: 1,
 			onBasePowerPriority: 8,
 			onBasePower: function (basePower, pokemon, target, move) {
-				return this.chainModify([0x14CD, 0x1000]);
+				return this.chainModify([0x1333, 0x1000]);
 			},
 		},
 		id: "galvanize",
@@ -2111,13 +2117,21 @@ exports.BattleAbilities = {
 		num: 99,
 	},
 	"normalize": {
-		desc: "This Pokemon's moves are changed to be Normal type. This effect comes before other effects that change a move's type.",
-		shortDesc: "This Pokemon's moves are changed to be Normal type.",
+		desc: "This Pokemon's moves are changed to be Normal type and have their power multiplied by 1.2. This effect comes before other effects that change a move's type.",
+		shortDesc: "This Pokemon's moves are changed to be Normal type and have 1.2x power.",
 		onModifyMovePriority: 1,
-		onModifyMove: function (move) {
+		onModifyMove: function (move, pokemon) {
 			if (move.id !== 'struggle' && this.getMove(move.id).type !== 'Normal') {
 				move.type = 'Normal';
 			}
+			if (move.category !== 'Status') pokemon.addVolatile('normalize');
+		},
+		effect: {
+			duration: 1,
+			onBasePowerPriority: 8,
+			onBasePower: function (basePower, pokemon, target, move) {
+				return this.chainModify([0x1333, 0x1000]);
+			},
 		},
 		id: "normalize",
 		name: "Normalize",
@@ -2297,8 +2311,8 @@ exports.BattleAbilities = {
 		num: 124,
 	},
 	"pixilate": {
-		desc: "This Pokemon's Normal-type moves become Fairy-type moves and have their power multiplied by 1.3. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
-		shortDesc: "This Pokemon's Normal-type moves become Fairy type and have 1.3x power.",
+		desc: "This Pokemon's Normal-type moves become Fairy-type moves and have their power multiplied by 1.2. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
+		shortDesc: "This Pokemon's Normal-type moves become Fairy type and have 1.2x power.",
 		onModifyMovePriority: -1,
 		onModifyMove: function (move, pokemon) {
 			if (move.type === 'Normal' && move.id !== 'naturalgift') {
@@ -2310,7 +2324,7 @@ exports.BattleAbilities = {
 			duration: 1,
 			onBasePowerPriority: 8,
 			onBasePower: function (basePower, pokemon, target, move) {
-				return this.chainModify([0x14CD, 0x1000]);
+				return this.chainModify([0x1333, 0x1000]);
 			},
 		},
 		id: "pixilate",
@@ -2623,8 +2637,8 @@ exports.BattleAbilities = {
 		num: 120,
 	},
 	"refrigerate": {
-		desc: "This Pokemon's Normal-type moves become Ice-type moves and have their power multiplied by 1.3. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
-		shortDesc: "This Pokemon's Normal-type moves become Ice type and have 1.3x power.",
+		desc: "This Pokemon's Normal-type moves become Ice-type moves and have their power multiplied by 1.2. This effect comes after other effects that change a move's type, but before Ion Deluge and Electrify's effects.",
+		shortDesc: "This Pokemon's Normal-type moves become Ice type and have 1.2x power.",
 		onModifyMovePriority: -1,
 		onModifyMove: function (move, pokemon) {
 			if (move.type === 'Normal' && move.id !== 'naturalgift') {

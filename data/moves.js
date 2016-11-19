@@ -438,6 +438,7 @@ exports.BattleMovedex = {
 		desc: "Prevents the target from switching out. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the target leaves the field using Baton Pass, the replacement will remain trapped. The effect ends if the user leaves the field.",
 		shortDesc: "Prevents the target from switching out.",
 		id: "anchorshot",
+		isViable: true,
 		name: "Anchor Shot",
 		pp: 20,
 		priority: 0,
@@ -846,7 +847,6 @@ exports.BattleMovedex = {
 		desc: "For 5 turns, the user and its party members take 0.5x damage from physical and special attacks, or 0.66x damage if in a Double Battle. Critical hits ignore this protection. It is removed from the user's side if the user or an ally is successfully hit by Brick Break, Psychic Fangs, or Defog. Lasts for 8 turns if the user is holding Light Clay. Fails unless the weather is Hail.",
 		shortDesc: "For 5 turns, damage to allies is halved. Hail only.",
 		id: "auroraveil",
-		isViable: true,
 		name: "Aurora Veil",
 		pp: 20,
 		priority: 0,
@@ -1103,6 +1103,7 @@ exports.BattleMovedex = {
 		desc: "If the user is hit by a contact move this turn before it can execute this move, the attacker is burned.",
 		shortDesc: "Burns on contact with the user before it moves.",
 		id: "beakblast",
+		isViable: true,
 		name: "Beak Blast",
 		pp: 15,
 		priority: -3,
@@ -1986,7 +1987,6 @@ exports.BattleMovedex = {
 		desc: "Until the user is no longer active, Fire-type users lose their Fire type and pure Fire-type users become Normal type.",
 		shortDesc: "User's Fire-type is removed until it switches out.",
 		id: "burnup",
-		isViable: true,
 		name: "Burn Up",
 		pp: 5,
 		priority: 0,
@@ -2095,7 +2095,6 @@ exports.BattleMovedex = {
 		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "catastropika",
-		isViable: true,
 		name: "Catastropika",
 		pp: 1,
 		priority: 0,
@@ -2606,6 +2605,7 @@ exports.BattleMovedex = {
 		desc: "If the user moves after the target, the target's Ability is rendered ineffective as long as it remains active. If the target uses Baton Pass, the replacement will remain under this effect. If the target's Ability is Multitype or Stance Change, this effect does not happen.",
 		shortDesc: "Nullifies the foe(s) Ability if the target moves first.",
 		id: "coreenforcer",
+		isViable: true,
 		name: "Core Enforcer",
 		pp: 10,
 		priority: 0,
@@ -3268,7 +3268,6 @@ exports.BattleMovedex = {
 		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "devastatingdrake",
-		isViable: true,
 		name: "Devastating Drake",
 		pp: 1,
 		priority: 0,
@@ -3799,6 +3798,7 @@ exports.BattleMovedex = {
 		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "dragonhammer",
+		isViable: true,
 		name: "Dragon Hammer",
 		pp: 15,
 		priority: 0,
@@ -4612,6 +4612,7 @@ exports.BattleMovedex = {
 		desc: "Raises the user's Attack, Defense, Special Attack, Special Defense, and Speed by 2 stages.",
 		shortDesc: "Raises user's Atk, Def, SpA, SpD, and Spe by 2.",
 		id: "extremeevoboost",
+		isViable: true,
 		name: "Extreme Evoboost",
 		pp: 1,
 		priority: 0,
@@ -5477,6 +5478,7 @@ exports.BattleMovedex = {
 		desc: "The target restores 1/2 of its maximum HP, rounded half up. If the terrain is Grassy Terrain, the target instead restores 2/3 of its maximum HP, rounded half down.",
 		shortDesc: "Heals the target by 50% of its max HP.",
 		id: "floralhealing",
+		isViable: true,
 		name: "Floral Healing",
 		pp: 10,
 		priority: 0,
@@ -8580,7 +8582,7 @@ exports.BattleMovedex = {
 			let noInstruct = {
 				// TODO: fill this up
 			};
-			if (!target.lastMove || noInstruct[target.lastMove]) {
+			if (!target.lastMove || this.getMove(target.lastMove).isZ || noInstruct[target.lastMove]) {
 				return false;
 			}
 			this.add('-singleturn', target, 'move: Instruct', '[of] ' + source);
@@ -8704,7 +8706,10 @@ exports.BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		onModifyMove: function (move, pokemon) {
-			move.type = this.runEvent('Plate', pokemon, null, 'judgment', 'Normal');
+			const item = pokemon.getItem();
+			if (item.id && item.onPlate && !item.zMove) {
+				move.type = item.onPlate;
+			}
 		},
 		secondary: false,
 		target: "normal",
@@ -9056,6 +9061,7 @@ exports.BattleMovedex = {
 		desc: "The user recovers 1/2 the HP lost by the target, rounded half up. If Big Root is held by the user, the HP recovered is 1.3x normal, rounded half down.",
 		shortDesc: "User recovers 50% of the damage dealt.",
 		id: "leechlife",
+		isViable: true,
 		name: "Leech Life",
 		pp: 10,
 		priority: 0,
@@ -10576,6 +10582,7 @@ exports.BattleMovedex = {
 		desc: "This move and its effects ignore the Abilities of other Pokemon.",
 		shortDesc: "Ignores the Abilities of other Pokemon.",
 		id: "moongeistbeam",
+		isViable: true,
 		name: "Moongeist Beam",
 		pp: 5,
 		priority: 0,
@@ -13842,7 +13849,6 @@ exports.BattleMovedex = {
 		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "savagespinout",
-		isViable: true,
 		name: "Savage Spin-Out",
 		pp: 1,
 		priority: 0,
@@ -15270,7 +15276,7 @@ exports.BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, authentic: 1},
 		stealsBoosts: true,
-		// Boost stealing implemented in scripts.js TODO: actually implement it
+		// Boost stealing implemented in scripts.js
 		secondary: false,
 		target: "normal",
 		type: "Ghost",
@@ -15282,24 +15288,18 @@ exports.BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its Speed stat stage changes with the target.", // TODO: is it actually raw Speed stat?
-		shortDesc: "Swaps Speed stat stages with target.",
+		desc: "The user swaps its raw Speed stat with the target.",
+		shortDesc: "Swaps Speed stat with target.",
 		id: "speedswap",
 		name: "Speed Swap",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, authentic: 1, mystery: 1},
 		onHit: function (target, source) {
-			let targetBoosts = {};
-			let sourceBoosts = {};
-
-			targetBoosts['spe'] = target.boosts['spe'];
-			sourceBoosts['spe'] = source.boosts['spe'];
-
-			source.setBoost(targetBoosts);
-			target.setBoost(sourceBoosts);
-
-			this.add('-swapboost', source, target, 'spe', '[from] move: Speed Swap');
+			const targetSpe = target.stats.spe;
+			target.stats.spe = source.stats.spe;
+			source.stats.spe = targetSpe;
+			this.add('-activate', source, 'move: Speed Swap', '[of] ' + target);
 		},
 		secondary: false,
 		target: "normal",
@@ -15364,6 +15364,7 @@ exports.BattleMovedex = {
 		desc: "Prevents the target from switching out. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the target leaves the field using Baton Pass, the replacement will remain trapped. The effect ends if the user leaves the field.",
 		shortDesc: "Prevents the target from switching out.",
 		id: "spiritshackle",
+		isViable: true,
 		name: "Spirit Shackle",
 		pp: 10,
 		priority: 0,
@@ -15789,8 +15790,8 @@ exports.BattleMovedex = {
 			onStart: function (pokemon) {
 				this.add('-singleturn', pokemon, 'move: Spotlight');
 			},
-			onAllyRedirectTargetPriority: 1,
-			onAllyRedirectTarget: function (target, source, source2, move) {
+			onFoeRedirectTargetPriority: 2,
+			onFoeRedirectTarget: function (target, source, source2, move) {
 				if (this.validTarget(this.effectData.target, source, move.target)) {
 					this.debug("Spotlight redirected target of move");
 					return this.effectData.target;
@@ -16122,6 +16123,7 @@ exports.BattleMovedex = {
 		desc: "The user restores its HP equal to the target's Attack stat, calculated with its stat stage, then lowers the target's Attack by 1 stage.",
 		shortDesc: "User heals HP=target's Atk stat. Lowers Atk by 1.",
 		id: "strengthsap",
+		isViable: true,
 		name: "Strength Sap",
 		pp: 10,
 		priority: 0,
@@ -16393,6 +16395,7 @@ exports.BattleMovedex = {
 		desc: "This move and its effects ignore the Abilities of other Pokemon.",
 		shortDesc: "Ignores the Abilities of other Pokemon.",
 		id: "sunsteelstrike",
+		isViable: true,
 		name: "Sunsteel Strike",
 		pp: 5,
 		priority: 0,
@@ -17497,6 +17500,7 @@ exports.BattleMovedex = {
 		desc: "Lowers the target's Speed by 1 stage and poisons it.",
 		shortDesc: "Lowers the target's Speed by 1 and poisons it.",
 		id: "toxicthread",
+		isViable: true,
 		name: "Toxic Thread",
 		pp: 20,
 		priority: 0,
@@ -17732,7 +17736,6 @@ exports.BattleMovedex = {
 		desc: "Has a 100% chance to lower the target's Attack by 1 stage.",
 		shortDesc: "100% chance to lower the target's Attack by 1.",
 		id: "tropkick",
-		isViable: true,
 		name: "Trop Kick",
 		pp: 15,
 		priority: 0,
@@ -18847,6 +18850,7 @@ exports.BattleMovedex = {
 		desc: "Has a 30% chance to flinch the target.",
 		shortDesc: "30% chance to flinch the target.",
 		id: "zingzap",
+		isViable: true,
 		name: "Zing Zap",
 		pp: 10,
 		priority: 0,
