@@ -46,12 +46,12 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 			if (user.locked) return false;
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Said a banned word: " + bannedMessages[x]);
 			user.popup('You have been automatically locked for sending a message containing a banned word.');
-			Monitor.log('[PornMonitor]' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ was automatically locked for trying to say "' + message + '"');
+			Monitor.log('[PornMonitor] ' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ was automatically locked (and shadow banned) for trying to say "' + message + '"');
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server (' +
 			bannedMessages[x] + ') (' + connection.ip + ')\n');
 			Gold.pmUpperStaff(user.name + ' has been automatically locked for sending a message containing a banned word' +
 			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
-			return false;
+			Users.ShadowBan.addUser(user);
 		}
 	}
 
