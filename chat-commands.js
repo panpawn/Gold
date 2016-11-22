@@ -1029,7 +1029,7 @@ exports.commands = {
 			return this.errorReply(`User '${this.targetUsername}' is offline and unrecognized, and so can't be promoted.`);
 		}
 
-		if (room.founder !== user.userid && !this.can('pban')) return false;
+		if (room.founder !== user.userid && !user.can('pban')) return this.errorReply("/roomowner - Access denied.");
 
 		if (!room.auth) room.auth = room.chatRoomData.auth = {};
 
@@ -1054,7 +1054,7 @@ exports.commands = {
 		if (!userid || userid === '') return this.sendReply("User '" + name + "' does not exist.");
 
 		if (room.auth[userid] !== '#') return this.sendReply("User '" + name + "' is not a room owner.");
-		if (room.founder !== user.userid && !user.can('pban')) return this.sendReply('/roomowner - Access denied.');
+		if (room.founder !== user.userid && !user.can('pban')) return this.errorReply('/roomowner - Access denied.');
 
 		delete room.auth[userid];
 		this.sendReply('(' + name + ' is no longer Room Owner.)');
