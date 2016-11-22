@@ -91,16 +91,6 @@ exports.Formats = [
 				return [template.baseSpecies + " is not permitted in Battle Spot Singles."];
 			}
 		},
-		name: "[Gen 7] Monotype",
-		section: "SM Singles (beta)",
-		desc: [
-			"All Pok&eacute;mon on a team must share a type. (This is gen7 monotype!)",
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
-			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575778/\">Monotype Viability Ranking</a>",
-		],
-		mod: 'gen7',
-		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
-		banlist: ['Monotype'],
 	},
 
 	// SM Doubles
@@ -1219,6 +1209,17 @@ exports.Formats = [
 		team: 'random',
 		searchShow: false,
 		ruleset: ['Pokemon', 'Same Type Clause', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+	},
+	{
+		name: "[Gen 7] Monotype",
+		desc: [
+			"All Pok&eacute;mon on a team must share a type. (This is gen7 monotype!)",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3544507/\">Monotype</a>",
+			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3575778/\">Monotype Viability Ranking</a>",
+		],
+		mod: 'gen7',
+		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
+		banlist: ['Monotype'],
 	},
 	/*
 	{
