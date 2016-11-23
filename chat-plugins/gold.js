@@ -236,7 +236,7 @@ exports.commands = {
 		let tar = Config.groupsranking[0];
 		if (target) {
 			target = target.trim();
-			if (Config.groupsranking.indexOf(target) > -1 && target !== '#' && target !== '*' && !user.can('hotpatch')) {
+			if (Config.groupsranking.indexOf(target) > -1 && target !== '#' && target !== '*') {
 				if (Config.groupsranking.indexOf(target) <= Config.groupsranking.indexOf(user.group)) {
 					tar = target;
 				} else {
