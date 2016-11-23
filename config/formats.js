@@ -1234,12 +1234,13 @@ exports.Formats = [
 	},
 	{
 		name: "Swalot World",
-		desc: ["Basically 1v1 but with only Swalot's."],
+		desc: ["Basically 1v1 but with only Swalot's.  Stockpile is banned."],
 
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.species !== 'Swalot') return set.species + " is not a Swalot.";
 		},
-		ruleset: ['Pokemon', 'Standard'],
+		ruleset: ['Team Preview', 'Pokemon', 'Standard'],
+		banlist: ['Stockpile'],
 	},
 ];
