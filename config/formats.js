@@ -1234,13 +1234,24 @@ exports.Formats = [
 	},
 	{
 		name: "Swalot World",
-		desc: ["Basically 1v1 but with only Swalot's.  Stockpile is banned."],
+		desc: ["Basically 1v1 but with only Swalot's.  Stockpile and Amnesia are banned."],
 
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.species !== 'Swalot') return set.species + " is not a Swalot.";
 		},
 		ruleset: ['Team Preview', 'Pokemon', 'Standard'],
-		banlist: ['Stockpile'],
+		banlist: ['Stockpile', 'Amnesia'],
+	},
+	{
+		name: "SuMo 1U",
+		desc: [
+			`Introducing Pokemon Perfect's very own SM 1U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/introducing-1u.4125/">More details</a>`,
+		],
+
+		mod: 'gen7',
+		ruleset: ['Sleep Clause', 'Pokemon', 'Standard', 'Baton Pass Clause', 'Mega Rayquaza Clause'],
+		banlist: ['Moody', 'Shadow Tag', 'Double Team', 'Fissure', 'Guillotine', 'Horn Drill', 'Minimize', 'Sheer Cold', 'Swagger', ' Red Orb', 'Blue Orb', 'Gengarite', 'Salamencite'],
 	},
 ];
