@@ -1207,8 +1207,7 @@ exports.Formats = [
 
 		mod: 'gen7',
 		team: 'random',
-		searchShow: false,
-		ruleset: ['Pokemon', 'Same Type Clause', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+		ruleset: ['Same Type Clause', 'Pokemon', 'Sleep Clause Mod', 'HP Percentage Mod'],
 	},
 	{
 		name: "[Gen 7] Monotype",
@@ -1221,10 +1220,9 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Standard', 'Baton Pass Clause', 'Swagger Clause', 'Same Type Clause', 'Team Preview'],
 		banlist: ['Monotype'],
 	},
-	/*
 	{
 		name: "Sp00ky Mons",
-		desc: ["&bullet; This tier only allows Ghost-type Pokemon..."],
+		desc: ["&bullet; This tier only allows Ghost-type Pokemon."],
 
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
@@ -1233,5 +1231,4 @@ exports.Formats = [
 
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
 	},
-	*/
 ];
