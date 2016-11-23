@@ -1201,6 +1201,7 @@ exports.Formats = [
 			'Altarianite', 'Charizardite X', 'Damp Rock', 'Gengarite', 'Kangaskhanite', 'Lucarionite', 'Mawilite', 'Metagrossite', 'Sablenite', 'Salamencite', 'Slowbronite', 'Smooth Rock', 'Soul Dew',
 		],
 	},
+	/*
 	{
 		name: "[Gen 7] Random Monotype",
 		desc: ["A random-generated monotype team with Gen 7 Pokèmon!"],
@@ -1209,6 +1210,7 @@ exports.Formats = [
 		team: 'random',
 		ruleset: ['Same Type Clause', 'Pokemon', 'Sleep Clause Mod', 'HP Percentage Mod'],
 	},
+	*/
 	{
 		name: "[Gen 7] Monotype",
 		desc: [
