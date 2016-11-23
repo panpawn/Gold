@@ -1230,7 +1230,16 @@ exports.Formats = [
 			let template = this.getTemplate(set.species || set.name);
 			if (!(template.types.includes('Ghost'))) return [set.species + " is not a Ghost-type."];
 		},
-
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
+	},
+	{
+		name: "Swalot World",
+		desc: ["Basically 1v1 but with only Swalot's."],
+
+		onValidateSet: function (set) {
+			let template = this.getTemplate(set.species || set.name);
+			if (template.species !== 'Swalot') return set.species + " is not a Swalot.";
+		},
+		ruleset: ['Pokemon', 'Standard'],
 	},
 ];
