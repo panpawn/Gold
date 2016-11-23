@@ -1234,14 +1234,14 @@ exports.Formats = [
 	},
 	{
 		name: "Swalot World",
-		desc: ["Basically 1v1 but with only Swalot's.  Stockpile and Amnesia are banned."],
+		desc: ["Basically 1v1 but with only Swalot's.  Banned moves: Stockpile, Amnesia and Power-Up Punch."],
 
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.species !== 'Swalot') return set.species + " is not a Swalot.";
 		},
 		ruleset: ['Team Preview', 'Pokemon', 'Standard'],
-		banlist: ['Stockpile', 'Amnesia'],
+		banlist: ['Stockpile', 'Amnesia', 'Power-Up Punch'],
 	},
 	{
 		name: "SuMo 1U",
