@@ -236,11 +236,11 @@ exports.commands = {
 		let tar = Config.groupsranking[0];
 		if (target) {
 			target = target.trim();
-			if (Config.groupsranking.indexOf(target) > -1 && target !== '#') {
+			if (Config.groupsranking.indexOf(target) > -1 && target !== '#' && target !== '*' && !user.can('hotpatch')) {
 				if (Config.groupsranking.indexOf(target) <= Config.groupsranking.indexOf(user.group)) {
 					tar = target;
 				} else {
-					this.sendReply('The group symbol you have tried to use is of a higher authority than you have access to. Defaulting to \' \' instead.');
+					this.sendReply('The group symbol you have tried to use is of a higher authority than you have access to or is otherwise not allowed to be hidden as. Defaulting to \' \' instead.');
 				}
 			} else {
 				this.sendReply(`You have tried to use an invalid character as your auth symbol. Defaulting to '${tar}' instead.`);
