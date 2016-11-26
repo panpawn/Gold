@@ -1108,6 +1108,7 @@ exports.commands = {
 		}
 
 		let groupName = Config.groups[nextGroup].name || "regular user";
+		if (nextGroup === '#' && !user.can('pban')) return this.errorReply("Try /roomowner instead.");
 		if (room.auth[userid] && room.auth[userid] === '#' && !user.can('pban')) {
 			if (room.founder && room.founder !== user.userid) return this.errorReply("You do not have permission to use this command.  If you are the Room Founder and trying to demote another RO, try /deroomowner [user].");
 		}
