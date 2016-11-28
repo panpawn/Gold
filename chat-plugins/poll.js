@@ -378,7 +378,7 @@ exports.commands = {
 	tp: 'tpoll',
 	tierpoll: 'tpoll',
 	tpoll: function (target, room, user) {
-		const tiers = ['OverUsed', 'Challenge Cup 1v1', 'Monotype', 'Gold Battle', 'Pokebank Anything Goes', 'Random Monotype', 'Monotype', 'Pokebank Ubers', 'OMotM', 'Gold Battle', 'Random Battle', 'Ubers'];
+		const tiers = ['OverUsed', 'Challenge Cup 1v1', 'Monotype', 'Little Cup', 'Pokebank Anything Goes', 'Random Monotype', 'Monotype', 'Pokebank Ubers', 'OMotM', 'Gold Battle', 'Random Battle', 'Ubers'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
 	vote: function (target, room, user) {
