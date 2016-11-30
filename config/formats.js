@@ -174,6 +174,21 @@ exports.Formats = [
 		banlist: ['Uber', 'Shadow Tag', 'Soul Dew'],
 	},
 	{
+		name: "ORAS 2U",
+                desc [
+                      "&bullet; <a href=\"http://www.pokemonperfect.com/forums/index.php?threads/oras-2u-discussion-thread.3865/\">np: ORAS 2U</a>"
+		section: "ORAS Singles",
+
+		gameType: 'singles',
+		maxForcedLevel: 100,
+		teamLength: {
+			validate: [1, 2, 3, 4, 5, 6],
+			battle: 6,
+		],
+		ruleset: ['Pokemon', 'Ubers', 'Team Preview', 'Mega Rayquaza Clause'],
+		banlist: ['Arceus', 'Arceus-Dark', 'Arceus-Electric', 'Arceus-Fairy', 'Arceus-Ghost', 'Arceus-Grass', 'Arceus-Ground', 'Arceus-Rock', 'Arceus-Water', 'Blaziken-Mega', 'Darkrai', 'Deoxys-Attack', 'Deoxys-Speed', 'Dialga', 'Diancie-Mega', 'Ferrothorn', 'Genesect', 'Giratina-Origin', 'Gliscor', 'Groudon', 'Ho-oh', 'Kangaskhan-Mega', 'Klefki', 'Kyogre', 'Landorus-Therian', 'Latias', 'Latios', 'Lucario-Mega', 'Lugia', 'Mewtwo', 'Palkia', 'Rayquaza', 'Sableye-Mega', 'Shaymin-Sky', 'Tyranitar', 'Xerneas', 'Yveltal', 'Zekrom' ],
+        },
+	{
 		name: "Ubers",
 		desc: [
 			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3522911/\">Ubers Metagame Discussion</a>",
