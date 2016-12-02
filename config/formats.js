@@ -1310,7 +1310,7 @@ exports.Formats = [
 		banlist: ['Stockpile', 'Amnesia', 'Power-Up Punch'],
 	},
 	{
-		name: "SuMo 1U",
+		name: "[Gen 7] SuMo 1U",
 		desc: [
 			`Introducing Pokemon Perfect's very own SM 1U!`,
 			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/introducing-1u.4125/">More details</a>`,
