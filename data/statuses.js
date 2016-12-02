@@ -168,7 +168,7 @@ exports.BattleStatuses = {
 				return;
 			}
 			this.add('-activate', pokemon, 'confusion');
-			if (this.random(3) > 0) {
+			if (this.random(2) === 0) {
 				return;
 			}
 			this.damage(this.getDamage(pokemon, pokemon, 40), pokemon, pokemon, {
@@ -382,7 +382,6 @@ exports.BattleStatuses = {
 			this.effectData.counter = 3;
 		},
 		onStallMove: function () {
-			if (this.activeMove.id === 'destinybond') return true;
 			// this.effectData.counter should never be undefined here.
 			// However, just in case, use 1 if it is undefined.
 			let counter = this.effectData.counter || 1;
