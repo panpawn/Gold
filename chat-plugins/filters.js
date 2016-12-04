@@ -118,7 +118,7 @@ Config.namefilter = function (name, user) {
 				user.locked = '#hostfilter';
 				user.updateIdentity();
 				user.popup("|modal|You have been automatically locked due to being on a proxy known for spam and abuse.\n\nLog off PS! and try reconnecting without a proxy to be unlocked.");
-				Monitor.log("[ProxyMonitor] " + name + " (" + ip + ") has been automatically locked. (" + host + ")");
+				// Monitor.log("[ProxyMonitor] " + name + " (" + ip + ") has been automatically locked. (" + host + ")");
 				return;
 			}
 		});
