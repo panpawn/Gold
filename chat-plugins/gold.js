@@ -739,7 +739,7 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		Gold.regdate(target, date => {
 			this.sendReplyBox(Gold.nameColor(target, false) + (date ? " was registered on " + moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ") : " is not registered."));
-			room.update();
+			if (room) room.update();
 		});
 	},
 	badge: 'badges',
