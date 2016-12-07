@@ -182,6 +182,7 @@ exports.commands = {
 		badHosts.forEach(proxy => {
 			buff += '<tr><td>' + proxy + '</td><td>' + Gold.nameColor(Gold.lockedHosts[proxy].by, false) + '</td><td>' + Chat.toDurationString(Date.now() - Gold.lockedHosts[proxy].on) + ' ago</td></tr>';
 		});
+		buff += '</table>';
 
 		return this.sendReplyBox(buff);
 	},
