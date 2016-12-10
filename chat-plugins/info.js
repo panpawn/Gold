@@ -144,7 +144,7 @@ exports.commands = {
 		}
 
 		if (user.can('alts', targetUser) || (room.isPrivate !== true && user.can('mute', targetUser, room) && targetUser.userid in room.users)) {
-			let punishments = Punishments.getRoomPunishments(user);
+			let punishments = Punishments.getRoomPunishments(targetUser);
 
 			if (punishments.length) {
 				buf += `<br />Room punishments: `;
@@ -153,7 +153,7 @@ exports.commands = {
 					const [punishType, punishUserid, expireTime, reason] = punishment;
 					let punishDesc = Punishments.roomPunishmentTypes.get(punishType);
 					if (!punishDesc) punishDesc = `punished`;
-					if (punishUserid !== user.userid) punishDesc += ` as ${punishUserid}`;
+					if (punishUserid !== targetUser.userid) punishDesc += ` as ${punishUserid}`;
 					let expiresIn = new Date(expireTime).getTime() - Date.now();
 					let expireString = Chat.toDurationString(expiresIn, {precision: 1});
 					punishDesc += ` for ${expireString}`;
@@ -179,8 +179,11 @@ exports.commands = {
 		}
 		let userid = toId(target);
 		if (!userid) return this.errorReply("Please enter a valid username.");
+		let targetUser = Users(userid);
+		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${target}</strong>`;
+		if (!targetUser || !targetUser.connected) buf += ` <em style="color:gray">(offline)</em>`;
+		buf += `<br /><br />`;
 		let customCode = Gold.whois(userid, false);
-		let buf = Chat.html`<strong class="username" style="color:${Gold.hashColor(userid)}">${target}</strong> <em style="color:gray">(offline)</em><br />`;
 		let atLeastOne = false;
 
 		let punishment = Punishments.userids.get(userid);
@@ -202,20 +205,20 @@ exports.commands = {
 			}
 		}
 
-		let punishments = Punishments.getRoomPunishments(user);
+		let punishments = Punishments.getRoomPunishments(targetUser);
 
 		if (customCode && user.can('pban')) {
 			buf += customCode;
 		}
 
-		if (punishments.length) {
+		if (punishments && punishments.length) {
 			buf += `<br />Room punishments: `;
 
 			buf += punishments.map(([room, punishment]) => {
 				const [punishType, punishUserid, expireTime, reason] = punishment;
 				let punishDesc = Punishments.roomPunishmentTypes.get(punishType);
 				if (!punishDesc) punishDesc = `punished`;
-				if (punishUserid !== user.userid) punishDesc += ` as ${punishUserid}`;
+				if (punishUserid !== targetUser.userid) punishDesc += ` as ${punishUserid}`;
 				let expiresIn = new Date(expireTime).getTime() - Date.now();
 				let expireString = Chat.toDurationString(expiresIn, {precision: 1});
 				punishDesc += ` for ${expireString}`;
@@ -228,7 +231,6 @@ exports.commands = {
 		if (!atLeastOne) {
 			buf += `This username has no punishments associated with it.`;
 		}
-
 		this.sendReplyBox(buf);
 	},
 

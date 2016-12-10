@@ -1254,9 +1254,11 @@ let commands = {
 		},
 		ban: function (tournament, user, params, cmd) {
 			if (params.length < 1) {
-				return this.sendReply("Usage: " + cmd + " <user>");
+				return this.sendReply("Usage: " + cmd + " <user>, <reason>");
 			}
-			let targetUser = Users.get(params[0]) || params[0];
+			let targetUser = Users.get(params[0]);
+			let online = !!targetUser;
+			if (!online) targetUser = params[0];
 			let targetUserid = toId(targetUser);
 			let reason = '';
 			if (params[1]) {
@@ -1264,11 +1266,29 @@ let commands = {
 				if (reason.length > MAX_REASON_LENGTH) return this.errorReply("The reason is too long. It cannot exceed " + MAX_REASON_LENGTH + " characters.");
 			}
 
-			if (tournament.checkBanned(user)) return this.errorReply("This user is already banned from tournaments.");
+			if (tournament.checkBanned(targetUser)) return this.errorReply("This user is already banned from tournaments.");
 
-			Punishments.roomPunish(this.room, user, ['TOURBAN', targetUserid, Date.now() + TOURBAN_DURATION, reason]);
-			tournament.removeBannedUser(user);
+			let punishment = ['TOURBAN', targetUserid, Date.now() + TOURBAN_DURATION, reason];
+			if (online) {
+				Punishments.roomPunish(this.room, targetUser, punishment);
+			} else {
+				Punishments.roomPunishName(this.room, targetUser, punishment);
+			}
+			tournament.removeBannedUser(targetUser);
 			this.privateModCommand((targetUser.name || targetUserid) + " was banned from tournaments by " + user.name + "." + (reason ? " (" + reason + ")" : ""));
+		},
+		unban: function (tournament, user, params, cmd) {
+			if (params.length < 1) {
+				return this.sendReply("Usage: " + cmd + " <user>");
+			}
+			let targetUser = Users.get(params[0]) || params[0];
+			let targetUserid = toId(targetUser);
+
+			if (!tournament.checkBanned(targetUser)) return this.errorReply("This user isn't banned from tournaments.");
+
+			Punishments.roomUnpunish(this.room, targetUser, 'TOURBAN');
+			tournament.removeBannedUser(targetUser);
+			this.privateModCommand((targetUser.name || targetUserid) + " was unbanned from tournaments by " + user.name + ".");
 		},
 	},
 };
@@ -1423,6 +1443,7 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		"- on/enable: Enables allowing voices or up to start tournaments in the current room.<br />" +
 		"- off/disable: Disables allowing anyone but ROs and up to start tournaments in the current room.<br />" +
 		"- announce/announcements &lt;on|off>: Enables/disables tournament announcements for the current room.<br />" +
+		"- ban/unban &lt;user>: Bans/unbans a user from joining tournaments in this room. Lasts 2 weeks.<br />" +
 		"- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />" +
 		"- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />" +
 		"More detailed help can be found <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6777489\">here</a>"
