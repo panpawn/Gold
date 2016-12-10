@@ -1201,9 +1201,7 @@ let commands = {
 				return this.sendReply("Usage: " + cmd + " <user>, <reason>");
 			}
 			let targetUser = Users.get(params[0]);
-			let online = !!targetUser;
-			if (!online) targetUser = params[0];
-			let targetUserid = toId(targetUser);
+			let targetUserid = toId(targetUser) || toId(params[0]);
 			let reason = '';
 			if (params[1]) {
 				reason = params[1].trim();
@@ -1213,10 +1211,10 @@ let commands = {
 			if (tournament.checkBanned(targetUser)) return this.errorReply("This user is already banned from tournaments.");
 
 			let punishment = ['TOURBAN', targetUserid, Date.now() + TOURBAN_DURATION, reason];
-			if (online) {
+			if (targetUser) {
 				Punishments.roomPunish(this.room, targetUser, punishment);
 			} else {
-				Punishments.roomPunishName(this.room, targetUser, punishment);
+				Punishments.roomPunishName(this.room, params[0], punishment);
 			}
 			tournament.removeBannedUser(targetUser);
 			this.privateModCommand((targetUser.name || targetUserid) + " was banned from tournaments by " + user.name + "." + (reason ? " (" + reason + ")" : ""));
