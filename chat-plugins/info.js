@@ -579,7 +579,7 @@ exports.commands = {
 		buffer.push('<span class="message-effect-weak">Weaknesses</span>: ' + (weaknesses.join(', ') || '<font color=#999999>None</font>'));
 		buffer.push('<span class="message-effect-resist">Resistances</span>: ' + (resistances.join(', ') || '<font color=#999999>None</font>'));
 		buffer.push('<span class="message-effect-immune">Immunities</span>: ' + (immunities.join(', ') || '<font color=#999999>None</font>'));
-		this.sendReplyBox(buffer.join('<br>'));
+		this.sendReplyBox(buffer.join('<br />'));
 	},
 	weaknesshelp: ["/weakness [pokemon] - Provides a Pok\u00e9mon's resistances, weaknesses, and immunities, ignoring abilities.",
 		"/weakness [type 1]/[type 2] - Provides a type or type combination's resistances, weaknesses, and immunities, ignoring abilities.",
@@ -643,7 +643,7 @@ exports.commands = {
 		}
 
 		let hasThousandArrows = source.id === 'thousandarrows' && defender.types.includes('Flying');
-		let additionalInfo = hasThousandArrows ? "<br>However, Thousand Arrows will be 1x effective on the first hit." : "";
+		let additionalInfo = hasThousandArrows ? "<br />However, Thousand Arrows will be 1x effective on the first hit." : "";
 
 		this.sendReplyBox("" + atkName + " is " + factor + "x effective against " + defName + "." + additionalInfo);
 	},
@@ -752,7 +752,7 @@ exports.commands = {
 			buffer.push('<span class="message-effect-resist">Neutral</span>: ' + (neutral.join(', ') || '<font color=#999999>None</font>'));
 			buffer.push('<span class="message-effect-weak">Resists</span>: ' + (resists.join(', ') || '<font color=#999999>None</font>'));
 			buffer.push('<span class="message-effect-immune">Immunities</span>: ' + (immune.join(', ') || '<font color=#999999>None</font>'));
-			return this.sendReplyBox(buffer.join('<br>'));
+			return this.sendReplyBox(buffer.join('<br />'));
 		} else {
 			let buffer = '<div class="scrollable"><table cellpadding="1" width="100%"><tr><th></th>';
 			let icon = {};
@@ -820,10 +820,10 @@ exports.commands = {
 			buffer += '</table></div>';
 
 			if (hasThousandArrows) {
-				buffer += "<br><b>Thousand Arrows has neutral type effectiveness on Flying-type Pok\u00e9mon if not already smacked down.";
+				buffer += "<br /><b>Thousand Arrows has neutral type effectiveness on Flying-type Pok\u00e9mon if not already smacked down.";
 			}
 
-			this.sendReplyBox('Coverage for ' + sources.join(' + ') + ':<br>' + buffer);
+			this.sendReplyBox('Coverage for ' + sources.join(' + ') + ':<br />' + buffer);
 		}
 	},
 	coveragehelp: ["/coverage [move 1], [move 2] ... - Provides the best effectiveness match-up against all defending types for given moves or attacking types",
@@ -1349,6 +1349,7 @@ exports.commands = {
 			"- /tour create <em>format</em>, roundrobin: Creates a new round robin tournament in the current room.<br />" +
 			"- /tour end: Forcibly ends the tournament in the current room<br />" +
 			"- /tour start: Starts the tournament in the current room<br />" +
+			"- /tour banlist [pokemon], [talent], [...]: Bans moves, abilities, Pokémon or items from being used in a tournament (it must be created first)<br />" +
 			"<br />" +
 			"More detailed help can be found in the <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6777489\">tournaments guide</a><br />" +
 			"</div>"
