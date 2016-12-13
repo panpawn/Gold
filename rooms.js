@@ -825,7 +825,7 @@ class GlobalRoom {
 					curRoom.addRaw(`<div class="broadcast-red"><b>The server needs restart because of a crash.</b><br />No new battles can be started until the server is done restarting.</div>`).update();
 				}
 			} else {
-				curRoom.addRaw(`<div class="broadcast-red"><b>The server is restarting soon.</b><br />Please finish your battles quickly. No new battles can be started until the server resets in a few minutes.</div>`).update();
+				curRoom.addRaw(`<div class="broadcast-red"><b>The server is restarting soon.</b><br />Please take your time to finish your battles. No new battles can be started until the server resets in a few minutes.</div>`).update();
 			}
 			if (!slow && curRoom.requestKickInactive && !curRoom.battle.ended) {
 				curRoom.requestKickInactive(false, true);
