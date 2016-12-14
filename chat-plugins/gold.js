@@ -1690,7 +1690,7 @@ exports.commands = {
 			room.add(`|raw|${Gold.nameColor(user.name)} has forcefully cancelled the current giveaway in this room.`).update();
 		},
 		'': function (target, room, user) {
-		if (!this.runBroadcast()) return;
+			if (!this.runBroadcast()) return;
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room right now.");
 			let participants = room.giveaway.names.map(usr => { return Gold.nameColor(usr); }).join(', ');
 			if (participants.length === 0) participants = '<em style="color:gray">(no one... yet.)</em>';
