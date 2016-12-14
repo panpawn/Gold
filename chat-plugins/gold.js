@@ -1680,7 +1680,7 @@ exports.commands = {
 			let winner = participants.sample();
 			let prize = room.giveaway.prize;
 			Gold.updateMoney(winner, prize);
-			room.add(`|raw|<div class="broadcast-blue"><center>The giveaway for <strong>${prize} bucks</strong> has been ended by ${Gold.nameColor(user.name)}.<br />Congratulations to our lucky winner is ${Gold.nameColor(winner)}!</center></div>`).update();
+			room.add(`|raw|<div class="broadcast-blue"><center>The giveaway for <strong>${prize} bucks</strong> has been ended by ${Gold.nameColor(user.name)}.<br />Congratulations to our lucky winner, ${Gold.nameColor(winner)}!</center></div>`).update();
 			delete room.giveaway;
 		},
 		cancel: function (target, room, user) {
