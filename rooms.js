@@ -1578,7 +1578,7 @@ class ChatRoom extends Room {
 				'Messages must have at least ' + this.slowchat + ' seconds between them.' +
 				'</div>';
 		}
-		if (this.giveaway && this.giveaway.html && !this.giveaway.ips.includes(user.latestIp) && user.autoconfirmed) {
+		if (this.giveaway && this.giveaway.html && !this.giveaway.ips.includes(user.latestIp)) {
 			message += this.giveaway.html;
 		}
 		if (message) message += '</div>';

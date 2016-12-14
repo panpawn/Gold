@@ -1666,7 +1666,7 @@ exports.commands = {
 		join: function (target, room, user) {
 			if (!this.canTalk()) return;
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room.");
-			if (!user.named || !user.autoconfirmed) return this.errorReply("You must be signed in and on an autoconfirmed name to join this giveaway.");
+			if (!user.named) return this.errorReply("You must be signed in and on an autoconfirmed name to join this giveaway.");
 			if (room.giveaway.ips.includes(user.latestIp)) return this.errorReply("You have already joined this giveaway, silly...");
 			room.giveaway.ips.push(user.latestIp);
 			room.giveaway.names.push(user.name);
