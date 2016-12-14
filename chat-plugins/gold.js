@@ -1646,6 +1646,63 @@ exports.commands = {
 		return this.sendReplyBox(buff);
 	},
 	goldintrohelp: ["/goldintro - Shows a list of common FAQs specific to Gold."],
+	giveaway: {
+		create: function (target, room, user) {
+			if (!this.can('declare')) return false;
+			if (!room) return this.errorReply("You must be a in a room to use this command.");
+			if (room.giveaway) return this.errorReply("A giveaway is already being run in this room. To stop it, either use /giveaway end or /giveaway cancel.");
+			if (!target || typeof Number(target) !== 'number') return this.errorReply('/giveaway create - Needs an integer for a buck prize.');
+			target = parseInt(target);
+			room.giveaway = {
+				ips: [],
+				names: [],
+				prize: target,
+				creator: user.name,
+				started: Date.now(),
+				html: `<div class="broadcast-gold">A giveaway for <strong>${target} bucks</strong> is currently running. <button class="button" name="send" value="/giveaway join">Join giveaway</button></div>`,
+			};
+			room.add(`|raw|${room.giveaway.html}`).update();
+		},
+		join: function (target, room, user) {
+			if (!this.canTalk()) return;
+			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room.");
+			if (!user.named || !user.autoconfirmed) return this.errorReply("You must be signed in and on an autoconfirmed name to join this giveaway.");
+			if (room.giveaway.ips.includes(user.latestIp)) return this.errorReply("You have already joined this giveaway, silly...");
+			room.giveaway.ips.push(user.latestIp);
+			room.giveaway.names.push(user.name);
+			room.add(`|raw|${Gold.nameColor(user.name)} has joined the current giveaway.`);
+		},
+		end: function (target, room, user) {
+			if (!this.can('declare')) return false;
+			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on for you to end.");
+			let participants = room.giveaway.names;
+			if (participants.length === 0) return this.errorReply("No one is in thie giveaway. To end it, you must do /giveaway cancel.");
+			let winner = participants.sample();
+			let prize = room.giveaway.prize;
+			Gold.updateMoney(winner, prize);
+			room.add(`|raw|<div class="broadcast-blue"><center>The giveaway for <strong>${prize} bucks</strong> has been ended by ${Gold.nameColor(user.name)}.<br />Congratulations to our lucky winner is ${Gold.nameColor(winner)}!</center></div>`).update();
+			delete room.giveaway;
+		},
+		cancel: function (target, room, user) {
+			if (!this.can('declare')) return false;
+			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room for you to cancel.");
+			delete room.giveaway;
+			room.add(`|raw|${Gold.nameColor(user.name)} has forcefully cancelled the current giveaway in this room.`).update();
+		},
+		'': function (target, room, user) {
+		if (!this.runBroadcast()) return;
+			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room right now.");
+			let participants = room.giveaway.names.map(usr => { return Gold.nameColor(usr); }).join(', ');
+			if (participants.length === 0) participants = '<em style="color:gray">(no one... yet.)</em>';
+			return this.sendReplyBox(`The current giveaway in this room is worth ${room.giveaway.prize} bucks.<br />It was started ${moment(room.giveaway.started).fromNow()} by ${Gold.nameColor(room.giveaway.creator)}<br />Users currently entered in the giveaway are: ${participants}`);
+		},
+	},
+	giveawayhelp: [
+		"/giveaway create [buck] - Creates a giveaway that will automatically end up giving [bucks] as a prize. Requires *, &, ~.",
+		"/giveaway join - Joins a giveaway.",
+		"/giveaway end - Ends a current giveaway. Requires *, &, ~",
+		"/giveaway cancel - Forcefully cancels a current giveaway. Requires: *, &, ~",
+	],
 };
 
 function loadRegdateCache() {

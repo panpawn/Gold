@@ -4,6 +4,7 @@
 * Credits: Codelegend, SilverTactic, DanielCranham, bumbadadabum
 **/
 
+/*
 'use strict';
 
 Punishments.roomPunishmentTypes.set('GIVEAWAYBAN', 'banned from giveaways');
@@ -551,3 +552,4 @@ exports.commands = {
 	'qg': commands.question,
 	'lg': commands.lottery,
 };
+*/
