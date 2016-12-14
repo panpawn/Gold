@@ -1694,7 +1694,7 @@ exports.commands = {
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room right now.");
 			let participants = room.giveaway.names.map(usr => { return Gold.nameColor(usr); }).join(', ');
 			if (participants.length === 0) participants = '<em style="color:gray">(no one... yet.)</em>';
-			return this.sendReplyBox(`The current giveaway in this room is worth ${room.giveaway.prize} bucks.<br />It was started ${moment(room.giveaway.started).fromNow()} by ${Gold.nameColor(room.giveaway.creator)}<br />Users currently entered in the giveaway are: ${participants}`);
+			return this.sendReplyBox(`The current giveaway in this room is worth ${room.giveaway.prize} bucks.<br />It was started ${moment(room.giveaway.started).fromNow()} by ${Gold.nameColor(room.giveaway.creator)}.<br />Users ${room.giveaway.names.length !== 0 ? `(${room.giveaway.names.length})` : ''} currently entered in the giveaway are: ${participants}`);
 		},
 	},
 	giveawayhelp: [
