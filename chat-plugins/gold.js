@@ -1667,7 +1667,10 @@ exports.commands = {
 			if (!this.canTalk()) return;
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room.");
 			if (!user.named) return this.errorReply("You must be signed in and on an autoconfirmed name to join this giveaway.");
-			if (room.giveaway.ips.includes(user.latestIp)) return this.errorReply("You have already joined this giveaway, silly...");
+			let useridCheck = room.giveaway.names.map(name => { if (toId(name) === user.userid) return true; });
+			if (room.giveaway.ips.includes(user.latestIp) || useridCheck[0]) {
+				return this.errorReply("You have already joined this giveaway...");
+			}
 			room.giveaway.ips.push(user.latestIp);
 			room.giveaway.names.push(user.name);
 			room.add(`|raw|${Gold.nameColor(user.name)} has joined the current giveaway.`);
