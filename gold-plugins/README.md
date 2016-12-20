@@ -1,0 +1,1 @@
+This is basically an extension of chat-plugins/ - but, these are all custom to Gold.

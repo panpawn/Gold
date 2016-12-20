@@ -891,6 +891,11 @@ Chat.loadCommands = function () {
 		if (file.substr(-3) !== '.js' || file === 'info.js') continue;
 		Object.assign(commands, require('./chat-plugins/' + file).commands);
 	}
+	// finally, load custom Gold plugins
+	for (let file of fs.readdirSync(path.resolve(__dirname, 'gold-plugins'))) {
+		if (file.substr(-3) !== '.js') continue;
+		Object.assign(commands, require('./gold-plugins/' + file).commands);
+	}
 };
 
 /**
