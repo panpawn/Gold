@@ -215,10 +215,6 @@ try {
 } catch (e) {
 	exports.bannedMessages = [];
 }
-try {
-	Chat.uncacheTree('./chat-plugins/chatfilter.js');
-	setTimeout(function () {require('../chat-plugins/chatfilter.js');}, 500);
-} catch (e) {}
 
 // watchUsers - log these user's messages to the upper staff room
 // watchPhrases - log messages that contain the ids of these phrases
