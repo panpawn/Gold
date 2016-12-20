@@ -263,7 +263,7 @@ try {
 				if (!Rooms(room)) return false;
 				data.autojoin.push(room);
 			} else if (action === 'REMOVE' && data.autojoin.includes(room)) {
-				data.autojoin.splice(data.autojoin.indexOf(room, 1));
+				data.autojoin.splice(data.autojoin.indexOf(room), 1);
 			}
 			this.saveData();
 		},
@@ -343,7 +343,7 @@ try {
 			if (action === 'ADD') {
 				if (!data.friends.includes(friend))data.friends.push(friend);
 			} else if (action === 'DELETE') {
-				if (data.friends.includes(friend)) data.friends.splce(data.friends.indexOf(friend, 1));
+				if (data.friends.includes(friend)) data.friends.splice(data.friends.indexOf(friend), 1);
 			} else {
 				return false;
 			}
