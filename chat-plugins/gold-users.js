@@ -63,8 +63,10 @@ try {
 			}; // we don't save blank user data objects until next save
 		},
 		saveData: function () {
-			fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
-		}.throttle(1.25 * 1000), // only save every 1.25 seconds - TOPS
+			setTimeout(function () {
+				fs.writeFileSync('config/goldusers.json', JSON.stringify(Gold.userData));
+			}, (1.25 * 1000)); // only save every 1.25 seconds - TOPS
+		},
 		initiateUser: function (user, ip) {	// when the user connections, this runs
 			user = toId(user);
 			if (!Gold.userData[user]) Gold.createUser(user);
@@ -179,7 +181,7 @@ try {
 				data.badges.push(badgeid);
 			} else if (action === 'TAKE') {
 				if (!data.badges.includes(badgeid)) return false;
-				data.badges.remove(badgeid);
+				data.badges.splice(data.badges.indexOf(badgeid), 1);
 			} else {
 				return false;
 			}
@@ -261,7 +263,7 @@ try {
 				if (!Rooms(room)) return false;
 				data.autojoin.push(room);
 			} else if (action === 'REMOVE' && data.autojoin.includes(room)) {
-				data.autojoin.remove(room);
+				data.autojoin.splice(data.autojoin.indexOf(room, 1));
 			}
 			this.saveData();
 		},
@@ -341,7 +343,7 @@ try {
 			if (action === 'ADD') {
 				if (!data.friends.includes(friend))data.friends.push(friend);
 			} else if (action === 'DELETE') {
-				if (data.friends.includes(friend)) data.friends.remove(friend);
+				if (data.friends.includes(friend)) data.friends.splce(data.friends.indexOf(friend, 1));
 			} else {
 				return false;
 			}
@@ -490,6 +492,7 @@ try {
 		},
 	});
 } catch (e) {
+	console.log('crash: ' + e.stack);
 	let staff = Rooms('staff');
 	if (staff) staff.add(`|html|<div class="broadcast-red"><b>CUSTOM GOLD FUNCTIONALITY HAS CRASHED:</b><br />${e.stack}<br /><br /><b>Please report this to a developer... so panpawn.`).update();
 }
