@@ -203,13 +203,13 @@ exports.commands = {
 		}
 	},
 	friendslisthelp: ["Gold's friendslist allows users to add friends to their friendslists. The commands include...",
-					"/friendslist add, [user] - Adds a user to your friendslist.",
-					"/friendslist remove, [user] - Removes a user from your friendslist.",
-					"/friendslist removeall - Clears your friendslist.",
-					"/friendslist - Displays your friendslist.",
-					"/friendslist [user] - Displays [user]'s friendslist.",
-					"/friendslist added, [user] - Shows whose added a user as a friend to their friendslist.",
-					"/friendslist notify - Toggles being notified or not when a friend comes online (disabled by default)."],
+		"/friendslist add, [user] - Adds a user to your friendslist.",
+		"/friendslist remove, [user] - Removes a user from your friendslist.",
+		"/friendslist removeall - Clears your friendslist.",
+		"/friendslist - Displays your friendslist.",
+		"/friendslist [user] - Displays [user]'s friendslist.",
+		"/friendslist added, [user] - Shows whose added a user as a friend to their friendslist.",
+		"/friendslist notify - Toggles being notified or not when a friend comes online (disabled by default)."],
 };
 
 Gold.friends = Friends;

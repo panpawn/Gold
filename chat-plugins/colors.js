@@ -78,8 +78,8 @@ exports.commands = {
 		updateColor();
 	},
 	customcolorhelp: ["Commands Include:",
-				"/customcolor [user], [hex] - Gives [user] a custom color of [hex]",
-				"/customcolor [user], delete - Deletes a user's custom color"],
+		"/customcolor [user], [hex] - Gives [user] a custom color of [hex]",
+		"/customcolor [user], delete - Deletes a user's custom color"],
 
 	colorpreview: function (target, room, user) {
 		if (!this.runBroadcast()) return;

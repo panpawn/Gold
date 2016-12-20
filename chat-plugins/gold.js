@@ -683,7 +683,7 @@ exports.commands = {
 		}
 	},
 	kickhelp: ["Usage: /kick [user] - kicks a user from the room",
-				"/kick [enable/disable] - enables or disables kick for that room. Requires ~."],
+		"/kick [enable/disable] - enables or disables kick for that room. Requires ~."],
 	userid: function (target, room, user) {
 		if (!target) return this.parse('/help userid');
 		if (!this.runBroadcast()) return;
@@ -1667,7 +1667,7 @@ exports.commands = {
 			if (!this.canTalk()) return;
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on in this room.");
 			if (!user.named) return this.errorReply("You must be signed in and on an autoconfirmed name to join this giveaway.");
-			let useridCheck = room.giveaway.names.map(name => { if (toId(name) === user.userid) return true; });
+			let useridCheck = room.giveaway.names.map(name => { if (toId(name) === user.userid) return true; return false;});
 			if (room.giveaway.ips.includes(user.latestIp) || useridCheck[0]) {
 				return this.errorReply("You have already joined this giveaway...");
 			}
