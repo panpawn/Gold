@@ -140,7 +140,7 @@ exports.commands = {
 			let removee = toId(target[1]);
 			if (!removee) return this.errorReply("Usage: /friendslist remove, [user] - Removes a user from your friendslist.");
 			if (!~Friends[user.userid].indexOf(removee)) return this.errorReply("You are not currently friends with this user.  Check spelling?");
-			Friends[user.userid].remove(removee);
+			Friends[user.userid].splice(Friends[user.userid].indexOf(removee), 1);
 			updateFriends();
 			this.sendReply("|raw|You have <font color=red>unfriended</font> " + getName(removee, true, true) + " from your friends list.");
 			break;

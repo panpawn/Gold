@@ -170,7 +170,7 @@ exports.commands = {
 			case 'list':
 				if (!this.runBroadcast()) return;
 				if (this.broadcasting) return this.errorReply("ERROR: this command is too spammy to broadcast.  Use / instead of ! to see it for yourself.");
-				let output = `<b>There's a total of ${Object.size(emotes)} emoticons added with this command:</b><br />`;
+				let output = `<b>There's a total of ${Object.keys(emotes).length} emoticons added with this command:</b><br />`;
 				for (let e in emotes) {
 					output += `${e}<br />`;
 				}

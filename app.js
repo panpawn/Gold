@@ -53,8 +53,7 @@ const path = require('path');
 // aren't
 
 try {
-	require('sugar');
-	require.resolve('sugar');
+	require.resolve('sockjs');
 } catch (e) {
 	if (require.main !== module) throw new Error("Dependencies unmet");
 
@@ -200,7 +199,7 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 		if (global.uptimeRecord && process.uptime() <= global.uptimeRecord) return;
 		global.uptimeRecord = process.uptime();
 		fs.writeFile('./logs/uptime.txt', global.uptimeRecord.toFixed(0));
-	}, (1).hour());
+	}, 1 * 60 * 60 * 1000);
 });
 
 //global.tour = require('./tour.js').tour();
