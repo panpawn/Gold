@@ -209,3 +209,8 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
  *********************************************************/
 
 require('./repl').start('app', cmd => eval(cmd));
+
+Array.prototype.sample = function() {
+	let arr = this;
+	return arr[Math.floor(Math.random() * arr.length)];
+}
