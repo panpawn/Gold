@@ -2,6 +2,7 @@
 * Anagram plugin for Pokémon Showdown *
 * By: jd                              *
 **************************************/
+// TODO: Replace .sample methods
 
 /*
 'use strict';

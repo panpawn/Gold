@@ -790,7 +790,9 @@ exports.commands = {
 	magic8ball: 'm8b',
 	m8b: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		return this.sendReplyBox(['Signs point to yes.', 'Yes.', 'Reply hazy, try again.', 'Without a doubt.', 'My sources say no.', 'As I see it, yes.', 'You may rely on it.', 'Concentrate and ask again.', 'Outlook not so good.', 'It is decidedly so.', 'Better not tell you now.', 'Very doubtful.', 'Yes - definitely.', 'It is certain.', 'Cannot predict now.', 'Most likely.', 'Ask again later.', 'My reply is no.', 'Outlook good.', 'Don\'t count on it.'].sample());
+		let replies = ['Signs point to yes.', 'Yes.', 'Reply hazy, try again.', 'Without a doubt.', 'My sources say no.', 'As I see it, yes.', 'You may rely on it.', 'Concentrate and ask again.', 'Outlook not so good.', 'It is decidedly so.', 'Better not tell you now.', 'Very doubtful.', 'Yes - definitely.', 'It is certain.', 'Cannot predict now.', 'Most likely.', 'Ask again later.', 'My reply is no.', 'Outlook good.', 'Don\'t count on it.'];
+		let randReply = replies[Math.floor(Math.random() * replies.length)];
+		return this.sendReplyBox(randReply);
 	},
 	coins: 'coingame',
 	coin: 'coingame',
@@ -1683,7 +1685,7 @@ exports.commands = {
 			if (!room.giveaway) return this.errorReply("There is currently no giveaway going on for you to end.");
 			let participants = room.giveaway.names;
 			if (participants.length === 0) return this.errorReply("No one is in thie giveaway. To end it, you must do /giveaway cancel.");
-			let winner = participants.sample();
+			let winner = participants[Math.floor(Math.random() * participants.length)];
 			let prize = room.giveaway.prize;
 			Gold.updateMoney(winner, prize);
 			room.add(`|raw|<div class="broadcast-blue"><center>The giveaway for <strong>${prize} bucks</strong> has been ended by ${Gold.nameColor(user.name)}.<br />Congratulations to our lucky winner, ${Gold.nameColor(winner)}!</center></div>`).update();

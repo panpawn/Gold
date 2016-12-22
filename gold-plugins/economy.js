@@ -226,12 +226,15 @@ exports.commands = {
 			let randomNumber = Math.floor((Math.random() * 100) + 1);
 			let prize = '';
 			let goodBad = '';
+			let opts;
 			if (randomNumber < 70) {
 				goodBad = 'bad';
-				prize = ['nothing', 'rick rolled', 'meme avatar', 'kick from Lobby', '2 minute mute'].sample();
+				opts = ['nothing', 'rick rolled', 'meme avatar', 'kick from Lobby', '2 minute mute'];
+				prize = opts[Math.floor(Math.random() * opts.length)];
 			} else if (randomNumber > 70) {
 				goodBad = 'good';
-				prize = ['100 bucks', '125 bucks', 'a custom symbol', 'a custom userlist icon', 'ability to get Dubtrack VIP', 'ability to set the PotD', 'custom color', 'the cost of the mystery box back', 'ability to have a leader/admin broadcast an image to Lobby', 'a kind, warm hearted thank you'].sample();
+				opts = ['100 bucks', '125 bucks', 'a custom symbol', 'a custom userlist icon', 'ability to get Dubtrack VIP', 'ability to set the PotD', 'custom color', 'the cost of the mystery box back', 'ability to have a leader/admin broadcast an image to Lobby', 'a kind, warm hearted thank you'];
+				prize = opts[Math.floor(Math.random() * opts.length)];
 			}
 			switch (prize) {
 			// good
@@ -264,7 +267,8 @@ exports.commands = {
 			case 'nothing':
 				break;
 			case 'meme avatar':
-				user.avatar = ['notpawn.png', 'notpawn2.png'].sample();
+				opts = ['notpawn.png', 'notpawn2.png'];
+				user.avatar = opts[Math.floor(Math.random() * opts.length)];
 				break;
 			case 'kick from Lobby':
 				try {
