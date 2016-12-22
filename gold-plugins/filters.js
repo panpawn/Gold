@@ -190,7 +190,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				reasons.push(`have the IPv4 class ${punishments[offender].ipclass} range (${ipRange}.*)`);
 				evader = punishments[offender].type + ' user: ' + offender;
 			}
-			if (defaultAvatars.includes(user.avatar)) {
+			if (points >= 1 && defaultAvatars.includes(user.avatar)) {
 				points++;
 				reasons.push(`have a default avatar`);
 			}
