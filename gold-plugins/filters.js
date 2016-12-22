@@ -26,7 +26,7 @@ let proxyWhitelist = Config.proxyWhitelist || false;
  * Chatfilter Magic *
  * ******************/
 
-Config.chatfilter = function (message, user, room, connection, targetUser) {
+exports.chatfilter = function (message, user, room, connection, targetUser) {
 	user.lastActiveTime = Date.now();
 	if (!room && !Users(targetUser)) targetUser = {name: 'unknown user'};
 
@@ -69,6 +69,7 @@ Config.chatfilter = function (message, user, room, connection, targetUser) {
 	}
 	return message;
 };
+Config.chatfilter = exports.chatfilter;
 
 /*********************
  * Namefilter Magic *
