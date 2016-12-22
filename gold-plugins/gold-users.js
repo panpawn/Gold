@@ -474,12 +474,9 @@ try {
 			let ipArr = ip.split('.');
 			let firstOctet = ipArr[0];
 			let ipClass = '';
-			if (firstOctet <= 126) {
-				ipClass = 'A';
-				return [ipArr[0], ipClass];
-			} else if (firstOctet <= 191) {
-				ipClass = 'B';
-				return [`${ipArr[0]}.${ipArr[1]}`, ipClass];
+			if (firstOctet <= 126 || firstOctet <= 191) {
+				ipClass = (firstOctet <= 126 ? 'A' : 'B');
+				return [`${ipArr[0]}.${ipArr[1]}`, ipClass]; // this technically is not correct IP addressing
 			} else if (firstOctet <= 223) {
 				ipClass = 'C';
 				return [`${ipArr[0]}.${ipArr[1]}.${ipArr[2]}`, ipClass];
