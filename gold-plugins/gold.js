@@ -987,7 +987,7 @@ exports.commands = {
 				if (uptimeHours) uptimeText += ", " + uptimeHours + " " + (uptimeHours === 1 ? "hour" : "hours");
 				return uptimeText;
 			} else {
-				return uptime.seconds().duration();
+				return Chat.toDurationString(uptime * 1000);
 			}
 		}
 
