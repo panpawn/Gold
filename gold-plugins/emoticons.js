@@ -127,8 +127,7 @@ exports.commands = {
 	ec: 'ezemote',
 	ezemote: function (target, room, user) {
 		if (!target) target = "help";
-		let parts = target.split(',');
-		for (let u in parts) parts[u] = parts[u].trim();
+		let parts = target.split(',').map(p => p.trim());
 		if (!parts[0]) return this.parse('/help ezemote');
 
 		try {
