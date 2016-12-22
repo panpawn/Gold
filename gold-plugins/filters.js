@@ -179,7 +179,6 @@ Gold.evadeMonitor = function (user, name, punished) {
 		};
 		Gold.savePunishments();
 	} else {
-		console.log(user.registered)
 		if (user.locked || Users.ShadowBan.checkBanned(user) || trustedHack(name)) return;
 
 		let ipRange = Gold.getIpRange(ip)[0];
