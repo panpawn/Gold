@@ -100,17 +100,14 @@ Config.namefilter = function (name, user) {
 
 	// Hostfilter stuff
 	let ip = user.connections[Object.keys(user.connections).length - 1].ip;
-
-	// deal with global ranked user's manually...
-	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
-	let rankIndex = (Config.groupsranking.includes(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
+	let trusted = trustedHack(nameId);
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
 
 		// handling "trusted" users...
-		if (rankIndex && rankIndex > 0) return;
+		if (trusted) return;
 		if (Gold.userData[toId(name)] && Gold.userData[toId(name)].proxywhitelist) return;
 		if (proxyWhitelist && proxyWhitelist.includes(nameId)) return;
 
@@ -130,6 +127,14 @@ Config.namefilter = function (name, user) {
 	return name;
 };
 
+// deal with global ranked user's manually...
+function trustedHack(name) {
+	nameId = toId(name);
+	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
+	let rankIndex = (Config.groupsranking.includes(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
+	if (rankIndex && rankIndex > 0) return true;
+	return false;
+}
 
 /*********************
  * Hostfilter Magic *
@@ -147,6 +152,7 @@ loadHostBlacklist();
 function saveHost() {
 	fs.writeFileSync('config/lockedhosts.json', JSON.stringify(Gold.lockedHosts));
 }
+
 
 Gold.evadeMonitor = function (user, name, punished) {
 	let punishments = this.punishments;
@@ -173,7 +179,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		};
 		Gold.savePunishments();
 	} else {
-		if (user.locked || Users.ShadowBan.checkBanned(user)) return;
+		if (user.locked || Users.ShadowBan.checkBanned(user) || trustedHack(name)) return;
 
 		let ipRange = Gold.getIpRange(ip)[0];
 		let reasons = [];
@@ -191,6 +197,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				reasons.push(`have the IPv4 class ${punishments[offender].ipclass} range (${ipRange}.*)`);
 				evader = punishments[offender].type + ' user: ' + offender;
 			}
+			// this does not count AS a reason, but merely to add to the list of reasons
 			if (points >= 1 && defaultAvatars.includes(user.avatar)) {
 				points++;
 				reasons.push(`have a default avatar`);
