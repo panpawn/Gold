@@ -129,7 +129,7 @@ Config.namefilter = function (name, user) {
 
 // deal with global ranked user's manually...
 function trustedHack(name) {
-	nameId = toId(name);
+	let nameId = toId(name);
 	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
 	let rankIndex = (Config.groupsranking.includes(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
 	if (rankIndex && rankIndex > 0) return true;
@@ -179,6 +179,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		};
 		Gold.savePunishments();
 	} else {
+		console.log(user.registered)
 		if (user.locked || Users.ShadowBan.checkBanned(user) || trustedHack(name)) return;
 
 		let ipRange = Gold.getIpRange(ip)[0];
