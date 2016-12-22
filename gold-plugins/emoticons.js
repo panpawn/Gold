@@ -8,7 +8,6 @@
 'use strict';
 
 const fs = require('fs');
-const serialize = require('node-serialize');
 let emotes = {};
 
 
@@ -102,9 +101,11 @@ Gold.emoticons = {
 
 function loadEmotes() {
 	try {
-		emotes = serialize.unserialize(fs.readFileSync('config/emotes.json', 'utf8'));
-		Object.merge(Gold.emoticons.chatEmotes, emotes);
-	} catch (e) {}
+		emotes = fs.readFileSync('config/emotes.json', 'utf8');
+		Object.assign(Gold.emoticons.chatEmotes, JSON.parse(emotes));
+	} catch (e) {
+		Rooms('staff').add('Failure to load emoticons: ' + e.stack).update();
+	}
 }
 setTimeout(function () {
 	loadEmotes();
@@ -112,8 +113,8 @@ setTimeout(function () {
 
 function saveEmotes() {
 	try {
-		fs.writeFileSync('config/emotes.json', serialize.serialize(emotes));
-		Object.merge(Gold.emoticons.chatEmotes, emotes);
+		fs.writeFileSync('config/emotes.json', emotes);
+		Object.assign(Gold.emoticons.chatEmotes, emotes);
 	} catch (e) {}
 }
 
@@ -184,7 +185,7 @@ exports.commands = {
 				while (len--) {
 					emoticons.push((`${Gold.emoticons.processEmoticons(name[(name.length - 1) - len])}&nbsp;${name[(name.length - 1) - len]}`));
 				}
-				this.sendReplyBox(`<div class="infobox-limited" target="_blank"><b><u>List of emoticons (${Object.keys(emotes).length}):</b></u> <br/><br/>${emoticons.join(' ').toString()}</div>`);
+				this.sendReplyBox(`<div class="infobox-limited" target="_blank"><b><u>List of emoticons (${emoticons.length}):</b></u> <br/><br/>${emoticons.join(' ').toString()}</div>`);
 				break;
 
 			case 'max':
