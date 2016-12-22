@@ -177,6 +177,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		let ipRange = Gold.getIpRange(ip)[0];
 		let reasons = [];
 		let evader = '';
+		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		Object.keys(punishments).forEach(offender => {
 			if (punishments[offender].exires < Date.now()) return;
 			if (punishments[offender].useragent === userAgent) {
@@ -189,11 +190,15 @@ Gold.evadeMonitor = function (user, name, punished) {
 				reasons.push(`have the IPv4 class ${punishments[offender].ipclass} range (${ipRange}.*)`);
 				evader = punishments[offender].type + ' user: ' + offender;
 			}
+			if (defaultAvatars.includes(user.avatar)) {
+				points++;
+				reasons.push(`have a default avatar`);
+			}
 		});
 		let staff = Rooms('staff');
-		if (points === 2) {
+		if (points >= 2) {
 			Users.ShadowBan.addUser(name);
-			if (staff) staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader}`).update();
+			if (staff) staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`).update();
 		} else if (points === 1) {
 			if (staff) staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
 		}
