@@ -184,6 +184,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		let ipRange = Gold.getIpRange(ip)[0];
 		let reasons = [];
 		let evader = '';
+		let alertStaff = false;
 		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		Object.keys(punishments).forEach(offender => {
 			if (punishments[offender].exires < Date.now()) return;
@@ -191,6 +192,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				points++;
 				reasons.push(`have the same user agent`);
 				evader = punishments[offender].type + ' user: ' + offender;
+				alertStaff = true;
 			}
 			if (punishments[offender].iprange && ip.startsWith(punishments[offender].iprange)) {
 				points++;
@@ -199,7 +201,6 @@ Gold.evadeMonitor = function (user, name, punished) {
 			}
 			// this does not count AS a reason, but merely to add to the list of reasons
 			if (points >= 1 && defaultAvatars.includes(user.avatar)) {
-				points++;
 				reasons.push(`have a default avatar`);
 			}
 		});
@@ -207,7 +208,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		if (points >= 2) {
 			Users.ShadowBan.addUser(name);
 			if (staff) staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`).update();
-		} else if (points === 1) {
+		} else if (alertStaff) {
 			if (staff) staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
 		}
 	}
