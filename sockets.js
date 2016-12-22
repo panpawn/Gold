@@ -35,7 +35,8 @@ if (cluster.isMaster) {
 				// connect
 				let nlPos = data.indexOf('\n');
 				let nlPos2 = data.indexOf('\n', nlPos + 1);
-				Users.socketConnect(worker, id, data.slice(1, nlPos), data.slice(nlPos + 1, nlPos2), data.slice(nlPos2 + 1));
+				let nlPos3 = data.indexOf('\n', nlPos2 + 1);
+				Users.socketConnect(worker, id, data.slice(1, nlPos), data.slice(nlPos + 1, nlPos2), data.slice(nlPos2 + 1), data.slice(nlPos3 + 1));
 				break;
 			}
 
@@ -455,7 +456,7 @@ if (cluster.isMaster) {
 			}
 		}
 
-		process.send('*' + socketid + '\n' + socket.remoteAddress + '\n' + socket.protocol);
+		process.send('*' + socketid + '\n' + socket.remoteAddress + '\n' + socket.protocol + '\n' + JSON.stringify(socket.headers));
 
 		socket.on('data', message => {
 			// drop empty messages (DDoS?)

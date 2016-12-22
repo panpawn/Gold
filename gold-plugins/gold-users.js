@@ -25,7 +25,6 @@ const fs = require('fs');
 const moment = require('moment');
 
 Gold.userData = Object.create(null);
-
 function loadUserData() {
 	fs.readFile('config/goldusers.json', 'utf8', function (err, file) {
 		if (err) return;
@@ -33,6 +32,15 @@ function loadUserData() {
 	});
 }
 loadUserData();
+
+Gold.punishments = Object.create(null);
+function loadPunishments() {
+	fs.readFile('config/gold-punishments.json', 'utf8', function (err, file) {
+		if (err) return;
+		Gold.punishments = JSON.parse(file);
+	});
+}
+loadPunishments();
 
 try {
 	Object.assign(Gold, {
@@ -460,6 +468,29 @@ try {
 				return `${buff.join('<br />')}<br />`;
 			}
 			return false;
+		},
+		getIpRange: function (ip) { // strictly for IPv4 support only
+			if (!ip) return;
+			let ipArr = ip.split('.');
+			let firstOctet = ipArr[0];
+			let ipClass = '';
+			if (firstOctet <= 126) {
+				ipClass = 'A';
+				return [ipArr[0], ipClass];
+			} else if (firstOctet <= 191) {
+				ipClass = 'B';
+				return [`${ipArr[0]}.${ipArr[1]}`, ipClass];
+			} else if (firstOctet <= 223) {
+				ipClass = 'C';
+				return [`${ipArr[0]}.${ipArr[1]}.${ipArr[2]}`, ipClass];
+			} else {
+				return [undefined, 'unknown']; // this should never happen
+			}
+		},
+		savePunishments: function () {
+			setTimeout(function () {
+				fs.writeFileSync('config/gold-punishments.json', JSON.stringify(Gold.punishments));
+			}, (1.25 * 1000)); // only save every 1.25 seconds - TOPS
 		},
 		pmAll: function (message, pmName) {
 			if (!pmName) pmName = '~Gold Server [Do not reply]';

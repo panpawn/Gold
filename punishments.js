@@ -556,6 +556,7 @@ Punishments.lock = function (user, expireTime, id, ...reason) {
 		curUser.locked = id;
 		curUser.updateIdentity();
 	}
+	Gold.evadeMonitor(user, null, {type: 'locked', expires: expireTime});
 };
 /**
  * @param {string} name
@@ -588,6 +589,7 @@ Punishments.unlock = function (name) {
 	if (!success.some(v => toId(v) === id)) {
 		success.push(id);
 	}
+	Gold.evadeMonitor(null, null, {alts: success});
 	return success;
 };
 /**

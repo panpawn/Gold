@@ -124,6 +124,8 @@ Config.namefilter = function (name, user) {
 		});
 	});
 
+	Gold.evadeMonitor(user, name);
+
 	return name;
 };
 
@@ -144,6 +146,59 @@ loadHostBlacklist();
 function saveHost() {
 	fs.writeFileSync('config/lockedhosts.json', JSON.stringify(Gold.lockedHosts));
 }
+
+Gold.evadeMonitor = function (user, name, punished) {
+	let punishments = this.punishments;
+	if (punished && punished.alts) {
+		punished.alts.forEach(alt => {
+			if (Gold.punishments[toId(alt)]) delete Gold.punishments[toId(alt)];
+		});
+		Gold.savePunishments();
+		return;
+	}
+	let points = 0;
+	let num = Object.keys(user.connections).length - 1;
+	let userAgent = user.connections[num].headers ? user.connections[num].headers['user-agent'] : '';
+	let ip = user.connections[num].ip;
+
+	if (punished) {
+		punishments[user.userid] = {
+			'useragent': userAgent,
+			'ip': ip,
+			'iprange': Gold.getIpRange(ip)[0],
+			'ipclass': Gold.getIpRange(ip)[1],
+			'type': punished.type,
+			'exires': punished.expires,
+		};
+		Gold.savePunishments();
+	} else {
+		if (user.locked || Users.ShadowBan.checkBanned(user)) return;
+
+		let ipRange = Gold.getIpRange(ip)[0];
+		let reasons = [];
+		let evader = '';
+		Object.keys(punishments).forEach(offender => {
+			if (punishments[offender].exires < Date.now()) return;
+			if (punishments[offender].useragent === userAgent) {
+				points++;
+				reasons.push(`have the same user agent`);
+				evader = punishments[offender].type + ' user: ' + offender;
+			}
+			if (punishments[offender].iprange && ip.startsWith(punishments[offender].iprange)) {
+				points++;
+				reasons.push(`have the IPv4 class ${punishments[offender].ipclass} range (${ipRange}.*)`);
+				evader = punishments[offender].type + ' user: ' + offender;
+			}
+		});
+		let staff = Rooms('staff');
+		if (points === 2) {
+			Users.ShadowBan.addUser(name);
+			if (staff) staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader}`).update();
+		} else if (points === 1) {
+			if (staff) staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
+		}
+	}
+};
 
 exports.commands = {
 	lockhost: function (target, room, user) {
