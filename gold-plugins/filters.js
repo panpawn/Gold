@@ -200,7 +200,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				evader = punishments[offender].type + ' user: ' + offender;
 			}
 			// this does not count AS a reason, but merely to add to the list of reasons
-			if (points >= 1 && defaultAvatars.includes(user.avatar)) {
+			if (defaultAvatars.includes(user.avatar)) {
 				reasons.push(`have a default avatar`);
 			}
 		});
