@@ -99,7 +99,8 @@ Config.namefilter = function (name, user) {
 	}
 
 	// Hostfilter stuff
-	let ip = user.connections[Object.keys(user.connections).length - 1].ip;
+	let conNum = Object.keys(user.connections).length - 1;
+	let ip = user.connections[conNum].ip;
 	let trusted = trustedHack(nameId);
 
 	Dnsbl.reverse(ip).then(host => {
@@ -121,6 +122,10 @@ Config.namefilter = function (name, user) {
 			}
 		});
 	});
+
+	if (user.connections[conNum].headers && user.connections[conNum].headers['user-agent']) {
+		user.useragent = user.connections[conNum].headers['user-agent'];
+	}
 
 	Gold.evadeMonitor(user, name);
 
@@ -165,7 +170,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 	}
 	let points = 0;
 	let num = Object.keys(user.connections).length - 1;
-	let userAgent = user.connections[num].headers ? user.connections[num].headers['user-agent'] : '';
+	let userAgent = user.useragent ? user.useragent : '';
 	let ip = user.connections[num].ip;
 
 	if (punished) {
