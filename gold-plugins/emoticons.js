@@ -2,7 +2,7 @@
  * This is a chat-plugin for an Emoticons system on PS
  * You will need a line in command-parser.js to actually
  * parse this so that it works.  Also, you will need to
- * add a few lines to the PM command (commands.js).
+ * add a few lines to the PM command (chat.js).
  * Credits: panpawn, jd
  */
 'use strict';
@@ -17,7 +17,7 @@ Gold.emoticons = {
 	chatEmotes: {}, // holds the emoticons, to be merged with json later on
 
 	// handles replacing emoticon messages with the HTML and then PS formats message
-	// this is also used for the PM command (located in commands.js)
+	// this is also used for the PM command (located in chat.js)
 	processEmoticons: function (text) {
 		let patterns = [], metachars = /[[\]{}()*+?.\\|^$\-,&#\s]/g;
 
