@@ -206,7 +206,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				Gold.savePunishments();
 				return;
 			}
-			if (punishments[offender].useragent === userAgent) {
+			if (punishments[offender].useragent === userAgent && punishments[offender].useragent !== '') {
 				points++;
 				reasons.push(`have the same user agent`);
 				evader = punishments[offender].type + ' user: ' + offender;
