@@ -170,7 +170,6 @@ Gold.evadeMonitor = function (user, name, punished) {
 	}
 	let points = 0;
 	let matched = false;
-	let num = Object.keys(user.connections).length - 1;
 	let userAgent = user.useragent ? user.useragent : '';
 	let ip = user.latestIp;
 
