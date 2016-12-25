@@ -172,7 +172,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 	let matched = false;
 	let num = Object.keys(user.connections).length - 1;
 	let userAgent = user.useragent ? user.useragent : '';
-	let ip = user.connections[num].ip;
+	let ip = user.latestIp;
 
 	if (punished) {
 		let tarId = toId(user.name); // since user.userid can be a guest number here...
