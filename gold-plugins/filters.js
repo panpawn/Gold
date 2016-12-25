@@ -161,7 +161,7 @@ function saveHost() {
 
 Gold.evadeMonitor = function (user, name, punished) {
 	let punishments = this.punishments;
-	if (punished && punished.alts) {
+	if (punished && punished.alts) { // handles when user is unlocked
 		punished.alts.forEach(alt => {
 			if (Gold.punishments[toId(alt)]) delete Gold.punishments[toId(alt)];
 		});
@@ -169,20 +169,27 @@ Gold.evadeMonitor = function (user, name, punished) {
 		return;
 	}
 	let points = 0;
+	let matched = false;
 	let num = Object.keys(user.connections).length - 1;
 	let userAgent = user.useragent ? user.useragent : '';
 	let ip = user.connections[num].ip;
 
 	if (punished) {
-		punishments[user.userid] = {
-			'useragent': userAgent,
-			'ip': ip,
-			'iprange': Gold.getIpRange(ip)[0],
-			'ipclass': Gold.getIpRange(ip)[1],
-			'type': punished.type,
-			'exires': punished.expires,
-		};
-		Gold.savePunishments();
+		let tarId = toId(user.name); // since user.userid can be a guest number here...
+		Object.keys(punishments).forEach(punished => {
+			if (punishments[punished].ip === ip) matched = true;
+		});
+		if (!matched && !punishments[tarId]) {
+			punishments[tarId] = {
+				'useragent': userAgent,
+				'ip': ip,
+				'iprange': Gold.getIpRange(ip)[0],
+				'ipclass': Gold.getIpRange(ip)[1],
+				'type': punished.type,
+				'exires': punished.expires,
+			};
+			Gold.savePunishments();
+		}
 	} else {
 		if (user.locked || Users.ShadowBan.checkBanned(user) || trustedHack(name)) return;
 
@@ -193,7 +200,12 @@ Gold.evadeMonitor = function (user, name, punished) {
 		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		Object.keys(punishments).forEach(offender => {
 			if (punishments[offender].ip === ip) return;
-			if (punishments[offender].exires < Date.now()) return;
+			if (reasons.length >= 3) return; // this should never happen
+			if (punishments[offender].exires < Date.now()) {
+				delete punishments[offender];
+				Gold.savePunishments();
+				return;
+			}
 			if (punishments[offender].useragent === userAgent) {
 				points++;
 				reasons.push(`have the same user agent`);
