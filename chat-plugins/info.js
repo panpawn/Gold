@@ -1073,7 +1073,7 @@ exports.commands = {
 			"Pok&eacute;mon Showdown is open source:<br />" +
 			"- Language: JavaScript (Node.js)<br />" +
 			"- <a href=\"https://github.com/panpawn/Pokemon-Showdown/commits/master\">What's new?</a><br />" +
-			"- <a href=\"https://github.com/panpawn/Pokemon-Showdown\">Gold's source code</a><br />" +
+			"- <a href=\"https://github.com/panpawn/Gold-Server\">Gold's source code</a><br />" +
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown-Client\">Main's Client source code</a><br />" +
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown\">Main's Server source code</a><br />" +
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown-Dex\">Main's Dex source code</a>"
