@@ -192,6 +192,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		let alertStaff = false;
 		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		Object.keys(punishments).forEach(offender => {
+			if (punishments[offender].ip === ip) return;
 			if (punishments[offender].exires < Date.now()) return;
 			if (punishments[offender].useragent === userAgent) {
 				points++;
