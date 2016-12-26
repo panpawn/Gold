@@ -147,7 +147,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName} has been added.`);
 				this.logModCommand(`${user.name} added the emoticon: ${emoteName}`);
-				Rooms.get('staff').add(`The emoticon ${emoteName} was added by ${Chat.escapeHTML(user.name)}.`).update();
+				Rooms('staff').add(`The emoticon "${emoteName}" was added by ${ser.name}.`).update();
 				break;
 
 			case 'rem':
@@ -164,7 +164,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName2} has been removed.`);
 				this.logModCommand(`${user.name} removed the emoticon: ${emoteName2}`);
-				Rooms.get('staff').add(`The emoticon ${emoteName2} was removed by ${Chat.escapeHTML(user.name)}.`).update();
+				Rooms('staff').add(`The emoticon "${emoteName2}" was removed by ${user.name}.`).update();
 				break;
 
 			case 'list':
