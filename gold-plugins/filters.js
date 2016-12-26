@@ -173,7 +173,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 	let ip = user.latestIp;
 
 	if (punished) {
-		let tarId = toId(user.name); // since user.userid can be a guest number here...
+		let tarId = toId(name); // since user.userid can be a guest number here...
 		Object.keys(Gold.punishments).forEach(punished => {
 			if (Gold.punishments[punished].ip === ip) matched = true;
 		});
