@@ -123,9 +123,11 @@ Config.namefilter = function (name, user) {
 		});
 	});
 
+	/*
 	if (user.connections[conNum].headers && user.connections[conNum].headers['user-agent']) {
 		user.useragent = user.connections[conNum].headers['user-agent'];
 	}
+	*/
 
 	// Gold.evadeMonitor(user, name);
 
