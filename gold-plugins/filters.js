@@ -127,7 +127,7 @@ Config.namefilter = function (name, user) {
 		user.useragent = user.connections[conNum].headers['user-agent'];
 	}
 
-	Gold.evadeMonitor(user, name);
+	// Gold.evadeMonitor(user, name);
 
 	return name;
 };
