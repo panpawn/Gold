@@ -100,12 +100,11 @@ Gold.emoticons = {
 // commands
 
 function loadEmotes() {
-	try {
-		emotes = fs.readFileSync('config/emotes.json', 'utf8');
-		Object.assign(Gold.emoticons.chatEmotes, JSON.parse(emotes));
-	} catch (e) {
-		Rooms('staff').add('Failure to load emoticons: ' + e.stack).update();
-	}
+	fs.readFile('config/emotes.json', 'utf8', function (err, file) {
+		if (err) return;
+		Gold.emoticons.chatEmotes = JSON.parse(file);
+		emotes = Gold.emoticons.chatEmotes;
+	});
 }
 setTimeout(function () {
 	loadEmotes();
@@ -113,9 +112,11 @@ setTimeout(function () {
 
 function saveEmotes() {
 	try {
-		fs.writeFileSync('config/emotes.json', emotes);
 		Object.assign(Gold.emoticons.chatEmotes, emotes);
-	} catch (e) {}
+		fs.writeFileSync('config/emotes.json', JSON.stringify(emotes));
+	} catch (e) {
+		Rooms('staff').add('Emoticons have failed to save: ' + e.stack).update();
+	}
 }
 
 exports.commands = {
@@ -147,7 +148,7 @@ exports.commands = {
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName} has been added.`);
 				this.logModCommand(`${user.name} added the emoticon: ${emoteName}`);
-				Rooms('staff').add(`The emoticon "${emoteName}" was added by ${ser.name}.`).update();
+				Rooms('staff').add(`The emoticon "${emoteName}" was added by ${user.name}.`).update();
 				break;
 
 			case 'rem':
