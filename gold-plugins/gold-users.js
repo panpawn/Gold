@@ -116,7 +116,8 @@ try {
 			user = toId(user);
 			if (user === 'constructor') return 0;
 			let data = this.checkExisting(user);
-			return data.money;
+			if (data) return data.money;
+			return 0;
 		},
 		moneyCirculating: function () {
 			let data = Object.keys(Gold.userData);
