@@ -248,6 +248,7 @@ let mainCustomColors = {
 // hashColor function
 function hashColor(name) {
 	name = toId(name);
+	if (name === 'constructor') return '';
 	if (customColors[name]) {
 		let customHex = customColors[name].startsWith('#') ? customColors[name] : '#' + customColors[name];
 		return customHex;
