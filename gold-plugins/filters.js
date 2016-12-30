@@ -188,7 +188,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 		if (user.locked || Users.ShadowBan.checkBanned(user) || trustedHack(name)) return;
 
 		let reasons = [];
-		let evader = '', offender = '';
+		let evader = '', offender = '', reason = '';
 		let alertStaff = false;
 		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		let punishedUsers = Object.keys(Gold.punishments);
@@ -202,20 +202,29 @@ Gold.evadeMonitor = function (user, name, punished) {
 				Gold.savePunishments();
 			}
 			if (offender.useragent && offender.useragent === userAgent) {
-				points++;
-				reasons.push(`have the same user agent`);
-				evader = `${offender.type} user: ${punishedUsers[i]}`;
-				alertStaff = true;
+				reason = `have the same user agent`;
+				if (!reasons.includes(reason)) {
+					points++;
+					reasons.push(reason);
+					evader = `${offender.type} user: ${punishedUsers[i]}`;
+					alertStaff = true;
+				}
 			}
 			if (offender.iprange && ip.startsWith(offender.iprange)) {
-				points++;
-				reasons.push(`have the IPv4 class ${offender.ipclass} range (${offender.iprange}.*)`);
-				evader = `${punishments[offender].type} user: ${punishedUsers[i]}`;
+				reason = `have the IPv4 class ${offender.ipclass} range (${offender.iprange}.*)`;
+				if (!reasons.includes(reason)) {
+					points++;
+					reasons.push(reason);
+					evader = `${punishments[offender].type} user: ${punishedUsers[i]}`;
+				}
 			}
 			// this does not count AS a reason (points), but merely to add to the list of reasons
 			if (defaultAvatars.includes(user.avatar)) {
-				reasons.push(`have a default avatar`);
-				points = points + 0.5;
+				reason = `have a default avatar`;
+				if (!reasons.includes(reason)) {
+					reasons.push(reason);
+					points = points + 0.5;
+				}
 			}
 		}
 		let staff = Rooms('staff');
