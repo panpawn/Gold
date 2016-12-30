@@ -271,10 +271,11 @@ try {
 			if (action === 'ADD' && !data.autojoin.includes(room)) {
 				if (!Rooms(room)) return false;
 				data.autojoin.push(room);
+				this.saveData();
 			} else if (action === 'REMOVE' && data.autojoin.includes(room)) {
 				data.autojoin.splice(data.autojoin.indexOf(room), 1);
+				this.saveData();
 			}
-			this.saveData();
 		},
 		getAutoJoin: function (user) {
 			try {
