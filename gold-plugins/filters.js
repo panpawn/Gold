@@ -215,6 +215,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 			// this does not count AS a reason (points), but merely to add to the list of reasons
 			if (defaultAvatars.includes(user.avatar)) {
 				reasons.push(`have a default avatar`);
+				points = points + 0.5;
 			}
 		}
 		let staff = Rooms('staff');
@@ -222,7 +223,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 			if (points >= 2) {
 				Users.ShadowBan.addUser(name);
 				staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`).update();
-			} else if (alertStaff) {
+			} else if (points === 1.5) {
 				staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
 			}
 		}
