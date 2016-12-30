@@ -443,8 +443,9 @@ class BattlePokemon {
 		this.isStalePPTurns = 0;
 		return true;
 	}
-	moveUsed(move) {
+	moveUsed(move, targetLoc) {
 		this.lastMove = this.battle.getMove(move).id;
+		this.lastMoveTargetLoc = targetLoc;
 		this.moveThisTurn = this.lastMove;
 	}
 	gotAttacked(move, damage, source) {
@@ -1521,7 +1522,7 @@ class BattleSide {
 		}
 
 		let move = this.battle.getMove(moveid);
-		let zMove = megaOrZ === 'zmove' ? this.battle.getZMove(move, activePokemon, false, true) : undefined;
+		let zMove = megaOrZ === 'zmove' ? this.battle.getZMove(move, activePokemon) : undefined;
 		if (megaOrZ === 'zmove') {
 			if (!zMove || this.choiceData.zmove) {
 				this.emitCallback('cantz', activePokemon); // TODO: The client shouldn't have sent this request in the first place.
@@ -3999,33 +4000,28 @@ class Battle extends Tools.BattleDex {
 	validTarget(target, source, targetType) {
 		return this.validTargetLoc(this.getTargetLoc(target, source), source, targetType);
 	}
-	getTarget(decision) {
-		let move = this.getMove(decision.zmove || decision.move);
+	getTarget(pokemon, move, targetLoc) {
+		move = this.getMove(move);
 		let target;
 		if ((move.target !== 'randomNormal') &&
-				this.validTargetLoc(decision.targetLoc, decision.pokemon, move.target)) {
-			if (decision.targetLoc > 0) {
-				target = decision.pokemon.side.foe.active[decision.targetLoc - 1];
+				this.validTargetLoc(targetLoc, pokemon, move.target)) {
+			if (targetLoc > 0) {
+				target = pokemon.side.foe.active[targetLoc - 1];
 			} else {
-				target = decision.pokemon.side.active[-decision.targetLoc - 1];
+				target = pokemon.side.active[-targetLoc - 1];
 			}
 			if (target) {
 				if (!target.fainted) {
 					// target exists and is not fainted
 					return target;
-				} else if (target.side === decision.pokemon.side) {
+				} else if (target.side === pokemon.side) {
 					// fainted allied targets don't retarget
 					return false;
 				}
 			}
 			// chosen target not valid, retarget randomly with resolveTarget
 		}
-		if (!decision.targetPosition || !decision.targetSide) {
-			target = this.resolveTarget(decision.pokemon, decision.zmove || decision.move);
-			decision.targetSide = target.side;
-			decision.targetPosition = target.position;
-		}
-		return decision.targetSide.active[decision.targetPosition];
+		return this.resolveTarget(pokemon, move);
 	}
 	resolveTarget(pokemon, move) {
 		// A move was used without a chosen target
@@ -4129,30 +4125,32 @@ class Battle extends Tools.BattleDex {
 		}
 		return false;
 	}
-	resolvePriority(decision) {
-		if (decision) {
-			if (!decision.side && decision.pokemon) decision.side = decision.pokemon.side;
-			if (!decision.choice && decision.move) decision.choice = 'move';
-			if (!decision.priority && decision.priority !== 0) {
-				let priorities = {
-					'beforeTurn': 100,
-					'beforeTurnMove': 99,
-					'switch': 7,
-					'runUnnerve': 7.3,
-					'runSwitch': 7.2,
-					'runPrimal': 7.1,
-					'instaswitch': 101,
-					'megaEvo': 6.9,
-					'residual': -100,
-					'team': 102,
-					'start': 101,
-				};
-				if (decision.choice in priorities) {
-					decision.priority = priorities[decision.choice];
-				}
+	resolvePriority(decision, midTurn) {
+		if (!decision) return;
+
+		if (!decision.side && decision.pokemon) decision.side = decision.pokemon.side;
+		if (!decision.choice && decision.move) decision.choice = 'move';
+		if (!decision.priority && decision.priority !== 0) {
+			let priorities = {
+				'beforeTurn': 100,
+				'beforeTurnMove': 99,
+				'switch': 7,
+				'runUnnerve': 7.3,
+				'runSwitch': 7.2,
+				'runPrimal': 7.1,
+				'instaswitch': 101,
+				'megaEvo': 6.9,
+				'residual': -100,
+				'team': 102,
+				'start': 101,
+			};
+			if (decision.choice in priorities) {
+				decision.priority = priorities[decision.choice];
 			}
+		}
+		if (!midTurn) {
 			if (decision.choice === 'move') {
-				if (this.getMove(decision.move).beforeTurnCallback) {
+				if (!decision.zmove && this.getMove(decision.move).beforeTurnCallback) {
 					this.addQueue({choice: 'beforeTurnMove', pokemon: decision.pokemon, move: decision.move, targetLoc: decision.targetLoc});
 				}
 			} else if (decision.choice === 'switch' || decision.choice === 'instaswitch') {
@@ -4162,37 +4160,36 @@ class Battle extends Tools.BattleDex {
 				decision.pokemon.switchFlag = false;
 				if (!decision.speed && decision.pokemon && decision.pokemon.isActive) decision.speed = decision.pokemon.getDecisionSpeed();
 			}
-
-			let deferPriority = this.gen >= 7 && decision.mega && !decision.pokemon.template.isMega;
-			if (decision.move) {
-				let target;
-
-				if (!decision.targetPosition) {
-					target = this.resolveTarget(decision.pokemon, decision.move);
-					decision.targetSide = target.side;
-					decision.targetPosition = target.position;
-				}
-
-				decision.move = this.getMoveCopy(decision.move);
-				if (!decision.priority && !deferPriority) {
-					let priority = decision.move.priority;
-					if (decision.zmove) {
-						let zMoveName = this.getZMove(decision.move, decision.pokemon, true);
-						let zMove = this.getMove(zMoveName);
-						if (zMove.exists) {
-							priority = zMove.priority;
-						}
-					}
-					priority = this.runEvent('ModifyPriority', decision.pokemon, target, decision.move, priority);
-					decision.priority = priority;
-					// In Gen 6, Quick Guard blocks moves with artificially enhanced priority.
-					if (this.gen > 5) decision.move.priority = priority;
-				}
-			}
-			if (!decision.pokemon && !decision.speed) decision.speed = 1;
-			if (!decision.speed && (decision.choice === 'switch' || decision.choice === 'instaswitch') && decision.target) decision.speed = decision.target.getDecisionSpeed();
-			if (!decision.speed && !deferPriority) decision.speed = decision.pokemon.getDecisionSpeed();
 		}
+
+		let deferPriority = this.gen >= 7 && decision.mega && !decision.pokemon.template.isMega;
+		if (decision.move) {
+			let target;
+
+			if (!decision.targetLoc) {
+				target = this.resolveTarget(decision.pokemon, decision.move);
+				decision.targetLoc = this.getTargetLoc(target, decision.pokemon);
+			}
+
+			decision.move = this.getMoveCopy(decision.move);
+			if (!decision.priority && !deferPriority) {
+				let priority = decision.move.priority;
+				if (decision.zmove) {
+					let zMoveName = this.getZMove(decision.move, decision.pokemon, true);
+					let zMove = this.getMove(zMoveName);
+					if (zMove.exists) {
+						priority = zMove.priority;
+					}
+				}
+				priority = this.runEvent('ModifyPriority', decision.pokemon, target, decision.move, priority);
+				decision.priority = priority;
+				// In Gen 6, Quick Guard blocks moves with artificially enhanced priority.
+				if (this.gen > 5) decision.move.priority = priority;
+			}
+		}
+		if (!decision.pokemon && !decision.speed) decision.speed = 1;
+		if (!decision.speed && (decision.choice === 'switch' || decision.choice === 'instaswitch') && decision.target) decision.speed = decision.target.getDecisionSpeed();
+		if (!decision.speed && !deferPriority) decision.speed = decision.pokemon.getDecisionSpeed();
 	}
 	addQueue(decision) {
 		if (Array.isArray(decision)) {
@@ -4208,7 +4205,7 @@ class Battle extends Tools.BattleDex {
 	sortQueue() {
 		this.queue.sort(Battle.comparePriority);
 	}
-	insertQueue(decision) {
+	insertQueue(decision, midTurn) {
 		if (Array.isArray(decision)) {
 			for (let i = 0; i < decision.length; i++) {
 				this.insertQueue(decision[i]);
@@ -4217,7 +4214,7 @@ class Battle extends Tools.BattleDex {
 		}
 
 		if (decision.pokemon) decision.pokemon.updateSpeed();
-		this.resolvePriority(decision);
+		this.resolvePriority(decision, midTurn);
 		for (let i = 0; i < this.queue.length; i++) {
 			if (Battle.comparePriority(decision, this.queue[i]) < 0) {
 				this.queue.splice(i, 0, decision);
@@ -4325,11 +4322,7 @@ class Battle extends Tools.BattleDex {
 		case 'move':
 			if (!decision.pokemon.isActive) return false;
 			if (decision.pokemon.fainted) return false;
-			if (decision.zmove) {
-				this.runZMove(decision.move, decision.pokemon, this.getTarget(decision), decision.sourceEffect);
-			} else {
-				this.runMove(decision.move, decision.pokemon, this.getTarget(decision), decision.sourceEffect);
-			}
+			this.runMove(decision.move, decision.pokemon, decision.targetLoc, decision.sourceEffect, decision.zmove);
 			break;
 		case 'megaEvo':
 			this.runMegaEvo(decision.pokemon);
@@ -4338,7 +4331,7 @@ class Battle extends Tools.BattleDex {
 			if (!decision.pokemon.isActive) return false;
 			if (decision.pokemon.fainted) return false;
 			this.debug('before turn callback: ' + decision.move.id);
-			let target = this.getTarget(decision);
+			let target = this.getTarget(decision.pokemon, decision.move, decision.targetLoc);
 			if (!target) return false;
 			decision.move.beforeTurnCallback.call(this, decision.pokemon, target);
 			break;
@@ -4505,7 +4498,7 @@ class Battle extends Tools.BattleDex {
 			const moveIndex = this.queue.findIndex(queuedDecision => queuedDecision.pokemon === decision.pokemon && queuedDecision.choice === 'move');
 			if (moveIndex >= 0) {
 				const moveDecision = this.queue.splice(moveIndex, 1)[0];
-				this.insertQueue(moveDecision);
+				this.insertQueue(moveDecision, true);
 			}
 			return false;
 		}
