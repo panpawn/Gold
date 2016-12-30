@@ -279,7 +279,7 @@ class Connection {
 
 		this.ip = ip || '';
 		this.protocol = protocol || '';
-		this.headers = (headers ? JSON.parse(headers) : {});
+		this.headers = headers ? JSON.parse(headers) : {};
 
 		this.autojoin = '';
 	}
@@ -365,6 +365,7 @@ class User {
 		//       wrong. Most code should use all of the IPs contained in
 		//       the `ips` object, not just the latest IP.
 		this.latestIp = connection.ip;
+		this.useragent = connection.headers && connection.headers['user-agent'] ? connection.headers['user-agent'] : '';
 		this.locked = false;
 		this.namelocked = false;
 		this.prevNames = Object.create(null);
