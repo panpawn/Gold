@@ -215,7 +215,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				if (!reasons.includes(reason)) {
 					points++;
 					reasons.push(reason);
-					evader = `${punishments[offender].type} user: ${punishedUsers[i]}`;
+					evader = `${offender.type} user: ${punishedUsers[i]}`;
 				}
 			}
 			// this does not count AS a reason (points), but merely to add to the list of reasons
