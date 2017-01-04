@@ -235,7 +235,7 @@ exports.Formats = [
 
 	{
 		section: "OM of the Month",
-		column: 2,
+		column: 1,
 	},
 	{
 		name: "[Gen 7] STABmons",
@@ -274,7 +274,7 @@ exports.Formats = [
 	},
 	{
 		section: "Other Metagames",
-		column: 2,
+		column: 1,
 	},
 	{
 		name: "[Gen 7] Balanced Hackmons (suspect test)",
@@ -530,7 +530,7 @@ exports.Formats = [
 
 	{
 		section: "RoA Spotlight",
-		column: 3,
+		column: 2,
 	},
 	{
 		name: "[Gen 5] Anything Goes",
@@ -545,7 +545,7 @@ exports.Formats = [
 
 	{
 		section: "ORAS Singles",
-		column: 3,
+		column: 2,
 	},
 	{
 		name: "OU",
@@ -835,7 +835,7 @@ exports.Formats = [
 
 	{
 		section: "BW2 Singles",
-		column: 4,
+		column: 3,
 	},
 	{
 		name: "[Gen 5] OU",
@@ -942,7 +942,7 @@ exports.Formats = [
 
 	{
 		section: 'BW2 Doubles',
-		column: 4,
+		column: 3,
 	},
 	{
 		name: "[Gen 5] Doubles OU",
@@ -992,7 +992,7 @@ exports.Formats = [
 
 	{
 		section: "Past Generations",
-		column: 4,
+		column: 3,
 	},
 	{
 		name: "[Gen 4] OU",
@@ -1307,8 +1307,14 @@ exports.Formats = [
 		ruleset: ['Team Preview', 'Pokemon', 'Standard'],
 		banlist: ['Stockpile', 'Amnesia', 'Power-Up Punch'],
 	},
+	// Pokemon Perfect Tiers
+	///////////////////////////////////////////////////////////////////
 	{
-		name: "[Gen 7] SuMo 1U",
+		section: "Pokémon Perfect",
+		column: 4,
+	},
+	{
+		name: "[Gen 7] 1U",
 		desc: [
 			`Introducing Pokemon Perfect's very own SM 1U!`,
 			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/introducing-1u.4125/">More details</a>`,
@@ -1317,5 +1323,77 @@ exports.Formats = [
 		mod: 'gen7',
 		ruleset: ['Team Preview', 'Sleep Clause', 'Pokemon', 'Standard', 'Baton Pass Clause', 'Mega Rayquaza Clause'],
 		banlist: ['Moody', 'Shadow Tag', 'Double Team', 'Fissure', 'Guillotine', 'Horn Drill', 'Minimize', 'Sheer Cold', 'Swagger', ' Red Orb', 'Blue Orb', 'Gengarite', 'Salamencite'],
+	},
+	{
+		name: "[Gen 1] 2U",
+		desc: [
+			`Pokemon Perfect's RBY 2U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/pokemon-perfect-main-tiers.3384/">Tier List</a>`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/rby-2u-viability-rankings.3473/">Viability Rankings</a>`,
+		],
+		mod: 'gen1',
+		ruleset: ['Species Clause', 'Sleep Clause', 'Pokemon', 'Standard', 'Freeze Clause'],
+		banlist: ['Dig', 'Double Team', 'Fissure', 'Fly', 'Horn Drill', 'Alakazam', 'Articuno', 'Chansey', 'Cloyster', 'Dragonite', 'Exeggutor', 'Gengar', 'Golem', 'Jolteon', 'Jynx', 'Lapras', 'Moltres', 'Slowbro', 'Snorlax', 'Starmie', 'Tauros', 'Zapdos'],
+	},
+	{
+		name: "[Gen 1] 3U",
+		desc: [
+			`Pokemon Perfect's RBY 3U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/pokemon-perfect-main-tiers.3384/">Tier List</a>`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/viability-rankings.3626/">Viability Rankings</a>`,
+		],
+		mod: 'gen1',
+		ruleset: ['Species Clause', 'Sleep Clause', 'Pokemon', 'Standard', 'Freeze Clause'],
+		banlist: ['Dig', 'Double Team', 'Fissure', 'Fly', 'Horn Drill', 'Alakazam', 'Chansey', 'Cloyster', 'Dragonite', 'Exeggutor', 'Gengar', 'Golem', 'Jolteon', 'Jynx', 'Lapras', 'Slowbro', 'Snorlax', 'Starmie', 'Tauros', 'Zapdos', 'Articuno', 'Moltres', 'Dodrio', 'Gyarados', 'Haunter', 'Hypno', 'Kadabra', 'Kangaskhan', 'Persian', 'Poliwrath', 'Raichu', 'Raticate', 'Rhydon', 'Tentacruel', 'Victreebel'],
+	},
+	{
+		name: "[Gen 1] 4U",
+		desc: [
+			`Pokemon Perfect's RBY 4U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/pokemon-perfect-main-tiers.3384/">Tier List</a>`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/viability-rankings.3718/">Viability Rankings</a>`,
+		],
+		mod: 'gen1',
+		ruleset: ['Species Clause', 'Sleep Clause', 'Pokemon', 'Standard', 'Freeze Clause'],
+		banlist: ['Dig', 'Double Team', 'Fissure', 'Fly', 'Horn Drill', 'Alakazam', 'Chansey', 'Cloyster', 'Dragonite', 'Exeggutor', 'Gengar', 'Golem', 'Jolteon', 'Jynx', 'Lapras', 'Slowbro', 'Snorlax', 'Starmie', 'Tauros', 'Zapdos', 'Articuno', 'Moltres', 'Dodrio', 'Gyarados', 'Haunter', 'Hypno', 'Kadabra', 'Kangaskhan', 'Persian', 'Poliwrath', 'Raichu', 'Raticate', 'Rhydon', 'Tentacruel', 'Victreebel', 'Aerodactyl', 'Charizard', 'Clefable', 'Dewgong', 'Dugtrio', 'Electabuzz', 'Exeggcute', 'Fearow', 'Golduck', 'Kingler', 'Mr. Mime', 'Pinsir', 'Poliwhirl', 'Sandslash', 'Vaporeon', 'Venusaur', 'Wigglytuff'],
+	},
+	{
+		name: "[Gen 1] 5U",
+		desc: [
+			`Pokemon Perfect's RBY 5U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/pokemon-perfect-main-tiers.3384/">Tier List</a>`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/viability-rankings.3859/">Viability Rankings</a>`,
+		],
+		mod: 'gen1',
+		ruleset: ['Species Clause', 'Sleep Clause', 'Pokemon', 'Standard', 'Freeze Clause'],
+		banlist: ['Dig', 'Double Team', 'Fissure', 'Fly', 'Horn Drill', 'Alakazam', 'Chansey', 'Cloyster', 'Dragonite', 'Exeggutor', 'Gengar', 'Golem', 'Jolteon', 'Jynx', 'Lapras', 'Slowbro', 'Snorlax', 'Starmie', 'Tauros', 'Zapdos', 'Articuno', 'Moltres', 'Dodrio', 'Gyarados', 'Haunter', 'Hypno', 'Kadabra', 'Kangaskhan', 'Persian', 'Poliwrath', 'Raichu', 'Raticate', 'Rhydon', 'Tentacruel', 'Victreebel', 'Aerodactyl', 'Charizard', 'Clefable', 'Dewgong', 'Dugtrio', 'Electabuzz', 'Exeggcute', 'Fearow', 'Golduck', 'Kingler', 'Mr. Mime', 'Pinsir', 'Poliwhirl', 'Sandslash', 'Vaporeon', 'Venusaur', 'Wigglytuff', 'Abra', 'Arcanine', 'Blastoise', 'Nidoking', 'Nidoqueen', 'Omastar', 'Porygon', 'Rapidash', 'Scyther', 'Slowpoke', 'Staryu', 'Tangela', 'Venomoth'],
+	},
+	{
+		name: "[Gen 3] 2U",
+		desc: [
+			`Pokemon Perfect's ADV 2U!`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/pokemon-perfect-main-tiers.3384/">Tier List</a>`,
+			`<a href="http://www.pokemonperfect.com/forums/index.php?threads/viability-rankings.3527/">Viability Rankings</a>`,
+		],
+		onValidateTeam: function (team) {
+			let bpCount = 0;
+			for (let i = 0; i < team.length; i++) {
+				if (team[i].moves.includes('Baton Pass')) bpCount++;
+			}
+			if (bpCount > 3) return ['It is Illegal to have Baton Pass on the movesets of more than 3 Pokemon per team.'];
+		},
+		onValidateSet: function (set) {
+			let moves = set.moves;
+			if (moves && moves.length >= 1) {
+				if (moves.includes('Baton Pass') && moves.includes('Belly Drum')) {
+					return ['Baton Pass + Belly Drum is an Illegal combination of moves on a Pokemon\'s moveset'];
+				} else if (moves.includes('Ingrain') && moves.includes('Baton Pass')) {
+					return ['Baton Pass + Ingrain is an Illegal combination of moves on a Pokemon\'s moveset'];
+				}
+			}
+		},
+		mod: 'gen3',
+		ruleset: ['Species Clause', 'Sleep Clause', 'Pokemon', 'Standard', 'Freeze Clause'],
+		banlist: ['Double Team', 'Fissure', 'Guillotine', 'Horn Drill', 'Minimize', 'Sheer Cold', 'Aerodactyl', 'Alakazam', 'Blissey', 'Celebi', 'Claydol', 'Dugtrio', 'Espeon', 'Flygon', 'Forretress', 'Gengar', 'Gyarados', 'Heracross', 'Jirachi', 'Jolteon', 'Magneton', 'Medicham', 'Metagross', 'Milotic', 'Porygon2', 'Raikou', 'Regice', 'Salamence', 'Skarmory', 'Slaking', 'Snorlax', 'Starmie', 'Suicune', 'Swampert', 'Tyranitar', 'Zapdos'],
 	},
 ];
