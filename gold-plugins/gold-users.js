@@ -279,6 +279,8 @@ try {
 		},
 		getAutoJoin: function (user) {
 			try {
+				user = toId(user);
+				if (user.startsWith('guest')) return false;
 				let data = this.checkExisting(user);
 				if (data.autojoin && data.autojoin.length > 0) {
 					return data.autojoin;
