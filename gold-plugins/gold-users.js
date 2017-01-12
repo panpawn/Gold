@@ -428,7 +428,7 @@ try {
 
 			if (newsDis.length > 0) {
 				newsDis = newsDis.join('<hr>');
-				return Users(user).send(`|pm| Gold News|${Users(user).getIdentity()}|/raw ${newsDis}`);
+				return Users(user).send(`|pm| Gold Server News|${Users(user).getIdentity()}|/raw ${newsDis}`);
 			}
 		},
 		whois: function (user, online) {
