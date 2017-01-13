@@ -650,6 +650,12 @@ class CommandContext {
 
 			if (!this.checkSlowchat(room, user) && !user.can('mute', null, room)) {
 				this.errorReply("This room has slow-chat enabled. You can only talk once every " + room.slowchat + " seconds.");
+			if (!this.checkBanwords(room, user.name) && !user.can('mute', null, room)) {
+				this.errorReply(`Your username contains a phrase banned by this room.`);
+				return false;
+			}
+			if (!this.checkBanwords(room, message) && !user.can('mute', null, room)) {
+				this.errorReply("Your message contained banned words.");
 				return false;
 			}
 

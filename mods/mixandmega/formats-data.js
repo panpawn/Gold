@@ -21,9 +21,17 @@ exports.BattleFormatsData = {
 		inherit: true,
 		tier: "OU",
 	},
+	genesect: {
+		inherit: true,
+		tier: "OU",
+	},
 	landorus: {
 		inherit: true,
 		tier: "OU",
+	},
+	regigigas: {
+		inherit: true,
+		tier: "Uber",
 	},
 	slaking: {
 		inherit: true,
