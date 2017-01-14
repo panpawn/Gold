@@ -173,6 +173,7 @@ try {
 		 *******************/
 		hasVip: function (user) {
 			user = toId(user);
+			if (user.startsWith('guest')) return [];
 			let data = this.checkExisting(user);
 			if (!data.badges) data.badges = [];
 			let vip = data.badges.includes('vip');
