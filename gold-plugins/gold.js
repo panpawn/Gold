@@ -21,8 +21,6 @@ let regdateCache = {};
 let udCache = {};
 let defCache = {};
 
-let baseDeclare = require('./chat-commands').commands.declare;
-
 fs.createWriteStream('badges.txt', {
 	'flags': 'a',
 });
@@ -974,7 +972,7 @@ exports.commands = {
 					if (data['data'] && data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Chat.escapeHTML(data['data']['currentSong'].name);
 				}
 				this.sendReplyBox('Join our dubtrack.fm room <a href="https://www.dubtrack.fm/join/goldenrod-radio-tower">here!</a>' + nowPlaying);
-				if (room) room.update();
+				room.update();
 			});
 		});
 	},
@@ -1713,12 +1711,6 @@ exports.commands = {
 		"/giveaway end - Ends a current giveaway. Requires *, &, ~",
 		"/giveaway cancel - Forcefully cancels a current giveaway. Requires: *, &, ~",
 	],
-	declare: function (target, room, user) {
-		baseDeclare.apply(this, arguments);
-		if (user.can('declare', null, room)) {
-			
-		}
-	}
 };
 
 function loadRegdateCache() {
