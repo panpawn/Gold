@@ -972,7 +972,7 @@ exports.commands = {
 					if (data['data'] && data['data']['currentSong']) nowPlaying = "<br /><b>Now Playing:</b> " + Chat.escapeHTML(data['data']['currentSong'].name);
 				}
 				this.sendReplyBox('Join our dubtrack.fm room <a href="https://www.dubtrack.fm/join/goldenrod-radio-tower">here!</a>' + nowPlaying);
-				room.update();
+				if (room) room.update();
 			});
 		});
 	},
