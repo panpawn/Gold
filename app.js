@@ -204,6 +204,8 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 
 //global.tour = require('./tour.js').tour();
 
+require('./github'); // GitHub alerts
+
 /*********************************************************
  * Start up the REPL server
  *********************************************************/
