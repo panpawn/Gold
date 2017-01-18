@@ -180,7 +180,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 				'iprange': Gold.getIpRange(ip)[0],
 				'ipclass': Gold.getIpRange(ip)[1],
 				'type': punished.type,
-				'exires': punished.expires,
+				'expires': punished.expires,
 			};
 			Gold.savePunishments();
 		}
@@ -197,7 +197,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 			offender = Gold.punishments[punishedUsers[i]];
 			if (offender.ip === ip) break;
 			if (reasons.length >= 3) break; // this should never happen
-			if (offender.exires < Date.now()) {
+			if (offender.expires < Date.now()) {
 				delete Gold.punishments[punishedUsers[i]];
 				Gold.savePunishments();
 			}
