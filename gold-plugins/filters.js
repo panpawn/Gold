@@ -46,10 +46,10 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			if (user.locked) return false;
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Said a banned word: " + bannedMessages[x]);
 			user.popup('You have been automatically locked for sending a message containing a banned word.');
-			Monitor.log('[PornMonitor] ' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ was automatically locked (and shadow banned) for trying to say "' + message + '"');
+			Monitor.log('[PornMonitor] LOCKED/SHADOWBANNED: ' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ for trying to say "' + message + '"');
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server (' +
 			bannedMessages[x] + ') (' + connection.ip + ')\n');
-			Gold.pmUpperStaff(user.name + ' has been automatically locked for sending a message containing a banned word' +
+			Gold.pmUpperStaff(user.name + ' has been automatically locked/shadowbanned for sending a message containing a banned word' +
 			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
 			Users.ShadowBan.addUser(user);
 		}
@@ -64,9 +64,24 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			Users.ShadowBan.addUser(user);
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Advertising) (' + connection.ip + ')\n');
 			Gold.pmUpperStaff(user.name + " has been sbanned for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
-			Monitor.log("[AdvMonitor] " + user.name + " has been sbanned for attempting to advertise" + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message);
+			Monitor.log("[AdvMonitor] SHADOWBANNED: " + user.name + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message);
 		}
 	}
+
+	if (Config.autoSban && !user.can('hotpatch')) {
+		let autoSban = '';
+		Config.autoSban.forEach(phrase => {
+			if (message.includes(phrase)) autoSban = phrase;
+		});
+		if (autoSban !== '') {
+			Users.ShadowBan.addUser(user);
+			let msg = (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message;
+			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Secret hidden phrase) (' + connection.ip + ')\n');
+			Gold.pmUpperStaff(user.name + " has been sbanned for triggering autosban" + msg, "~Server");
+			Monitor.log(`[TextMonitor] SHADOWBANNED: ${user.name}: ${msg}`);
+		}
+	}
+
 	return message;
 };
 Config.chatfilter = exports.chatfilter;
