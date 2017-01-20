@@ -75,7 +75,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		});
 		if (autoSban !== '') {
 			Users.ShadowBan.addUser(user);
-			let msg = (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message;
+			let msg = (room ? " **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message;
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Secret hidden phrase) (' + connection.ip + ')\n');
 			Gold.pmUpperStaff(user.name + " has been sbanned for triggering autosban" + msg, "~Server");
 			Monitor.log(`[TextMonitor] SHADOWBANNED: ${user.name}: ${msg}`);
