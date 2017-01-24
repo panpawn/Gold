@@ -247,9 +247,12 @@ Gold.evadeMonitor = function (user, name, punished) {
 			if (points >= 2) {
 				Users.ShadowBan.addUser(name);
 				staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`).update();
+			}
+			/*
 			} else if (points === 1.5) {
 				staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
 			}
+			*/
 		}
 	}
 };
