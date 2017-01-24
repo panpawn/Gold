@@ -25,7 +25,6 @@ exports.commands = {
 		if (!message || message.length < 1) return this.errorReply("Tell messages must be at least one character.");
 		if (Gold.userData[targetUser] && Gold.userData[targetUser].tells && Object.keys(Gold.userData[targetUser].tells).length >= MAX_TELLS_IN_QUEUE && !user.can('hotpatch')) return this.errorReply("This user has too many tells queued, try again later.");
 		Gold.createTell(user.name, targetUser, message); // function saves when tell is created automatically
-		//createTell(user.name, targetUser, message); // function saves when tell is created automatically
 		return this.sendReply(sentReply);
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
