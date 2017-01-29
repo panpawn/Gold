@@ -232,8 +232,10 @@ class QuestionGiveaway extends Giveaway {
 		if (!this.answered[user.userid]) this.answered[user.userid] = 0;
 		if (this.answered[user.userid] >= 3) return user.sendTo(this.room, "You have already guessed three times. You cannot guess anymore in this giveaway.");
 
+		let sanitized = toId(guess);
+
 		for (let i = 0; i < this.answers.length; i++) {
-			if (toId(this.answers[i]) === toId(guess)) {
+			if (toId(this.answers[i]) === sanitized) {
 				this.winner = user;
 				this.clearTimer();
 				return this.end();
@@ -286,8 +288,12 @@ class QuestionGiveaway extends Giveaway {
 		delete this.room.giveaway;
 	}
 
+	static sanitize(str) {
+		return str.toLowerCase().replace(/[^a-z0-9 .-]+/ig, "").trim();
+	}
+
 	static sanitizeAnswers(answers) {
-		return answers.map(val => val.replace(/[^a-z0-9 .-]+/ig, "").trim()).filter((val, index, array) => toId(val).length && !array.includes(val));
+		return answers.map(val => QuestionGiveaway.sanitize(val)).filter((val, index, array) => toId(val).length && array.indexOf(val) === index);
 	}
 }
 
@@ -398,7 +404,7 @@ let commands = {
 		let [giver, ot, tid, prize, question, ...answers] = target.split(target.includes('|') ? '|' : ',').map(param => param.trim());
 		if (!(giver && ot && tid && prize && question && answers.length)) return this.errorReply("Invalid arguments specified - /question giver, ot, tid, prize, question, answer(s)");
 		tid = toId(tid);
-		if (!parseInt(tid) && tid.length !== 6) return this.errorReply("Invalid TID");
+		if (!parseInt(tid) || tid.length < 5 || tid.length > 6) return this.errorReply("Invalid TID");
 		let targetUser = Users(giver);
 		if (!targetUser || !targetUser.connected) return this.errorReply(`User '${giver}' is not online.`);
 		if (!this.can('warn', null, room) && !(this.can('broadcast', null, room) && user === targetUser)) return this.errorReply("Permission denied.");
@@ -447,9 +453,9 @@ let commands = {
 		if (room.giveaway) return this.errorReply("There is already a giveaway going on!");
 
 		let [giver, ot, tid, prize, winners] = target.split(target.includes('|') ? '|' : ',').map(param => param.trim());
-		if (!(giver && ot && tid && prize)) return this.errorReply("Invalid arguments specified - /question giver, ot, tid, prize, question, answer(s)");
+		if (!(giver && ot && tid && prize)) return this.errorReply("Invalid arguments specified - /lottery giver, ot, tid, prize, winners");
 		tid = toId(tid);
-		if (!parseInt(tid) && tid.length !== 6) return this.errorReply("Invalid TID");
+		if (!parseInt(tid) || tid.length < 5 || tid.length > 6) return this.errorReply("Invalid TID");
 		let targetUser = Users(giver);
 		if (!targetUser || !targetUser.connected) return this.errorReply(`User '${giver}' is not online.`);
 		if (!this.can('warn', null, room) && !(this.can('broadcast', null, room) && user === targetUser)) return this.errorReply("Permission denied.");
@@ -558,7 +564,7 @@ let commands = {
 		case 'staff':
 			if (!this.can('warn', null, room)) return;
 			reply = '<strong>Staff commands:</strong><br />' +
-			        '- question or qg <em>User | OT | TID | Prize | Question | Answer[,Answer2,Answer3]</em> - Start a new question giveaway (voices can only host for themselves, staff can for all users) (Requires: + % @ * # & ~)<br />' +
+			        '- question or qg <em>User | OT | TID | Prize | Question | Answer[ | Answer2 | Answer3]</em> - Start a new question giveaway (voices can only host for themselves, staff can for all users) (Requires: + % @ * # & ~)<br />' +
 			        '- lottery or lg <em>User | OT | TID | Prize[| Number of Winners]</em> - Starts a lottery giveaway (voices can only host for themselves, staff can for all users) (Requires: + % @ * # & ~)<br />' +
 			        '- changequestion - Changes the question of a question giveaway (Requires: giveaway host)<br />' +
 			        '- changeanswer - Changes the answer of a question giveaway (Requires: giveaway host)<br />' +
