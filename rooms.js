@@ -710,14 +710,6 @@ class GlobalRoom {
 				connection.autojoins = '';
 			}
 		}
-		for (let i = 0; i < user.connections.length; i++) {
-			connection = user.connections[i];
-			if (Gold.getAutoJoin(user.userid)) {
-				Gold.getAutoJoin(user.userid).forEach(tarRoom => {
-					user.tryJoinRoom(tarRoom, connection);
-				});
-			}
-		}
 	}
 	onConnect(user, connection) {
 		let initdata = '|updateuser|' + user.name + '|' + (user.named ? '1' : '0') + '|' + user.avatar + '\n';

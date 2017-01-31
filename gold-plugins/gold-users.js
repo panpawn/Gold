@@ -58,7 +58,6 @@ try {
 				tells: Object.create(null),
 				friends: [],
 				badges: [],
-				autojoin: [],
 				tellNum: 0,
 				money: 0,
 				lastSeen: 0,
@@ -261,37 +260,6 @@ try {
 			return buff.join(" ");
 		},
 
-		/********************
-		 * Auto join Magic  *
-		 *******************/
-		autoJoin: function (user, room, action) {
-			let data = this.checkExisting(user);
-			if (!data.autojoin) data.autojoin = [];
-			if (room.startsWith('groupchat-') || room.startsWith('battle-')) return false;
-
-			if (action === 'ADD' && !data.autojoin.includes(room)) {
-				if (!Rooms(room)) return false;
-				data.autojoin.push(room);
-				this.saveData();
-			} else if (action === 'REMOVE' && data.autojoin.includes(room)) {
-				data.autojoin.splice(data.autojoin.indexOf(room), 1);
-				this.saveData();
-			}
-		},
-		getAutoJoin: function (user) {
-			try {
-				user = toId(user);
-				if (user.startsWith('guest')) return false;
-				let data = this.checkExisting(user);
-				if (data.autojoin && data.autojoin.length > 0) {
-					return data.autojoin;
-				}
-				return false;
-			} catch (e) {
-				this.logCrash(e.stack, 'Gold#getAutoJoin on user: ' + user);
-				return false;
-			}
-		},
 		/*******************
 		 * Misc. Functions *
 		 *******************/

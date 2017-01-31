@@ -1138,7 +1138,6 @@ class User {
 				return null;
 			} else {
 				connection.sendTo(roomid, `|noinit|nonexistent|The room "${roomid}" does not exist.`);
-				Gold.autoJoin(this.userid, roomid, 'REMOVE');
 				return false;
 			}
 		}
@@ -1163,7 +1162,6 @@ class User {
 
 		let joinResult = this.joinRoom(room, connection);
 		if (!joinResult) {
-			Gold.autoJoin(this.userid, room.id, 'REMOVE');
 			if (joinResult === null) {
 				connection.sendTo(roomid, `|noinit|joinfailed|You are banned from the room "${roomid}".`);
 				return false;
@@ -1201,9 +1199,6 @@ class User {
 			}
 			connection.joinRoom(room);
 			room.onConnect(this, connection);
-		}
-		if (this.named && this.registered && room.type === 'chat') {
-			Gold.autoJoin(this.userid, room.id, 'ADD');
 		}
 		return true;
 	}
