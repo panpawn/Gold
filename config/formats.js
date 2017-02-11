@@ -1232,15 +1232,15 @@ exports.Formats = [
 		column: 4,
 	},
 	{
-		name: "Gold Battle",
-		desc: ["&bullet; Only Gold Pokemon are allowed!  Do <code>/goldbattle</code> to see the list."],
+		name: "[Gen 7] Gold Battle",
+		desc: ["&bullet; Only Gold Pokemon are allowed!"],
 
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.color !== 'Yellow') return [set.species + " is not a yellow / gold Pokémon."];
 			if (set.shiny) return [set.species + " is not allowed to be shiny... This is called Gold Battle, duh."];
 		},
-
+		mod: 'gen7',
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard'],
 	},
 	{
