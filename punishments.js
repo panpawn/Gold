@@ -456,6 +456,9 @@ Punishments.unpunish = function (id, punishType) {
 	if (success) {
 		Punishments.savePunishments();
 	}
+
+	if (punishType === 'BAN' && success) Gold.evadeMonitor(null, null, {alts: success});
+
 	return success;
 };
 
@@ -576,6 +579,8 @@ Punishments.ban = function (user, expireTime, id, ...reason) {
 		curUser.locked = id;
 		curUser.disconnectAll();
 	}
+
+	Gold.evadeMonitor(user, null, {type: 'globally banned', expires: expireTime});
 };
 /**
  * @param {string} name
