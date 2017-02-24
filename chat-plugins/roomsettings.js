@@ -189,7 +189,7 @@ exports.commands = {
 			room.modchat = 'autoconfirmed';
 			break;
 		case 'player':
-			target = '\u2605';
+			target = '\u2606';
 			/* falls through */
 		default: {
 			if (!Config.groups[target]) {
@@ -206,7 +206,8 @@ exports.commands = {
 			}
 			room.modchat = target;
 			break;
-		}}
+		}
+		}
 		if (currentModchat === room.modchat) {
 			return this.errorReply("Modchat is already set to " + currentModchat + ".");
 		}
