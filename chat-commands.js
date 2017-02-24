@@ -1726,7 +1726,6 @@ exports.commands = {
 	},
 	globalbanhelp: ["/globalban OR /gban [username], [reason] - Kick user from all rooms and ban user's IP address with reason. Requires: @ * & ~"],
 
-	unban: 'unglobalunban',
 	globalunban: 'ungloalban',
 	unglobalban: function (target, room, user) {
 		if (!target) return this.parse('/help unglobalban');
