@@ -1377,9 +1377,6 @@ exports.commands = {
 			return this.errorReply("The room '" + target + "' does not exist.");
 		}
 		user.leaveRoom(targetRoom, connection);
-		if (user.named && user.registered) {
-			Gold.autoJoin(user.userid, (targetRoom ? targetRoom.id : room.id), 'REMOVE');
-		}
 	},
 
 
