@@ -1266,11 +1266,9 @@ exports.commands = {
 		connection.popup(buffer.join("\n\n"));
 	},
 
-	rb: 'ban',
-	roomban: 'ban',
-	b: 'ban',
-	ban: function (target, room, user, connection) {
-		if (!target) return this.parse('/help ban');
+	rb: 'roomban',
+	roomban: function (target, room, user, connection) {
+		if (!target) return this.parse('/help roomban');
 		if (!this.canTalk()) return;
 
 		target = this.splitTarget(target);
@@ -1321,7 +1319,7 @@ exports.commands = {
 		Punishments.roomBan(room, targetUser, null, null, target);
 		return true;
 	},
-	banhelp: ["/roomban [username], [reason] - Bans the user from the room you are in. Requires: @ # & ~"],
+	roombanhelp: ["/roomban [username], [reason] - Bans the user from the room you are in. Requires: @ # & ~"],
 
 	unroomban: 'unban',
 	roomunban: 'unban',
