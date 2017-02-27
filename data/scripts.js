@@ -145,7 +145,7 @@ exports.BattleScripts = {
 		let movename = move.name;
 		if (move.id === 'hiddenpower') movename = 'Hidden Power';
 		if (sourceEffect) attrs += '|[from]' + this.getEffect(sourceEffect);
-		if (move.isZ === true) {
+		if (zMove && move.isZ === true) {
 			attrs = '|[anim]' + movename + attrs;
 			movename = 'Z-' + movename;
 		}
@@ -775,7 +775,7 @@ exports.BattleScripts = {
 			if (move.type === item.zMoveType) {
 				if (move.category === "Status") {
 					return move.name;
-				} else {
+				} else if (move.zMovePower) {
 					return this.zMoveTable[move.type];
 				}
 			}
@@ -932,12 +932,15 @@ exports.BattleScripts = {
 		const format = this.getFormat();
 		const teamGenerator = typeof format.team === 'string' && format.team.startsWith('random') ? format.team + 'Team' : '';
 		if (!teamGenerator && team) return team;
-		// Reinitialize the RNG seed to create random teams.
-		const originalPrng = this.prng.clone();
+
+		// Teams are generated each one with a shiny new PRNG to prevent
+		// information leaks that would empower brute-force attacks.
+		const originalPrng = this.prng;
 		this.prng = new PRNG();
+		this.prngSeed.push(...this.prng.startingSeed);
 		team = this[teamGenerator || 'randomTeam'](side);
-		// Restore the default seed
-		this.seed = originalPrng;
+		this.prng = originalPrng;
+
 		return team;
 	},
 	randomCCTeam: function (side) {
@@ -2277,18 +2280,15 @@ exports.BattleScripts = {
 			AG: 71,
 		};
 		let customScale = {
-			// Between OU and Uber
-			// Blaziken: 74, 'Blaziken-Mega': 74, 'Lucario-Mega': 74,
-
-			// Banned Ability
-			// Gothitelle: 74, Wobbuffet: 74,
+			// Banned Abilities
+			Gothitelle: 76, Politoed: 76, Wobbuffet: 76,
 
 			// Holistic judgement
 			Unown: 100,
 		};
 		let tier = template.tier;
-		if (tier.includes('Unreleased') && template.battleOnly) {
-			tier = baseTemplate.tier;
+		if (tier.includes('Unreleased') && baseTemplate.tier === 'Uber') {
+			tier = 'Uber';
 		}
 		if (tier.charAt(0) === '(') {
 			tier = tier.slice(1, -1);
@@ -2296,6 +2296,9 @@ exports.BattleScripts = {
 		let level = levelScale[tier] || 75;
 		if (customScale[template.name]) level = customScale[template.name];
 
+		// Custom level based on moveset
+		if (ability === 'Power Construct') level = 73;
+		if (hasMove['batonpass'] && level < 75) level = 75;
 		// if (template.name === 'Slurpuff' && !counter.setupType) level = 81;
 		// if (template.name === 'Xerneas' && hasMove['geomancy']) level = 71;
 
@@ -3411,12 +3414,11 @@ exports.BattleScripts = {
 		if (!depth) depth = 0;
 		let forceResult = (depth >= 4);
 
+		// The teams generated depend on the tier choice in such a way that
+		// no exploitable information is leaked from rolling the tier in getTeam(p1).
 		let availableTiers = ['Uber', 'OU', 'UU', 'RU', 'NU', 'PU'];
-		const originalPrng = this.prng.clone();
-		this.prng = originalPrng.clone();
-		const chosenTier = this.factoryTier || availableTiers[this.random(availableTiers.length)];
-		if (!this.factoryTier) this.factoryTier = chosenTier;
-		this.prng = originalPrng;
+		if (!this.factoryTier) this.factoryTier = availableTiers[this.random(availableTiers.length)];
+		const chosenTier = this.factoryTier;
 
 		let pokemon = [];
 

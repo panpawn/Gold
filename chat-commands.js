@@ -478,20 +478,18 @@ exports.commands = {
 		if (!this.can('addhtml', null, room)) return false;
 		if (!target) return this.parse("/help pminfobox");
 
-		target = this.canHTML(target);
+		target = this.canHTML(this.splitTarget(target));
 		if (!target) return;
-
-		target = this.splitTarget(target);
 		let targetUser = this.targetUser;
 
-		if (!targetUser || !targetUser.connected) return this.errorReply("User " + targetUser + " is not currently online.");
+		if (!targetUser || !targetUser.connected) return this.errorReply(`User ${this.targetUsername} is not currently online.`);
 		if (!(targetUser in room.users) && !user.can('addhtml')) return this.errorReply("You do not have permission to use this command to users who are not in this room.");
-		if (targetUser.ignorePMs) return this.errorReply("This user is currently ignoring PMs.");
-		if (targetUser.locked) return this.errorReply("This user is currently locked, so you cannot send them a pminfobox.");
+		if (targetUser.ignorePMs && targetUser.ignorePMs !== user.group && !user.can('lock')) return this.errorReply("This user is currently ignoring PMs.");
+		if (targetUser.locked && !user.can('lock')) return this.errorReply("This user is currently locked, so you cannot send them a pminfobox.");
 
 		// Apply the infobox to the message
-		target = '/raw <div class="infobox">' + target + '</div>';
-		let message = '|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target;
+		target = `/raw <div class="infobox">${target}</div>`;
+		let message = `|pm|${user.getIdentity()}|${targetUser.getIdentity()}|${target}`;
 
 		user.send(message);
 		if (targetUser !== user) targetUser.send(message);
@@ -2371,8 +2369,8 @@ exports.commands = {
 	showblacklishelp: ["/showblacklist OR /showbl - show a list of blacklisted users in the room"],
 
 	markshared: function (target, room, user) {
+		if (!target) return this.parse('/help markshared');
 		if (!this.can('ban')) return false;
-		if (!target) return this.errorReply("No IP entered.");
 		let [ip, note] = this.splitOne(target);
 		if (!/^[0-9.*]+$/.test(ip)) return this.errorReply("Please enter a valid IP address.");
 
@@ -2385,8 +2383,8 @@ exports.commands = {
 	marksharedhelp: ["/markshared [ip] - Marks an IP address as shared. Requires @, &, ~"],
 
 	unmarkshared: function (target, room, user) {
+		if (!target) return this.parse('/help unmarkshared');
 		if (!this.can('ban')) return false;
-		if (!target) return this.errorReply("No IP entered.");
 		if (!/^[0-9.*]+$/.test(target)) return this.errorReply("Please enter a valid IP address.");
 
 		if (!Punishments.sharedIps.has(target)) return this.errorReply("This IP isn't marked as shared.");
