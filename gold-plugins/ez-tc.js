@@ -45,6 +45,7 @@ exports.commands = {
 			let commandName = toId(parts[1]);
 			if (Chat.commands[commandName]) return this.sendReply("/trainercards - The command \"" + commandName + "\" already exists.");
 			let html = parts.splice(2, parts.length).join(',');
+			if (html.includes('\\')) html = html.replace('\\', '');
 			trainerCards[commandName] = new Function('target', 'room', 'user', "if (!room.disableTrainerCards) if (!this.runBroadcast()) return; this.sendReplyBox('" + html.replace(/'/g, "\\'") + "');"); // eslint-disable-line no-new-func
 			saveTrainerCards();
 			this.sendReply("The trainer card \"" + commandName + "\" has been added.");
