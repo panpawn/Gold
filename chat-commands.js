@@ -1937,6 +1937,7 @@ exports.commands = {
 	},
 	promotehelp: ["/promote [username], [group] - Promotes the user to the specified group. Requires: & ~"],
 
+	transferaccount: 'transferauthority',
 	transferauth: 'transferauthority',
 	transferauthority: (function () {
 		function transferAuth(user1, user2, transfereeAuth) { // bits and pieces taken from /userauth
@@ -1956,6 +1957,10 @@ exports.commands = {
 			}
 			// room authority
 			Rooms.rooms.forEach((curRoom, id) => {
+				if (curRoom.founder && curRoom.founder === user1ID) {
+					curRoom.founder = user2ID;
+					buff.push(`${id} [ROOMFOUNDER]`);
+				}
 				if (!curRoom.auth) return;
 				let roomGroup = curRoom.auth[user1ID];
 				if (!roomGroup) return;
@@ -1965,6 +1970,21 @@ exports.commands = {
 			});
 			if (buff.length >= 2) { // did they have roomauth?
 				Rooms.global.writeChatRoomData();
+			}
+
+			if (Gold.userData[user1ID]) {
+				let bucks = Gold.readMoney(user1ID);
+				if (bucks && bucks > 0) {
+					Gold.updateMoney(user1ID, -bucks);
+					Gold.updateMoney(user2ID, bucks);
+					buff.push(`${bucks} bucks`);
+				}
+				let badges = Gold.userData[user1ID].badges;
+				if (badges && badges.length > 0) {
+					Gold.userData[user1ID].badges = [];
+					Gold.userData[user2ID].badges = badges;
+					Gold.saveData();
+				}
 			}
 
 			if (Users(user1ID)) Users(user1ID).updateIdentity();
@@ -1982,7 +2002,8 @@ exports.commands = {
 			if (toId(user1).length > 17 || toId(user2).length > 17) return this.errorReply(`One or more of the given usernames are too long to be a valid username (max 17 characters).`);
 			let transferSuccess = transferAuth(user1, user2, user.group);
 			if (transferSuccess.length >= 1) {
-				this.addModCommand(`${user1} has had their authority (${transferSuccess.join(', ')}) transfered onto new name: ${user2} - by ${user.name}.`);
+				this.addModCommand(`${user1} has had their account (${transferSuccess.join(', ')}) transfered onto new name: ${user2} - by ${user.name}.`);
+				this.sendReply(`Note: avatars do not transfer automatically with this command.`);
 			} else {
 				return this.errorReply(`User '${user1}' has no global or room authority, or they have higher global authority than you.`);
 			}
