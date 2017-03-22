@@ -1726,53 +1726,51 @@ exports.commands = {
 	transferauthority: (function () {
 		function transferAuth(user1, user2, transfereeAuth) { // bits and pieces taken from /userauth
 			let buff = [];
-			let user1ID = toId(user1);
-			let user2ID = toId(user2);
 			let ranks = Config.groupsranking;
 
 			// global authority
-			let globalGroup = Users.usergroups[user1ID];
+			let globalGroup = Users.usergroups[user1];
 			if (globalGroup) {
 				let symbol = globalGroup.charAt(0);
 				if (ranks.indexOf(symbol) > ranks.indexOf(transfereeAuth)) return buff;
-				Users.setOfflineGroup(user1ID, Config.groupsranking[0]);
-				Users.setOfflineGroup(user2ID, symbol);
+				Users.setOfflineGroup(user1, Config.groupsranking[0]);
+				Users.setOfflineGroup(user2, symbol);
 				buff.push(`Global ${symbol}`);
 			}
 			// room authority
 			Rooms.rooms.forEach((curRoom, id) => {
-				if (curRoom.founder && curRoom.founder === user1ID) {
-					curRoom.founder = user2ID;
+				if (curRoom.founder && curRoom.founder === user1) {
+					curRoom.founder = user2;
 					buff.push(`${id} [ROOMFOUNDER]`);
 				}
 				if (!curRoom.auth) return;
-				let roomGroup = curRoom.auth[user1ID];
+				let roomGroup = curRoom.auth[user1];
 				if (!roomGroup) return;
-				delete curRoom.auth[user1ID];
-				curRoom.auth[user2ID] = roomGroup;
+				delete curRoom.auth[user1];
+				curRoom.auth[user2] = roomGroup;
 				buff.push(roomGroup + id);
 			});
 			if (buff.length >= 2) { // did they have roomauth?
 				Rooms.global.writeChatRoomData();
 			}
 
-			if (Gold.userData[user1ID]) {
-				let bucks = Gold.readMoney(user1ID);
+			if (Gold.userData[user1]) { // bucks & badges
+				let bucks = Gold.readMoney(user1);
 				if (bucks && bucks > 0) {
-					Gold.updateMoney(user1ID, -bucks);
-					Gold.updateMoney(user2ID, bucks);
+					Gold.updateMoney(user1, -bucks);
+					Gold.updateMoney(user2, bucks);
 					buff.push(`${bucks} bucks`);
 				}
-				let badges = Gold.userData[user1ID].badges;
+				let badges = Gold.userData[user1].badges;
 				if (badges && badges.length > 0) {
-					Gold.userData[user1ID].badges = [];
-					Gold.userData[user2ID].badges = badges;
+					Gold.userData[user1].badges = [];
+					Gold.userData[user2].badges = badges;
 					Gold.saveData();
 				}
 			}
 
-			if (Users(user1ID)) Users(user1ID).updateIdentity();
-			if (Users(user2ID)) Users(user2ID).updateIdentity();
+			if (Users(user1)) Users(user1).updateIdentity();
+			if (Users(user2)) Users(user2).updateIdentity();
 
 			return buff;
 		}
@@ -1780,11 +1778,11 @@ exports.commands = {
 			if (!this.can('declare')) return false;
 			if (!target || !target.includes(',')) return this.parse(`/help transferauthority`);
 			target = target.split(',');
-			let user1 = target[0].trim();
-			let user2 = target[1].trim();
-			if (toId(user1).length < 1 || toId(user2).length < 1) return this.errorReply(`One or more of the given usernames are too short to be a valid username (min 1 character).`);
-			if (toId(user1).length > 17 || toId(user2).length > 17) return this.errorReply(`One or more of the given usernames are too long to be a valid username (max 17 characters).`);
-			let transferSuccess = transferAuth(user1, user2, user.group);
+			let user1 = target[0].trim(), user2 = target[1].trim(), user1ID = toId(user1), user2ID = toId(user2);
+			if (user1ID.length < 1 || user2ID.length < 1) return this.errorReply(`One or more of the given usernames are too short to be a valid username (min 1 character).`);
+			if (user1ID.length > 17 || user2ID.length > 17) return this.errorReply(`One or more of the given usernames are too long to be a valid username (max 17 characters).`);
+			if (user1ID === user2ID) return this.errorReply(`You provided the same accounts for the alt change.`);
+			let transferSuccess = transferAuth(user1ID, user2ID, user.group);
 			if (transferSuccess.length >= 1) {
 				this.addModCommand(`${user1} has had their account (${transferSuccess.join(', ')}) transfered onto new name: ${user2} - by ${user.name}.`);
 				this.sendReply(`Note: avatars do not transfer automatically with this command.`);
