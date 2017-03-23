@@ -109,7 +109,7 @@ exports.commands = {
 			if (!target) return this.parse('/help twostep');
 			if (!target.includes('@')) return this.errorReply("This is not a valid email address.");
 			user.twostepEmail = {
-				email: target.trim(),
+				email: target,
 				code: Math.floor(Math.random() * 90000) + 10000,
 			};
 			let email = `Hello, ${user.name}:\n\nTo verify this email account as a second step of authentication for your login on Gold, type this: /twostep  verify ${user.twostepEmail.code}`;
@@ -143,6 +143,21 @@ exports.commands = {
 				return this.errorReply("Unfortunately, you entered the wrong verification code.");
 			}
 		},
+		reset: function (target, room, user) { // resets a user's 2-step email to nothing
+			if (!this.can('hotpatch')) return false;
+			if (!target) return this.errorReply("Usage: /twostep reset [username]");
+			if (!Gold.userData[toId(target)]) return this.errorReply("This user has not visted the server before, and therefore does not have two-step enabled to reset.");
+			if (!Gold.userData[toId(target)].email) return this.errorReply("This user does not currently have two-step authentication enabled.");
+			delete Gold.userData[toId(target)].email;
+			Gold.saveData();
+			return this.privateModCommand(`(${user.name} has forcibly reset ${target}'s two-step authentication email address.)`);
+		},
+		check: function (target, room, user) { // checks if an account has 2-step enabled
+			if (!this.can('hotpatch')) return false;
+			if (!target) return this.errorReply("Usage: /twostep check [username]");
+			let hasTwoStep = (Gold.userData[toId(target)] && Gold.userData[toId(target)].email ? "has two-step" : "does NOT have two-step");
+			return this.sendReply(`${target} ${hasTwoStep} authentication enabled.`);
+		},
 		'': 'help',
 		help: function (target, room, user) {
 			return this.parse('/help twostep');
@@ -150,6 +165,6 @@ exports.commands = {
 	},
 	twostephelp: [
 		"Two-step authentication means that if you're trying to log in from an unstrusted network, the server will have you confirm your identity in the form of confirming an emailed pin code.",
-		"To set this up, do /twostep setup [email address] - it will then send you an email asking you to do a command to verify this is your email.",
+		"To set this up, do /twostep setup [email] - it will then send you an email asking you to do a command to verify this is your email.",
 	],
 };
