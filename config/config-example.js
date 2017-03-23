@@ -65,6 +65,22 @@ Y929lRybWEiKUr+4Yw2O1W0CAwEAAQ==
 	subject: 'Pokemon Showdown has crashed!'
 };**/
 
+// twostep - for the two step auth feature
+/*
+exports.twostep = {
+	options: {
+		host: 'mail.example.com',
+		port: 465,
+		secure: true,
+		auth: {
+			user: 'example@domain.com',
+			pass: 'password',
+		},
+	},
+	from: 'example@example.com',
+};
+*/
+
 // basic name filter - removes characters used for impersonation
 //   The basic name filter removes Unicode characters that can be used for impersonation,
 //   like the upside-down exclamation mark (looks like an i), the Greek omicron (looks
