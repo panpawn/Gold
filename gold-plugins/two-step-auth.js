@@ -109,7 +109,7 @@ exports.commands = {
 			if (!target) return this.parse('/help twostep');
 			if (!target.includes('@')) return this.errorReply("This is not a valid email address.");
 			user.twostepEmail = {
-				email: target,
+				email: target.trim(),
 				code: Math.floor(Math.random() * 90000) + 10000,
 			};
 			let email = `Hello, ${user.name}:\n\nTo verify this email account as a second step of authentication for your login on Gold, type this: /twostep  verify ${user.twostepEmail.code}`;
