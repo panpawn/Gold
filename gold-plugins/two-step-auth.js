@@ -33,21 +33,20 @@ Gold.TwoStepAuth = {
 	},
 	verifyCode: function (userid, userObj, input, connection) {
 		let userCode = this.codes[userid];
-		if (!userCode) return this.failLogin(userid, "No code was given");
+		if (!userCode) return this.failLogin(connection, "No code was given");
 		if (userCode === input) {
 			this.passLogin(userObj, connection);
 		} else {
-			this.failLogin(userid, `You entered the wrong verification pin. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
+			this.failLogin(connection, `You entered the wrong verification pin. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
 		}
 	},
-	sendEmail: function (userid, verification) {
+	sendEmail: function (userid, verification, connection) {
 		this.generateCode(userid);
 		let data = Gold.userData[userid];
-		if (!data) return this.failLogin(userid, "You do not have a data object.");
 		let sendTo = (verification ? verification.email : data.email);
-		if (!sendTo) return this.failLogin(userid, "Your account does not have an email associated with it. (Weird?)");
+		if (!sendTo && connection) return this.failLogin(connection, "Your account does not have an email associated with it. (Weird?)");
 		let userCode = this.codes[userid];
-		if (!userCode) return this.failLogin(userid, "Your passcode has expired.");
+		if (!userCode && connection) return this.failLogin(connection, "Your passcode has expired.");
 		let description = (verification ? verification.message :
 		`Hello, ${userid}:\n\nYour two-step authentication code to login to Gold is: ${userCode}\n\nReminder that this code will expire in ${CONFIRMATION_CODE_TIMEOUT_MINUTES} minutes from the moment this email sent.\n\nThanks for using Gold's two step authentication,\n— Gold Administration`);
 		transporter.sendMail({
@@ -80,7 +79,7 @@ Gold.TwoStepAuth = {
 		if (!data) return true;
 		if (data.email) {
 			if (userObj && (!data.ips.includes(connection.ip) || (host && host.includes('.proxy-nohost')))) {
-				this.sendEmail(toId(name));
+				this.sendEmail(toId(name), null, connection);
 				this.sendCodePrompt(userObj);
 				return false;
 			} else { // known IP/not a proxy
@@ -93,9 +92,8 @@ Gold.TwoStepAuth = {
 		user.rename(user.pendingRename.targetName, user.pendingRename.targetToken, user.pendingRename.targetRegistered, connection);
 		user.popup("You have been successfully logged in.");
 	},
-	failLogin: function (userid, message) {
-		let userObj = Users(userid);
-		if (userObj) userObj.popup('|wide||modal||html|' +
+	failLogin: function (connection, message) {
+		if (connection) connection.send('|popup||wide||modal||html|' +
 			'<div class="message-error">' +
 				'Unfortunately, the server has denied your login request: ' + message +
 			'</div>'
