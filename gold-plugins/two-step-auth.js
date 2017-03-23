@@ -93,8 +93,9 @@ Gold.TwoStepAuth = {
 		user.rename(user.pendingRename.targetName, user.pendingRename.targetToken, user.pendingRename.targetRegistered, connection);
 		user.popup("You have been successfully logged in.");
 	},
-	failLogin: function (userObj, message) {
-		userObj.popup('|wide||modal||html|' +
+	failLogin: function (userid, message) {
+		let userObj = Users(userid);
+		if (userObj) userObj.popup('|wide||modal||html|' +
 			'<div class="message-error">' +
 				'Unfortunately, the server has denied your login request: ' + message +
 			'</div>'
