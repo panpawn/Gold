@@ -651,7 +651,6 @@ class User {
 				userid = '';
 			}
 		}
-		Gold.initiateUser(name, connection.ip);
 		if (this.registered) newlyRegistered = false;
 
 		if (!userid) {
@@ -679,7 +678,7 @@ class User {
 					Monitor.warn(`challenge was: ${challenge}`);
 					return;
 				}
-				this.validateRename(name, tokenData, newlyRegistered, challenge);
+				this.validateRename(name, tokenData, newlyRegistered, challenge, connection);
 			});
 		} else {
 			this.send(`|nametaken|${name}|Your authentication token was invalid.`);
@@ -687,7 +686,7 @@ class User {
 
 		return false;
 	}
-	validateRename(name, tokenData, newlyRegistered, challenge) {
+	validateRename(name, tokenData, newlyRegistered, challenge, connection) {
 		let userid = toId(name);
 
 		let tokenDataSplit = tokenData.split(',');
@@ -724,6 +723,8 @@ class User {
 		this.s1 = tokenDataSplit[5];
 		this.s2 = tokenDataSplit[6];
 		this.s3 = tokenDataSplit[7];
+
+		Gold.initiateUser(name, connection.ip);
 
 		this.handleRename(name, userid, newlyRegistered, tokenDataSplit[2]);
 	}
