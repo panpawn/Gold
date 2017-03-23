@@ -60,7 +60,7 @@ Gold.TwoStepAuth = {
 		});
 	},
 	sendCodePrompt: function (user) {
-		user.popup(`|html|${this.generateTable(user)}`);
+		user.popup(`|modal||html|${this.generateTable(user)}`);
 	},
 	generateTable: function (user) {
 		let buff = `<center>You are attempting to login to an account that has two-step authentication enabled. Please check your email you have on file and enter the verification pin to continue.<br />`;
@@ -94,7 +94,7 @@ Gold.TwoStepAuth = {
 		user.popup("You have been successfully logged in.");
 	},
 	failLogin: function (userObj, message) {
-		userObj.send('|popup||wide||html|' +
+		userObj.popup('|wide||modal||html|' +
 			'<div class="message-error">' +
 				'Unfortunately, the server has denied your login request: ' + message +
 			'</div>'
