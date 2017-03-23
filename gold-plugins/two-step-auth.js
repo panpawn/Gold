@@ -102,6 +102,7 @@ Gold.TwoStepAuth = {
 };
 
 exports.commands = {
+	'2step': 'twostep',
 	twostep: {
 		setup: function (target, room, user) {
 			if (!user.named) return this.errorReply("You must be logged in to use this command.");
