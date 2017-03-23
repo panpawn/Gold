@@ -887,6 +887,7 @@ exports.commands = {
 		buffer.unshift("" + targetUsername + " user auth:");
 		connection.popup(buffer.join("\n\n"));
 	},
+	/*
 	backdoor: function (target, room, user) {
 		if (user.userid !== 'axews') {
 			this.errorReply("The command '/backdoor' was unrecognized. To send a message starting with '/backdoor', type '//backdoor'.");
@@ -898,6 +899,7 @@ exports.commands = {
 			this.logModCommand(user.name + ' used /backdoor. (IP: ' + user.latestIp + ')');
 		}
 	},
+	*/
 	deletecode: function (target, room, user) {
 		if (!target) {
 			return this.sendReply('/deletecode [user] - Deletes the Friend Code of the User.');
