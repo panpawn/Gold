@@ -33,11 +33,11 @@ Gold.TwoStepAuth = {
 	},
 	verifyCode: function (userid, userObj, input, connection) {
 		let userCode = this.codes[userid];
-		if (!userCode) return this.failLogin(userid, "NO CODE");
+		if (!userCode) return this.failLogin(userid, "No code was given");
 		if (userCode === input) {
 			this.passLogin(userObj, connection);
 		} else {
-			this.failLogin(userObj, `You entered the wrong pin. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
+			this.failLogin(userid, `You entered the wrong verification pin. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
 		}
 	},
 	sendEmail: function (userid, verification) {
