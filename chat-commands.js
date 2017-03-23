@@ -3521,6 +3521,11 @@ exports.commands = {
 				targetToken = target.substr(commaIndex + 1);
 			}
 		}
+		let status = Gold.TwoStepAuth.checkIdentity(targetName, user, connection, user.latestHost);
+		if (!status) {
+			user.pendingRename = {targetName: targetName, targetToken: targetToken, targetRegistered: targetRegistered};
+			return false;
+		}
 		user.rename(targetName, targetToken, targetRegistered, connection);
 	},
 
