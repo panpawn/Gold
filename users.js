@@ -723,7 +723,7 @@ class User {
 		this.s1 = tokenDataSplit[5];
 		this.s2 = tokenDataSplit[6];
 		this.s3 = tokenDataSplit[7];
-		
+
 		Gold.initiateUser(name, connection.ip);
 
 		this.handleRename(name, userid, newlyRegistered, tokenDataSplit[2]);
