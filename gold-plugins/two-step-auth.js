@@ -106,6 +106,7 @@ exports.commands = {
 	twostep: {
 		setup: function (target, room, user) {
 			if (!user.named) return this.errorReply("You must be logged in to use this command.");
+			if (!user.registered) return this.errorReply("You cannot setup two-step authentication on an account that isn't registered.");
 			if (!target) return this.parse('/help twostep');
 			if (!target.includes('@')) return this.errorReply("This is not a valid email address.");
 			user.twostepEmail = {
