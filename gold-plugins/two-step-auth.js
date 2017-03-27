@@ -74,11 +74,12 @@ Gold.TwoStepAuth = {
 	generateButton: function (value, option) {
 		if (!option) return `<button class="button" name="send" value="${TWO_STEP_CMD}${value}">${value}</button>`;
 	},
-	checkIdentity: function (name, userObj, connection, host) {
+	checkIdentity: function (name, userObj, connection, host, pendingRename) {
 		let data = Gold.userData[toId(name)];
 		if (!data) return true;
 		if (data.email) {
 			if (userObj && (!data.ips.includes(connection.ip) || (host && host.includes('.proxy-nohost')))) {
+				userObj.pendingRename = pendingRename;
 				this.sendEmail(toId(name), null, connection);
 				this.sendCodePrompt(userObj);
 				return false;
@@ -91,13 +92,16 @@ Gold.TwoStepAuth = {
 	passLogin: function (user, connection) {
 		user.rename(user.pendingRename.targetName, user.pendingRename.targetToken, user.pendingRename.targetRegistered, connection);
 		user.popup("You have been successfully logged in.");
+		delete user.pendingRename;
 	},
 	failLogin: function (connection, message) {
-		if (connection) connection.send('|popup||wide||modal||html|' +
-			'<div class="message-error">' +
+		if (connection) {
+			connection.send('|popup||wide||modal||html|' +
+				'<div class="message-error">' +
 				'Unfortunately, the server has denied your login request: ' + message +
-			'</div>'
-		);
+				'</div>'
+			);
+		}
 	},
 };
 
@@ -118,7 +122,7 @@ exports.commands = {
 			return this.sendReply("Check your email for verification - it will have you enter a command to verify that you own this email.");
 		},
 		login: function (target, room, user, connection) { // undocumented
-			if (user.named) return this.errorReply("This is a secret command.");
+			if (!user.pendingRename) return this.errorReply("This is a secret command.");
 			if (!target) return false;
 			if (target === 'restart') return Gold.TwoStepAuth.sendCodePrompt(user);
 			if (isNaN(target)) return false;
