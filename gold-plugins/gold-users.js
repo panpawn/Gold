@@ -365,6 +365,26 @@ try {
 			if (reply.length === 0) return false;
 			return reply;
 		},
+		tellStaff: function (from, message, upper) {
+			let staff = [];
+			const staffRanks = (upper ? ['&', '~'] : ['%', '@', '&', '~']);
+
+			fs.readFile('config/usergroups.csv', 'utf8', function (err, data) {
+
+				let row = ('' + data).split('\n');
+				for (let i = row.length; i > -1; i--) {
+					if (!row[i]) continue;
+					let rank = row[i].split(',')[1].replace("\r", '');
+					let user = row[i].split(',')[0];
+					if (staffRanks.includes(rank)) {
+						staff.push(user);
+					}
+				}
+				staff.forEach(member => {
+					if (toId(member) !== toId(from)) Gold.createTell(from, member, message);
+				});
+			});
+		},
 		trustUser: function (user, action) {
 			let data = this.checkExisting(user);
 			if (!action) action = false;

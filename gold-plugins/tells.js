@@ -29,6 +29,24 @@ exports.commands = {
 	},
 	tellhelp: ["/tell [user], [message] - sends a user an offline message to be recieved when they next log on."],
 
+	tellstaff: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target || target === ' ') return this.parse('/help tellstaff');
+
+		Gold.tellStaff(user.name, target);
+		return this.sendReply("Your tell to all current staff have been added to their offline messaging queue.");
+	},
+	tellstaffhelp: ["/tellstaff [message] - Sends an offline message to all current staff members. Requires: & ~"],
+
+	tellupperstaff: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target || target === ' ') return this.parse('/help tellupperstaff');
+
+		Gold.tellStaff(user.name, target, true);
+		return this.sendReply("Your tell to all current upper staff have been added to their offline messaging queue.");
+	},
+	tellupperstaffhelp: ["/tellupperstaff [message] - Sends an offline message to all current upper staff members. Requires: & ~"],
+
 	mailbox: function (target, room, user) {
 		if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");
 		let pop = '|popup||wide||html| ';
