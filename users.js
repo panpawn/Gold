@@ -35,6 +35,8 @@ const PERMALOCK_CACHE_TIME = 30 * 24 * 60 * 60 * 1000;
 
 const fs = require('fs');
 
+const Matchmaker = require('./ladders-matchmaker').matchmaker;
+
 let Users = module.exports = getUser;
 
 /*********************************************************
@@ -804,7 +806,7 @@ class User {
 
 		let oldid = this.userid;
 		if (userid !== this.userid) {
-			Rooms.global.cancelSearch(this);
+			this.cancelSearch();
 
 			if (!Users.move(this, userid)) {
 				return false;
@@ -848,6 +850,8 @@ class User {
 		return true;
 	}
 	merge(oldUser) {
+		oldUser.cancelChallengeTo();
+		oldUser.cancelSearch();
 		oldUser.inRooms.forEach(roomid => {
 			Rooms(roomid).onLeave(oldUser);
 		});
@@ -1091,6 +1095,9 @@ class User {
 				// there's no need to keep track of this user, so we can
 				// immediately deallocate
 				this.destroy();
+			} else {
+				this.cancelChallengeTo();
+				this.cancelSearch();
 			}
 		}
 	}
@@ -1220,10 +1227,13 @@ class User {
 	}
 	leaveRoom(room, connection, force) {
 		room = Rooms(room);
-		if (room.id === 'global' && !force) {
+		if (room.id === 'global') {
 			// you can't leave the global room except while disconnecting
 			Gold.updateSeen(this.userid);
-			return false;
+
+			if (!force) return false;
+			this.cancelChallengeTo();
+			this.cancelSearch();
 		}
 		if (!this.inRooms.has(room.id)) {
 			return false;
@@ -1334,6 +1344,9 @@ class User {
 			games: games,
 		}));
 	}
+	cancelSearch(format) {
+		return Matchmaker.cancelSearch(this, format);
+	}
 	makeChallenge(user, format/*, isPrivate*/) {
 		user = getUser(user);
 		if (!user || this.challengeTo) {
@@ -1394,7 +1407,7 @@ class User {
 			}
 			return false;
 		}
-		Rooms.global.startBattle(this, user, user.challengeTo.format, this.team, user.challengeTo.team, {rated: false});
+		Matchmaker.startBattle(this, user, user.challengeTo.format, this.team, user.challengeTo.team, {rated: false});
 		delete this.challengesFrom[user.userid];
 		user.challengeTo = null;
 		this.updateChallenges();

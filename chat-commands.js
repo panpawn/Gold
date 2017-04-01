@@ -20,6 +20,8 @@
 const crypto = require('crypto');
 const fs = require('fs');
 
+const Matchmaker = require('./ladders-matchmaker').matchmaker;
+
 const MAX_REASON_LENGTH = 300;
 const MUTE_LENGTH = 7 * 60 * 1000;
 const HOURMUTE_LENGTH = 60 * 60 * 1000;
@@ -450,8 +452,8 @@ exports.commands = {
 		let targetUser = this.pmTarget;
 
 		if (!targetRoom || targetRoom === Rooms.global) return this.errorReply(`The room "${target}" was not found.`);
-		if (targetRoom.staffRoom && !targetUser.isStaff) return this.errorReply(`User "${this.targetUsername}" requires global auth to join room "${targetRoom.id}".`);
-		if (!targetUser) return this.errorReply(`The user "${this.targetUsername}" was not found.`);
+		if (targetRoom.staffRoom && !targetUser.isStaff) return this.errorReply(`User "${targetUser.name}" requires global auth to join room "${targetRoom.id}".`);
+		if (!targetUser) return this.errorReply(`The user "${targetUser.name}" was not found.`);
 
 		if (!targetRoom.checkModjoin(targetUser)) {
 			if (targetRoom.getAuth(targetUser) !== ' ') {
@@ -986,16 +988,21 @@ exports.commands = {
 		if (!target) {
 			if (!this.runBroadcast()) return;
 			if (!room.aliases || !room.aliases.length) return this.sendReplyBox("This room does not have any aliases.");
-			return this.sendReplyBox("This room has the following aliases: " + room.aliases.join(", ") + "");
+			return this.sendReplyBox(`This room has the following aliases: ${room.aliases.join(", ")}`);
 		}
 		if (!this.can('makeroom')) return false;
+		if (target.includes(',')) {
+			this.errorReply(`Invalid room alias: ${target.trim()}`);
+			return this.parse('/help roomalias');
+		}
+
 		let alias = toId(target);
 		if (!alias.length) return this.errorReply("Only alphanumeric characters are valid in an alias.");
 		if (Rooms(alias) || Rooms.aliases.has(alias)) return this.errorReply("You cannot set an alias to an existing room or alias.");
 		if (room.isPersonal) return this.errorReply("Personal rooms can't have aliases.");
 
 		Rooms.aliases.set(alias, room.id);
-		this.privateModCommand(`(${user.name} added the room alias '${target}'.)`);
+		this.privateModCommand(`(${user.name} added the room alias '${target.trim()}'.)`);
 
 		if (!room.aliases) room.aliases = [];
 		room.aliases.push(alias);
@@ -1004,10 +1011,19 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 		}
 	},
+	roomaliashelp: [
+		"/roomalias - displays a list of all room aliases of the room the command was entered in.",
+		"/roomalias [alias] - adds the given room alias to the room the command was entered in. Requires: & ~",
+	],
 
 	removeroomalias: function (target, room, user) {
 		if (!room.aliases) return this.errorReply("This room does not have any aliases.");
 		if (!this.can('makeroom')) return false;
+		if (target.includes(',')) {
+			this.errorReply(`Invalid room alias: ${target.trim()}`);
+			return this.parse('/help removeroomalias');
+		}
+
 		let alias = toId(target);
 		if (!alias || !Rooms.aliases.has(alias)) return this.errorReply("Please specify an existing alias.");
 		if (Rooms.aliases.get(alias) !== room.id) return this.errorReply("You may only remove an alias from the current room.");
@@ -1021,6 +1037,7 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 		}
 	},
+	removeroomaliashelp: ["/removeroomalias [alias] - removes the given room alias of the room the command was entered in. Requires: & ~"],
 
 	roomowner: function (target, room, user) {
 		if (!room.chatRoomData) {
@@ -1919,7 +1936,7 @@ exports.commands = {
 		}
 
 		if (!Users.isUsernameKnown(userid)) {
-			return this.errorReply(`/globalpromote - WARNING: '${name}' is offline and unrecognized. The username might be misspelled (either by you or the person or told you) or unregistered. Use /forcepromote if you're sure you want to risk it.`);
+			return this.errorReply(`/globalpromote - WARNING: '${name}' is offline and unrecognized. The username might be misspelled (either by you or the person who told you) or unregistered. Use /forcepromote if you're sure you want to risk it.`);
 		}
 		if (targetUser && !targetUser.registered) {
 			return this.errorReply(`User '${name}' is unregistered, and so can't be promoted.`);
@@ -2082,7 +2099,7 @@ exports.commands = {
 
 		let entry = targetUser.name + " was forced to choose a new name by " + user.name + (reason ? ": " + reason : "");
 		this.privateModCommand("(" + entry + ")");
-		Rooms.global.cancelSearch(targetUser);
+		Matchmaker.cancelSearch(targetUser);
 		targetUser.resetName();
 		targetUser.send("|nametaken||" + user.name + " considers your name inappropriate" + (reason ? ": " + reason : "."));
 		//return true;
@@ -2104,7 +2121,7 @@ exports.commands = {
 
 		let reasonText = reason ? ` (${reason})` : `.`;
 		let lockMessage = `${targetUser.name} was namelocked by ${user.name}${reasonText}`;
-		this.addModCommand(lockMessage, `(${targetUser.latestIp})`);
+		this.addModCommand(lockMessage, ` (${targetUser.latestIp})`);
 
 		// Notify staff room when a user is locked outside of it.
 		if (room.id !== 'staff' && Rooms('staff')) {
@@ -2112,7 +2129,7 @@ exports.commands = {
 		}
 
 		this.globalModlog("NAMELOCK", targetUser, ` by ${user.name}${reasonText}`);
-		Rooms.global.cancelSearch(targetUser);
+		Matchmaker.cancelSearch(targetUser);
 		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.namelock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000);
 		targetUser.popup(`|modal|${user.name} has locked your name and you can't change names anymore${reasonText}`);
@@ -3310,9 +3327,9 @@ exports.commands = {
 					return false;
 				}
 			}
-			Rooms.global.searchBattle(user, target);
+			Matchmaker.searchBattle(user, target);
 		} else {
-			Rooms.global.cancelSearch(user);
+			Matchmaker.cancelSearch(user);
 		}
 	},
 
