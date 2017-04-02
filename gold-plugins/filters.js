@@ -88,8 +88,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
 		let regEx = new RegExp(firsts.join('|'),"g");
 		if (message.toLowerCase().match(regEx)) {
-			user.sendTo(room, "Wow, you're first? What a great acomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
-			return false;
+			return user.sendTo(room, "Wow, you're first? What a great acomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
 		}
 	}
 
