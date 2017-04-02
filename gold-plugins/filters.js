@@ -17,9 +17,6 @@ let adRegex = new RegExp("(play.pokemonshowdown.com\\/~~)(?!(" + adWhitelist.joi
 
 let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 
-let watchPhrases = Config.watchPhrases ? Config.watchPhrases : [];
-let watchUsers = Config.watchUsers ? Config.watchUsers : [];
-
 let proxyWhitelist = Config.proxyWhitelist || false;
 
 const FIRST_COOLDOWN = 1.5 * 60000; // 1 minute, 30 seconds
@@ -31,16 +28,6 @@ const FIRST_COOLDOWN = 1.5 * 60000; // 1 minute, 30 seconds
 exports.chatfilter = function (message, user, room, connection, targetUser) {
 	user.lastActiveTime = Date.now();
 	if (!room && !Users(targetUser)) targetUser = {name: 'unknown user'};
-
-	// watch phrases and watch users
-	let watchRoom = Rooms('watchroom') ? Rooms('watchroom') : false;
-	if (watchRoom) {
-		let watchWords = watchPhrases.filter(phrase => { return ~toId(message).indexOf(phrase); }).length;
-		let watchUserslist = watchUsers.filter(name => { return ~user.userid.indexOf(name); }).length;
-		if (!user.can('hotpatch') && watchWords >= 1 || watchUserslist >= 1) {
-			watchRoom.add('|c|' + user.getIdentity() + '| __(' + (room ? "To " + room.id : "Private message to " + targetUser.name) + ")__ " + message).update();
-		}
-	}
 
 	// global banned messages
 	for (let x in bannedMessages) {
