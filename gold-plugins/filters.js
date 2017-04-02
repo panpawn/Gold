@@ -22,6 +22,8 @@ let watchUsers = Config.watchUsers ? Config.watchUsers : [];
 
 let proxyWhitelist = Config.proxyWhitelist || false;
 
+const FIRST_COOLDOWN = 1.5 * 60000; // 1 minute, 30 seconds
+
 /*********************
  * Chatfilter Magic *
  * ******************/
@@ -79,6 +81,15 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Secret hidden phrase) (' + connection.ip + ')\n');
 			Gold.pmUpperStaff(user.name + " has been sbanned for triggering autosban" + msg, "~Server");
 			Monitor.log(`[TextMonitor] SHADOWBANNED: ${user.name}: ${msg}`);
+		}
+	}
+
+	if (room.log && room.log.length === 0) { // Firsting isn't cool anymore
+		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
+		let regEx = new RegExp(firsts.join('|'),"g");
+		if (message.toLowerCase().match(regEx)) {
+			user.sendTo(room, "Wow, you're first? What a great acomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
+			return false;
 		}
 	}
 
