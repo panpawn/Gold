@@ -84,7 +84,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		}
 	}
 
-	if (room.log && room.log.length === 0) { // Firsting isn't cool anymore
+	if (room && room.log && room.log.length === 0) { // Firsting isn't cool anymore
 		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
 		let regEx = new RegExp(firsts.join('|'),"g");
 		if (message.toLowerCase().match(regEx)) {
