@@ -36,8 +36,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Said a banned word: " + bannedMessages[x]);
 			user.popup('You have been automatically locked for sending a message containing a banned word.');
 			Monitor.log('[PornMonitor] LOCKED/SHADOWBANNED: ' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ for trying to say "' + message + '"');
-			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was locked from talking by the Server (' +
-			bannedMessages[x] + ') (' + connection.ip + ')\n');
+			modlog(`${user.name} was locked from talking by the Server (${bannedMessages[x]}) (${connection.ip})`);
 			Gold.pmUpperStaff(user.name + ' has been automatically locked/shadowbanned for sending a message containing a banned word' +
 			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
 			Users.ShadowBan.addUser(user);
@@ -51,7 +50,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		if (user.locked) return false;
 		if (!Users.ShadowBan.checkBanned(user)) {
 			Users.ShadowBan.addUser(user);
-			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Advertising) (' + connection.ip + ')\n');
+			modlog(`${user.name} was shadow banned by the Server. (Advertising) (${connection.ip})`);
 			Gold.pmUpperStaff(user.name + " has been sbanned for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
 			Monitor.log("[AdvMonitor] SHADOWBANNED: " + user.name + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message);
 		}
@@ -65,7 +64,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		if (autoSban !== '') {
 			Users.ShadowBan.addUser(user);
 			let msg = (room ? " **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message;
-			fs.appendFile('logs/modlog/modlog_staff.txt', '[' + (new Date().toJSON()) + '] (staff) ' + user.name + ' was shadow banned by the Server. (Secret hidden phrase) (' + connection.ip + ')\n');
+			modlog(`${user.name} was shadow banned by the Server. (Message contained: ${autoSban}) (${connection.ip})`);
 			Gold.pmUpperStaff(user.name + " has been sbanned for triggering autosban" + msg, "~Server");
 			Monitor.log(`[TextMonitor] SHADOWBANNED: ${user.name}: ${msg}`);
 		}
@@ -75,7 +74,8 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
 		let regEx = new RegExp(firsts.join('|'),"g");
 		if (message.toLowerCase().match(regEx)) {
-			return user.sendTo(room, "Wow, you're first? What a great acomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
+			user.sendTo(room, "Wow, you're first? What a great acomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
+			return false;
 		}
 	}
 
@@ -83,6 +83,9 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 };
 Config.chatfilter = exports.chatfilter;
 
+function modlog (message) {
+	fs.appendFile(`logs/modlog/modlog_staff.txt`, `[${(new Date().toJSON())}] (staff) ${message}\n`);
+}
 /*********************
  * Namefilter Magic *
  * ******************/
@@ -181,6 +184,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 	let ip = user.latestIp;
 
 	if (punished) {
+		if (user.permalocked) return;
 		let tarId = user.userid;
 		Object.keys(Gold.punishments).forEach(punished => {
 			if (Gold.punishments[punished].ip === ip) matched = true;
@@ -243,13 +247,10 @@ Gold.evadeMonitor = function (user, name, punished) {
 		if (staff) {
 			if (points >= 2) {
 				Users.ShadowBan.addUser(name);
-				staff.add(`[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`).update();
+				let msg = `[EvadeMonitor] SHADOWBANNED: ${name}, evading alt of ${evader} because they ${reasons.join(' and ')}`;
+				staff.add(msg).update();
+				modlog(msg);
 			}
-			/*
-			} else if (points === 1.5) {
-				staff.add(`[EvadeMonitor] SUSPECTED EVADER: ${name} is possibly an evading alt of ${evader} because they ${reasons.join(' and ')}.`).update();
-			}
-			*/
 		}
 	}
 };
