@@ -2,7 +2,7 @@
  * Created by SilverTactic (Siilver) and panpawn
  * This is a plugin that uses the anagrams
  * format that is dedicated to Pokemon
- * names. Winners recieve 0.25 bucks a peice.
+ * names. Winners recieve 0.25 bucks a piece.
  */
 'use strict';
 
