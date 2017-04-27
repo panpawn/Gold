@@ -402,9 +402,13 @@ class CommandContext {
 			if (this.pmTarget) {
 				data = this.pmTransform(data);
 				this.user.send(data);
-				if (this.pmTarget !== this.user) this.pmTarget.send(data);
+				if (this.pmTarget !== this.user && !Users.ShadowBan.checkBanned(this.user)) this.pmTarget.send(data);
 			} else {
-				this.room.add(data);
+				if (Users.ShadowBan.checkBanned(this.user)) {
+					this.user.sendTo(this.room.id, data);
+				} else {
+					this.room.add(data);
+				}
 			}
 		} else {
 			// not broadcasting
@@ -437,7 +441,7 @@ class CommandContext {
 		if (this.pmTarget) {
 			data = this.pmTransform(data);
 			this.user.send(data);
-			if (this.pmTarget !== this.user) this.pmTarget.send(data);
+			if (this.pmTarget !== this.user && !Users.ShadowBan.checkBanned(this.user)) this.pmTarget.send(data);
 			return;
 		}
 		this.room.add(data);
@@ -530,7 +534,12 @@ class CommandContext {
 		if (this.pmTarget) {
 			this.add('|c~|' + (suppressMessage || this.message));
 		} else {
-			this.add('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+			if (Users.ShadowBan.checkBanned(this.user)) {
+				this.user.sendTo(this.room.id, '|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+				Users.ShadowBan.addMessage(this.user, `To ${this.room.id}`, (suppressMessage || this.message));
+			} else {
+				this.add('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+			}
 		}
 		if (!this.pmTarget) {
 			this.room.lastBroadcast = this.broadcastMessage;
