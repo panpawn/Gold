@@ -241,6 +241,13 @@ exports.watchPhrases = [];
 // maxAutoJoinRooms - the maximum number of rooms to be autojoined
 exports.maxAutoJoinRooms = 8;
 
+//github alerts
+exports.github = {
+	secret: "", // Your repo secret
+	port: "", // Desired port, must be unused and above 1000
+	rooms: ["development"], // Desired rooms
+};
+
 // replsocketprefix - the prefix for the repl sockets to be listening on
 // replsocketmode - the file mode bits to use for the repl sockets
 exports.replsocketprefix = './logs/repl/';
