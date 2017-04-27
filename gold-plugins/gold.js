@@ -1794,6 +1794,7 @@ exports.commands = {
 		};
 	})(),
 	transferauthorityhelp: ["/transferauthority [old alt], [new alt] - Transfers a user's global/room authority onto their new alt. Requires & ~"],
+	'!shrug': true,
 	shrug: function () {
 		this.parse('¯\\_(ツ)_/¯');
 	},
