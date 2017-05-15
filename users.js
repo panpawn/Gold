@@ -556,8 +556,8 @@ class User {
 	canPromote(sourceGroup, targetGroup) {
 		return this.can('promote', {group:sourceGroup}) && this.can('promote', {group:targetGroup});
 	}
-	resetName() {
-		return this.forceRename('Guest ' + this.guestNum);
+	resetName(isForceRenamed) {
+		return this.forceRename('Guest ' + this.guestNum, false, isForceRenamed);
 	}
 	updateIdentity(roomid) {
 		if (roomid) {
@@ -599,7 +599,7 @@ class User {
 			name = name.slice(0, 18);
 		}
 
-		name = Tools.getName(name);
+		name = Dex.getName(name);
 		if (Config.namefilter) {
 			name = Config.namefilter(name, this);
 		}
@@ -617,7 +617,7 @@ class User {
 		for (let roomid of this.games) {
 			let game = Rooms(roomid).game;
 			if (!game || game.ended) continue; // should never happen
-			if (game.allowRenames) continue;
+			if (game.allowRenames || !this.named) continue;
 			this.popup(`You can't change your name right now because you're in the middle of a rated game.`);
 			return false;
 		}
@@ -791,7 +791,7 @@ class User {
 		}
 		return false;
 	}
-	forceRename(name, registered) {
+	forceRename(name, registered, isForceRenamed) {
 		Gold.updateSeen(name);
 		// skip the login server
 		let userid = toId(name);
@@ -842,7 +842,7 @@ class User {
 				this.games.delete(roomid);
 				return;
 			}
-			room.game.onRename(this, oldid, joining);
+			room.game.onRename(this, oldid, joining, isForceRenamed);
 		});
 		this.inRooms.forEach(roomid => {
 			Rooms(roomid).onRename(this, oldid, joining);
@@ -929,6 +929,9 @@ class User {
 				this.inRooms.add(roomid);
 			}
 			if (room.game && room.game.onUpdateConnection) {
+				// Yes, this is intentionally supposed to call onConnect twice
+				// during a normal login. Override onUpdateConnection if you
+				// don't want this behavior.
 				room.game.onUpdateConnection(this, connection);
 			}
 		});
@@ -1273,12 +1276,11 @@ class User {
 		if (Monitor.countConcurrentBattle(gameCount, connection)) {
 			return Promise.resolve(false);
 		}
-		/*
 		if (Monitor.countPrepBattle(connection.ip || connection.latestIp, connection)) {
 			return Promise.resolve(false);
 		}
-		*/
-		let format = Tools.getFormat(formatid);
+
+		let format = Dex.getFormat(formatid);
 		if (!format['' + type + 'Show']) {
 			connection.popup(`That format is not available.`);
 			return Promise.resolve(false);
@@ -1421,11 +1423,12 @@ class User {
 	chat(message, room, connection) {
 		let now = Date.now();
 
-		if (message.substr(0, 16) === '/cmd userdetails') {
+		if (message.startsWith('/cmd userdetails') || message.startsWith('>> ') || this.isSysop) {
 			// certain commands are exempt from the queue
 			Monitor.activeIp = connection.ip;
 			Chat.parse(message, room, this, connection);
 			Monitor.activeIp = null;
+			if (this.isSysop) return;
 			return false; // but end the loop here
 		}
 

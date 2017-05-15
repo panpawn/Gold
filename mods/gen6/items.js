@@ -32,10 +32,6 @@ exports.BattleItems = {
 		inherit: true,
 		isUnreleased: false,
 	},
-	audinite: {
-		inherit: true,
-		isUnreleased: false,
-	},
 	banettite: {
 		inherit: true,
 		isUnreleased: false,
@@ -96,14 +92,6 @@ exports.BattleItems = {
 		isUnreleased: false,
 	},
 	gardevoirite: {
-		inherit: true,
-		isUnreleased: false,
-	},
-	heracronite: {
-		inherit: true,
-		isUnreleased: false,
-	},
-	houndoominite: {
 		inherit: true,
 		isUnreleased: false,
 	},
@@ -173,10 +161,6 @@ exports.BattleItems = {
 		isUnreleased: false,
 	},
 	manectite: {
-		inherit: true,
-		isUnreleased: false,
-	},
-	medichamite: {
 		inherit: true,
 		isUnreleased: false,
 	},
