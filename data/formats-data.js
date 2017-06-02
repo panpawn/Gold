@@ -364,23 +364,21 @@ exports.BattleFormatsData = {
 	},
 	pikachusinnoh: {
 		eventPokemon: [
-			{"generation": 7, "level": 10, "moves":["thunderbolt", "quickattack", "irontail", "volttackle"]},
+			{"generation": 7, "level": 10, "nature": "Hardy", "moves":["thunderbolt", "quickattack", "irontail", "volttackle"]},
 		],
 		eventOnly: true,
-		isUnreleased: true,
-		tier: "Unreleased",
+		tier: "New",
 	},
 	pikachuunova: {
 		eventPokemon: [
-			{"generation": 7, "level": 14, "moves":["thunderbolt", "quickattack", "irontail", "volttackle"]},
+			{"generation": 7, "level": 14, "nature": "Hardy", "moves":["thunderbolt", "quickattack", "irontail", "volttackle"]},
 		],
 		eventOnly: true,
-		isUnreleased: true,
-		tier: "Unreleased",
+		tier: "New",
 	},
 	pikachukalos: {
 		eventPokemon: [
-			{"generation": 7, "level": 17, "moves":["thunderbolt", "quickattack", "irontail", "electroball"]},
+			{"generation": 7, "level": 17, "nature": "Hardy", "moves":["thunderbolt", "quickattack", "irontail", "electroball"]},
 		],
 		eventOnly: true,
 		isUnreleased: true,
@@ -388,7 +386,7 @@ exports.BattleFormatsData = {
 	},
 	pikachualola: {
 		eventPokemon: [
-			{"generation": 7, "level": 20, "moves":["thunderbolt", "quickattack", "irontail", "electroball"]},
+			{"generation": 7, "level": 20, "nature": "Hardy", "moves":["thunderbolt", "quickattack", "irontail", "electroball"]},
 		],
 		eventOnly: true,
 		isUnreleased: true,
@@ -1070,7 +1068,7 @@ exports.BattleFormatsData = {
 	},
 	exeggutoralola: {
 		randomBattleMoves: ["dracometeor", "leafstorm", "flamethrower", "earthquake", "woodhammer", "gigadrain", "dragonhammer"],
-		randomDoubleBattleMoves: ["dracometeor", "leafstorm", "protect", "flamethrower", "trickroom", "woodhammer", "dragonhammer", "protect"],
+		randomDoubleBattleMoves: ["dracometeor", "leafstorm", "protect", "flamethrower", "trickroom", "woodhammer", "dragonhammer"],
 		tier: "New",
 	},
 	cubone: {
@@ -2419,7 +2417,7 @@ exports.BattleFormatsData = {
 		randomBattleMoves: ["substitute", "gigadrain", "dragonpulse", "focusblast", "swordsdance", "outrage", "leafblade", "earthquake", "hiddenpowerfire"],
 		randomDoubleBattleMoves: ["substitute", "gigadrain", "leafstorm", "hiddenpowerice", "focusblast", "dragonpulse", "hiddenpowerfire", "protect"],
 		requiredItem: "Sceptilite",
-		tier: "Unreleased",
+		tier: "OU",
 	},
 	torchic: {
 		randomBattleMoves: ["protect", "batonpass", "substitute", "hiddenpowergrass", "swordsdance", "firepledge"],
@@ -2445,7 +2443,7 @@ exports.BattleFormatsData = {
 	blazikenmega: {
 		randomBattleMoves: ["flareblitz", "highjumpkick", "protect", "swordsdance", "substitute", "batonpass", "stoneedge", "knockoff"],
 		requiredItem: "Blazikenite",
-		tier: "Unreleased",
+		tier: "Uber",
 	},
 	mudkip: {
 		randomBattleMoves: ["hydropump", "earthpower", "hiddenpowerelectric", "icebeam", "sludgewave"],
@@ -2471,7 +2469,7 @@ exports.BattleFormatsData = {
 		randomBattleMoves: ["raindance", "waterfall", "earthquake", "icepunch", "superpower"],
 		randomDoubleBattleMoves: ["waterfall", "earthquake", "raindance", "icepunch", "superpower", "protect"],
 		requiredItem: "Swampertite",
-		tier: "Unreleased",
+		tier: "OU",
 	},
 	poochyena: {
 		randomBattleMoves: ["superfang", "foulplay", "suckerpunch", "toxic", "crunch", "firefang", "icefang", "poisonfang"],
@@ -6100,7 +6098,7 @@ exports.BattleFormatsData = {
 	},
 	silvally: {
 		randomBattleMoves: ["swordsdance", "return", "doubleedge", "crunch", "flamecharge", "flamethrower", "icebeam", "uturn", "ironhead"],
-		randomDoubleBattleMoves: ["protect", "doubleedge", "uturn", "crunch", "icebeam", "partingshot", "flamecharge", "partingshot", "swordsdance", "explosion"],
+		randomDoubleBattleMoves: ["protect", "doubleedge", "uturn", "crunch", "icebeam", "partingshot", "flamecharge", "swordsdance", "explosion"],
 		tier: "New",
 	},
 	silvallybug: {
