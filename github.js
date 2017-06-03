@@ -10,7 +10,7 @@
  */
 'use strict';
 
-if (!Config.github) return;
+if (!Config.github || !Config.github.port) return;
 
 let updates = {};
 
@@ -32,7 +32,7 @@ github.on('push', function push(repo, ref, result) {
 	let messages = [];
 	let message = "";
 	message += "[<font color='FF00FF'>" + Chat.escapeHTML(repo) + '</font>] ';
-	message += "<font color='909090'>" + Chat.escapeHTML(result.pusher.name) + "</font> ";
+	message += Gold.nameColor(result.pusher.name, true) + " ";
 	message += (result.forced ? '<font color="red">force-pushed</font>' : 'pushed') + " ";
 	message += "<b>" + Chat.escapeHTML(result.commits.length) + "</b> ";
 	message += "new commit" + (result.commits.length === 1 ? '' : 's') + " to ";
@@ -50,7 +50,7 @@ github.on('push', function push(repo, ref, result) {
 		message += "<font color='800080'>" + Chat.escapeHTML(branch) + "</font> ";
 		message += "<a href=\"" + Chat.escapeHTML(commit.url) + "\">";
 		message += "<font color='606060'>" + Chat.escapeHTML(commit.id.substring(0, 6)) + "</font></a> ";
-		message += "<font color='909090'>" + Chat.escapeHTML(commit.author.name) + "</font>: " + Chat.escapeHTML(shortCommit);
+		message += Gold.nameColor(commit.author.name, true) + ": " + Chat.escapeHTML(shortCommit);
 		messages.push(message);
 	});
 	sendMessages(messages.join("<br>"));
@@ -66,7 +66,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
 		action = 'updated';
 	}
 	if (action === 'labeled') {
-		// Nobody cares about labels
+		action = 'labled';
 		return;
 	}
 	let now = Date.now();
@@ -76,7 +76,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
 	updates[repo][requestNumber] = now;
 	let message = "";
 	message += "[<font color='FF00FF'>" + repo + "</font>] ";
-	message += "<font color='909090'>" + result.sender.login + "</font> ";
+	message += Gold.nameColor(result.sender.login, true) + " ";
 	message += action + " pull request <a href=\"" + url + "\">#" + requestNumber + "</a>: ";
 	message += result.pull_request.title;
 	sendMessages(message);
