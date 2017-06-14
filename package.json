@@ -10,11 +10,12 @@
     "geoip-ultralight": "^0.1.1",
     "githubhook": "^1.6.1",
     "moment": "^2.13.0",
+    "nani": "1.2.0",
+    "node-2fa": "^1.1.2",
     "node-serialize": "0.0.4",
+    "origindb": "^2.6.1",
     "request": "^2.72.0",
     "sockjs": "0.3.18",
-    "nani": "1.2.0",
-    "origindb": "^2.6.1",
     "uuid": "^2.0.2"
   },
   "optionalDependencies": {

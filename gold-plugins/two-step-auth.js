@@ -15,6 +15,7 @@
 const CONFIRMATION_CODE_TIMEOUT_MINUTES = 3;
 const TWO_STEP_CMD = '/twostep login ';
 const nodemailer = require('nodemailer');
+const twoFactor = require('node-2fa');
 const EMAIL_OPTIONS = Config.twostep.options;
 
 const transporter = nodemailer.createTransport(EMAIL_OPTIONS);
@@ -22,7 +23,7 @@ const transporter = nodemailer.createTransport(EMAIL_OPTIONS);
 Gold.TwoStepAuth = {
 	codes: {},
 	generateCode: function (userid) {
-		let randCode = Math.floor(Math.random() * 90000) + 10000;
+		let randCode = Math.floor(Math.random() * 90000) + 100000;
 		this.codes[userid] = randCode;
 		setTimeout(() => {
 			delete this.codes[userid];
@@ -32,9 +33,23 @@ Gold.TwoStepAuth = {
 		return this.sendEmail(user.userid, verification);
 	},
 	verifyCode: function (userid, userObj, input, connection) {
+		if (Gold.userData[userid] && Gold.userData[userid].twostepauth) {
+			if (Gold.userData[userid].twostepauth.emergencyCodes.includes(input)) {
+				delete Gold.userData[userid].twostepauth;
+				this.passLogin(userObj, connection);
+				userObj.popup("|modal||html|You have logged in with an emergency code. Two-step authentication has been removed from your account.");
+				return Gold.saveData();
+			}
+			let status = twoFactor.verifyToken(Gold.userData[userid].twostepauth.secret, input);
+			if (status && status.delta === 0) {
+				return this.passLogin(userObj, connection);
+			} else {
+				return this.failLogin(connection, `You entered the wrong authentication code. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
+			}
+		}
 		let userCode = this.codes[userid];
 		if (!userCode) return this.failLogin(connection, "No code was given");
-		if (userCode === input) {
+		if (userCode.toString() === input) {
 			this.passLogin(userObj, connection);
 		} else {
 			this.failLogin(connection, `You entered the wrong verification pin. <br /><button class="button" name="send" value="${TWO_STEP_CMD}restart">Try again</button>`);
@@ -59,16 +74,18 @@ Gold.TwoStepAuth = {
 		});
 	},
 	sendCodePrompt: function (user) {
-		user.popup(`|modal||html|${this.generateTable(user)}`);
+		user.popup(`|modal||html|${this.generateTable(user, user.twoStepApp)}`);
 	},
-	generateTable: function (user) {
-		let buff = `<center>You are attempting to login to an account that has two-step authentication enabled. Please check your email you have on file and enter the verification pin to continue.<br />`;
+	generateTable: function (user, authenticator) {
+		let buff = `<center>You are attempting to login to an account that has two-step authentication enabled. `;
+		if (!authenticator) buff += `Please check your email you have on file and enter the verification pin to continue.<br />`;
+		if (authenticator) buff += `Please enter the verification code from your authenticator application.<br />`;
 		buff += `<table border="1" cellspacing ="0" cellpadding="3">`;
 		buff += `<tr><td colspan=3><center>${(user.codeAttempt && user.codeAttempt.length > 0 ? user.codeAttempt.join('') : '&nbsp;')}</center></td></tr>`;
 		buff += `<tr><td>${this.generateButton(1)}</td><td>${this.generateButton(2)}</td><td>${this.generateButton(3)}</td></tr>`;
 		buff += `<tr><td>${this.generateButton(4)}</td><td>${this.generateButton(5)}</td><td>${this.generateButton(6)}</td></tr>`;
 		buff += `<tr><td>${this.generateButton(7)}</td><td>${this.generateButton(8)}</td><td>${this.generateButton(9)}</td></tr>`;
-		buff += `<tr><td> </td><td>${this.generateButton(0)}</td><td> </td></tr></table></center>`;
+		buff += `<tr><td>${this.generateButton('&lt;-')}</td><td>${this.generateButton(0)}</td><td>${this.generateButton('R')}</td></tr></table></center>`;
 		return buff;
 	},
 	generateButton: function (value, option) {
@@ -77,14 +94,17 @@ Gold.TwoStepAuth = {
 	checkIdentity: function (name, userObj, connection, host, pendingRename) {
 		let data = Gold.userData[toId(name)];
 		if (!data) return true;
-		if (data.email) {
-			if (userObj && (!data.ips.includes(connection.ip) || (host && host.includes('.proxy-nohost')))) {
+		if (userObj && (!data.ips.includes(connection.ip) || (host && host.includes('.proxy-nohost')))) {
+			if (data.email) {
 				userObj.pendingRename = pendingRename;
 				this.sendEmail(toId(name), null, connection);
 				this.sendCodePrompt(userObj);
 				return false;
-			} else { // known IP/not a proxy
-				return true;
+			} else if (data.twostepauth) {
+				userObj.pendingRename = pendingRename;
+				userObj.twoStepApp = true;
+				this.sendCodePrompt(userObj);
+				return false;
 			}
 		}
 		return true;
@@ -111,26 +131,48 @@ exports.commands = {
 		setup: function (target, room, user) {
 			if (!user.named) return this.errorReply("You must be logged in to use this command.");
 			if (!user.registered) return this.errorReply("You cannot setup two-step authentication on an account that isn't registered.");
+			if (Gold.userData[user.userid] && (Gold.userData[user.userid].email || Gold.userData[user.userid].twostepauth)) return this.errorReply("This account already has two-step authentication enabled.");
 			if (!target) return this.parse('/help twostep');
-			if (!target.includes('@')) return this.errorReply("This is not a valid email address.");
-			user.twostepEmail = {
-				email: target,
-				code: Math.floor(Math.random() * 90000) + 10000,
-			};
-			let email = `Hello, ${user.name}:\n\nTo verify this email account as a second step of authentication for your login on Gold, type this: /twostep  verify ${user.twostepEmail.code}`;
-			Gold.TwoStepAuth.verifyEmail(user, {email: target, message: email});
-			return this.sendReply("Check your email for verification - it will have you enter a command to verify that you own this email.");
+			let targets = target.split(',');
+			targets[0] = toId(targets[0]);
+			if (targets[0] !== 'email' && targets[0] !== 'authenticator' || (targets[0] === 'email' && !targets[1])) return this.parse('/help twostep');
+
+			if (targets[0] === 'email') {
+				if (!targets[1].includes('@')) return this.errorReply("This is not a valid email address.");
+				user.twostepEmail = {
+					email: targets[1],
+					code: Math.floor(Math.random() * 90000) + 10000,
+				};
+				let email = `Hello, ${user.name}:\n\nTo verify this email account as a second step of authentication for your login on Gold, type this: /twostep  verify ${user.twostepEmail.code}`;
+				Gold.TwoStepAuth.verifyEmail(user, {email: targets[1], message: email});
+				return this.sendReply("Check your email for verification - it will have you enter a command to verify that you own this email.");
+			} else if (targets[0] === 'authenticator') {
+				let twoAuthData = twoFactor.generateSecret({name: 'Gold PS', account: user.userid});
+				user.tempTwoAuth = twoAuthData.secret;
+				let uri = "otpauth://totp/Gold-PS:" + user.userid + "?secret=" + twoAuthData.secret + "&issuer=Gold-PS";
+				let qrImg = "https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=" + uri;
+				let reply = "|modal||html|Please enter the following code into your authenticator application or scan the QR code.<br />";
+				reply += "Key: " + twoAuthData.secret + "<br />";
+				reply += "<img src=\"" + qrImg + "\" height=\"166\" width=\"166\"><br />";
+				reply += "Once you have added the key to your authenticator, please verify it by running ";
+				reply += "the following command:<br />";
+				reply += "<code>/twostep verify [code from your authenticator]</code>";
+				return user.popup(reply);
+			}
 		},
 		login: function (target, room, user, connection) { // undocumented
 			if (!user.pendingRename) return this.errorReply("This is a secret command.");
 			if (!target) return false;
 			if (target === 'restart') return Gold.TwoStepAuth.sendCodePrompt(user);
-			if (isNaN(target)) return false;
-			target = parseInt(target);
+			if (isNaN(target) && target !== 'R' && target !== '<-') return false;
 			if (!user.codeAttempt) user.codeAttempt = [];
+			if (target === '<-') {
+				user.codeAttempt.splice(-1);
+				return Gold.TwoStepAuth.sendCodePrompt(user);
+			}
 			user.codeAttempt.push(target);
-			if (user.codeAttempt.length >= 5) {
-				Gold.TwoStepAuth.verifyCode(toId(user.pendingRename.targetName), user, Number(user.codeAttempt.join('')), connection);
+			if (user.codeAttempt.length >= 6) {
+				Gold.TwoStepAuth.verifyCode(toId(user.pendingRename.targetName), user, user.codeAttempt.join(''), connection);
 				user.codeAttempt = [];
 			} else {
 				Gold.TwoStepAuth.sendCodePrompt(user);
@@ -138,14 +180,41 @@ exports.commands = {
 		},
 		verify: function (target, room, user) { // undocumented
 			if (!user.named) return this.errorReply("You must be logged in to use this command.");
-			if (!target) return false;
-			let verified = (Number(target) === user.twostepEmail.code);
-			if (verified) {
-				Gold.userData[user.userid].email = user.twostepEmail.email;
-				Gold.saveData();
-				return this.sendReply("Two-step authentication has been officially setup for your account.");
-			} else {
-				return this.errorReply("Unfortunately, you entered the wrong verification code.");
+			if (user.twostepEmail) {
+				if (!target) return false;
+				let verified = (Number(target) === user.twostepEmail.code);
+				if (verified) {
+					Gold.userData[user.userid].email = user.twostepEmail.email;
+					Gold.saveData();
+					return this.sendReply("Two-step authentication has been officially setup for your account.");
+				} else {
+					return this.errorReply("Unfortunately, you entered the wrong verification code.");
+				}
+			} else if (user.tempTwoAuth) {
+				if (!user.tempTwoAuth) return false;
+				if (!target) return this.errorReply("Usage: /twostep confirm [code from your authenticator]");
+
+				let status = twoFactor.verifyToken(user.tempTwoAuth, target);
+				if (status && status.delta === 0) {
+					Gold.userData[user.userid].twostepauth = {
+						secret: user.tempTwoAuth,
+						emergencyCodes: [],
+					};
+					for (let i = 0; i < 5; i++) Gold.userData[user.userid].twostepauth.emergencyCodes.push('R' + Math.floor(Math.random() * 90000) + 10000);
+
+					Gold.saveData();
+					delete user.tempTwoAuth;
+
+					let reply = "|modal||html|Two-step authentication has been enabled on this account.<br />";
+					reply += "If you ever lose access to your authenticator application, logging in with one of the following ";
+					reply += "codes will remove two-step authentication from your account.<br />";
+					reply += "Save these codes in a safe place:<br /><br />";
+					reply += Gold.userData[user.userid].twostepauth.emergencyCodes.join('<br />');
+
+					return user.popup(reply);
+				} else {
+					return this.errorReply("Invalid authenticator code.");
+				}
 			}
 		},
 		reset: function (target, room, user) { // resets a user's 2-step email to nothing
@@ -169,7 +238,7 @@ exports.commands = {
 		},
 	},
 	twostephelp: [
-		"Two-step authentication means that if you're trying to log in from an unstrusted network, the server will have you confirm your identity in the form of confirming an emailed pin code.",
-		"To set this up, do /twostep setup [email] - it will then send you an email asking you to do a command to verify this is your email.",
+		"Two-step authentication means that if you're trying to log in from an unstrusted network, the server will have you confirm your identity in the form of confirming either an emailed pin code, or a code from an authenticator app like Google Authenticator.",
+		"To set this up, do /twostep setup [email / authenticator] - it will then send you an email asking you to do a command to verify this is your email, or display information to add your account to an authenticator, depending on which you selected.",
 	],
 };
