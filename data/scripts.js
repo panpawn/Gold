@@ -2296,7 +2296,6 @@ exports.BattleScripts = {
 			NU: 81,
 			BL3: 80,
 			RU: 79,
-			New: 79,
 			BL2: 78,
 			UU: 77,
 			BL: 76,
@@ -3585,18 +3584,27 @@ exports.BattleScripts = {
 		// let flags = this.randomBSSFactorySets[tier][speciesId].flags;
 		let setList = this.randomBSSFactorySets[tier][speciesId].sets;
 		let effectivePool, priorityPool;
-		// arificially replicate Item Clause
-		let itemsMax = {"aguavberry":1, "alakazite":1, "assaultvest":1, "beedrillite":1, "blacksludge":1, "blastoisinite":1, "charizarditex":1, "chestoberry":1, "choiceband":1, "choicescarf":1, "choicespecs":1, "eeviumz":1, "ejectbutton":1, "electricmemory":1, "electriumz":1, "eviolite":1, "fightingmemory":1, "figyberry":1, "firiumz":1, "flameorb":1, "flyiniumz":1, "focussash":1, "gengarite":1, "ghostiumz":1, "groundmemory":1, "heatrock":1, "heracronite":1, "iapapaberry":1, "kangaskhanite":1, "keeberry":1, "leftovers":1, "lifeorb":1, "lightclay":1, "lucarionite":1, "mawilite":1, "medichamite":1, "metagrossite":1, "normaliumz":1, "occaberry":1, "pidgeotite":1, "pinsirite":1, "primariumz":1, "redcard":1, "rockiumz":1, "rockyhelmet":1, "salamencite":1, "scizorite":1, "sharpedonite":1, "sitrusberry":1, "slowbronite":1, "smoothrock":1, "steelmemory":1, "steelixite":1, "thickclub":1, "toxicorb":1, "venusaurite":1, "wateriumz":1, "weaknesspolicy":1};
+		// artificially replicate Item Clause
+		let itemsMax = {
+			aguavberry:1, airballoon:1, alakazite:1, assaultvest:1, beedrillite:1, blacksludge:1, blastoisinite:1, blazikenite:1,
+			buginiumz:1, charizarditex:1, charizarditey:1, chestoberry:1, choiceband:1, choicescarf:1, choicespecs:1, darkiniumz:1,
+			dragoniumz:1, eeviumz:1, ejectbutton:1, electricmemory:1, electricseed:1, electriumz:1, eviolite:1, expertbelt:1, fairiumz:1,
+			fightingmemory:1, fightiniumz:1, figyberry:1, firiumz:1, fistplate:1, flameorb:1, flyiniumz:1, focussash:1, gengarite:1,
+			ghostiumz:1, glalitite:1, grassiumz:1, groundiumz:1, groundmemory:1, gyaradosite:1, heatrock:1, heracronite:1, iapapaberry:1,
+			iciumz:1, kangaskhanite:1, keeberry:1, kingsrock:1, leftovers:1, lifeorb:1, lightball:1, lightclay:1, lucarionite:1, lumberry:1,
+			magoberry:1, mawilite:1, medichamite:1, mentalherb:1, metagrossite:1, normaliumz:1, occaberry:1, pidgeotite:1, pinsirite:1,
+			poisoniumz:1, primariumz:1, psychiumz:1, redcard:1, rockiumz:1, rockyhelmet:1, safetygoggles:1, salacberry:1, salamencite:1,
+			scizorite:1, scopelens:1, sharpedonite:1, shucaberry:1, sitrusberry:1, slowbronite:1, smoothrock:1, steeliumz:1, steelixite:1,
+			steelmemory:1, tapuniumz:1, thickclub:1, toxicorb:1, venusaurite:1, wateriumz:1, weaknesspolicy:1, wikiberry:1,
+		};
 
 		let movesMax = {'batonpass':1, 'stealthrock':1, 'spikes':1, 'toxicspikes':1, 'doubleedge':1, 'trickroom':1};
 		let requiredMoves = {};
 		let weatherAbilitiesRequire = {
-			'hydration': 'raindance', 'swiftswim': 'raindance',
-			'leafguard': 'sunnyday', 'solarpower': 'sunnyday', 'chlorophyll': 'sunnyday',
-			'sandforce': 'sandstorm', 'sandrush': 'sandstorm', 'sandveil': 'sandstorm',
-			'snowcloak': 'hail',
+			'swiftswim': 'raindance',
+			'sandrush': 'sandstorm', 'sandveil': 'sandstorm',
 		};
-		let weatherAbilitiesSet = {'drizzle':1, 'drought':1, 'snowwarning':1, 'sandstream':1};
+		let weatherAbilitiesSet = {'drizzle':1, 'sandstream':1};
 
 		// Build a pool of eligible sets, given the team partners
 		// Also keep track of sets with moves the team requires
@@ -3677,7 +3685,7 @@ exports.BattleScripts = {
 		let teamData = {typeCount: {}, typeComboCount: {}, baseFormes: {}, megaCount: 0, zCount: 0, has: {}, forceResult: forceResult, weaknesses: {}, resistances: {}};
 		let requiredMoveFamilies = {};
 		let requiredMoves = {};
-		let weatherAbilitiesSet = {'drizzle': 'raindance', 'drought': 'sunnyday', 'snowwarning': 'hail', 'sandstream': 'sandstorm'};
+		let weatherAbilitiesSet = {'drizzle': 'raindance', 'sandstream': 'sandstorm'};
 		let resistanceAbilities = {
 			'dryskin': ['Water'], 'waterabsorb': ['Water'], 'stormdrain': ['Water'],
 			'flashfire': ['Fire'], 'heatproof': ['Fire'],

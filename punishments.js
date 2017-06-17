@@ -394,6 +394,20 @@ setImmediate(() => {
  * @param {?Set<string>} recursionKeys
  */
 Punishments.punish = function (user, punishment, recursionKeys) {
+	let existingPunishment = Punishments.userids.get(toId(user.name));
+	if (existingPunishment) {
+		// don't reduce the duration of an existing punishment
+		if (existingPunishment[2] > punishment[2]) {
+			punishment[2] = existingPunishment[2];
+		}
+
+		// don't override stronger punishment types
+		const types = ['LOCK', 'NAMELOCK', 'BAN'];
+		if (types.indexOf(existingPunishment[0]) > types.indexOf(punishment[0])) {
+			punishment[0] = existingPunishment[0];
+		}
+	}
+
 	let keys = recursionKeys || new Set();
 
 	if (!recursionKeys) {
@@ -868,6 +882,45 @@ Punishments.removeSharedIp = function (ip) {
 /*********************************************************
  * Checking
  *********************************************************/
+
+Punishments.search = function (searchId) {
+	const foundKeys = [];
+	let foundRest = null;
+	Punishments.ips.forEach((punishment, ip) => {
+		const [, id, ...rest] = punishment;
+
+		if (searchId === id || searchId === ip) {
+			foundKeys.push(ip);
+			foundRest = rest;
+		}
+	});
+	Punishments.userids.forEach((punishment, userid) => {
+		const [, id, ...rest] = punishment;
+
+		if (searchId === id || searchId === userid) {
+			foundKeys.push(userid);
+			foundRest = rest;
+		}
+	});
+	Punishments.roomIps.nestedForEach((punishment, roomid, ip) => {
+		const [, punishUserid, ...rest] = punishment;
+
+		if (searchId === punishUserid || searchId === ip) {
+			foundKeys.push(ip + ':' + roomid);
+			foundRest = rest;
+		}
+	});
+	Punishments.roomUserids.nestedForEach((punishment, roomid, userid) => {
+		const [, punishUserid, ...rest] = punishment;
+
+		if (searchId === punishUserid || searchId === userid) {
+			foundKeys.push(userid + ':' + roomid);
+			foundRest = rest;
+		}
+	});
+
+	return [foundKeys, foundRest];
+};
 
 /**
  * @param {string} name

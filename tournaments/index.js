@@ -1094,6 +1094,20 @@ let commands = {
 		acceptchallenge: function (tournament, user) {
 			tournament.acceptChallenge(user, this);
 		},
+		vtm: function (tournament, user, params, cmd, connection) {
+			if (tournament.banlist.length < 1) return this.parse("/vtm " + tournament.teambuilderFormat);
+			if (Monitor.countPrepBattle(connection.ip, connection)) {
+				return;
+			}
+			TeamValidator(tournament.teambuilderFormat, tournament.banlist).prepTeam(user.team).then(result => {
+				if (result.charAt(0) === '1') {
+					connection.popup("Your team is valid for this tournament.");
+				} else {
+					const format = Dex.getFormat(tournament.teambuilderFormat).name.replace(/\[/, "\\[").replace(/\]/, "\\]");
+					connection.popup("Your team was rejected for the following reasons:\n\n- " + result.slice(1).replace(/\n/g, '\n- ').replace(new RegExp(format, "g"), "this tournament"));
+				}
+			});
+		},
 		viewruleset: 'viewbanlist',
 		viewbanlist: function (tournament) {
 			if (!this.runBroadcast()) return;
@@ -1153,9 +1167,7 @@ let commands = {
 				return this.errorReply("The tournament's banlist is already empty.");
 			}
 			tournament.banlist = [];
-			tournament.format = tournament.teambuilderFormat;
 			this.room.addRaw("<b>The tournament's banlist was cleared.</b>");
-			this.room.send('|tournament|update|' + JSON.stringify({format: tournament.format}));
 			this.privateModCommand("(" + user.name + " cleared the tournament's banlist.)");
 		},
 		name: 'setname',
@@ -1163,9 +1175,6 @@ let commands = {
 		setname: function (tournament, user, params, cmd) {
 			if (params.length < 1) {
 				return this.sendReply("Usage: " + cmd + " <comma-separated arguments>");
-			}
-			if (tournament.banlist.length < 1) {
-				return this.errorReply("The tournament cannot be named unless it has a banlist.");
 			}
 			const name = Chat.escapeHTML(params[0].trim());
 			if (!name.length) return this.errorReply("The tournament's name cannot be blank.");
@@ -1382,7 +1391,7 @@ Chat.loadCommands();
 Chat.commands.tour = 'tournament';
 Chat.commands.tours = 'tournament';
 Chat.commands.tournaments = 'tournament';
-Chat.commands.tournament = function (paramString, room, user) {
+Chat.commands.tournament = function (paramString, room, user, connection) {
 	let cmdParts = paramString.split(' ');
 	let cmd = cmdParts.shift().trim().toLowerCase();
 	let params = cmdParts.join(' ').split(',').map(param => param.trim());
@@ -1503,7 +1512,7 @@ Chat.commands.tournament = function (paramString, room, user) {
 		if (!commandHandler) {
 			this.errorReply(cmd + " is not a tournament command.");
 		} else {
-			commandHandler.call(this, tournament, user, params, cmd);
+			commandHandler.call(this, tournament, user, params, cmd, connection);
 		}
 	}
 };
@@ -1515,7 +1524,7 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		"- banlist &lt;comma-separated arguments>: Sets the supplementary banlist for the tournament before it has started.<br />" +
 		"- viewbanlist: Shows the supplementary banlist for the tournament.<br />" +
 		"- clearbanlist: Clears the supplementary banlist for the tournament before it has started.<br />" +
-		"- name &lt;name>: Sets a custom name for the tournament if it has a supplementary banlist.<br />" +
+		"- name &lt;name>: Sets a custom name for the tournament.<br />" +
 		"- clearname: Clears the custom name of the tournament.<br />" +
 		"- end/stop/delete: Forcibly ends the tournament in the current room.<br />" +
 		"- begin/start: Starts the tournament in the current room.<br />" +

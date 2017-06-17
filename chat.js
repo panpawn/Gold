@@ -750,7 +750,7 @@ class CommandContext {
 
 			if (room) {
 				let normalized = message.trim();
-				if (room.id === 'lobby' && (normalized === user.lastMessage) &&
+				if ((room.id === 'lobby' || room.id === 'help') && (normalized === user.lastMessage) &&
 						((Date.now() - user.lastMessageTime) < MESSAGE_COOLDOWN)) {
 					this.errorReply("You can't send the same message again so soon.");
 					return false;
@@ -997,6 +997,17 @@ Chat.escapeHTML = function (str) {
 };
 
 /**
+ * Strips HTML from a string.
+ *
+ * @param {string} html
+ * @return {string}
+ */
+Chat.stripHTML = function (html) {
+	if (!html) return '';
+	return html.replace(/<[^>]*>/g, '');
+};
+
+/**
  * Template string tag function for escaping HTML
  *
  * @param  {string[]} strings
@@ -1156,4 +1167,16 @@ Chat.parseText = function (str) {
 	let result = output[0];
 
 	return result;
+};
+
+/**
+ * Takes an array and turns it into a sentence string by adding commas and the word 'and' at the end
+ *
+ * @param  {array} array
+ * @return {string}
+ */
+Chat.toListString = function (array) {
+	if (!array.length) return '';
+	if (array.length === 1) return array[0];
+	return `${array.slice(0, -1).join(", ")} and ${array.slice(-1)}`;
 };
