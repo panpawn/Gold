@@ -50,7 +50,7 @@ function formatHTML(message) {
 				continue;
 			}
 		}
-		total += '<span style = "color: ' + getColor() + '">' + Chat.escapeHTML(message[i])+ '</span>';
+		total += '<span style = "color: ' + getColor() + '">' + Chat.escapeHTML(message[i]) + '</span>';
 	}
 	return total;
 }
