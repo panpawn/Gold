@@ -37,6 +37,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen7',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
 		banlist: ['Uber', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
 	},
@@ -626,6 +627,7 @@ exports.Formats = [
 		desc: ["&bullet; <a href=\"https://www.smogon.com/forums/threads/3604732/\">Blind BW</a>"],
 
 		mod: 'gen5',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard', 'Evasion Abilities Clause', 'Baton Pass Clause', 'Swagger Clause'],
 		banlist: ['Uber', 'Drizzle ++ Swift Swim', 'Drought ++ Chlorophyll', 'Sand Stream ++ Sand Rush', 'Soul Dew'],
 	},
@@ -929,6 +931,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen5',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard', 'Evasion Abilities Clause', 'Baton Pass Clause', 'Swagger Clause', 'Team Preview'],
 		banlist: ['Uber', 'Drizzle ++ Swift Swim', 'Drought ++ Chlorophyll', 'Sand Stream ++ Sand Rush', 'Soul Dew'],
 	},
@@ -1086,6 +1089,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen4',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard', 'Evasion Abilities Clause'],
 		banlist: ['Uber'],
 	},
@@ -1163,6 +1167,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen3',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard'],
 		banlist: ['Uber', 'Smeargle + Ingrain'],
 	},
@@ -1193,6 +1198,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen2',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard'],
 		banlist: ['Uber'],
 	},
@@ -1231,6 +1237,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen1',
+		allowTies: true,
 		ruleset: ['Pokemon', 'Standard'],
 		banlist: ['Uber'],
 	},
@@ -1249,6 +1256,7 @@ exports.Formats = [
 		name: "[Gen 1] OU (tradeback)",
 
 		mod: 'gen1',
+		allowTies: true,
 		searchShow: false,
 		ruleset: ['Pokemon', 'Allow Tradeback', 'Sleep Clause Mod', 'Freeze Clause Mod', 'Species Clause', 'OHKO Clause', 'Evasion Moves Clause', 'HP Percentage Mod', 'Cancel Mod'],
 		banlist: ['Uber', 'Unreleased', 'Illegal',

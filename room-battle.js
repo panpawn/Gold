@@ -102,6 +102,9 @@ class BattlePlayer {
 		let user = Users(this.userid);
 		if (user) user.sendTo(this.game.id, data);
 	}
+	sendError(data) {
+		this.sendRoom(Chat.html`|html|<div class="message-error">${data}</div>`);
+	}
 	simSend(action, ...rest) {
 		this.game.send(action, this.slot, ...rest);
 	}
@@ -301,6 +304,7 @@ class Battle {
 		this.started = false;
 		this.ended = false;
 		this.active = false;
+		this.tieRequests = [];
 
 		this.players = Object.create(null);
 		this.playerCount = 0;
@@ -374,6 +378,36 @@ class Battle {
 		request[3] = choice;
 
 		this.sendFor(user, 'choose', choice);
+	}
+	requestTie(user, room, cmd) {
+		const player = this.players[user];
+		const REQUEST_TIMEOUT_MINUTES = 1;
+		if (!player) return user.sendTo(room, `|error|Only players of this battle can request a tie.`);
+
+		const allowTie = Dex.getFormat(this.format).allowTies;
+		if (!allowTie) return player.sendError(`This tier does not allow ties.`);
+		if (this.ended) return player.sendError(`This battle has already ended.`);
+		if (this.tieRequests.includes(user.userid)) return player.sendError(`You have already requested this battle end in a tie.`);
+
+		if (!user.lastCommand || user.lastCommand !== cmd) {
+			player.sendError(`You are about to request that this battle ends in a tie.  To tie, your opponent must also agree to this as well.`);
+			player.sendError(`In order to proceed with requesting to tie, use /${cmd} again.`);
+			user.lastCommand = cmd;
+			return;
+		}
+		user.lastCommand = '';
+
+		this.tieRequests.push(user.userid);
+
+		setTimeout(() => {// automatically remove request
+			this.tieRequests.splice(this.tieRequests.indexOf(user.userid), 1);
+		}, REQUEST_TIMEOUT_MINUTES * 60000);
+
+		if (this.tieRequests.length >= 2) {
+			// two (or more) players have agreed to tie
+			this.tie();
+		}
+		return room.add(Chat.html`${user.getIdentity(room)} has requested to tie by using /${cmd}. This request will automatically expire in ${REQUEST_TIMEOUT_MINUTES} minute${Chat.plural(REQUEST_TIMEOUT_MINUTES)}.`);
 	}
 	undo(user, data) {
 		const player = this.players[user];
