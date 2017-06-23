@@ -384,8 +384,8 @@ class Battle {
 		const REQUEST_TIMEOUT_MINUTES = 1;
 		if (!player) return user.sendTo(room, `|error|Only players of this battle can request a tie.`);
 
-		const allowTie = Dex.getFormat(this.format).allowTies;
-		if (!allowTie) return player.sendError(`This tier does not allow ties.`);
+		//const allowTie = Dex.getFormat(this.format).allowTies;
+		//if (!allowTie) return player.sendError(`This tier does not allow ties.`);
 		if (this.ended) return player.sendError(`This battle has already ended.`);
 		if (this.tieRequests.includes(user.userid)) return player.sendError(`You have already requested this battle end in a tie.`);
 
