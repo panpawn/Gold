@@ -3097,6 +3097,7 @@ exports.commands = {
 		room.game.choose(user, 'team ' + target);
 	},
 
+	tie: 'requesttie',
 	offerdraw: 'requesttie',
 	requesttie: function (target, room, user, connection, cmd) {
 		if (!room.game) return this.errorReply("This room doesn't have an active game.");
