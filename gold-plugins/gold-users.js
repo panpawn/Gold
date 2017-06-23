@@ -370,7 +370,6 @@ try {
 			const staffRanks = (upper ? ['&', '~'] : ['%', '@', '&', '~']);
 
 			fs.readFile('config/usergroups.csv', 'utf8', function (err, data) {
-
 				let row = ('' + data).split('\n');
 				for (let i = row.length; i > -1; i--) {
 					if (!row[i]) continue;

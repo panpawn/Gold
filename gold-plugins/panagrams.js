@@ -29,7 +29,7 @@ let Panagram = (function () {
 	function Panagram(room, sessions) {
 		this.sessions = sessions;
 		this.room = room;
-		let dex = Tools.data.Pokedex;
+		let dex = Dex.data.Pokedex;
 		do {
 			this.answer = dex[Object.keys(dex)[Math.floor(Math.random() * Object.keys(dex).length)]];
 		} while (this.answer.num < 1 || this.answer.forme);
@@ -48,7 +48,7 @@ let Panagram = (function () {
 		].join('<br>');
 
 		this.room.chat = function (user, message, connection) {
-			if (Tools.data.Pokedex[toId(message)] && message.match(/^[a-z ]/i)) message = '/gp ' + message;
+			if (Dex.data.Pokedex[toId(message)] && message.match(/^[a-z ]/i)) message = '/gp ' + message;
 			message = Chat.parse(message, this, user, connection);
 
 			if (message && message !== true) {
@@ -126,9 +126,9 @@ exports.commands = {
 		if (!this.canTalk()) return;
 
 		if (!target) return this.sendReply('|html|/' + cmd + ' <em>Pokémon Name</em> - Guesses a Pokémon in a game of Panagram.');
-		if (!Tools.data.Pokedex[toId(target)]) return this.sendReply("'" + target + "' is not a valid Pokémon.");
+		if (!Dex.data.Pokedex[toId(target)]) return this.sendReply("'" + target + "' is not a valid Pokémon.");
 
-		let guess = Tools.data.Pokedex[toId(target)];
+		let guess = Dex.data.Pokedex[toId(target)];
 		if (guess.num < 1 || guess.forme) return this.sendReply(guess.species + ' is either an alternate form or doesn\'t exist in the games. They cannot be guessed.');
 		if (toId(guess.species) in pGames[room.id].guessed) return this.sendReply('That Pokémon has already been guessed!');
 
