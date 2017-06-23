@@ -725,11 +725,15 @@ function runDexsearch(target, cmd, canAll, message) {
 
 	let resultsStr = (message === "" ? message : "<span style=\"color:#999999;\">" + escapeHTML(message) + ":</span><br />");
 	if (results.length > 1) {
-		if (showAll || results.length <= RESULTS_MAX_LENGTH + 5) {
-			results.sort();
-			resultsStr += results.join(", ");
-		} else {
-			resultsStr += results.slice(0, RESULTS_MAX_LENGTH).join(", ") + ", and " + (results.length - RESULTS_MAX_LENGTH) + " more. <span style=\"color:#999999;\">Redo the search with 'all' as a search parameter to show all results.</span>";
+		results.sort();
+		let notShown = 0;
+		if (!showAll && results.length > RESULTS_MAX_LENGTH + 5) {
+			notShown = results.length - RESULTS_MAX_LENGTH;
+			results = results.slice(0, RESULTS_MAX_LENGTH);
+		}
+		resultsStr += results.map(result => `<a href="//dex.pokemonshowdown.com/pokemon/${toId(result)}" target="_blank" class="subtle" style="white-space:nowrap"><psicon pokemon="${result}" style="vertical-align:-7px;margin:-2px" />${result}</a>`).join(", ");
+		if (notShown) {
+			resultsStr += `, and ${notShown} more. <span style="color:#999999;">Redo the search with ', all' at the end to show all results.</span>`;
 		}
 	} else if (results.length === 1) {
 		return {dt: results[0]};
@@ -1173,11 +1177,15 @@ function runMovesearch(target, cmd, canAll, message) {
 		results = Dex.shuffle(results).slice(0, randomOutput);
 	}
 	if (results.length > 1) {
-		if (showAll || results.length <= RESULTS_MAX_LENGTH + 5) {
-			results.sort();
-			resultsStr += results.join(", ");
-		} else {
-			resultsStr += results.slice(0, RESULTS_MAX_LENGTH).join(", ") + ", and " + (results.length - RESULTS_MAX_LENGTH) + " more. <span style=\"color:#999999;\">Redo the search with 'all' as a search parameter to show all results.</span>";
+		results.sort();
+		let notShown = 0;
+		if (!showAll && results.length > RESULTS_MAX_LENGTH + 5) {
+			notShown = results.length - RESULTS_MAX_LENGTH;
+			results = results.slice(0, RESULTS_MAX_LENGTH);
+		}
+		resultsStr += results.map(result => `<a href="//dex.pokemonshowdown.com/moves/${toId(result)}" target="_blank" class="subtle" style="white-space:nowrap">${result}</a>`).join(", ");
+		if (notShown) {
+			resultsStr += `, and ${notShown} more. <span style="color:#999999;">Redo the search with ', all' at the end to show all results.</span>`;
 		}
 	} else if (results.length === 1) {
 		return {dt: results[0]};
@@ -1196,7 +1204,7 @@ function runItemsearch(target, cmd, canAll, message) {
 		target = target.substr(0, target.length - 5);
 	}
 
-	target = target.toLowerCase().replace('-', ' ').replace(/[^a-z0-9.\s\/]/g, '');
+	target = target.toLowerCase().replace('-', ' ').replace(/[^a-z0-9.\s/]/g, '');
 	let rawSearch = target.split(' ');
 	let searchedWords = [];
 	let foundItems = [];
@@ -1260,7 +1268,7 @@ function runItemsearch(target, cmd, canAll, message) {
 		case 'burns': newWord = 'burn'; break;
 		case 'poisons': newWord = 'poison'; break;
 		default:
-			if (/x[\d\.]+/.test(newWord)) {
+			if (/x[\d.]+/.test(newWord)) {
 				newWord = newWord.substr(1) + 'x';
 			}
 		}
@@ -1354,10 +1362,10 @@ function runItemsearch(target, cmd, canAll, message) {
 			// splits words in the description into a toId()-esk format except retaining / and . in numbers
 			let descWords = item.desc;
 			// add more general quantifier words to descriptions
-			if (/[1-9\.]+x/.test(descWords)) descWords += ' increases';
+			if (/[1-9.]+x/.test(descWords)) descWords += ' increases';
 			if (item.isBerry) descWords += ' berry';
-			descWords = descWords.replace(/super[\-\s]effective/g, 'supereffective');
-			descWords = descWords.toLowerCase().replace('-', ' ').replace(/[^a-z0-9\s\/]/g, '').replace(/(\D)\./, (p0, p1) => p1).split(' ');
+			descWords = descWords.replace(/super[-\s]effective/g, 'supereffective');
+			descWords = descWords.toLowerCase().replace('-', ' ').replace(/[^a-z0-9\s/]/g, '').replace(/(\D)\./, (p0, p1) => p1).split(' ');
 
 			for (let k = 0; k < searchedWords.length; k++) {
 				if (descWords.includes(searchedWords[k])) matched++;
@@ -1372,10 +1380,10 @@ function runItemsearch(target, cmd, canAll, message) {
 			let item = Dex.getItem(foundItems[l]);
 			let matched = 0;
 			let descWords = item.desc;
-			if (/[1-9\.]+x/.test(descWords)) descWords += ' increases';
+			if (/[1-9.]+x/.test(descWords)) descWords += ' increases';
 			if (item.isBerry) descWords += ' berry';
-			descWords = descWords.replace(/super[\-\s]effective/g, 'supereffective');
-			descWords = descWords.toLowerCase().replace('-', ' ').replace(/[^a-z0-9\s\/]/g, '').replace(/(\D)\./, (p0, p1) => p1).split(' ');
+			descWords = descWords.replace(/super[-\s]effective/g, 'supereffective');
+			descWords = descWords.toLowerCase().replace('-', ' ').replace(/[^a-z0-9\s/]/g, '').replace(/(\D)\./, (p0, p1) => p1).split(' ');
 
 			for (let k = 0; k < searchedWords.length; k++) {
 				if (descWords.includes(searchedWords[k])) matched++;
@@ -1390,11 +1398,15 @@ function runItemsearch(target, cmd, canAll, message) {
 
 	let resultsStr = (message === "" ? message : "<span style=\"color:#999999;\">" + escapeHTML(message) + ":</span><br />");
 	if (foundItems.length > 0) {
-		if (showAll || foundItems.length <= RESULTS_MAX_LENGTH + 5) {
-			foundItems.sort();
-			resultsStr += foundItems.join(", ");
-		} else {
-			resultsStr += foundItems.slice(0, RESULTS_MAX_LENGTH).join(", ") + ", and " + (foundItems.length - RESULTS_MAX_LENGTH) + " more. <span style=\"color:#999999;\">Redo the search with ', all' at the end to show all results.</span>";
+		foundItems.sort();
+		let notShown = 0;
+		if (!showAll && foundItems.length > RESULTS_MAX_LENGTH + 5) {
+			notShown = foundItems.length - RESULTS_MAX_LENGTH;
+			foundItems = foundItems.slice(0, RESULTS_MAX_LENGTH);
+		}
+		resultsStr += foundItems.map(result => `<a href="//dex.pokemonshowdown.com/items/${toId(result)}" target="_blank" class="subtle" style="white-space:nowrap"><psicon item="${result}" style="vertical-align:-7px" />${result}</a>`).join(", ");
+		if (notShown) {
+			resultsStr += `, and ${notShown} more. <span style="color:#999999;">Redo the search with ', all' at the end to show all results.</span>`;
 		}
 	} else {
 		resultsStr += "No items found. Try a more general search";
