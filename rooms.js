@@ -1128,6 +1128,7 @@ class ChatRoom extends Room {
 		this.logFile = null;
 		this.logFilename = '';
 		this.destroyingLog = false;
+		this.creation = Date.now();
 		if (this.auth) Object.setPrototypeOf(this.auth, null);
 		if (!this.modchat) this.modchat = (Config.chatmodchat || false);
 		if (!this.modjoin) this.modjoin = false;
