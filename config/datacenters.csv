@@ -2072,6 +2072,7 @@
 178.22.80.0,178.22.87.255,prolocation.net,http://prolocation.net/
 178.32.0.0,178.33.255.255,OVH,http://www.ovh.co.uk/
 178.62.0.0,178.62.127.255,DigitalOcean England,https://www.digitalocean.com/
+178.62.128.0,178.62.255.255,DigitalOcean Amsterdam,https://www.digitalocean.com/
 178.63.0.0,178.63.255.255,Hetzner Online AG,http://www.hetzner.de/
 178.73.192.0,178.73.255.255,Portlane,http://www.portlane.com/
 178.77.64.0,178.77.127.255,Host Europe,http://www.hosteurope.de/
@@ -2251,7 +2252,7 @@
 188.126.64.0,188.126.95.255,Portlane,http://www.portlane.com/
 188.138.0.0,188.138.127.255,plusserver.de,http://plusserver.de/
 188.165.0.0,188.165.255.255,OVH,http://www.ovh.co.uk/
-188.166.0.0,188.166.127.255,DigitalOcean Netherlands,https://www.digitalocean.com/
+188.166.0.0,188.166.255.255,DigitalOcean Europe,https://www.digitalocean.com/
 188.172.0.0,188.172.255.255,xservers.ro,http://www.xservers.ro/
 188.190.96.0,188.190.127.255,infiumhost.com,http://infiumhost.com/
 188.214.128.0,188.214.135.255,Duomenu Centras Lithuania,http://www.duomenucentras.lt/lt/
