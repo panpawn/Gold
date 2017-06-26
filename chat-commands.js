@@ -2838,7 +2838,8 @@ exports.commands = {
 	},
 	killhelp: ["/kill - kills the server. Can't be done unless the server is in lockdown state. Requires: ~"],
 
-/*	loadbanlist: function (target, room, user, connection) {
+	/*
+	loadbanlist: function (target, room, user, connection) {
 		if (!this.can('hotpatch')) return false;
 
 		connection.sendTo(room, "Loading ipbans.txt...");
@@ -2847,7 +2848,8 @@ exports.commands = {
 			error => connection.sendTo(room, "Something went wrong while loading ipbans.txt: " + error)
 		);
 	},
-	loadbanlisthelp: ["/loadbanlist - Loads the bans located at ipbans.txt. The command is executed automatically at startup. Requires: ~"],*/
+	loadbanlisthelp: ["/loadbanlist - Loads the bans located at ipbans.txt. The command is executed automatically at startup. Requires: ~"],
+	*/
 
 	refreshpage: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;

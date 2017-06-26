@@ -56,6 +56,7 @@ exports.commands = {
 			return '<a href="' + link + '" target="_blank">' + formatted + '</a>';
 		}
 		function moneyCheck(price) {
+			if (price === 'FREE') return true;
 			if (Gold.readMoney(user.userid) < price) return false;
 			if (Gold.readMoney(user.userid) >= price) return true;
 		}
@@ -68,13 +69,12 @@ exports.commands = {
 		}
 		function processPurchase(price, item, desc) {
 			if (!desc) desc = '';
-			if (Gold.readMoney(user.userid) < price) return false; // this should never happen
-			Gold.updateMoney(user.userid, -price);
+			if (Gold.readMoney(user.userid) < price && price !== 'FREE') return false; // this should never happen
+			if (price !== 'FREE') Gold.updateMoney(user.userid, -price);
 			logTransaction(user.name + ' has purchased a(n) ' + item + '. ' + desc);
 		}
 
 		switch (toId(parts[0])) {
-
 		case 'symbol':
 			price = prices['symbol'];
 			if (Gold.hasVip(user.userid)) return this.errorReply("You are a VIP user - you do not need to buy custom symbols from the shop.  Use /customsymbol to change your symbol.");
@@ -425,7 +425,7 @@ exports.commands = {
 		let regex = new RegExp(target.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "gi");
 
 		if (word) {
-			output += 'Displaying last 50 lines containing "' + target + '":\n';
+			output += `Displaying last 50 lines containing "${target}":\n`;
 			for (let line in lines) {
 				if (count >= 50) break;
 				if (!~lines[line].search(regex)) continue;
@@ -496,12 +496,12 @@ function logTransaction(message) {
 
 function updatePrices() {
 	let avg = Gold.moneyCirculating()[1];
-	prices = {
+	prices = { // 'FREE' is now supported
 		'symbol': Math.round(avg * 0.035),
 		// 'declare': Math.round(avg * 0.19),
 		'fix': Math.round(avg * 0.2),
-		'custom': Math.round(avg * 0.55),
-		'animated': Math.round(avg * 0.65),
+		'custom': 'FREE', // Math.round(avg * 0.55),
+		'animated': 'FREE', // Math.round(avg * 0.65),
 		'room': Math.round(avg * 0.53),
 		'musicbox': Math.round(avg * 0.4),
 		'trainer': Math.round(avg * 0.4),
