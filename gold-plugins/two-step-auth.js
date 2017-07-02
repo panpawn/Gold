@@ -15,6 +15,9 @@
 const CONFIRMATION_CODE_TIMEOUT_MINUTES = 3;
 const TWO_STEP_CMD = '/twostep login ';
 const nodemailer = require('nodemailer');
+
+if (!Config.twostep) return; // server does not have two-step email options set
+
 const EMAIL_OPTIONS = Config.twostep.options;
 
 const transporter = nodemailer.createTransport(EMAIL_OPTIONS);
