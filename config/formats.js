@@ -306,7 +306,6 @@ exports.Formats = [
 		mod: 'gen7',
 		ruleset: ['Gen 7] OU'],
 		banlist: ['Ignore STAB Moves', 'Kartana', 'Komala', 'Tapu Lele', 'Aerodactylite', 'King\'s Rock', 'Metagrossite', 'Razor Fang'],
-		unbanlist: ['Ignore STAB Moves'],
 	},
 	{
 		name: "[Gen 7] Godly Gift",

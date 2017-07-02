@@ -7,26 +7,16 @@ const execFileSync = require('child_process').execFileSync;
 
 const MAX_PROCESSES = 1;
 const RESULTS_MAX_LENGTH = 100;
-const LOG_PATH = '../logs/modlog/';
+const LOG_PATH = 'logs/modlog/';
 
 class ModlogManager extends ProcessManager {
-	onFork() {
-		global.Config = require('../config/config');
-		global.Dex = require('../sim/dex');
-		global.toId = Dex.getId;
-
-		process.on('message', message => this.onMessageDownstream(message));
-		process.once('disconnect', () => process.exit(0));
-
-		require('../repl').start('modlog', cmd => eval(cmd));
-	}
-
 	onMessageUpstream(message) {
 		// Protocol:
 		// when crashing: 	  "[id]|0"
 		// when not crashing: "[id]|1|[results]"
 		let pipeIndex = message.indexOf('|');
 		let id = +message.substr(0, pipeIndex);
+
 		if (this.pendingTasks.has(id)) {
 			this.pendingTasks.get(id)(message.slice(pipeIndex + 1));
 			this.pendingTasks.delete(id);
@@ -51,7 +41,7 @@ class ModlogManager extends ProcessManager {
 		let exactSearch = message.substr(pipeIndex + 1, nextPipeIndex - pipeIndex - 1);
 		let maxLines = message.substr(nextPipeIndex + 1);
 
-		process.send(`${id}|${await this.receive(rooms, searchString, exactSearch, maxLines)}`);
+		process.send(id + '|' + await this.receive(rooms, searchString, exactSearch, maxLines));
 	}
 
 	async receive(rooms, searchString, exactSearch, maxLines) {
@@ -60,7 +50,7 @@ class ModlogManager extends ProcessManager {
 		maxLines = Number(maxLines);
 		if (isNaN(maxLines) || maxLines > RESULTS_MAX_LENGTH || maxLines < 1) maxLines = RESULTS_MAX_LENGTH;
 		try {
-			result = `1|${await runModlog(rooms.split(','), searchString, exactSearch, maxLines)}`;
+			result = '1|' + await runModlog(rooms.split(','), searchString, exactSearch, maxLines);
 		} catch (err) {
 			require('../crashlogger')(err, 'A modlog query', {
 				rooms: rooms,
@@ -81,6 +71,19 @@ const PM = exports.PM = new ModlogManager({
 	maxProcesses: MAX_PROCESSES,
 	isChatBased: true,
 });
+
+if (!process.send) {
+	PM.spawn();
+}
+
+if (process.send && module === process.mainModule) {
+	global.Config = require('../config/config');
+	global.Dex = require('../sim/dex');
+	global.toId = Dex.getId;
+	process.on('message', message => PM.onMessageDownstream(message));
+	process.on('disconnect', () => process.exit());
+	require('../repl').start('modlog', cmd => eval(cmd));
+}
 
 class SortedLimitedLengthList {
 	constructor(maxSize) {
@@ -117,7 +120,7 @@ class SortedLimitedLengthList {
 function checkRipgrepAvailability() {
 	if (Config.ripgrepmodlog === undefined) {
 		try {
-			execFileSync('rg', ['--version'], {cwd: path.normalize(`${__dirname}/${LOG_PATH}`)});
+			execFileSync('rg', ['--version'], {cwd: path.normalize(`${__dirname}/../${LOG_PATH}`)});
 			Config.ripgrepmodlog = true;
 		} catch (error) {
 			Config.ripgrepmodlog = false;
@@ -182,7 +185,7 @@ async function checkRoomModlog(path, regex, results) {
 function runRipgrepModlog(paths, regexString, results) {
 	let stdout;
 	try {
-		stdout = execFileSync('rg', ['-i', '-e', regexString, '--no-filename', '--no-line-number', ...paths], {cwd: path.normalize(`${__dirname}/${LOG_PATH}`)});
+		stdout = execFileSync('rg', ['-i', '-e', regexString, '--no-filename', '--no-line-number', ...paths], {cwd: path.normalize(`${__dirname}/../${LOG_PATH}`)});
 	} catch (error) {
 		return results;
 	}

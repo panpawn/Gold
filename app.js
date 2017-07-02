@@ -109,6 +109,7 @@ global.Chat = require('./chat');
 global.Rooms = require('./rooms');
 
 global.Verifier = require('./verifier');
+Verifier.PM.spawn();
 
 global.Gold = {};
 global.Db = require('origindb')('config/db');
@@ -157,6 +158,7 @@ if (require.main === module) {
  *********************************************************/
 
 global.TeamValidator = require('./team-validator');
+TeamValidator.PM.spawn();
 
 // load ipbans at our leisure
 /*fs.readFile(path.resolve(__dirname, 'config/ipbans.txt'), (err, data) => {
