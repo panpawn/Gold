@@ -116,8 +116,7 @@ exports.commands = {
 				return;
 			}
 
-	/* falls through */
-		case 'forceset':
+		case 'forceset': // eslint-disable-line no-fallthrough
 			if (user.avatarCooldown && !globalUpper) {
 				let milliseconds = (Date.now() - user.avatarCooldown);
 				let seconds = ((milliseconds / 1000) % 60);

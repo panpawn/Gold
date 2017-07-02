@@ -31,7 +31,6 @@ exports.commands = {
 		if (room.id !== 'gamechamber') return this.errorReply("You must be in Game Chamber to use this command.");
 		if (!Rooms.get('gamechamber')) return this.errorReply("You must have the room \"Game Chamber\" in order to use this script.");
 		switch (toId(parts[0])) {
-
 		case 'buy':
 		case 'join':
 			if (!Gold.lottery.gameActive) return this.errorReply("The game of lottery is not currently running.");
@@ -183,16 +182,16 @@ exports.commands = {
 			if (!this.runBroadcast()) return;
 			if (!Gold.lottery.gameActive) return this.errorReply("There is no active game of lottery currently running.");
 			this.sendReplyBox(
-					"<div style=\"max-height: 125px; overflow-y: auto; overflow-x: hidden;\" target=\"_blank\">" +
-					"<u>Lottery Game Status:</u><br />" +
-					"Game started by: <b><font color=" + Gold.hashColor(Gold.lottery.createdBy) + ">" + Chat.escapeHTML(Gold.lottery.createdBy) + "</font></b><br />" +
-					"Pot: <b>" + Gold.lottery.pot + " Gold bucks</b><br />" +
-					"Ticket price: <b>" + Gold.lottery.ticketPrice + " Gold bucks</b><br />" +
-					"Game started: <b>" + moment(Gold.lottery.startTime).fromNow() + "</b><br />" +
-					"Max tickets per user: <b>" + Gold.lottery.maxTicketsPerUser + "</b><br />" +
-					"<b>Tickets bought (" + Gold.lottery.players.length + "):</b><br />" +
-					Gold.lottery.players + "</div>"
-				);
+				"<div style=\"max-height: 125px; overflow-y: auto; overflow-x: hidden;\" target=\"_blank\">" +
+				"<u>Lottery Game Status:</u><br />" +
+				"Game started by: <b><font color=" + Gold.hashColor(Gold.lottery.createdBy) + ">" + Chat.escapeHTML(Gold.lottery.createdBy) + "</font></b><br />" +
+				"Pot: <b>" + Gold.lottery.pot + " Gold bucks</b><br />" +
+				"Ticket price: <b>" + Gold.lottery.ticketPrice + " Gold bucks</b><br />" +
+				"Game started: <b>" + moment(Gold.lottery.startTime).fromNow() + "</b><br />" +
+				"Max tickets per user: <b>" + Gold.lottery.maxTicketsPerUser + "</b><br />" +
+				"<b>Tickets bought (" + Gold.lottery.players.length + "):</b><br />" +
+				Gold.lottery.players + "</div>"
+			);
 			break;
 
 		case 'uptime':
@@ -215,19 +214,19 @@ exports.commands = {
 		default:
 			if (!this.runBroadcast()) return;
 			this.sendReplyBox(
-					"<center><b>Lottery Commands</b><br />" +
-					"<i><font color=gray>(By: <a href=\"https://github.com/panpawn/Pokemon-Showdown/blob/master/chat-plugins/lottery.js\" class=\"subtle\">panpawn</a>)</font></i></center><br />" +
-					"<code>/lotto create, [ticket price]</code> - Starts a game of lotto with the respected ticket price. (Requires @, #, &, ~)<br />" +
-					"<code>/lotto create, [ticket price], pmall</code> - Starts a game of lotto with the respected ticket price AND notifies everyone. (Requires ~)<br />" +
-					"<code>/lotto join</code> OR <code>/loto buy</code> - Buys 1 ticket for the current game of loto (no cap set as of now).<br />" +
-					"<code>/lotto end</code> - Picks a winner of the lotto.  (Requires @, #, &, ~)<br />" +
-					"<code>/lotto setlimit, [ticketcap]</code> - Sets the cap of tickets per user.  (Requires ~)<br />" +
-					"<code>/lotto pot</code> - Shows the current pot of the game of lotto.<br />" +
-					"<code>/lotto uptime</code> - Shows how long ago the game of lottery was started.<br />" +
-					"<code>/lotto status</code> - Shows the current status of lottery.<br />" +
-					"<code>/lotto odds, [user]</code> - Shows the odds of [user] winning the lottery.<br />" +
-					"<code>/lotto tickets</code> - Shows all of the current tickets in the current game of lotto."
-				);
+				"<center><b>Lottery Commands</b><br />" +
+				"<i><font color=gray>(By: <a href=\"https://github.com/panpawn/Pokemon-Showdown/blob/master/chat-plugins/lottery.js\" class=\"subtle\">panpawn</a>)</font></i></center><br />" +
+				"<code>/lotto create, [ticket price]</code> - Starts a game of lotto with the respected ticket price. (Requires @, #, &, ~)<br />" +
+				"<code>/lotto create, [ticket price], pmall</code> - Starts a game of lotto with the respected ticket price AND notifies everyone. (Requires ~)<br />" +
+				"<code>/lotto join</code> OR <code>/loto buy</code> - Buys 1 ticket for the current game of loto (no cap set as of now).<br />" +
+				"<code>/lotto end</code> - Picks a winner of the lotto.  (Requires @, #, &, ~)<br />" +
+				"<code>/lotto setlimit, [ticketcap]</code> - Sets the cap of tickets per user.  (Requires ~)<br />" +
+				"<code>/lotto pot</code> - Shows the current pot of the game of lotto.<br />" +
+				"<code>/lotto uptime</code> - Shows how long ago the game of lottery was started.<br />" +
+				"<code>/lotto status</code> - Shows the current status of lottery.<br />" +
+				"<code>/lotto odds, [user]</code> - Shows the odds of [user] winning the lottery.<br />" +
+				"<code>/lotto tickets</code> - Shows all of the current tickets in the current game of lotto."
+			);
 		}
 	},
 };

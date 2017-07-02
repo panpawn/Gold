@@ -75,7 +75,7 @@ exports.commands = {
 						'<li>/' + cmd + ' removeall - Removes all songs from your music box.<br>' +
 						'<li>/' + cmd + ' css <em>CSS code</em> - Edits the CSS of your music box\'s buttons.<br>' +
 						'<li>/' + cmd + ' delete <em>User</em> - Deletes a user\'s music box. Requires ~.</ul>'
-					);
+				);
 				break;
 
 			case 'add':

@@ -134,7 +134,6 @@ exports.commands = {
 
 		try {
 			switch (toId(parts[0])) {
-
 			case 'add':
 				if (!this.can('pban')) return this.errorReply("Access denied.");
 				if (!this.canTalk()) return this.errorReply("You cannot do this while unable to talk.");

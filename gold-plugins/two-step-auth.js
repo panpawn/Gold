@@ -51,7 +51,7 @@ Gold.TwoStepAuth = {
 		let userCode = this.codes[userid];
 		if (!userCode && connection) return this.failLogin(connection, "Your passcode has expired.");
 		let description = (verification ? verification.message :
-		`Hello, ${userid}:\n\nYour two-step authentication code to login to Gold is: ${userCode}\n\nReminder that this code will expire in ${CONFIRMATION_CODE_TIMEOUT_MINUTES} minutes from the moment this email sent... Did you not attempt to login to Gold a few minutes ago? A user with the IP of ${connection.ip} tried to access your account with your username and password.\n\nThanks for using Gold's two step authentication,\n— Gold Administration`);
+			`Hello, ${userid}:\n\nYour two-step authentication code to login to Gold is: ${userCode}\n\nReminder that this code will expire in ${CONFIRMATION_CODE_TIMEOUT_MINUTES} minutes from the moment this email sent... Did you not attempt to login to Gold a few minutes ago? A user with the IP of ${connection.ip} tried to access your account with your username and password.\n\nThanks for using Gold's two step authentication,\n— Gold Administration`);
 		transporter.sendMail({
 			from: EMAIL_OPTIONS.from,
 			to: sendTo,
