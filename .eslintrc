@@ -101,6 +101,7 @@
 		"no-process-exit": "off",
 		"no-restricted-modules": ["error", "request"],
 		"no-sync": "off",
+		"no-useless-escape": "off",
 
 		"array-bracket-spacing": ["error", "never"],
 		"block-spacing": "off",
