@@ -13,6 +13,9 @@
 
 'use strict';
 
+const ProcessManager = require('./process-manager');
+let Sim;
+
 /** 10 seconds */
 const TICK_TIME = 10 * 1000;
 
@@ -25,20 +28,122 @@ const MAX_TURN_TICKS_CHALLENGE = 30;
 // time after a player disabling the timer before they can re-enable it
 const TIMER_COOLDOWN = 20 * 1000;
 
-global.Config = require('./config/config');
-
-const ProcessManager = require('./process-manager');
-
 class SimulatorManager extends ProcessManager {
+	constructor(execFile) {
+		super(execFile);
+
+		this.battles = null;
+	}
+
+	onFork() {
+		this.battles = new Map();
+
+		global.Config = require('./config/config');
+		process.on('uncaughtException', err => {
+			if (Config.crashguard) {
+				require('./crashlogger')(err, 'A simulator process');
+			}
+		});
+
+		global.Chat = require('./chat');
+		Sim = require('./sim');
+		global.Dex = require('./sim/dex');
+		global.toId = Dex.getId;
+
+		process.on('message', message => this.onMessageDownstream(message));
+		process.once('disconnect', () => process.exit(0));
+
+		require('./repl').start(`sim-${process.pid}`, cmd => eval(cmd));
+	}
+
 	onMessageUpstream(message) {
 		let lines = message.split('\n');
 		let battle = this.pendingTasks.get(lines[0]);
 		if (battle) battle.receive(lines);
 	}
 
+	onMessageDownstream(message) {
+		//console.log('CHILD MESSAGE RECV: "' + message + '"');
+		let nlIndex = message.indexOf("\n");
+		let more = '';
+		if (nlIndex > 0) {
+			more = message.substr(nlIndex + 1);
+			message = message.substr(0, nlIndex);
+		}
+
+		let data = message.split('|');
+		let id = data[0];
+		switch (data[1]) {
+		case 'init':
+			if (this.battles.has(id)) return;
+
+			try {
+				const battle = Sim.construct(Dex.getFormat(data[2], data[4]), data[3], sendBattleMessage);
+				battle.id = id;
+				this.battles.set(id, battle);
+			} catch (err) {
+				if (require('./crashlogger')(err, 'A battle', {message}) === 'lockdown') {
+					let ministack = Chat.escapeHTML(err.stack).split("\n").slice(0, 2).join("<br />");
+					process.send(id + '\nupdate\n|html|<div class="broadcast-red"><b>A BATTLE PROCESS HAS CRASHED:</b> ' + ministack + '</div>');
+				} else {
+					process.send(id + '\nupdate\n|html|<div class="broadcast-red"><b>The battle crashed!</b><br />Don\'t worry, we\'re working on fixing it.</div>');
+				}
+			}
+
+			break;
+
+		case 'dealloc':
+			if (this.battles.has(id)) {
+				this.battles.get(id).destroy();
+				this.battles.delete(id);
+			} else {
+				require('./crashlogger')(new Error("Invalid dealloc"), 'A battle', {message});
+			}
+
+			break;
+
+		case 'eval':
+			try {
+				eval(message.substr(message.indexOf('|') + 1));
+			} catch (e) {}
+			break;
+
+		default:
+			let battle = this.battles.get(id);
+			if (!battle) return;
+
+			let prevRequest = battle.currentRequest;
+			let prevRequestDetails = battle.currentRequestDetails || '';
+			try {
+				battle.receive(data, more);
+			} catch (err) {
+				require('./crashlogger')(err, 'A battle', {
+					message,
+					currentRequest: prevRequest,
+					log: '\n' + battle.log.join('\n').replace(/\n\|split\n[^\n]*\n[^\n]*\n[^\n]*\n/g, '\n'),
+				});
+
+				let logPos = battle.log.length;
+				battle.add('html', '<div class="broadcast-red"><b>The battle crashed</b><br />You can keep playing but it might crash again.</div>');
+
+				let nestedError;
+				try {
+					battle.makeRequest(prevRequest, prevRequestDetails);
+				} catch (e) {
+					nestedError = e;
+				}
+
+				battle.sendUpdates(logPos);
+				if (nestedError) throw nestedError;
+			}
+
+			break;
+		}
+	}
+
 	eval(code) {
-		for (let process of this.processes) {
-			process.send(`|eval|${code}`);
+		for (let PW of this.processes) {
+			PW.send(`|eval|${code}`);
 		}
 	}
 }
@@ -102,6 +207,9 @@ class BattlePlayer {
 		let user = Users(this.userid);
 		if (user) user.sendTo(this.game.id, data);
 	}
+	sendError(data) {
+		this.sendRoom(Chat.html`|html|<div class="message-error">${data}</div>`);
+	}
 	simSend(action, ...rest) {
 		this.game.send(action, this.slot, ...rest);
 	}
@@ -158,7 +266,7 @@ class BattleTimer {
 		let userid = requester ? requester.userid : 'staff';
 		if (this.timerRequesters.has(userid)) return false;
 		if (this.timer && requester) {
-			this.battle.room.send(`|inactive|${requester.userid} also wants the timer to be on`);
+			this.battle.room.send(`|inactive|${requester.name} also wants the timer to be on.`);
 			this.timerRequesters.add(userid);
 			return false;
 		}
@@ -289,18 +397,20 @@ class BattleTimer {
 }
 
 class Battle {
-	constructor(room, format, rated, supplementaryRuleset) {
+	constructor(room, format, rated) {
+		format = Dex.getFormat(format);
 		this.id = room.id;
 		this.room = room;
-		this.title = Dex.getFormat(format).name;
+		this.title = format.name;
 		if (!this.title.endsWith(" Battle")) this.title += " Battle";
 		this.allowRenames = !rated;
 
-		this.format = toId(format);
+		this.format = format.id;
 		this.rated = rated;
 		this.started = false;
 		this.ended = false;
 		this.active = false;
+		this.tieRequests = [];
 
 		this.players = Object.create(null);
 		this.playerCount = 0;
@@ -319,7 +429,7 @@ class Battle {
 		// data to be logged
 		this.logData = null;
 		this.endType = 'normal';
-		this.supplementaryRuleset = !!supplementaryRuleset;
+		this.supplementaryBanlist = !!format.supplementaryBanlist;
 
 		this.rqid = 1;
 
@@ -328,7 +438,7 @@ class Battle {
 			throw new Error(`Battle with ID ${room.id} already exists.`);
 		}
 
-		this.send('init', this.format, rated ? '1' : '', supplementaryRuleset ? supplementaryRuleset.join(',') : '');
+		this.send('init', this.format, rated ? '1' : '', format.supplementaryBanlist ? format.supplementaryBanlist.join(',') : '');
 		this.process.pendingTasks.set(room.id, this);
 	}
 
@@ -374,6 +484,36 @@ class Battle {
 		request[3] = choice;
 
 		this.sendFor(user, 'choose', choice);
+	}
+	requestTie(user, room, cmd) {
+		const player = this.players[user];
+		const REQUEST_TIMEOUT_MINUTES = 1;
+		if (!player) return user.sendTo(room, `|error|Only players of this battle can request a tie.`);
+
+		//const allowTie = Dex.getFormat(this.format).allowTies;
+		//if (!allowTie) return player.sendError(`This tier does not allow ties.`);
+		if (this.ended) return player.sendError(`This battle has already ended.`);
+		if (this.tieRequests.includes(user.userid)) return player.sendError(`You have already requested this battle end in a tie.`);
+
+		if (!user.lastCommand || user.lastCommand !== cmd) {
+			player.sendError(`You are about to request that this battle ends in a tie.  To tie, your opponent must also agree to this as well.`);
+			player.sendError(`In order to proceed with requesting to tie, use /${cmd} again.`);
+			user.lastCommand = cmd;
+			return;
+		}
+		user.lastCommand = '';
+
+		this.tieRequests.push(user.userid);
+
+		setTimeout(() => {// automatically remove request
+			this.tieRequests.splice(this.tieRequests.indexOf(user.userid), 1);
+		}, REQUEST_TIMEOUT_MINUTES * 60000);
+
+		if (this.tieRequests.length >= 2) {
+			// two (or more) players have agreed to tie
+			this.tie();
+		}
+		return room.add(Chat.html`${user.getIdentity(room)} has requested to tie by using /${cmd}. This request will automatically expire in ${REQUEST_TIMEOUT_MINUTES} minute${Chat.plural(REQUEST_TIMEOUT_MINUTES)}.`);
 	}
 	undo(user, data) {
 		const player = this.players[user];
@@ -666,140 +806,17 @@ class Battle {
 	}
 }
 
-exports.RoomBattlePlayer = BattlePlayer;
-exports.RoomBattleTimer = BattleTimer;
-exports.RoomBattle = Battle;
-exports.SimulatorManager = SimulatorManager;
-exports.SimulatorProcess = SimulatorProcess;
-
-if (process.send && module === process.mainModule) {
-	// This is a child process!
-
-	global.Chat = require('./chat');
-	const Sim = require('./sim');
-	global.Dex = require('./sim/dex');
-	global.toId = Dex.getId;
-
-	if (Config.crashguard) {
-		// graceful crash - allow current battles to finish before restarting
-		process.on('uncaughtException', err => {
-			require('./crashlogger')(err, 'A simulator process');
-		});
-	}
-
-	require('./repl').start(`sim-${process.pid}`, cmd => eval(cmd));
-
-	let Battles = new Map();
-
-	// Receive and process a message sent using Simulator.prototype.send in
-	// another process.
-	process.on('message', message => {
-		//console.log('CHILD MESSAGE RECV: "' + message + '"');
-		let nlIndex = message.indexOf("\n");
-		let more = '';
-		if (nlIndex > 0) {
-			more = message.substr(nlIndex + 1);
-			message = message.substr(0, nlIndex);
-		}
-		let data = message.split('|');
-		if (data[1] === 'init') {
-			const id = data[0];
-			if (!Battles.has(id)) {
-				try {
-					let format = Dex.getFormat(data[2]);
-					if (data[4]) {
-						Dex.mod(format.mod || 'base').getBanlistTable(format);
-						format = Object.assign({}, format);
-						format.ruleset = format.ruleset ? format.ruleset.slice() : [];
-						const supplementaryRuleset = data[4].split(',');
-						for (let i = 0; i < supplementaryRuleset.length; i++) {
-							let rule = supplementaryRuleset[i];
-							let remove = false;
-							if (rule.charAt(0) === '!') {
-								remove = true;
-								rule = rule.substr(1);
-							}
-							if (!rule.startsWith('Rule:')) continue;
-							rule = rule.substr(5);
-							if (remove) {
-								if (format.ruleset.includes(rule)) format.ruleset.splice(format.ruleset.indexOf(rule), 1);
-							} else {
-								if (!format.ruleset.includes(rule)) format.ruleset.push(rule);
-							}
-						}
-					}
-					const battle = Sim.construct(format, data[3], sendBattleMessage);
-					battle.id = id;
-					Battles.set(id, battle);
-				} catch (err) {
-					if (require('./crashlogger')(err, 'A battle', {
-						message: message,
-					}) === 'lockdown') {
-						let ministack = Chat.escapeHTML(err.stack).split("\n").slice(0, 2).join("<br />");
-						process.send(id + '\nupdate\n|html|<div class="broadcast-red"><b>A BATTLE PROCESS HAS CRASHED:</b> ' + ministack + '</div>');
-					} else {
-						process.send(id + '\nupdate\n|html|<div class="broadcast-red"><b>The battle crashed!</b><br />Don\'t worry, we\'re working on fixing it.</div>');
-					}
-				}
-			}
-		} else if (data[1] === 'dealloc') {
-			const id = data[0];
-			if (Battles.has(id)) {
-				Battles.get(id).destroy();
-
-				// remove from battle list
-				Battles.delete(id);
-			} else {
-				require('./crashlogger')(new Error("Invalid dealloc"), 'A battle', {
-					message: message,
-				});
-			}
-		} else {
-			let battle = Battles.get(data[0]);
-			if (battle) {
-				let prevRequest = battle.currentRequest;
-				let prevRequestDetails = battle.currentRequestDetails || '';
-				try {
-					battle.receive(data, more);
-				} catch (err) {
-					require('./crashlogger')(err, 'A battle', {
-						message: message,
-						currentRequest: prevRequest,
-						log: '\n' + battle.log.join('\n').replace(/\n\|split\n[^\n]*\n[^\n]*\n[^\n]*\n/g, '\n'),
-					});
-
-					let logPos = battle.log.length;
-					battle.add('html', '<div class="broadcast-red"><b>The battle crashed</b><br />You can keep playing but it might crash again.</div>');
-					let nestedError;
-					try {
-						battle.makeRequest(prevRequest, prevRequestDetails);
-					} catch (e) {
-						nestedError = e;
-					}
-					battle.sendUpdates(logPos);
-					if (nestedError) {
-						throw nestedError;
-					}
-				}
-			} else if (data[1] === 'eval') {
-				try {
-					eval(data[2]);
-				} catch (e) {}
-			}
-		}
-	});
-
-	process.on('disconnect', () => {
-		process.exit();
-	});
-} else {
-	// Create the initial set of simulator processes.
-	SimulatorProcess.spawn();
-}
-
 // Messages sent by this function are received and handled in
 // Battle.prototype.receive in simulator.js (in another process).
 function sendBattleMessage(type, data) {
 	if (Array.isArray(data)) data = data.join("\n");
 	process.send(this.id + "\n" + type + "\n" + data);
 }
+
+module.exports = {
+	RoomBattlePlayer: BattlePlayer,
+	RoomBattleTimer: BattleTimer,
+	RoomBattle: Battle,
+	SimulatorManager,
+	SimulatorProcess,
+};

@@ -129,26 +129,26 @@ exports.commands = {
 			let hash = parts[1].trim();
 			if (!pendingAdds[hash]) return this.sendReply("Invalid hash.");
 
-			userid = pendingAdds[hash].userid;
-			avatar = pendingAdds[hash].avatar;
+			let userid2 = pendingAdds[hash].userid;
+			let avatar2 = pendingAdds[hash].avatar;
 			delete pendingAdds[hash];
 
-			require('child_process').execFile('bash', ['-c', script, '-', avatar, './config/avatars/' + userid], function (e, out, err) {
+			require('child_process').execFile('bash', ['-c', script, '-', avatar2, './config/avatars/' + userid2], function (e, out, err) {
 				if (e) {
-					this.sendReply(userid + "'s custom avatar failed to be set. Script output:");
+					this.sendReply(userid2 + "'s custom avatar failed to be set. Script output:");
 					(out + err).split('\n').forEach(this.sendReply.bind(this));
 					return;
 				}
 
 				reloadCustomAvatars();
 
-				let targetUser = Users.getExact(userid);
-				if (targetUser) targetUser.avatar = Config.customavatars[userid];
+				let targetUser = Users.getExact(userid2);
+				if (targetUser) targetUser.avatar = Config.customavatars[userid2];
 
-				this.sendReply(userid + "'s custom avatar has been set.");
+				this.sendReply(userid2 + "'s custom avatar has been set.");
 
-				Rooms.get('staff').add('|raw|' + Gold.nameColor(userid, true) + ' has received a custom avatar from ' + Gold.nameColor(user.name, true)).update();
-				Users.get(userid).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Chat.escapeHTML(user.name) + '</font></b>: <img src="' + avatar + '" width="80" height="80">');
+				Rooms.get('staff').add('|raw|' + Gold.nameColor(userid2, true) + ' has received a custom avatar from ' + Gold.nameColor(user.name, true)).update();
+				Users.get(userid2).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Chat.escapeHTML(user.name) + '</font></b>: <img src="' + avatar2 + '" width="80" height="80">');
 				room.update();
 			}.bind(this));
 			break;

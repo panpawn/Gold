@@ -19,8 +19,6 @@ let bannedMessages = Config.bannedMessages ? Config.bannedMessages : [];
 
 let proxyWhitelist = Config.proxyWhitelist || false;
 
-const FIRST_COOLDOWN = 1.5 * 60000; // 1 minute, 30 seconds
-
 /*********************
  * Chatfilter Magic *
  * ******************/
@@ -72,7 +70,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 
 	if (room && room.log && room.log.length === 0) { // Firsting isn't cool anymore
 		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
-		let regEx = new RegExp(firsts.join('|'),"g");
+		let regEx = new RegExp(firsts.join('|'), "g");
 		if (message.toLowerCase().match(regEx)) {
 			user.sendTo(room, "Wow, you're first? What a great accomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
 			return false;
@@ -83,7 +81,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 };
 Config.chatfilter = exports.chatfilter;
 
-function modlog (message) {
+function modlog(message) {
 	fs.appendFile(`logs/modlog/modlog_staff.txt`, `[${(new Date().toJSON())}] (staff) ${message}\n`);
 }
 /*********************
@@ -205,7 +203,6 @@ Gold.evadeMonitor = function (user, name, punished) {
 
 		let reasons = [];
 		let evader = '', offender = '', reason = '';
-		let alertStaff = false;
 		let defaultAvatars = [1, 2, 101, 102, 169, 170, 265, 266];
 		let punishedUsers = Object.keys(Gold.punishments);
 
@@ -223,7 +220,6 @@ Gold.evadeMonitor = function (user, name, punished) {
 					points++;
 					reasons.push(reason);
 					evader = `${offender.type} user: ${punishedUsers[i]}`;
-					alertStaff = true;
 				}
 			}
 			if (offender.iprange && ip.startsWith(offender.iprange)) {

@@ -83,7 +83,7 @@ class Effect {
 		this.fullname = '';
 		/**
 		 * Effect type.
-		 * @type {'Effect' | 'Pokemon' | 'Move' | 'Item' | 'Ability' | 'Format' | 'Ruleset' | 'Weather' | 'Status'}
+		 * @type {'Effect' | 'Pokemon' | 'Move' | 'Item' | 'Ability' | 'Format' | 'Ruleset' | 'Weather' | 'Status' | 'Rule' | 'ValidatorRule'}
 		 */
 		this.effectType = 'Effect';
 		/**
@@ -133,19 +133,40 @@ class Format extends Effect {
 		super(data, moreData);
 		/** @type {string} */
 		this.mod = Tools.getString(this.mod) || 'gen6';
-		/** @type {'Format' | 'Ruleset'} */
+		/** @type {'Format' | 'Ruleset' | 'Rule' | 'ValidatorRule'} */
 		// @ts-ignore
 		this.effectType = Tools.getString(this.effectType) || 'Format';
 		/**
 		 * List of rule names.
 		 * @type {string[]}
 		 */
-		this.ruleset = this.ruleset;
+		this.ruleset = this.ruleset || [];
 		/**
-		 * List of banned effecdts.
+		 * Base list of rule names as specified in "./config/formats.js".
+		 * Used in a custom format to correctly display the altered ruleset.
 		 * @type {string[]}
 		 */
-		this.banlist = this.banlist;
+		this.baseRuleset = this.baseRuleset || [];
+		/**
+		 * List of banned effects.
+		 * @type {string[]}
+		 */
+		this.banlist = this.banlist || [];
+		/**
+		 * List of inherited banned effects to override.
+		 * @type {string[]}
+		 */
+		this.unbanlist = this.unbanlist || [];
+		/**
+		 * List of ruleset and banlist changes in a custom format.
+		 * @type {string[]}
+		 */
+		this.supplementaryBanlist = this.supplementaryBanlist || [];
+		/**
+		 * Table of rule names and banned effects.
+		 * @type {?{[mod: string]: string | boolean}}
+		 */
+		this.banlistTable = this.banlistTable;
 	}
 }
 
@@ -372,8 +393,8 @@ class Template extends Effect {
 		 */
 		this.genderRatio = this.genderRatio || (this.gender === 'M' ? {M:1, F:0} :
 			this.gender === 'F' ? {M:0, F:1} :
-			this.gender === 'N' ? {M:0, F:0} :
-			{M:0.5, F:0.5});
+				this.gender === 'N' ? {M:0, F:0} :
+					{M:0.5, F:0.5});
 
 		/**
 		 * Required item. Do not use this directly; see requiredItems.

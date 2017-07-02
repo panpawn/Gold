@@ -127,7 +127,7 @@ class PlayerLadder extends Ladder {
 			for (let u in this.data) {
 				let userData = this.data[u];
 				for (let a in userData) {
-					if (/^(?:cumulative|history)\-/i.test(a) || a === 'name') continue; // cumulative does not need to be soft reset
+					if (/^(?:cumulative|history)-/i.test(a) || a === 'name') continue; // cumulative does not need to be soft reset
 					let historyKey = 'history-' + a;
 
 					if (!userData[historyKey]) userData[historyKey] = [];
@@ -937,7 +937,7 @@ let commands = {
 
 		this.privateModCommand(`(${user.name} has reset the monthly scavengers ladder.)`);
 	},
-
+	top: 'ladder',
 	ladder: function (target, room, user) {
 		if (room.id !== 'scavengers') return this.errorReply("This command can only be used in the scavengers room.");
 		if (!this.runBroadcast()) return false;

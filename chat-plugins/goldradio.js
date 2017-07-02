@@ -209,7 +209,7 @@ let commands = {
 
 		this.sendReply("User '" + name + "' has no nomination for the Artist of the Day.");
 	},
-	removenomhelp: ["/aotd removenom [username] - Remove a user\'s nomination for the Artist of the Day and prevent them from voting again until the next round. Requires: % @ * # & ~"],
+	removenomhelp: ["/aotd removenom [username] - Remove a user's nomination for the Artist of the Day and prevent them from voting again until the next round. Requires: % @ * # & ~"],
 
 	set: function (target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
