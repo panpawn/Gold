@@ -33,7 +33,7 @@ const THROTTLE_MULTILINE_WARN_STAFF = 6;
 
 const PERMALOCK_CACHE_TIME = 30 * 24 * 60 * 60 * 1000;
 
-const fs = require('fs');
+const FS = require('./fs');
 
 const Matchmaker = require('./ladders-matchmaker').matchmaker;
 
@@ -46,14 +46,6 @@ let Users = module.exports = getUser;
 let users = Users.users = new Map();
 let prevUsers = Users.prevUsers = new Map();
 let numUsers = 0;
-
-try {
-	exports.bannedMessages = fs.readFileSync('config/bannedmessages.txt', 'utf8');
-} catch (e) {
-	exports.bannedMessages = '';
-	fs.writeFileSync('config/bannedmessages.txt', '', 'utf8');
-}
-exports.bannedMessages = exports.bannedMessages.split('\n');
 
 // Low-level functions for manipulating Users.users and Users.prevUsers
 // Keeping them all here makes it easy to ensure they stay consistent
@@ -147,13 +139,11 @@ function importUsergroups() {
 	// can't just say usergroups = {} because it's exported
 	for (let i in usergroups) delete usergroups[i];
 
-	fs.readFile('config/usergroups.csv', (err, data) => {
-		if (err) return;
-		data = ('' + data).split("\n");
-		for (let i = 0; i < data.length; i++) {
-			if (!data[i]) continue;
-			let row = data[i].split(",");
-			usergroups[toId(row[0])] = (row[1] || Config.groupsranking[0]) + row[0];
+	FS('config/usergroups.csv').readTextIfExists().then(data => {
+		for (const row of data.split("\n")) {
+			if (!row) continue;
+			let cells = row.split(",");
+			usergroups[toId(cells[0])] = (cells[1] || Config.groupsranking[0]) + cells[0];
 		}
 	});
 }
@@ -162,7 +152,7 @@ function exportUsergroups() {
 	for (let i in usergroups) {
 		buffer += usergroups[i].substr(1).replace(/,/g, '') + ',' + usergroups[i].charAt(0) + "\n";
 	}
-	fs.writeFile('config/usergroups.csv', buffer, () => {});
+	FS('config/usergroups.csv').write(buffer);
 }
 importUsergroups();
 
@@ -1584,12 +1574,7 @@ Users.socketConnect = function (worker, workerid, socketid, ip, protocol, header
 	}
 	// Emergency mode connections logging
 	if (Config.emergency) {
-		fs.appendFile('logs/cons.emergency.log', '[' + ip + ']\n', err => {
-			if (err) {
-				console.log('!! Error in emergency conns log !!');
-				throw err;
-			}
-		});
+		FS('logs/cons.emergency.log').append('[' + ip + ']\n');
 	}
 
 	let user = new User(connection);
@@ -1664,12 +1649,7 @@ Users.socketReceive = function (worker, workerid, socketid, message) {
 	}
 	// Emergency logging
 	if (Config.emergency) {
-		fs.appendFile('logs/emergency.log', `[${user} (${connection.ip})] ${roomId}|${message}\n`, err => {
-			if (err) {
-				console.log(`!! Error in emergency log !!`);
-				throw err;
-			}
-		});
+		FS('logs/emergency.log').append(`[${user} (${connection.ip})] ${roomId}|${message}\n`);
 	}
 
 	let startTime = Date.now();

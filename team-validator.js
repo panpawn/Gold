@@ -9,7 +9,7 @@
 
 'use strict';
 
-let TeamValidator = module.exports = getValidator;
+const TeamValidator = module.exports = getValidator;
 let PM;
 
 function banReason(strings, reason) {
@@ -863,6 +863,15 @@ class Validator {
 		do {
 			alreadyChecked[template.speciesid] = true;
 			if (dex.gen === 2 && template.gen === 1) tradebackEligible = true;
+			// STABmons hack
+			if (format.banlistTable && format.banlistTable['ignorestabmoves'] && !(moveid in {'acupressure':1, 'bellydrum':1, 'chatter':1, 'geomancy':1, 'shellsmash':1, 'shiftgear':1, 'thousandarrows':1}) && !move.isZ) {
+				let types = template.types;
+				if (template.baseSpecies === 'Rotom') types = ['Electric', 'Ghost', 'Fire', 'Water', 'Ice', 'Flying', 'Grass'];
+				if (template.baseSpecies === 'Shaymin') types = ['Grass', 'Flying'];
+				if (template.baseSpecies === 'Hoopa') types = ['Psychic', 'Ghost', 'Dark'];
+				if (template.baseSpecies === 'Oricorio') types = ['Fire', 'Flying', 'Electric', 'Psychic', 'Ghost'];
+				if (template.baseSpecies === 'Silvally' || types.includes(move.type)) return false;
+			}
 			if (!template.learnset) {
 				if (template.baseSpecies !== template.species) {
 					// forme without its own learnset
@@ -1160,13 +1169,30 @@ function getValidator(format, supplementaryBanlist) {
 const ProcessManager = require('./process-manager');
 
 class TeamValidatorManager extends ProcessManager {
+	onFork() {
+		global.Config = require('./config/config');
+		process.on('uncaughtException', err => {
+			if (Config.crashguard) {
+				require('./crashlogger')(err, `A team validator process`, true);
+			}
+		});
+
+		global.Dex = require('./sim/dex').includeData();
+		global.toId = Dex.getId;
+		global.Chat = require('./chat');
+
+		process.on('message', message => this.onMessageDownstream(message));
+		process.once('disconnect', () => process.exit(0));
+
+		require('./repl').start(`team-validator-${process.pid}`, cmd => eval(cmd));
+	}
+
 	onMessageUpstream(message) {
 		// Protocol:
 		// success: "[id]|1[details]"
 		// failure: "[id]|0[details]"
 		let pipeIndex = message.indexOf('|');
 		let id = +message.substr(0, pipeIndex);
-
 		if (this.pendingTasks.has(id)) {
 			this.pendingTasks.get(id)(message.slice(pipeIndex + 1));
 			this.pendingTasks.delete(id);
@@ -1196,7 +1222,7 @@ class TeamValidatorManager extends ProcessManager {
 
 	receive(format, supplementaryBanlist, removeNicknames, team) {
 		let parsedTeam = Dex.fastUnpackTeam(team);
-		supplementaryBanlist = supplementaryBanlist === '0' ? false : supplementaryBanlist.split(',');
+		supplementaryBanlist = (!supplementaryBanlist || supplementaryBanlist === '0') ? false : supplementaryBanlist.split(',');
 		removeNicknames = removeNicknames === '1';
 
 		let problems;
@@ -1229,24 +1255,3 @@ PM = TeamValidator.PM = new TeamValidatorManager({
 	maxProcesses: global.Config ? Config.validatorprocesses : 1,
 	isChatBased: false,
 });
-
-if (process.send && module === process.mainModule) {
-	// This is a child process!
-
-	global.Config = require('./config/config');
-
-	if (Config.crashguard) {
-		process.on('uncaughtException', err => {
-			require('./crashlogger')(err, `A team validator process`, true);
-		});
-	}
-
-	global.Dex = require('./sim/dex').includeData();
-	global.toId = Dex.getId;
-	global.Chat = require('./chat');
-
-	require('./repl').start(`team-validator-${process.pid}`, cmd => eval(cmd));
-
-	process.on('message', message => PM.onMessageDownstream(message));
-	process.on('disconnect', () => process.exit());
-}
