@@ -1,3 +1,4 @@
+ 2.15.120.0,2.15.127.255,Wanadoo France Technical Role,http://www.orange.fr/
 5.9.0.0,5.9.255.255,Hetzner Online AG,http://www.hetzner.de/
 5.10.64.0,5.10.127.255,SoftLayer,http://www.softlayer.com/
 5.34.182.0,5.34.183.255,UA Servers,https://itldc.com/
@@ -2803,6 +2804,7 @@
 204.61.220.0,204.61.223.255,Quasar Data Center,http://quasardata.com/
 204.68.96.0,204.68.127.255,American Internet Services,http://americanis.net/
 204.74.208.0,204.74.223.255,Take 2 Hosting,http://www.take2hosting.com/
+204.93.32.0,204.93.63.255,nLayer Communications, Inc.,https://www.gtt.net/
 204.93.128.0,204.93.255.255,ServerCentral,http://www.servercentral.net/
 204.109.56.0,204.109.63.255,Tranquil Hosting,http://www.tqhosting.com/
 204.124.180.0,204.124.183.255,Volume Drive,http://volumedrive.com
