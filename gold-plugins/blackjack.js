@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const CARD_IMAGE_PATH = 'http://ps-dev-panpawn1.c9users.io/cards/'; // image dir here pliz
+const CARD_IMAGE_PATH = `http://goldservers.info:${Config.port}/cards/`;
 
 class Blackjack extends Rooms.RoomGame {
 	constructor(room, user, target) {
