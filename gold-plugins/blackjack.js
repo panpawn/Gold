@@ -51,6 +51,7 @@ class Blackjack extends Rooms.RoomGame {
 
 		this.joinButton = '<button class="button" name="send" value="/joingame" title="Join Blackjack">Join Blackjack</button>';
 		this.spectateButton = '<button class="button" name="send" value="/blackjack spectate" title="Spectate Blackjack">Spectate</button>';
+		this.slideButton = '<button class="button" name="send" value="/blackjack slide" title="Slide the game log down in the chat">(<i class="fa fa-arrow-down" aria-hidden="true"></i> slide)</button>';
 		this.atLeastOneJoin = false;
 
 		this.madeGame(target);
@@ -129,6 +130,7 @@ class Blackjack extends Rooms.RoomGame {
 	 * display - displays gameplay to players and spectators
 	 * clear - clears a user's gameplay screen
 	 * clearAllTimers - clears all possible existing timers pertaining to blackjack
+	 * slide - slides the game log down in the chat
 	 */
 	errorMessage(user, message) {
 		user.sendTo(this.room, Chat.html`|html|<div class="message-error">${message}</div>`);
@@ -186,6 +188,10 @@ class Blackjack extends Rooms.RoomGame {
 			this.autostart = null;
 		}
 	}
+	slide(user) {
+		user.sendTo(this.id, `|uhtml|blackjack-${this.blackjackNumber}|`);
+		this.display('', null, user.name);
+	}
 
 	/**
 	 * Game State Changes
@@ -210,7 +216,7 @@ class Blackjack extends Rooms.RoomGame {
 
 		this.curUser = Object.keys(this.players)[0];
 
-		let output = `The game of blackjack has started${(this.startedBy !== '' ? ` (started by ${this.startedBy})` : ``)}.<br />`;
+		let output = `The game of blackjack has started${(this.startedBy !== '' ? ` (started by ${this.startedBy})` : ``)}. ${this.slideButton}<br />`;
 		this.started = true;
 		this.state = 'started';
 		for (let player in this.players) {
@@ -435,6 +441,7 @@ class BlackjackPlayer extends Rooms.RoomGamePlayer {
 
 		this.cards = [];
 		this.points = 0;
+		this.slide = 0;
 		this.status = 'playing';
 
 		this.selfUhtml = '';
@@ -503,6 +510,11 @@ exports.commands = {
 			if (!room.game || room.game.title !== 'Blackjack') return this.errorReply("There is no game of blackjack currently ongoing in this room.");
 
 			room.game.stand(user);
+		},
+		slide: function (target, room, user) { // undocumented (used in UI)
+			if (!room.game || room.game.title !== 'Blackjack') return this.errorReply("There is no game of blackjack currently ongoing in this room.");
+
+			room.game.slide(user);
 		},
 		j: 'join',
 		join: function (target, room, user) {
