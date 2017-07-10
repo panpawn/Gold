@@ -1423,6 +1423,12 @@ class ChatRoom extends Room {
 	}
 }
 
+class GameRoom extends Room {
+	constructor() {
+
+	}
+}
+
 function getRoom(roomid, fallback) {
 	if (fallback) throw new Error("fallback parameter in getRoom no longer supported");
 	if (roomid && roomid.id) return roomid;
