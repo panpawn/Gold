@@ -259,6 +259,11 @@ class CommandContext {
 
 		return message;
 	}
+	fakeUnrecognized() {
+		if (this.cmdToken === '!') return this.errorReply(`The command "!${this.cmd}" does not exist.`);
+		if (this.pmTarget) return this.errorReply(`The command "/${this.cmd}" does not exist. To send a message starting with "/${this.cmd}", type "//${this.cmd}".`);
+		return this.errorReply(`The command "/${this.cmd}" was unrecognized. To send a message starting with "/${this.cmd}", type "//${this.cmd}".`);
+	}
 	splitCommand(message = this.message, recursing) {
 		this.cmd = '';
 		this.cmdToken = '';
