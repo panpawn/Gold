@@ -15,7 +15,10 @@
         "./sim/prng.js",
         "./crashlogger.js",
         "./dnsbl.js",
+        "./monitor.js",
         "./repl.js",
-        "./fs.js"
+        "./fs.js",
+        "./process-manager.js",
+        "./verifier.js"
     ]
 }
