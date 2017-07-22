@@ -590,7 +590,7 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		if (!this.canTalk()) return;
 		if (!target) target = toId(user.name);
-		return this.sendReplyBox(Gold.nameColor(target, true) + '.  The hexcode for this name color is: ' + Gold.hashColor(target) + '.');
+		return this.sendReplyBox(`${Gold.nameColor(target.trim(), true)}.  The hexcode for this name color is: ${Gold.hashColor(target)}.`);
 	},
 	rsi: 'roomshowimage',
 	roomshowimage: function (target, room, user) {
@@ -716,29 +716,32 @@ exports.commands = {
 	},
 	credit: 'credits',
 	credits: function (target, room, user) {
-		let popup = "|html|" + "<font size=5>Gold Server Credits</font><br />" +
-					"<u>Owners:</u><br />" +
-					"- " + Gold.nameColor('panpawn', true) + " (Founder, Sysadmin, Development, Lead Policy)<br />" +
-					"<br />" +
-					"<u>Development:</u><br />" +
-					"- " + Gold.nameColor('panpawn', true) + " (Owner of GitHub repository)<br />" +
-					"- " + Gold.nameColor('Silveee', true) + " (Contributor)<br />" +
-					"- " + Gold.nameColor('jd', true) + " (Collaborator)<br />" +
-					"<br />" +
-					"<u>Special Thanks:</u><br />" +
-					"- Current staff team<br />" +
-					"- Our regular users<br />" +
-					"- " + Gold.nameColor('snow', true) + " (Policy administrator)<br />" +
-					"- " + Gold.nameColor('pitcher', true) + " (Former co-owner)<br />" +
-					"- " + Gold.nameColor('PixelatedPaw', true) + " (One of the original administrators)";
+		let popup = `|html|<span style="font-size: 20px; font-weight: bold;">Gold Server Credits</span><br />`;
+		popup += `<u>Owner</u><br />`;
+		popup += `- ${Gold.nameColor('panpawn', true)} (Founder, Sysadmin, Development, Lead Policy)<br />`;
+		popup += `<br />`;
+
+		popup += `<u>Development</u><br />`;
+		popup += `- ${Gold.nameColor('panpawn', true)} (Owner of GitHub repository)<br />`;
+		popup += `- ${Gold.nameColor('jd', true)} (Developmental Collaborator)<br />`;
+		popup += `<br />`;
+
+		popup += `<u>Special Thanks:</u><br />`;
+		popup += `- Current staff team<br />`;
+		popup += `- Our regular users<br />`;
+		popup += `- ${Gold.nameColor('Silveee', true)} (Developmental Contributor)<br />`;
+		popup += `- ${Gold.nameColor('snow', true)} (Former Policy Admin)<br />`;
+		popup += `- ${Gold.nameColor('pitcher', true)} (Former co-owner & Policy Admin)<br />`;
+		popup += `- ${Gold.nameColor('PixelatedPaw', true)} (One of the original Admins)<br />`;
+
 		user.popup(popup);
 	},
 	'!regdate': true,
 	regdate: function (target, room, user, connection) {
-		if (toId(target).length < 1 || toId(target).length > 19) return this.sendReply("Usernames may not be less than one character or longer than 19");
+		if (toId(target).length < 1 || toId(target).length > 19) return this.errorReply("Usernames may not be less than one character or longer than 19");
 		if (!this.runBroadcast()) return;
 		Gold.regdate(target, date => {
-			this.sendReplyBox(Gold.nameColor(target, false) + (date ? " was registered on " + moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ") : " is not registered."));
+			this.sendReplyBox(`${Gold.nameColor(target.trim(), false)} ${(date ? ` was registered on ${moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ")}` : ` is not registered.`)}`);
 			if (room) room.update();
 		});
 	},
