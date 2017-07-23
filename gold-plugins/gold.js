@@ -144,15 +144,15 @@ exports.commands = {
 	auth: 'gal',
 	goldauthlist: 'gal',
 	gal: function (target, room, user, connection) {
-		if (target) return this.parse('/userauth ' + target);
-		const ignoreUsers = ['ponybot', 'eltonjohn', 'axews', 'tintins', 'amaterasu'];
+		if (target) return this.parse(`/userauth ${target}`);
+		const ignoreUsers = ['ponybot', 'eltonjohn', 'axews'];
 		fs.readFile('config/usergroups.csv', 'utf8', function (err, data) {
 			let staff = {
-				"admins": [],
-				"leaders": [],
-				"mods": [],
-				"drivers": [],
-				"voices": [],
+				'admins': [],
+				'leaders': [],
+				'mods': [],
+				'drivers': [],
+				'voices': [],
 			};
 			let row = ('' + data).split('\n');
 			for (let i = row.length; i > -1; i--) {
@@ -162,23 +162,23 @@ exports.commands = {
 				let personId = toId(person);
 				switch (rank) {
 				case '~':
-					if (~ignoreUsers.indexOf(personId)) break;
+					if (ignoreUsers.includes(personId)) break;
 					staff['admins'].push(formatName(person));
 					break;
 				case '&':
-					if (~ignoreUsers.indexOf(personId)) break;
+					if (ignoreUsers.includes(personId)) break;
 					staff['leaders'].push(formatName(person));
 					break;
 				case '@':
-					if (~ignoreUsers.indexOf(personId)) break;
+					if (ignoreUsers.includes(personId)) break;
 					staff['mods'].push(formatName(person));
 					break;
 				case '%':
-					if (~ignoreUsers.indexOf(personId)) break;
+					if (ignoreUsers.includes(personId)) break;
 					staff['drivers'].push(formatName(person));
 					break;
 				case '+':
-					if (~ignoreUsers.indexOf(personId)) break;
+					if (ignoreUsers.includes(personId)) break;
 					staff['voices'].push(formatName(person));
 					break;
 				default:
