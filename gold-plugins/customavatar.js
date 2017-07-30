@@ -146,9 +146,9 @@ exports.commands = {
 
 				this.sendReply(userid2 + "'s custom avatar has been set.");
 
-				Rooms.get('staff').add('|raw|' + Gold.nameColor(userid2, true) + ' has received a custom avatar from ' + Gold.nameColor(user.name, true)).update();
-				Users.get(userid2).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Chat.escapeHTML(user.name) + '</font></b>: <img src="' + avatar2 + '" width="80" height="80">');
-				room.update();
+				const staff = Rooms('staff');
+				if (staff) staff.add('|raw|' + Gold.nameColor(userid2, true) + ' has received a custom avatar from ' + Gold.nameColor(user.name, true)).update();
+				if (Users(userid2)) Users(userid2).popup('|modal||html|<font color="red"><strong>ATTENTION!</strong></font><br /> You have received a custom avatar from <b><font color="' + Gold.hashColor(user.userid) + '">' + Chat.escapeHTML(user.name) + '</font></b>: <img src="' + avatar2 + '" width="80" height="80">');
 			}.bind(this));
 			break;
 
