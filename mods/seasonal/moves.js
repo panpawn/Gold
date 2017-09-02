@@ -151,21 +151,24 @@ exports.BattleMovedex = {
 		type: "Flying",
 	},
 	// panpawn
-	lafireblaze: {
-		accuracy: 60,
+	lafireblaze420: {
+		accuracy: 75,
 		basepower: 150,
 		category: "Physical",
 		shortDesc: "No additional effect.",
-		id: "lafireblaze",
+		id: "lafireblaze420",
 		isNonstandard: true,
-		name: "LaFireBlaze",
+		name: "LaFireBlaze420",
 		pp: 15,
 		priority: 0,
 		onTryHit: function (target, source, move) {
 			this.attrLastMove('[still]');
 			this.add('-anim', source, "Fire Blast", target);
 		},
-		secondary: false,
+		secondary: {
+			chance: 20,
+			status: 'brn',
+		},
 		target: "normal",
 		type: "Fire",
 	},
