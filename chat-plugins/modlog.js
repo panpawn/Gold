@@ -240,7 +240,7 @@ function prettifyResults(rawResults, room, searchString, exactSearch, addModlogL
 				(exactSearch ? "" : " Add quotes to the search parameter to search for a phrase, rather than a user.");
 	}
 	const resultArray = rawResults.split('\n');
-	let lines = resultArray.length;
+	let lines = resultArray.length - 1;
 	const resultString = resultArray.map(line => {
 		if (hideIps) line = line.replace(/\([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\)/g, '');
 		let bracketIndex = line.indexOf(']');
