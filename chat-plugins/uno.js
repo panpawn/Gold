@@ -225,6 +225,7 @@ class UNOgame extends Rooms.RoomGame {
 		return new Promise((resolve, reject) => {
 			if (!this.awaitUno) return resolve();
 
+			this.state = "uno";
 			// the throttle for sending messages is at 600ms for non-authed users,
 			// wait 750ms before sending the next person's turn.
 			// this allows games to be fairer, so the next player would not spam the pass command blindly
@@ -631,6 +632,7 @@ exports.commands = {
 			if (!room.game || room.game.gameid !== 'uno') return this.errorReply("There is no UNO game going on in this room right now.");
 			if (room.game.currentPlayer !== user.userid) return this.errorReply("It is currently not your turn.");
 			if (!room.game.players[user.userid].cardLock) return this.errorReply("You cannot pass until you draw a card.");
+			if (room.game.state === 'color') return this.errorReply("You cannot pass until you choose a color.");
 
 			room.game.sendToRoom(`${user.name} has passed.`);
 			room.game.nextTurn();

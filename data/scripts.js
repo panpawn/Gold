@@ -107,7 +107,7 @@ exports.BattleScripts = {
 			this.singleEvent('ModifyMove', move, null, pokemon, target, move, move);
 			move = this.getZMoveCopy(move, pokemon);
 			if (move.type !== 'Normal') sourceEffect = baseMove;
-		} else if (zMove || (sourceEffect && sourceEffect.isZ)) {
+		} else if (zMove || (sourceEffect && sourceEffect.isZ && sourceEffect.id !== 'instruct')) {
 			move = this.getZMoveCopy(move, pokemon);
 		} else {
 			move = this.getMoveCopy(move);
@@ -275,7 +275,7 @@ exports.BattleScripts = {
 			return true;
 		}
 
-		if (!move.negateSecondary && !(pokemon.hasAbility('sheerforce') && pokemon.volatiles['sheerforce'])) {
+		if (!move.negateSecondary && !(move.hasSheerForce && pokemon.hasAbility('sheerforce'))) {
 			this.singleEvent('AfterMoveSecondarySelf', move, null, pokemon, target, move);
 			this.runEvent('AfterMoveSecondarySelf', pokemon, target, move);
 		}
@@ -313,7 +313,7 @@ exports.BattleScripts = {
 			move.ignoreImmunity = (move.category === 'Status');
 		}
 
-		if (move.ignoreImmunity !== true && !move.ignoreImmunity[move.type] && !target.runImmunity(move.type, true)) {
+		if (this.gen < 7 && move.ignoreImmunity !== true && !move.ignoreImmunity[move.type] && !target.runImmunity(move.type, true)) {
 			return false;
 		}
 
@@ -323,6 +323,9 @@ exports.BattleScripts = {
 			return false;
 		}
 
+		if (this.gen >= 7 && move.ignoreImmunity !== true && !move.ignoreImmunity[move.type] && !target.runImmunity(move.type, true)) {
+			return false;
+		}
 		if (move.flags['powder'] && target !== pokemon && !this.getImmunity('powder', target)) {
 			this.debug('natural powder immunity');
 			this.add('-immune', target, '[msg]');
@@ -518,7 +521,7 @@ exports.BattleScripts = {
 
 		this.eachEvent('Update');
 
-		if (target && !move.negateSecondary && !(pokemon.hasAbility('sheerforce') && pokemon.volatiles['sheerforce'])) {
+		if (target && !move.negateSecondary && !(move.hasSheerForce && pokemon.hasAbility('sheerforce'))) {
 			this.singleEvent('AfterMoveSecondary', move, null, target, pokemon, move);
 			this.runEvent('AfterMoveSecondary', target, pokemon, move);
 		}

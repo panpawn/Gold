@@ -66,7 +66,9 @@ class BattlePlayer {
 
 		for (let i = 0; i < user.connections.length; i++) {
 			let connection = user.connections[i];
-			Sockets.subchannelMove(connection.worker, this.game.id, this.slotNum + 1, connection.socketid);
+			if (connection.inRooms.has(game.id)) {
+				Sockets.subchannelMove(connection.worker, this.game.id, this.slotNum + 1, connection.socketid);
+			}
 		}
 	}
 	destroy() {
@@ -278,7 +280,7 @@ class BattleTimer {
 			const player = this.battle[slot];
 			const isConnected = player && player.active;
 
-			if (isConnected === (this.dcTicksLeft[slotNum] !== NOT_DISCONNECTED)) continue;
+			if (!!isConnected === !!(this.dcTicksLeft[slotNum] === NOT_DISCONNECTED)) continue;
 
 			if (!isConnected) {
 				// player has disconnected: don't wait longer than 6 ticks (1 minute)
@@ -325,16 +327,16 @@ class BattleTimer {
 }
 
 class Battle {
-	constructor(room, format, rated) {
-		format = Dex.getFormat(format);
+	constructor(room, formatid, options) {
+		let format = Dex.getFormat(formatid);
 		this.id = room.id;
 		this.room = room;
 		this.title = format.name;
 		if (!this.title.endsWith(" Battle")) this.title += " Battle";
-		this.allowRenames = !rated;
+		this.allowRenames = !options.rated;
 
-		this.format = format.id;
-		this.rated = rated;
+		this.format = formatid;
+		this.rated = options.rated;
 		this.started = false;
 		this.ended = false;
 		this.active = false;
@@ -357,7 +359,6 @@ class Battle {
 		// data to be logged
 		this.logData = null;
 		this.endType = 'normal';
-		this.customBanlist = !!format.customBanlist;
 
 		this.rqid = 1;
 
@@ -366,7 +367,7 @@ class Battle {
 			throw new Error(`Battle with ID ${room.id} already exists.`);
 		}
 
-		this.send('init', this.format, rated ? '1' : '', format.customBanlist ? format.customBanlist.join(',') : '');
+		this.send('init', this.format, this.rated ? '1' : '');
 		this.process.pendingTasks.set(room.id, this);
 	}
 
@@ -567,6 +568,7 @@ class Battle {
 			if (request[3]) data += `\n|sentchoice|${request[3]}`;
 			(connection || user).sendTo(this.id, data);
 		}
+		if (!player.active) this.onJoin(user);
 	}
 	onUpdateConnection(user, connection) {
 		this.onConnect(user, connection);
@@ -774,7 +776,7 @@ if (process.send && module === process.mainModule) {
 			const id = data[0];
 			if (!Battles.has(id)) {
 				try {
-					const battle = Sim.construct(Dex.getFormat(data[2], data[4]), data[3], sendBattleMessage);
+					const battle = Sim.construct(data[2], data[3], sendBattleMessage);
 					battle.id = id;
 					Battles.set(id, battle);
 				} catch (err) {

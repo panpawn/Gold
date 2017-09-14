@@ -297,11 +297,11 @@ class GlobalRoom {
 		this.staffAutojoin = []; // rooms that staff autojoin upon connecting
 		for (let i = 0; i < this.chatRoomData.length; i++) {
 			if (!this.chatRoomData[i] || !this.chatRoomData[i].title) {
-				console.log('ERROR: Room number ' + i + ' has no data.');
+				Monitor.warn(`ERROR: Room number ${i} has no data and could not be loaded.`);
 				continue;
 			}
 			let id = toId(this.chatRoomData[i].title);
-			if (!Config.quietconsole) console.log("NEW CHATROOM: " + id);
+			Monitor.notice("NEW CHATROOM: " + id);
 			let room = Rooms.createChatRoom(id, this.chatRoomData[i].title, this.chatRoomData[i]);
 			if (room.aliases) {
 				for (let a = 0; a < room.aliases.length; a++) {
@@ -500,16 +500,30 @@ class GlobalRoom {
 		return roomTable;
 	}
 	getRooms(user) {
-		let roomsData = {official:[], chat:[], userCount: this.userCount, battleCount: this.battleCount};
+		let roomsData = {official:[], pspl:[], chat:[], userCount: this.userCount, battleCount: this.battleCount};
 		for (let i = 0; i < this.chatRooms.length; i++) {
 			let room = this.chatRooms[i];
 			if (!room) continue;
 			if (room.isPrivate && !(room.isPrivate === 'voice' && user.group !== ' ')) continue;
-			(room.isOfficial ? roomsData.official : roomsData.chat).push({
-				title: room.title,
-				desc: room.desc,
-				userCount: room.userCount,
-			});
+			if (room.isOfficial) {
+				roomsData.official.push({
+					title: room.title,
+					desc: room.desc,
+					userCount: room.userCount,
+				});
+			} else if (room.pspl) {
+				roomsData.pspl.push({
+					title: room.title,
+					desc: room.desc,
+					userCount: room.userCount,
+				});
+			} else {
+				roomsData.chat.push({
+					title: room.title,
+					desc: room.desc,
+					userCount: room.userCount,
+				});
+			}
 		}
 		return roomsData;
 	}
@@ -814,12 +828,8 @@ class BattleRoom extends Room {
 			options = {};
 		}
 
-		let rated;
-		if (options.rated && format.rated !== false) {
-			rated = options.rated;
-		} else {
-			rated = false;
-		}
+		if (format.rated === false) options.rated = false;
+		let rated = options.rated || false;
 
 		if (options.tour) {
 			this.tour = options.tour;
@@ -831,7 +841,7 @@ class BattleRoom extends Room {
 		this.p2 = p2 || null;
 
 		this.rated = rated;
-		this.battle = new Rooms.RoomBattle(this, formatid, rated);
+		this.battle = new Rooms.RoomBattle(this, formatid, options);
 		this.game = this.battle;
 
 		this.sideTicksLeft = [21, 21];
@@ -1456,24 +1466,43 @@ Rooms.search = function (name, fallback) {
 	return getRoom(name) || getRoom(toId(name)) || getRoom(Rooms.aliases.get(toId(name)));
 };
 
-Rooms.createBattle = function (roomid, format, p1, p2, options) {
-	if (roomid && roomid.id) return roomid;
-	if (!p1 || !p2) return false;
-	if (!roomid) roomid = 'default';
-	if (!Rooms.rooms.has(roomid)) {
-		// console.log("NEW BATTLE ROOM: " + roomid);
-		Monitor.countBattle(p1.latestIp, p1.name);
-		Monitor.countBattle(p2.latestIp, p2.name);
-		Rooms.rooms.set(roomid, new BattleRoom(roomid, format, p1, p2, options));
-	}
-	return Rooms(roomid);
+Rooms.createBattleRoom = function (roomid, format, p1, p2, options) {
+	if (Rooms.rooms.has(roomid)) throw new Error(`Room ${roomid} already exists`);
+	Monitor.debug("NEW BATTLE ROOM: " + roomid);
+	const room = new BattleRoom(roomid, format, p1, p2, options);
+	Rooms.rooms.set(roomid, room);
+	return room;
 };
 Rooms.createChatRoom = function (roomid, title, data) {
-	let room = Rooms.rooms.get(roomid);
-	if (room) return room;
-
-	room = new ChatRoom(roomid, title, data);
+	if (Rooms.rooms.has(roomid)) throw new Error(`Room ${roomid} already exists`);
+	const room = new ChatRoom(roomid, title, data);
 	Rooms.rooms.set(roomid, room);
+	return room;
+};
+Rooms.createBattle = function (format, options) {
+	const p1 = options.p1;
+	const p2 = options.p2;
+	if (p1 === p2) throw new Error(`Players can't battle themselves`);
+	if (!p1) throw new Error(`p1 required`);
+	if (!p2) throw new Error(`p2 required`);
+	Ladders.matchmaker.cancelSearch(p1);
+	Ladders.matchmaker.cancelSearch(p2);
+
+	if (Rooms.global.lockdown === true) {
+		p1.popup("The server is restarting. Battles will be available again in a few minutes.");
+		p2.popup("The server is restarting. Battles will be available again in a few minutes.");
+		return;
+	}
+
+	const roomid = Rooms.global.prepBattleRoom(format);
+	const room = Rooms.createBattleRoom(roomid, format, p1, p2, options);
+	room.battle.addPlayer(p1, options.p1team);
+	room.battle.addPlayer(p2, options.p2team);
+	p1.joinRoom(room);
+	p2.joinRoom(room);
+	Monitor.countBattle(p1.latestIp, p1.name);
+	Monitor.countBattle(p2.latestIp, p2.name);
+	Rooms.global.onCreateBattleRoom(p1, p2, room, options);
 	return room;
 };
 
@@ -1498,7 +1527,7 @@ Rooms.SimulatorProcess = require('./room-battle').SimulatorProcess;
 
 // initialize
 
-if (!Config.quietconsole) console.log("NEW GLOBAL: global");
+Monitor.notice("NEW GLOBAL: global");
 Rooms.global = new GlobalRoom('global');
 
 Rooms.rooms.set('global', Rooms.global);

@@ -28,9 +28,8 @@
   "engines": {
     "node": ">=7.7.0"
   },
-  "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node pokemon-showdown",
     "test": "eslint --rulesdir=dev-tools/eslint --cache *.js chat-plugins/ gold-plugins/ config/ data/ dev-tools/ mods/ sim/ tournaments/ test/"
   },
   "bin": "./pokemon-showdown",
