@@ -2228,6 +2228,7 @@ exports.commands = {
 	unnamelockhelp: ["/unnamelock [username] - Unnamelocks the user. Requires: % @ * & ~"],
 
 	hidetextalts: 'hidetext',
+	hidealttext: 'hidetext',
 	hidealtstext: 'hidetext',
 	hideuser: 'hidetext',
 	hidetext: function (target, room, user, connection, cmd) {
@@ -2247,7 +2248,7 @@ exports.commands = {
 			return this.errorReply("User '" + name + "' is not banned from this room or locked.");
 		}
 
-		if (cmd === 'hidealtstext' || cmd === 'hidetextalts') {
+		if (cmd === 'hidealtstext' || cmd === 'hidetextalts' || cmd === 'hidealttext') {
 			this.addModCommand(`${targetUser.name}'s alts' messages were cleared from ${room.title} by ${user.name}.`);
 			this.add(`|unlink|${hidetype}${userid}`);
 
@@ -2266,7 +2267,7 @@ exports.commands = {
 	},
 	hidetexthelp: [
 		"/hidetext [username] - Removes a locked or banned user's messages from chat (includes users banned from the room). Requires: % (global only), @ * # & ~",
-		"/hidealtstext OR /hidetextalts [username] - Removes a locked or banned user's messages, and their alternate account's messages from the chat (includes users banned from the room).  Requires: % (global only), @ * # & ~",
+		"/hidealtstext [username] - Removes a locked or banned user's messages, and their alternate account's messages from the chat (includes users banned from the room).  Requires: % (global only), @ * # & ~",
 	],
 
 	ab: 'blacklist',
