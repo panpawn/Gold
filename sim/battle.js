@@ -2017,8 +2017,8 @@ class Battle extends Dex.ModdedDex {
 			}
 		}
 
-		if (this.gen <= 2) {
-			// in gen 1-2, fainting skips the rest of the turn, including residuals
+		if (this.gen <= 1) {
+			// in gen 1, fainting skips the rest of the turn, including residuals
 			this.queue = [];
 		} else if (this.gen <= 3 && this.gameType === 'singles') {
 			// in gen 3 or earlier, fainting in singles skips to residuals
