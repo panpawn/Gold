@@ -218,7 +218,7 @@ exports.commands = {
 				"<i><font color=gray>(By: <a href=\"https://github.com/panpawn/Pokemon-Showdown/blob/master/chat-plugins/lottery.js\" class=\"subtle\">panpawn</a>)</font></i></center><br />" +
 				"<code>/lotto create, [ticket price]</code> - Starts a game of lotto with the respected ticket price. (Requires @, #, &, ~)<br />" +
 				"<code>/lotto create, [ticket price], pmall</code> - Starts a game of lotto with the respected ticket price AND notifies everyone. (Requires ~)<br />" +
-				"<code>/lotto join</code> OR <code>/loto buy</code> - Buys 1 ticket for the current game of loto (no cap set as of now).<br />" +
+				"<code>/lotto join</code> OR <code>/lotto buy</code> - Buys 1 ticket for the current game of lotto (no cap set as of now).<br />" +
 				"<code>/lotto end</code> - Picks a winner of the lotto.  (Requires @, #, &, ~)<br />" +
 				"<code>/lotto setlimit, [ticketcap]</code> - Sets the cap of tickets per user.  (Requires ~)<br />" +
 				"<code>/lotto pot</code> - Shows the current pot of the game of lotto.<br />" +
