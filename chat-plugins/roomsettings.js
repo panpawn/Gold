@@ -32,7 +32,10 @@ class RoomSettings {
 		}
 		return Chat.html`<button class="button" name="send" value="/roomsetting ${command}">${setting}</button> `;
 	}
-	modchat() {
+	modchatConditionals() {
+		
+	}
+	modchatLevel() {
 		if (!this.user.can('modchat', null, this.room)) return this.button(this.room.modchat ? this.room.modchat : 'off', true);
 		let modchatOutput = [];
 		for (let i = 0; i <= RANKS.length; i++) {
@@ -151,7 +154,7 @@ class RoomSettings {
 	}
 	generateDisplay(user, room, connection) {
 		let output = Chat.html`<div class="infobox">Room Settings for ${this.room.title}<br />`;
-		output += `<strong>Modchat:</strong> <br />${this.modchat()}<br />`;
+		output += `<strong>Modchat:</strong> <br />${this.modchatLevel()}<br />`;
 		output += `<strong>Modjoin:</strong> <br />${this.modjoin()}<br />`;
 		output += `<strong>Stretch filter:</strong> <br />${this.stretching()}<br />`;
 		output += `<strong>Caps filter:</strong> <br />${this.capitals()}<br />`;
