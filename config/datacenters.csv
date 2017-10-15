@@ -2080,7 +2080,6 @@
 178.77.64.0,178.77.127.255,Host Europe,http://www.hosteurope.de/
 178.79.128.0,178.79.191.255,Linode,http://www.linode.com/
 178.79.192.0,178.79.255.255,Limelight Networks Inc,http://www.limelight.com/
-178.86.0.0,178.87.255.255,hosting.ua,http://hosting.ua/
 178.156.0.0,178.156.127.255,ServiHosting Networks S.L.,http://servihosting.es
 178.162.128.0,178.162.255.255,Leaseweb,http://www.leaseweb.com/
 178.174.0.0,178.174.127.255,Unbelievable Machine,http://www.unbelievable-machine.com/
@@ -2208,6 +2207,7 @@
 185.58.192.0,185.58.195.255,ArubaCloud,http://arubacloud.com
 185.62.190.0,185.62.191.255,BlazingFast,https://blazingfast.io/
 185.73.36.0,185.73.39.255,Atlantic.net,http://atlantic.net
+185.82.216.0,185.82.217.255,Sofia Data Center,http://sdc.bg/
 185.86.148.0,185.86.149.255,Yourserver Sweden,https://www.yourserver.se/
 185.86.150.0,185.86.150.127,Yourserver Sweden,https://www.yourserver.se/
 185.86.151.0,185.86.151.255,Yourserver Latvia,https://www.yourserver.se/
@@ -2571,7 +2571,7 @@
 195.242.212.0,195.242.215.255,OpenHosting UK Internet Solutions,http://openhosting.co.uk/
 195.245.124.0,195.245.127.255,Akamai,http://akamai.com/
 195.248.78.0,195.248.78.255,availo.no,http://www.availo.no/
-196.52.0.0,196.55.255.255,LogicWeb Inc,https://www.logicweb.com/
+196.52.0.0,196.55.255.255,Leaseweb,https://www.leaseweb.com/
 198.7.56.0,198.7.63.255,Leaseweb,http://www.leaseweb.com/
 198.8.80.0,198.8.95.255,colo@,http://coloat.com/
 198.12.12.0,198.12.15.255,awknet,http://awknet.com/

@@ -212,6 +212,7 @@ exports.commands = {
 		case 'off':
 		case 'false':
 		case 'no':
+		case 'disable':
 			room.modchat = false;
 			break;
 		case 'ac':
@@ -260,10 +261,20 @@ exports.commands = {
 	ioo: function (target, room, user) {
 		return this.parse('/modjoin +');
 	},
+	'!ionext': true,
+	ionext: function (target, room, user) {
+		if (this.meansNo(target)) {
+			user.inviteOnlyNextBattle = false;
+			this.sendReply("Your next battle will be publicly visible.");
+		} else {
+			user.inviteOnlyNextBattle = true;
+			this.sendReply("Your next battle will be invite-only.");
+		}
+	},
 
 	inviteonly: function (target, room, user) {
 		if (!target) return this.parse('/help inviteonly');
-		if (target === 'on' || target === 'true' || target === 'yes') {
+		if (this.meansYes(target)) {
 			return this.parse("/modjoin +");
 		} else {
 			return this.parse(`/modjoin ${target}`);
@@ -284,7 +295,7 @@ exports.commands = {
 		}
 		if (room.tour && !room.tour.modjoin) return this.errorReply(`You can't do this in tournaments where modjoin is prohibited.`);
 		if (target === 'player') target = '\u2606';
-		if (target === 'off' || target === 'false') {
+		if (this.meansNo(target)) {
 			if (!room.modjoin) return this.errorReply(`Modjoin is already turned off in this room.`);
 			delete room.modjoin;
 			this.add(`|raw|<div class="broadcast-blue"><strong>This room is no longer invite only!</strong><br />Anyone may now join.</div>`);
@@ -334,7 +345,7 @@ exports.commands = {
 		if (!this.can('modchat', null, room)) return false;
 
 		let targetInt = parseInt(target);
-		if (target === 'off' || target === 'disable' || target === 'false') {
+		if (this.meansNo(target)) {
 			if (!room.slowchat) return this.errorReply(`Slow chat is already disabled in this room.`);
 			room.slowchat = false;
 			this.add("|raw|<div class=\"broadcast-blue\"><strong>Slow chat was disabled!</strong><br />There is no longer a set minimum time between messages.</div>");
@@ -369,10 +380,10 @@ exports.commands = {
 		if (!this.canTalk()) return;
 		if (!this.can('editroom', null, room)) return false;
 
-		if (target === 'enable' || target === 'on') {
+		if (this.meansYes(target)) {
 			if (room.filterStretching) return this.errorReply(`This room's stretch filter is already ON`);
 			room.filterStretching = true;
-		} else if (target === 'disable' || target === 'off') {
+		} else if (this.meansNo(target)) {
 			if (!room.filterStretching) return this.errorReply(`This room's stretch filter is already OFF`);
 			room.filterStretching = false;
 		} else {
@@ -398,10 +409,10 @@ exports.commands = {
 		if (!this.canTalk()) return;
 		if (!this.can('editroom', null, room)) return false;
 
-		if (target === 'enable' || target === 'on' || target === 'true') {
+		if (this.meansYes(target)) {
 			if (room.filterCaps) return this.errorReply(`This room's caps filter is already ON`);
 			room.filterCaps = true;
-		} else if (target === 'disable' || target === 'off' || target === 'false') {
+		} else if (this.meansNo(target)) {
 			if (!room.filterCaps) return this.errorReply(`This room's caps filter is already OFF`);
 			room.filterCaps = false;
 		} else {
@@ -427,10 +438,10 @@ exports.commands = {
 		if (!this.canTalk()) return;
 		if (!this.can('editroom', null, room)) return false;
 
-		if (target === 'enable' || target === 'on' || target === 'true') {
+		if (this.meansYes(target)) {
 			if (room.filterEmojis) return this.errorReply(`This room's emoji filter is already ON`);
 			room.filterEmojis = true;
-		} else if (target === 'disable' || target === 'off' || target === 'false') {
+		} else if (this.meansNo(target)) {
 			if (!room.filterEmojis) return this.errorReply(`This room's emoji filter is already OFF`);
 			room.filterEmojis = false;
 		} else {
@@ -484,19 +495,25 @@ exports.commands = {
 
 			words = words.map(word => word.replace(/\n/g, '').trim());
 
-			for (let i = 0; i < words.length; i++) {
-				if (/[\\^$*+?()|{}[\]]/.test(words[i])) {
+			let banwordRegexLen = (room.banwordRegex instanceof RegExp) ? room.banwordRegex.source.length : 30;
+			for (let word of words) {
+				if (/[\\^$*+?()|{}[\]]/.test(word)) {
 					if (!user.can('makeroom')) return this.errorReply("Regex banwords are only allowed for leaders or above.");
 
 					try {
-						let test = new RegExp(words[i]); // eslint-disable-line no-unused-vars
+						let test = new RegExp(word); // eslint-disable-line no-unused-vars
 					} catch (e) {
-						return this.errorReply(e.message.substr(0, 28) === 'Invalid regular expression: ' ? e.message : `Invalid regular expression: /${words[i]}/: ${e.message}`);
+						return this.errorReply(e.message.startsWith('Invalid regular expression: ') ? e.message : `Invalid regular expression: /${word}/: ${e.message}`);
 					}
 				}
-				if (room.banwords.indexOf(words[i]) > -1) {
-					return this.errorReply(`${words[i]} is already a banned phrase.`);
-				}
+				if (room.banwords.includes(word)) return this.errorReply(`${word} is already a banned phrase.`);
+
+				banwordRegexLen += (banwordRegexLen === 30) ? word.length : `|${word}`.length;
+				// RegExp instances whose source is greater than or equal to
+				// v8's RegExpMacroAssembler::kMaxRegister in length will crash
+				// the server on compile. In this case, that would happen each
+				// time a chat message gets tested for any banned phrases.
+				if (banwordRegexLen >= (1 << 16 - 1)) return this.errorReply("This room has too many banned phrases to add the ones given.");
 			}
 
 			room.banwords = room.banwords.concat(words);
@@ -526,10 +543,8 @@ exports.commands = {
 
 			words = words.map(word => word.replace(/\n/g, '').trim());
 
-			for (let i = 0; i < words.length; i++) {
-				let index = room.banwords.indexOf(words[i]);
-
-				if (index < 0) return this.errorReply(`${words[i]} is not a banned phrase in this room.`);
+			for (let word of words) {
+				if (!room.banwords.includes(word)) return this.errorReply(`${word} is not a banned phrase in this room.`);
 			}
 
 			room.banwords = room.banwords.filter(w => !words.includes(w));

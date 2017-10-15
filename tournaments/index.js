@@ -1553,7 +1553,7 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		"- banuser/unbanuser &lt;user>: Bans/unbans a user from joining tournaments in this room. Lasts 2 weeks.<br />" +
 		"- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />" +
 		"- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />" +
-		"More detailed help can be found <a href=\"https://www.smogon.com/forums/threads/3570628/#post-6777489\">here</a>"
+		"More detailed help can be found <a href=\"http://www.smogon.com/forums/threads/3570628/#post-6777489\">here</a>"
 	);
 };
 
