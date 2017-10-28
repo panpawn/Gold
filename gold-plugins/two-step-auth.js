@@ -172,7 +172,7 @@ exports.commands = {
 		},
 	},
 	twostephelp: [
-		"Two-step authentication means that if you're trying to log in from an unstrusted network, the server will have you confirm your identity in the form of confirming an emailed pin code.",
+		"Two-step authentication means that if you're trying to log in from an untrusted network, the server will have you confirm your identity in the form of confirming an emailed pin code.",
 		"To set this up, do /twostep setup [email] - it will then send you an email asking you to do a command to verify you own the email.",
 	],
 };
