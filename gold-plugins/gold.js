@@ -2,7 +2,6 @@
 
 // modules
 const fs = require('fs');
-const moment = require('moment');
 const http = require('http');
 const https = require('https');
 const geoip = require('geoip-ultralight');
@@ -1247,7 +1246,7 @@ exports.commands = {
 		function lastActive(user) {
 			if (!Users(user)) return false;
 			user = Users(user);
-			return (user && user.lastActiveTime ? moment(user.lastActiveTime).fromNow() : "hasn't talked yet");
+			return (user && user.lastMessageTime ? Chat.toDurationString(Date.now() - user.lastMessageTime, {precision: true}) : "hasn't talked yet");
 		}
 		function showProfile() {
 			let profile = '<table><tr>', vip = Gold.hasVip(userid) ? " (<font color=#6390F0><b>VIP User</b></font>)" : "";
