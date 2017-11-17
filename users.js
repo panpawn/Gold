@@ -25,6 +25,9 @@
 
 'use strict';
 
+const PLAYER_SYMBOL = '\u2606';
+const HOST_SYMBOL = '\u2605';
+
 const THROTTLE_DELAY = 600;
 const THROTTLE_BUFFER_LIMIT = 6;
 const THROTTLE_MULTILINE_WARN = 3;
@@ -32,6 +35,8 @@ const THROTTLE_MULTILINE_WARN_STAFF = 6;
 //const DEFAULT_BAN_DURATION = "5d";
 
 const PERMALOCK_CACHE_TIME = 30 * 24 * 60 * 60 * 1000;
+
+const DEFAULT_TRAINER_SPRITES = [1, 2, 101, 102, 169, 170, 265, 266];
 
 const FS = require('./fs');
 
@@ -375,7 +380,7 @@ class User {
 		this.userid = '';
 		this.group = Config.groupsranking[0];
 
-		//points system user variables
+		// points system user variables
 		this.money = 0;
 		this.coins = 0;
 		this.canCustomSymbol = false;
@@ -391,8 +396,7 @@ class User {
 		this.isAway = false;
 		this.originalName = '';
 
-		let trainersprites = [1, 2, 101, 102, 169, 170, 265, 266];
-		this.avatar = trainersprites[Math.floor(Math.random() * trainersprites.length)];
+		this.avatar = DEFAULT_TRAINER_SPRITES[Math.floor(Math.random() * DEFAULT_TRAINER_SPRITES.length)];
 
 		this.connected = true;
 		this.goldDev = false;
@@ -408,6 +412,7 @@ class User {
 		this.latestIp = connection.ip;
 		this.useragent = connection.headers && connection.headers['user-agent'] ? connection.headers['user-agent'] : '';
 		this.locked = false;
+		this.semilocked = false;
 		this.namelocked = false;
 		this.prevNames = Object.create(null);
 		this.inRooms = new Set();
@@ -479,6 +484,10 @@ class User {
 				return mutedSymbol + this.name;
 			}
 			return room.getAuth(this) + this.name;
+		}
+		if (this.semilocked) {
+			const mutedSymbol = (Config.punishgroups && Config.punishgroups.muted ? Config.punishgroups.muted.symbol : '!');
+			return mutedSymbol + this.name;
 		}
 		return this.group + this.name;
 	}
@@ -600,44 +609,6 @@ class User {
 			Rooms(roomid).onUpdateIdentity(this);
 		});
 	}
-	filterName(name) {
-		if (!Config.disablebasicnamefilter) {
-			// whitelist
-			// \u00A1-\u00BF\u00D7\u00F7  Latin punctuation/symbols
-			// \u02B9-\u0362              basic combining accents
-			// \u2012-\u2027\u2030-\u205E Latin punctuation/symbols extended
-			// \u2050-\u205F              fractions extended
-			// \u2190-\u23FA\u2500-\u2BD1 misc symbols
-			// \u2E80-\u32FF              CJK symbols
-			// \u3400-\u9FFF              CJK
-			// \uF900-\uFAFF\uFE00-\uFE6F CJK extended
-			name = name.replace(/[^a-zA-Z0-9 /\\.~()<>^*%&=+$@#_'?!"\u00A1-\u00BF\u00D7\u00F7\u02B9-\u0362\u2012-\u2027\u2030-\u205E\u2050-\u205F\u2190-\u23FA\u2500-\u2BD1\u2E80-\u32FF\u3400-\u9FFF\uF900-\uFAFF\uFE00-\uFE6F-]+/g, '');
-
-			// blacklist
-			// \u00a1 upside-down exclamation mark (i)
-			// \u2580-\u2590 black bars
-			// \u25A0\u25Ac\u25AE\u25B0 black bars
-			// \u534d\u5350 swastika
-			// \u2a0d crossed integral (f)
-			name = name.replace(/[\u00a1\u2580-\u2590\u25A0\u25Ac\u25AE\u25B0\u2a0d\u534d\u5350]/g, '');
-			// e-mail address
-			if (name.includes('@') && name.includes('.')) return '';
-		}
-		name = name.replace(/^[^A-Za-z0-9]+/, ""); // remove symbols from start
-
-		// cut name length down to 18 chars
-		if (/[A-Za-z0-9]/.test(name.slice(18))) {
-			name = name.replace(/[^A-Za-z0-9]+/g, "");
-		} else {
-			name = name.slice(0, 18);
-		}
-
-		name = Dex.getName(name);
-		if (Config.namefilter) {
-			name = Config.namefilter(name, this);
-		}
-		return name;
-	}
 	/**
 	 *
 	 * @param name             The name you want
@@ -678,7 +649,7 @@ class User {
 			this.send(`|nametaken||Your name must be 18 characters or shorter.`);
 			return false;
 		}
-		name = this.filterName(name);
+		name = Chat.namefilter(name, this);
 		if (userid !== toId(name)) {
 			if (name) {
 				name = userid;
@@ -811,15 +782,19 @@ class User {
 			}
 			if (this.named) user.prevNames[this.userid] = this.name;
 			this.destroy();
+
+			if (user.named) Punishments.checkName(user, registered);
+			if (user.namelocked) user.named = true;
+
 			Rooms.global.checkAutojoin(user);
-			if (Config.loginfilter) Config.loginfilter(user, this, userType);
+			Chat.loginfilter(user, this, userType);
 			return true;
 		}
 
 		// rename success
 		if (this.forceRename(name, registered)) {
 			Rooms.global.checkAutojoin(this);
-			if (Config.loginfilter) Config.loginfilter(this, null, userType);
+			Chat.loginfilter(this, null, userType);
 			return true;
 		}
 		return false;
@@ -1306,7 +1281,7 @@ class User {
 			connection.popup(`That format is not available.`);
 			return Promise.resolve(false);
 		}
-		return TeamValidator(formatid).prepTeam(this.team, this.locked || this.namelocked).then(result => this.finishPrepBattle(connection, result));
+		return TeamValidatorAsync(formatid).validateTeam(this.team, this.locked || this.namelocked).then(result => this.finishPrepBattle(connection, result));
 	}
 
 	/**
@@ -1681,3 +1656,6 @@ Users.socketReceive = function (worker, workerid, socketid, message) {
 		Monitor.warn(`[slow] ${deltaTime}ms - ${user.name} <${connection.ip}>: ${roomId}|${message}`);
 	}
 };
+
+Users.PLAYER_SYMBOL = PLAYER_SYMBOL;
+Users.HOST_SYMBOL = HOST_SYMBOL;

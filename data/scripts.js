@@ -95,7 +95,7 @@ exports.BattleScripts = {
 			for (const side of this.sides) {
 				for (const currentPoke of side.active) {
 					if (!currentPoke || !currentPoke.hp || pokemon === currentPoke) continue;
-					if (currentPoke.hasAbility('dancer')) {
+					if (currentPoke.hasAbility('dancer') && !currentPoke.volatiles['twoturnmove']) {
 						dancers.push(currentPoke);
 					}
 				}
@@ -413,12 +413,12 @@ exports.BattleScripts = {
 
 		if (move.breaksProtect) {
 			let broke = false;
-			for (let i in {banefulbunker:1, kingsshield:1, protect:1, spikyshield:1}) {
-				if (target.removeVolatile(i)) broke = true;
+			for (const effectid of ['banefulbunker', 'kingsshield', 'protect', 'spikyshield']) {
+				if (target.removeVolatile(effectid)) broke = true;
 			}
 			if (this.gen >= 6 || target.side !== pokemon.side) {
-				for (let i in {craftyshield:1, matblock:1, quickguard:1, wideguard:1}) {
-					if (target.side.removeSideCondition(i)) broke = true;
+				for (const effectid of ['craftyshield', 'matblock', 'quickguard', 'wideguard']) {
+					if (target.side.removeSideCondition(effectid)) broke = true;
 				}
 			}
 			if (broke) {
@@ -706,7 +706,9 @@ exports.BattleScripts = {
 				if (this.canSwitch(target.side)) didSomething = true; // at least defer the fail message to later
 			}
 			if (moveData.selfSwitch) {
-				if (this.canSwitch(pokemon.side)) didSomething = true; // at least defer the fail message to later
+				// If the move is Parting Shot and it fails to change the target's stats in gen 7, didSomething will be null instead of false.
+				// Leaving didSomething as null will cause this function to return before setting the switch flag, preventing the switch.
+				if (this.canSwitch(pokemon.side) && (didSomething !== null || this.gen < 7)) didSomething = true; // at least defer the fail message to later
 			}
 			// Hit events
 			//   These are like the TryHit events, except we don't need a FieldHit event.
@@ -837,7 +839,7 @@ exports.BattleScripts = {
 	},
 
 	canZMove: function (pokemon) {
-		if (pokemon.side.zMoveUsed) return;
+		if (pokemon.side.zMoveUsed || (pokemon.transformed && (pokemon.template.isMega || pokemon.template.isPrimal))) return;
 		let item = pokemon.getItem();
 		if (!item.zMove) return;
 		if (item.zMoveUser && !item.zMoveUser.includes(pokemon.template.species)) return;
@@ -866,18 +868,28 @@ exports.BattleScripts = {
 		let altForme = pokemon.baseTemplate.otherFormes && this.getTemplate(pokemon.baseTemplate.otherFormes[0]);
 		let item = pokemon.getItem();
 		if (altForme && altForme.isMega && altForme.requiredMove && pokemon.moves.includes(toId(altForme.requiredMove)) && !item.zMove) return altForme.species;
-		if (item.megaEvolves !== pokemon.baseTemplate.baseSpecies || item.megaStone === pokemon.species) return false;
+		if (item.megaEvolves !== pokemon.baseTemplate.baseSpecies || item.megaStone === pokemon.species) {
+			return null;
+		}
 		return item.megaStone;
 	},
 
+	canUltraBurst: function (pokemon) {
+		if (['Necrozma-Dawn-Wings', 'Necrozma-Dusk-Mane'].includes(pokemon.baseTemplate.species) &&
+			pokemon.getItem().id === 'ultranecroziumz') {
+			return "Necrozma-Ultra";
+		}
+		return null;
+	},
+
 	runMegaEvo: function (pokemon) {
-		let template = this.getTemplate(pokemon.canMegaEvo);
-		let side = pokemon.side;
+		const isUltraBurst = !pokemon.canMegaEvo;
+		const template = this.getTemplate(pokemon.canMegaEvo || pokemon.canUltraBurst);
+		const side = pokemon.side;
 
 		// Pokémon affected by Sky Drop cannot mega evolve. Enforce it here for now.
-		let foeActive = side.foe.active;
-		for (let i = 0; i < foeActive.length; i++) {
-			if (foeActive[i].volatiles['skydrop'] && foeActive[i].volatiles['skydrop'].source === pokemon) {
+		for (const foeActive of side.foe.active) {
+			if (foeActive.volatiles['skydrop'] && foeActive.volatiles['skydrop'].source === pokemon) {
 				return false;
 			}
 		}
@@ -887,17 +899,21 @@ exports.BattleScripts = {
 		pokemon.details = template.species + (pokemon.level === 100 ? '' : ', L' + pokemon.level) + (pokemon.gender === '' ? '' : ', ' + pokemon.gender) + (pokemon.set.shiny ? ', shiny' : '');
 		if (pokemon.illusion) {
 			pokemon.ability = ''; // Don't allow Illusion to wear off
-			this.add('-mega', pokemon, pokemon.illusion.template.baseSpecies, template.requiredItem);
+			this.add(isUltraBurst ? '-burst' : '-mega', pokemon, pokemon.illusion.template.baseSpecies, template.requiredItem);
 		} else {
 			this.add('detailschange', pokemon, pokemon.details);
-			this.add('-mega', pokemon, template.baseSpecies, template.requiredItem);
+			this.add(isUltraBurst ? '-burst' : '-mega', pokemon, template.baseSpecies, template.requiredItem);
 		}
 		pokemon.setAbility(template.abilities['0']);
 		pokemon.baseAbility = pokemon.ability;
 
 		// Limit one mega evolution
-		for (let i = 0; i < side.pokemon.length; i++) {
-			side.pokemon[i].canMegaEvo = false;
+		for (const ally of side.pokemon) {
+			if (isUltraBurst) {
+				ally.canUltraBurst = null;
+			} else {
+				ally.canMegaEvo = null;
+			}
 		}
 
 		this.runEvent('AfterMega', pokemon);

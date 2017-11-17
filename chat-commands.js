@@ -484,15 +484,9 @@ exports.commands = {
 		if (!targetUser) return this.errorReply(`The user "${targetUser.name}" was not found.`);
 
 		if (!targetRoom.checkModjoin(targetUser)) {
-			if (targetRoom.getAuth(targetUser) !== ' ') {
-				return this.errorReply(`The user "${targetUser.name}" does not have permission to join "${targetRoom.title}".`);
-			}
 			this.room = targetRoom;
 			this.parse(`/roomvoice ${targetUser.name}`);
 			if (!targetRoom.checkModjoin(targetUser)) {
-				if (targetRoom.getAuth(targetUser) !== ' ') {
-					return this.errorReply(`The user "${targetUser.name}" does not have permission to join "${targetRoom.title}".`);
-				}
 				return this.errorReply(`You do not have permission to invite people into this room.`);
 			}
 		}
@@ -1061,8 +1055,12 @@ exports.commands = {
 	roomaliashelp: [
 		"/roomalias - displays a list of all room aliases of the room the command was entered in.",
 		"/roomalias [alias] - adds the given room alias to the room the command was entered in. Requires: & ~",
+		"/removeroomalias [alias] - removes the given room alias of the room the command was entered in. Requires: & ~",
 	],
 
+	deleteroomalias: 'removeroomalias',
+	deroomalias: 'removeroomalias',
+	unroomalias: 'removeroomalias',
 	removeroomalias: function (target, room, user) {
 		if (!room.aliases) return this.errorReply("This room does not have any aliases.");
 		if (!this.can('makeroom')) return false;
@@ -1152,13 +1150,15 @@ exports.commands = {
 		if (!this.canTalk()) return;
 		if (!target) return this.parse('/help roompromote');
 
+		const force = target.startsWith('!!!');
+		if (force) target = target.slice(3);
 		target = this.splitTarget(target, true);
 		let targetUser = this.targetUser;
 		let userid = toId(this.targetUsername);
 		let name = targetUser ? targetUser.name : this.targetUsername;
 
 		if (!userid) return this.parse('/help roompromote');
-		if (!targetUser && !Users.isUsernameKnown(userid)) {
+		if (!targetUser && !Users.isUsernameKnown(userid) && !force) {
 			return this.errorReply(`User '${name}' is offline and unrecognized, and so can't be promoted.`);
 		}
 		if (targetUser && !targetUser.registered) {
@@ -1496,7 +1496,7 @@ exports.commands = {
 		if (!room.users[targetUser.userid]) {
 			return this.errorReply("User " + this.targetUsername + " is not in the room " + room.id + ".");
 		}
-		if (targetUser.joinRoom(targetRoom.id) === false) return this.errorReply("User " + targetUser.name + " could not be joined to room " + targetRoom.title + ". They could be banned from the room.");
+		if (!targetUser.joinRoom(targetRoom.id)) return this.errorReply("User " + targetUser.name + " could not be joined to room " + targetRoom.title + ". They could be banned from the room.");
 		this.addModCommand("" + targetUser.name + " was redirected to room " + targetRoom.title + " by " + user.name + ".");
 		targetUser.leaveRoom(room);
 	},
@@ -2361,10 +2361,14 @@ exports.commands = {
 			return this.errorReply(`[${duplicates.join(', ')}] ${Chat.plural(duplicates, "are", "is")} already blacklisted.`);
 		}
 
+		const userRank = Config.groupsranking.indexOf(room.getAuth(user));
 		for (const userid of targets) {
+			const targetRank = Config.groupsranking.indexOf(room.getAuth({userid}));
+			if (targetRank >= userRank) return this.errorReply(`/blacklistname - Access denied: ${userid} is of equal or higher authority than you.`);
+
 			Punishments.roomBlacklist(room, null, null, userid, reason);
 
-			let trusted = Users.isTrusted(userid);
+			const trusted = Users.isTrusted(userid);
 			if (trusted && room.isPrivate !== true) {
 				Monitor.log("[CrisisMonitor] Trusted user " + userid + (trusted !== userid ? " (" + trusted + ")" : "") + " was nameblacklisted from " + room.id + " by " + user.name + ", and should probably be demoted.");
 			}
@@ -2571,7 +2575,7 @@ exports.commands = {
 				// rebuild the formats list
 				delete Rooms.global.formatList;
 				// respawn validator processes
-				TeamValidator.PM.respawn();
+				TeamValidatorAsync.PM.respawn();
 				// respawn simulator processes
 				Rooms.SimulatorProcess.respawn();
 				// broadcast the new formats list to clients
@@ -2587,7 +2591,7 @@ exports.commands = {
 				if (lock['validator']) return this.errorReply(`Hot-patching the validator has been disabled by ${lock['validator'].by} (${lock['validator'].reason})`);
 				if (lock['formats']) return this.errorReply(`Hot-patching formats has been disabled by ${lock['formats'].by} (${lock['formats'].reason})`);
 
-				TeamValidator.PM.respawn();
+				TeamValidatorAsync.PM.respawn();
 				this.sendReply("The team validator has been hot-patched. Any battles started after now will have teams be validated according to the new code.");
 			} else if (target === 'punishments') {
 				if (lock['punishments']) return this.errorReply(`Hot-patching punishments has been disabled by ${lock['punishments'].by} (${lock['punishments'].reason})`);
@@ -3268,7 +3272,7 @@ exports.commands = {
 		}
 		if (!this.can('joinbattle', null, room)) return;
 
-		room.auth[targetUser.userid] = '\u2606';
+		room.auth[targetUser.userid] = Users.PLAYER_SYMBOL;
 		this.addModCommand("" + name + " was promoted to Player by " + user.name + ".");
 	},
 	addplayerhelp: ["/addplayer [username] - Allow the specified user to join the battle as a player."],
@@ -3525,7 +3529,7 @@ exports.commands = {
 		let format = originalFormat.effectType === 'Format' ? originalFormat : Dex.getFormat('[Gen 7] Pokebank Anything Goes');
 		if (format.effectType !== 'Format') return this.popupReply("Please provide a valid format.");
 
-		TeamValidator(format.id).prepTeam(user.team).then(result => {
+		TeamValidatorAsync(format.id).validateTeam(user.team).then(result => {
 			let matchMessage = (originalFormat === format ? "" : "The format '" + originalFormat.name + "' was not found.");
 			if (result.charAt(0) === '1') {
 				connection.popup("" + (matchMessage ? matchMessage + "\n\n" : "") + "Your team is valid for " + format.name + ".");
@@ -3593,7 +3597,7 @@ exports.commands = {
 		} else if (cmd === 'roomlist') {
 			if (!trustable) return false;
 			connection.send('|queryresponse|roomlist|' + JSON.stringify({
-				rooms: Rooms.global.getRoomList(target),
+				rooms: Rooms.global.getBattles(target),
 			}));
 		} else if (cmd === 'rooms') {
 			if (!trustable) return false;

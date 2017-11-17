@@ -158,8 +158,8 @@ if (require.main === module) {
  * Set up our last global
  *********************************************************/
 
-global.TeamValidator = require('./team-validator');
-TeamValidator.PM.spawn();
+global.TeamValidatorAsync = require('./team-validator-async');
+TeamValidatorAsync.PM.spawn();
 
 // load ipbans at our leisure
 /*fs.readFile(path.resolve(__dirname, 'config/ipbans.txt'), (err, data) => {

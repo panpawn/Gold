@@ -220,9 +220,9 @@ exports.commands = {
 			room.modchat = 'autoconfirmed';
 			break;
 		case 'player':
-			target = '\u2606';
+			target = Users.PLAYER_SYMBOL;
 			/* falls through */
-		default: {
+		default:
 			if (!Config.groups[target]) {
 				this.errorReply(`The rank '${target}' was unrecognized as a modchat level.`);
 				return this.parse('/help modchat');
@@ -237,7 +237,6 @@ exports.commands = {
 			}
 			room.modchat = target;
 			break;
-		}
 		}
 		if (currentModchat === room.modchat) {
 			return this.errorReply(`Modchat is already set to ${currentModchat}.`);
@@ -294,7 +293,7 @@ exports.commands = {
 			if (!this.can('makeroom')) return;
 		}
 		if (room.tour && !room.tour.modjoin) return this.errorReply(`You can't do this in tournaments where modjoin is prohibited.`);
-		if (target === 'player') target = '\u2606';
+		if (target === 'player') target = Users.PLAYER_SYMBOL;
 		if (this.meansNo(target)) {
 			if (!room.modjoin) return this.errorReply(`Modjoin is already turned off in this room.`);
 			delete room.modjoin;
