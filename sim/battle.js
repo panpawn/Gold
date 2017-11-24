@@ -2066,6 +2066,10 @@ class Battle extends Dex.ModdedDex {
 			return move.damage;
 		}
 
+		if (move.useBestSourceOffensive) {
+			move.category = pokemon.getStat('atk', false, true) > pokemon.getStat('spa', false, true) ? 'Physical' : 'Special';
+		}
+
 		let category = this.getCategory(move);
 		let defensiveCategory = move.defensiveCategory || category;
 
@@ -2138,11 +2142,6 @@ class Battle extends Dex.ModdedDex {
 			defBoosts = 0;
 		}
 
-		if (move.useBestSourceOffensive) {
-			attackStat = attacker.getStat('atk', false, true) > attacker.getStat('spa', false, true) ? 'atk' : 'spa';
-			atkBoosts = attacker.boosts[attackStat];
-		}
-
 		if (move.useTargetOffensive) {
 			attack = defender.calculateStat(attackStat, atkBoosts);
 		} else {
@@ -2163,7 +2162,7 @@ class Battle extends Dex.ModdedDex {
 		let baseDamage = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * basePower * attack / defense) / 50);
 
 		// Calculate damage modifiers separately (order differs between generations)
-		return this.modifyDamage(baseDamage, pokemon, target, move, attackStat, suppressMessages);
+		return this.modifyDamage(baseDamage, pokemon, target, move, suppressMessages);
 	}
 
 	/**
@@ -2171,10 +2170,9 @@ class Battle extends Dex.ModdedDex {
 	 * @param {Pokemon} pokemon
 	 * @param {Pokemon} target
 	 * @param {Move} move
-	 * @param {string} attackStat
 	 * @param {boolean} suppressMessages
 	 */
-	modifyDamage(baseDamage, pokemon, target, move, attackStat, suppressMessages = false) {
+	modifyDamage(baseDamage, pokemon, target, move, suppressMessages = false) {
 		if (!move.type) move.type = '???';
 		let type = move.type;
 
@@ -2227,7 +2225,7 @@ class Battle extends Dex.ModdedDex {
 
 		if (move.crit && !suppressMessages) this.add('-crit', target);
 
-		if (pokemon.status === 'brn' && attackStat === 'atk' && !pokemon.hasAbility('guts')) {
+		if (pokemon.status === 'brn' && move.category === 'Physical' && !pokemon.hasAbility('guts')) {
 			if (this.gen < 6 || move.id !== 'facade') {
 				baseDamage = this.modify(baseDamage, 0.5);
 			}
