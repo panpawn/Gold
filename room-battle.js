@@ -42,7 +42,6 @@ let pokemonRecord;
 loadPokemonRecord();
 
 function loadPokemonRecord() {
-	console.log('loading pokemon record');
 	fs.readFile('config/pokemon-match-records.tsv', (err, recordData) => {
 		if (!err) {
 			pokemonRecord = {};
@@ -63,7 +62,6 @@ function loadPokemonRecord() {
 					};
 				}
 			}
-			console.log('loaded pokemon record: ' + JSON.stringify(pokemonRecord));
 		}
 	});
 }
@@ -670,8 +668,9 @@ class Battle {
 							// It should be harder to adjust the level as we have
 							// more data, so if there is a win proportion
 							// discrepancy, the chance to adjust the level is
-							// 1 / totalMatches.
-							if (Math.random() < 1 / (wins + losses)) {
+							// 1 / sqrt(totalMatches). So e.g. at 100 matches,
+							// the chance to adjust is 1/10.
+							if (Math.random() < 1 / Math.sqrt(wins + losses)) {
 								level += adjust;
 								pokemonRecord[species.toLowerCase()].level = level;
 							}
@@ -998,7 +997,6 @@ if (process.send && module === process.mainModule) {
 			if (!Battles.has(id)) {
 				try {
 					loadPokemonRecord();
-					console.log('constructing battle with pokemon record: ' + JSON.stringify(pokemonRecord));
 					const battle = Sim.construct(data[2], data[3], sendBattleMessage, undefined, pokemonRecord);
 					battle.id = id;
 					Battles.set(id, battle);
