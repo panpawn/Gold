@@ -664,6 +664,13 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Standard'],
 	},
 	{
+		name: "[Gen 1] Random Auto Level Adjusted",
+
+		mod: 'gen1',
+		team: 'randomAutoLevelAdjusted',
+		ruleset: ['Pokemon', 'Standard'],
+	},
+	{
 		name: "[Gen 1] Challenge Cup",
 
 		mod: 'gen1',
