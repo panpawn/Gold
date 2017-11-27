@@ -467,7 +467,7 @@ class CommandContext {
 
 		let points = 0;
 		let times = [];
-		for (let log of room.chatLog.slice(-8)) {
+		for (let log of room.chatLog.slice(-9)) {
 			const name = toId(log.split('|')[5]);
 			const time = Number(log.split('|')[2]);
 			if (knownNames.includes(name)) {
@@ -483,7 +483,7 @@ class CommandContext {
 				}
 			}
 		}
-		if (points >= 5) {
+		if (points >= 6) {
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, `Spamming ${room.title} (Automated moderation)`);
 			const roomMsg = `${user.name} was locked from talking for a week automatically for spamming. (Spam is bad, m'kay?)`;
 			room.add(roomMsg).update();
