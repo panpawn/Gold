@@ -323,7 +323,7 @@ exports.BattleAbilities = {
 	},
 	"blaze": {
 		desc: "When this Pokemon has 1/3 or less of its maximum HP, rounded down, its attacking stat is multiplied by 1.5 while using a Fire-type attack.",
-		shortDesc: "When this Pokemon has 1/3 or less of its max HP, its Fire attacks do 1.5x damage.",
+		shortDesc: "At 1/3 or less of its max HP, this Pokemon's attacking stat is 1.5x with Fire attacks.",
 		onModifyAtkPriority: 5,
 		onModifyAtk: function (atk, attacker, defender, move) {
 			if (move.type === 'Fire' && attacker.hp <= attacker.maxhp / 3) {
@@ -701,7 +701,7 @@ exports.BattleAbilities = {
 		shortDesc: "If this Pokemon is a Mimikyu, the first hit it takes in battle deals 0 neutral damage.",
 		onDamagePriority: 1,
 		onDamage: function (damage, target, source, effect) {
-			if (effect && effect.effectType === 'Move' && target.template.speciesid === 'mimikyu' && !target.transformed) {
+			if (effect && effect.effectType === 'Move' && ['mimikyu', 'mimikyutotem'].includes(target.template.speciesid) && !target.transformed) {
 				this.add('-activate', target, 'ability: Disguise');
 				this.effectData.busted = true;
 				return 0;
@@ -710,13 +710,13 @@ exports.BattleAbilities = {
 		onEffectiveness: function (typeMod, target, type, move) {
 			if (!this.activeTarget) return;
 			let pokemon = this.activeTarget;
-			if (pokemon.template.speciesid !== 'mimikyu' || pokemon.transformed || (pokemon.volatiles['substitute'] && !(move.flags['authentic'] || move.infiltrates))) return;
+			if (!['mimikyu', 'mimikyutotem'].includes(pokemon.template.speciesid) || pokemon.transformed || (pokemon.volatiles['substitute'] && !(move.flags['authentic'] || move.infiltrates))) return;
 			if (!pokemon.runImmunity(move.type)) return;
 			return 0;
 		},
 		onUpdate: function (pokemon) {
-			if (pokemon.template.speciesid === 'mimikyu' && this.effectData.busted) {
-				let template = this.getTemplate('Mimikyu-Busted');
+			if (['mimikyu', 'mimikyutotem'].includes(pokemon.template.speciesid) && this.effectData.busted) {
+				let template = this.getTemplate(pokemon.template.speciesid === 'mimikyutotem' ? 'Mimikyu-Busted-Totem' : 'Mimikyu-Busted');
 				pokemon.formeChange(template);
 				pokemon.baseTemplate = template;
 				pokemon.details = template.species + (pokemon.level === 100 ? '' : ', L' + pokemon.level) + (pokemon.gender === '' ? '' : ', ' + pokemon.gender) + (pokemon.set.shiny ? ', shiny' : '');
@@ -2123,7 +2123,7 @@ exports.BattleAbilities = {
 		num: 30,
 	},
 	"neuroforce": {
-		shortDesc: "Super effective moves used by this Pokemon will do 1.2x damage.",
+		shortDesc: "This Pokemon's attacks that are super effective against the target do 1.2x damage.",
 		onModifyDamage: function (damage, source, target, move) {
 			if (move && move.typeMod > 0) {
 				return this.chainModify([0x1333, 0x1000]);
@@ -2131,7 +2131,7 @@ exports.BattleAbilities = {
 		},
 		id: "neuroforce",
 		name: "Neuroforce",
-		rating: 3.5,
+		rating: 3,
 		num: 233,
 	},
 	"noguard": {
@@ -2213,8 +2213,8 @@ exports.BattleAbilities = {
 		num: 142,
 	},
 	"overgrow": {
-		desc: "When this Pokemon has 1/3 or less of its maximum HP, its attacking stat is multiplied by 1.5 while using a Grass-type attack.",
-		shortDesc: "When this Pokemon has 1/3 or less of its max HP, its Grass attacks do 1.5x damage.",
+		desc: "When this Pokemon has 1/3 or less of its maximum HP, rounded down, its attacking stat is multiplied by 1.5 while using a Grass-type attack.",
+		shortDesc: "At 1/3 or less of its max HP, this Pokemon's attacking stat is 1.5x with Grass attacks.",
 		onModifyAtkPriority: 5,
 		onModifyAtk: function (atk, attacker, defender, move) {
 			if (move.type === 'Grass' && attacker.hp <= attacker.maxhp / 3) {
@@ -3460,7 +3460,7 @@ exports.BattleAbilities = {
 	},
 	"swarm": {
 		desc: "When this Pokemon has 1/3 or less of its maximum HP, rounded down, its attacking stat is multiplied by 1.5 while using a Bug-type attack.",
-		shortDesc: "When this Pokemon has 1/3 or less of its max HP, its Bug attacks do 1.5x damage.",
+		shortDesc: "At 1/3 or less of its max HP, this Pokemon's attacking stat is 1.5x with Bug attacks.",
 		onModifyAtkPriority: 5,
 		onModifyAtk: function (atk, attacker, defender, move) {
 			if (move.type === 'Bug' && attacker.hp <= attacker.maxhp / 3) {
@@ -3653,7 +3653,7 @@ exports.BattleAbilities = {
 	},
 	"torrent": {
 		desc: "When this Pokemon has 1/3 or less of its maximum HP, rounded down, its attacking stat is multiplied by 1.5 while using a Water-type attack.",
-		shortDesc: "When this Pokemon has 1/3 or less of its max HP, its Water attacks do 1.5x damage.",
+		shortDesc: "At 1/3 or less of its max HP, this Pokemon's attacking stat is 1.5x with Water attacks.",
 		onModifyAtkPriority: 5,
 		onModifyAtk: function (atk, attacker, defender, move) {
 			if (move.type === 'Water' && attacker.hp <= attacker.maxhp / 3) {

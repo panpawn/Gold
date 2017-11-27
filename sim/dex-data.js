@@ -715,7 +715,7 @@ class Template extends Effect {
 		this.eventPokemon = this.eventPokemon;
 
 		if (!this.gen) {
-			if (this.num >= 722 || this.forme === 'Alola') {
+			if (this.num >= 722 || this.forme.startsWith('Alola')) {
 				this.gen = 7;
 			} else if (this.forme && ['Mega', 'Mega-X', 'Mega-Y'].includes(this.forme)) {
 				this.gen = 6;
@@ -898,12 +898,6 @@ class Move extends Effect {
 		 * @type {boolean}
 		 */
 		this.ignoreDefensive = this.ignoreDefensive;
-
-		/**
-		 * Whether or not this move uses the source's highest raw stat.
-		 * @type {boolean}
-		 */
-		this.useBestSourceOffensive = this.useBestSourceOffensive;
 
 		/**
 		 * Whether or not this move ignores type immunities. Defaults to

@@ -340,9 +340,9 @@ class ModdedDex {
 				template.speciesid = id;
 				// @ts-ignore
 				template.abilities = {0: template.abilities['S']};
-				return template;
+			} else {
+				template = this.getTemplate(this.data.Aliases[id]);
 			}
-			template = this.getTemplate(this.data.Aliases[id]);
 			if (template) {
 				this.templateCache.set(id, template);
 			}
@@ -369,7 +369,13 @@ class ModdedDex {
 		}
 		if (id && this.data.Pokedex.hasOwnProperty(id)) {
 			template = new Data.Template({name}, this.data.Pokedex[id], this.data.FormatsData[id], this.data.Learnsets[id]);
-			if (!template.tier && template.baseSpecies !== template.species) template.tier = this.data.FormatsData[toId(template.baseSpecies)].tier;
+			if (!template.tier && template.baseSpecies !== template.species) {
+				if (template.speciesid.endsWith('totem')) {
+					template.tier = this.data.FormatsData[template.speciesid.slice(0, -5)].tier;
+				} else {
+					template.tier = this.data.FormatsData[toId(template.baseSpecies)].tier;
+				}
+			}
 			if (!template.tier) template.tier = 'Illegal';
 		} else {
 			template = new Data.Template({name, exists: false});
