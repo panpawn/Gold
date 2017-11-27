@@ -457,7 +457,7 @@ class CommandContext {
 	}
 
 	checkSpam(room, user) {
-		if (!room || user.can('mute', null, room)) return true;
+		if (!room || !room.autoLockSpam || user.can('mute', null, room)) return true;
 
 		const knownNames = [
 			...user.getAltUsers(true),
