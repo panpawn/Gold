@@ -57,6 +57,13 @@ class BasicRoom {
 		 */
 		this.log = [];
 
+		/**
+		 * Chat log. This is the log that's used to try and tell
+		 * if someone is spamming a room or not in some cases.
+		 * @type {string[]}
+		 */
+		this.chatLog = [];
+
 		/** @type {?RoomGame} */
 		this.game = null;
 		/** @type {?RoomBattle} */
@@ -139,10 +146,13 @@ class BasicRoom {
 		if (typeof message !== 'string') throw new Error("Deprecated message type");
 		if (message.startsWith('|uhtmlchange|')) return this.uhtmlchange(message);
 		this.logEntry(message);
+		let chatLogMessage = '';
 		if (this.logTimes && message.substr(0, 3) === '|c|') {
 			message = '|c:|' + (~~(Date.now() / 1000)) + '|' + message.substr(3);
+			chatLogMessage = `|c:|${Date.now()}|${message.substr(3)}`;
 		}
 		this.log.push(message);
+		if (chatLogMessage) this.chatLog.push(chatLogMessage);
 		return this;
 	}
 	/**
