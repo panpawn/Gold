@@ -106,6 +106,7 @@ Config.namefilter = function (name, user) {
 	}
 
 	// Hostfilter stuff
+	if (!user.connections) return name; // this should never happen
 	let conNum = Object.keys(user.connections).length - 1;
 	let ip = user.connections[conNum].ip;
 	let trusted = trustedHack(nameId);
@@ -286,4 +287,29 @@ exports.commands = {
 
 		return this.sendReplyBox(buff);
 	},
+
+	spamautolock: 'autolockspam',
+	autolockspam: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target) return this.sendReply(`This room currently will ${(room.autoLockSpam ? 'autolock' : 'NOT autolock')} spammers.`);
+		if (this.meansYes(target)) {
+			if (room.autoLockSpam) return this.errorReply("This room is already automatically locking spammers.");
+			room.autoLockSpam = true;
+			this.privateModCommand(`(${user.name} set this room to automatically lock spammers.)`);
+		} else if (this.meansNo(target)) {
+			if (!room.autoLockSpam) return this.errorReply("This room already is not automatically locking spammers.");
+			room.autoLockSpam = false;
+			this.privateModCommand(`(${user.name} set this room to no longer automatically lock spammers.)`);
+		} else if (target === 'help') {
+			return this.parse('/help autolockspam');
+		}
+		if (room.chatRoomData) {
+			room.chatRoomData.autoLockSpam = room.autoLockSpam;
+			Rooms.global.writeChatRoomData();
+		}
+	},
+	autolockspamhelp: [
+		"/autolockspam on - Enables automatically locking spammers in the current room. Requires: & ~",
+		"/autolockspam off - Disables automatically locking spammers in the current room. Requires: & ~",
+	],
 };

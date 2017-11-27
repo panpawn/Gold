@@ -456,6 +456,49 @@ class CommandContext {
 		return true;
 	}
 
+	checkSpam(room, user) {
+		if (!room || user.can('mute', null, room)) return true;
+
+		const knownNames = [
+			...user.getAltUsers(true),
+			...Object.keys(user.prevNames),
+			user.userid,
+		].map(toId);
+
+		let points = 0;
+		let times = [];
+		for (let log of room.chatLog.slice(-8)) {
+			const name = toId(log.split('|')[5]);
+			const time = Number(log.split('|')[2]);
+			if (knownNames.includes(name)) {
+				times.push(time);
+				const time1 = times[times.length - 2];
+				const time2 = times[times.length - 1];
+				const difference = time2 - time1;
+				if (times.length >= 2 &&  difference < 10000) {
+					points++;
+				} else {
+					// reset points if there's a break between
+					points = 0;
+				}
+			}
+		}
+		if (points >= 5) {
+			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, `Spamming ${room.title} (Automated moderation)`);
+			const roomMsg = `${user.name} was locked from talking for a week automatically for spamming. (Spam is bad, m'kay?)`;
+			room.add(roomMsg).update();
+			this.addModCommand(roomMsg, ` (${user.latestIp})`);
+			for (const alt of knownNames) {
+				room.add(`|unlink|hide|${alt}`);
+			}
+			user.popup(`You have been automatically locked from talking for spamming ${room.title}.\n\nIf you feel like your lock was a mistake or otherwise unjust, PM a global staff member.`);
+			Monitor.log(`[SpamMonitor] LOCKED: ${user.name} for spamming ${room.title}`);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	checkSlowchat(room, user) {
 		if (!room || !room.slowchat) return true;
 		let lastActiveSeconds = (Date.now() - user.lastMessageTime) / 1000;
@@ -779,6 +822,10 @@ class CommandContext {
 			*/
 
 			if (!this.checkFormat(room, user, message) && !user.can('mute', null, room)) {
+				return false;
+			}
+
+			if (!this.checkSpam(room, user)) {
 				return false;
 			}
 
