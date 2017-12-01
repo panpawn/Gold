@@ -57,9 +57,9 @@ class Battle extends Dex.ModdedDex {
 		this.sides = [null, null];
 		this.rated = rated;
 		/**@type {AnyObject} */
-		this.weatherData = {id:''};
+		this.weatherData = {id: ''};
 		/**@type {AnyObject} */
-		this.terrainData = {id:''};
+		this.terrainData = {id: ''};
 		this.pseudoWeather = {};
 
 		this.pokemonRecord = pokemonRecord;
@@ -70,11 +70,11 @@ class Battle extends Dex.ModdedDex {
 
 		/**@type {Effect} */
 		// @ts-ignore
-		this.effect = {id:''};
+		this.effect = {id: ''};
 		/**@type {AnyObject} */
-		this.effectData = {id:''};
+		this.effectData = {id: ''};
 		/**@type {AnyObject} */
-		this.event = {id:''};
+		this.event = {id: ''};
 
 		this.gameType = (format.gameType || 'singles');
 		this.reportExactHP = !!format.debug;
@@ -2112,7 +2112,7 @@ class Battle extends Dex.ModdedDex {
 		let defender = target;
 		let attackStat = category === 'Physical' ? 'atk' : 'spa';
 		let defenseStat = defensiveCategory === 'Physical' ? 'def' : 'spd';
-		let statTable = {atk:'Atk', def:'Def', spa:'SpA', spd:'SpD', spe:'Spe'};
+		let statTable = {atk: 'Atk', def: 'Def', spa: 'SpA', spd: 'SpD', spe: 'Spe'};
 		let attack;
 		let defense;
 
