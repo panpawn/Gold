@@ -2437,8 +2437,6 @@ class Battle extends Dex.ModdedDex {
 						// in gen 3, fainting skips all moves and switches
 						this.cancelDecision(pokemon);
 					}
-					// Stop Pursuit from running
-					pokemon.moveThisTurn = true;
 				}
 			}
 		}
@@ -2614,6 +2612,7 @@ class Battle extends Dex.ModdedDex {
 	 * @param {Pokemon} pokemon
 	 */
 	willMove(pokemon) {
+		if (pokemon.fainted) return false;
 		for (let i = 0; i < this.queue.length; i++) {
 			if (this.queue[i].choice === 'move' && this.queue[i].pokemon === pokemon) {
 				return this.queue[i];
