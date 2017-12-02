@@ -2631,6 +2631,7 @@ class Battle extends Dex.ModdedDex {
 				success = true;
 				return false;
 			}
+			return true;
 		});
 		return success;
 	}
