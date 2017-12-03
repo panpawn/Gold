@@ -3892,7 +3892,7 @@ exports.BattlePokedex = {
 		otherFormes: ["pokestarsmeargle"],
 	},
 	pokestarsmeargle: {
-		num: 235,
+		num: -5000,
 		species: "Pokestar Smeargle",
 		types: ["Normal"],
 		baseStats: {hp: 55, atk: 20, def: 35, spa: 20, spd: 45, spe: 75},
@@ -13442,6 +13442,17 @@ exports.BattlePokedex = {
 		prevo: "pluffle",
 		evoLevel: 2,
 		eggGroups: ["Fairy", "Human-Like"],
+	},
+	pajantom: {
+		num: -12,
+		species: "Pajantom",
+		types: ["Dragon", "Ghost"],
+		baseStats: {hp: 84, atk: 133, def: 71, spa: 51, spd: 111, spe: 101},
+		abilities: {0: "Comatose"},
+		heightm: 1.1,
+		weightkg: 3.1,
+		color: "Purple",
+		eggGroups: ["Dragon", "Monster"],
 	},
 	syclant: {
 		num: -51,

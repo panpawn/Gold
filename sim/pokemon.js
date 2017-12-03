@@ -106,7 +106,7 @@ class Pokemon {
 		set.level = this.battle.clampIntRange(set.forcedLevel || set.level || 100, 1, 9999);
 		this.level = set.level;
 
-		let genders = {M:'M', F:'F', N:'N'};
+		let genders = {M: 'M', F: 'F', N: 'N'};
 		this.gender = genders[set.gender] || this.template.gender || (Math.random() * 2 < 1 ? 'M' : 'F');
 		if (this.gender === 'N') this.gender = '';
 		this.happiness = typeof set.happiness === 'number' ? this.battle.clampIntRange(set.happiness, 0, 255) : 255;
@@ -199,11 +199,11 @@ class Pokemon {
 
 		/**@type {{[k: string]: number}} */
 		this.boosts = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0, accuracy: 0, evasion: 0};
-		this.stats = {atk:0, def:0, spa:0, spd:0, spe:0};
+		this.stats = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
 
 		// This is used in gen 1 only, here to avoid code repetition.
 		// Only declared if gen 1 to avoid declaring an object we aren't going to need.
-		if (this.battle.gen === 1) this.modifiedStats = {atk:0, def:0, spa:0, spd:0, spe:0};
+		if (this.battle.gen === 1) this.modifiedStats = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
 
 		this.isStale = 0;
 		this.isStaleCon = 0;
@@ -243,7 +243,7 @@ class Pokemon {
 	}
 
 	updateSpeed() {
-		this.speed = this.getDecisionSpeed();
+		this.speed = this.getActionSpeed();
 	}
 
 	/**
@@ -334,7 +334,7 @@ class Pokemon {
 
 		// stat modifier effects
 		if (!unmodified) {
-			let statTable = {atk:'Atk', def:'Def', spa:'SpA', spd:'SpD', spe:'Spe'};
+			let statTable = {atk: 'Atk', def: 'Def', spa: 'SpA', spd: 'SpD', spe: 'Spe'};
 			stat = this.battle.runEvent('Modify' + statTable[statName], this, null, null, stat);
 		}
 
@@ -346,7 +346,7 @@ class Pokemon {
 		return stat;
 	}
 
-	getDecisionSpeed() {
+	getActionSpeed() {
 		let speed = this.getStat('spe', false, false);
 		if (speed > 10000) speed = 10000;
 		if (this.battle.getPseudoWeather('trickroom')) {
@@ -453,7 +453,7 @@ class Pokemon {
 	}
 
 	ignoringAbility() {
-		return !!((this.battle.gen >= 5 && !this.isActive) || (this.volatiles['gastroacid'] && !['comatose', 'multitype', 'schooling', 'stancechange'].includes(this.ability)));
+		return !!((this.battle.gen >= 5 && !this.isActive) || (this.volatiles['gastroacid'] && !['battlebond', 'comatose', 'disguise', 'multitype', 'powerconstruct', 'rkssystem', 'schooling', 'shieldsdown', 'stancechange'].includes(this.ability)));
 	}
 
 	ignoringItem() {
@@ -514,14 +514,17 @@ class Pokemon {
 		};
 	}
 
+	/**
+	 * @return {string | null}
+	 */
 	getLockedMove() {
 		let lockedMove = this.battle.runEvent('LockMove', this);
-		if (lockedMove === true) lockedMove = false;
+		if (lockedMove === true) lockedMove = null;
 		return lockedMove;
 	}
 
 	/**
-	 * @param {string} [lockedMove]
+	 * @param {string?} [lockedMove]
 	 * @param {boolean} [restrictData]
 	 */
 	getMoves(lockedMove, restrictData) {
@@ -831,7 +834,7 @@ class Pokemon {
 		return true;
 	}
 
-	clearVolatile() {
+	clearVolatile(includeSwitchFlags = true) {
 		this.boosts = {
 			atk: 0,
 			def: 0,
@@ -863,8 +866,10 @@ class Pokemon {
 			}
 		}
 		this.volatiles = {};
-		this.switchFlag = false;
-		this.forceSwitchFlag = false;
+		if (includeSwitchFlags) {
+			this.switchFlag = false;
+			this.forceSwitchFlag = false;
+		}
 
 		this.lastMove = '';
 		this.moveThisTurn = '';
@@ -1264,8 +1269,8 @@ class Pokemon {
 			return false;
 		}
 		if (!effect || effect.id !== 'transform') {
-			if (['illusion', 'multitype', 'stancechange'].includes(ability.id)) return false;
-			if (['multitype', 'stancechange'].includes(oldAbility)) return false;
+			if (['illusion', 'battlebond', 'comatose', 'disguise', 'multitype', 'powerconstruct', 'rkssystem', 'schooling', 'shieldsdown', 'stancechange'].includes(ability.id)) return false;
+			if (['battlebond', 'comatose', 'disguise', 'multitype', 'powerconstruct', 'rkssystem', 'schooling', 'shieldsdown', 'stancechange'].includes(oldAbility)) return false;
 		}
 		this.battle.singleEvent('End', this.battle.getAbility(oldAbility), this.abilityData, this, source, effect);
 		if (!effect && this.battle.effect && this.battle.effect.effectType === 'Move') {

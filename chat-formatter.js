@@ -10,7 +10,7 @@
 'use strict';
 
 // Regex copied from the client
-const domainRegex = '[a-z0-9\\-]+(?:[.][a-z0-9\\-]+)*';
+const domainRegex = '[a-z0-9-]+(?:[.][a-z0-9-]+)*';
 const parenthesisRegex = '[(](?:[^\\s()<>&]|&amp;)*[)]';
 const linkRegex = new RegExp(
 	'(?:' +
@@ -33,7 +33,7 @@ const linkRegex = new RegExp(
 				// URLs usually don't end with punctuation, so don't allow
 				// punctuation symbols that probably aren't related to URL.
 				'(?:' +
-					'[^\\s`()\\[\\]{}\'".,!?;:&<>*`^~\\\\]' +
+					'[^\\s`()[\\]{}\'".,!?;:&<>*`^~\\\\]' +
 					'|' + parenthesisRegex +
 				')' +
 			')?' +
@@ -44,9 +44,11 @@ const linkRegex = new RegExp(
 	'(?!.*&gt;)',
 	'ig'
 );
+// compiled from above
+// const linkRegex = /(?:(?:(?:https?:\/\/|\bwww[.])[a-z0-9-]+(?:[.][a-z0-9-]+)*|\b[a-z0-9-]+(?:[.][a-z0-9-]+)*[.](?:com?|org|net|edu|info|us|jp|[a-z]{2,3}(?=[:/])))(?:[:][0-9]+)?\b(?:\/(?:(?:[^\s()&<>]|&amp;|&quot;|[(](?:[^\s()<>&]|&amp;)*[)])*(?:[^\s`()[\]{}'".,!?;:&<>*`^~\\]|[(](?:[^\s()<>&]|&amp;)*[)]))?)?|[a-z0-9.]+\b@[a-z0-9-]+(?:[.][a-z0-9-]+)*[.][a-z]{2,3})(?!.*&gt;)/ig;
 
 /**
- * @typedef {'_' | '*' | '~' | '^' | '\\' | '<' | '[' | '`' | 'a' | 'spoiler' | '>'} SpanType
+ * @typedef {'_' | '*' | '~' | '^' | '\\' | '<' | '[' | '`' | 'a' | 'spoiler' | '>' | '('} SpanType
  */
 /**
  * @typedef {[SpanType, number]} FormatSpan [spanType, buffersIndex]
@@ -76,7 +78,7 @@ class TextFormatter {
 					if (slashIndex - 4 > 19 + 3) uri = uri.slice(0, 19) + '<small class="message-overflow">' + uri.slice(19, slashIndex - 4) + '</small>' + uri.slice(slashIndex - 4);
 				}
 			}
-			return `<a href="${fulluri}" target="_blank" rel="noopener">${uri}</a>`;
+			return `<a href="${fulluri}" rel="noopener" target="_blank">${uri}</a>`;
 		});
 		// (links don't have any specific syntax, they're just a pattern, so we detect them in a separate pass)
 
@@ -121,6 +123,27 @@ class TextFormatter {
 			this.buffers.push(this.slice(this.offset, end));
 			this.offset = end;
 		}
+	}
+	/**
+	 * @param {number} start
+	 * @return {boolean} success
+	 */
+	closeParenSpan(start) {
+		let stackPosition = -1;
+		for (let i = this.stack.length - 1; i >= 0; i--) {
+			const span = this.stack[i];
+			if (span[0] === '(') {
+				stackPosition = i;
+				break;
+			}
+			if (span[0] !== 'spoiler') break;
+		}
+		if (stackPosition === -1) return false;
+
+		this.pushSlice(start);
+		while (this.stack.length > stackPosition) this.popSpan(start);
+		this.offset = start;
+		return true;
 	}
 	/**
 	 * Attempt to close a span.
@@ -195,6 +218,13 @@ class TextFormatter {
 		this.pushSlice(end);
 	}
 	/**
+	 * @param {string} html
+	 */
+	toUriComponent(html) {
+		let component = html.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, '\'');
+		return encodeURIComponent(component);
+	}
+	/**
 	 * @param {SpanType} spanType
 	 * @param {number} start
 	 * @return {boolean} success
@@ -210,9 +240,9 @@ class TextFormatter {
 					i++;
 				}
 				let curDelimLength = 0;
-				while (true) {
+				while (i < this.str.length) {
 					const char = this.at(i);
-					if (char === '\n' || char === '') break;
+					if (char === '\n') break;
 					if (char === '`') {
 						curDelimLength++;
 					} else {
@@ -245,34 +275,64 @@ class TextFormatter {
 		case '[':
 			{
 				if (this.slice(start, start + 2) !== '[[') return false;
-				let i = start + 8;
-				while (/[^\]\n]/.test(this.at(i))) i++;
+				let i = start + 2;
+				let colonPos = -1; // `:`
+				let anglePos = -1; // `<`
+				while (i < this.str.length) {
+					const char = this.at(i);
+					if (char === ']' || char === '\n') break;
+					if (char === ':' && colonPos < 0) colonPos = i;
+					if (char === '&' && this.slice(i, i + 4) === '&lt;') anglePos = i;
+					i++;
+				}
 				if (this.slice(i, i + 2) !== ']]') return false;
-				const termEnd = i;
-				i += 2;
-				let term = this.slice(start + 2, termEnd);
+				let termEnd = i;
 				let uri = '';
-				if (this.slice(i, i + 4) === '&lt;') { // <
-					let j = i + 4;
-					while (/[^ &\n]/.test(this.at(j))) j++;
-					if (this.slice(j, j + 4) === '&gt;') { // >
-						uri = this.slice(i + 4, j);
-						i = j + 4;
-						// does not require more escaping
-						if (!this.isTrusted) {
-							let shortUri = uri.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
-							term += `<small> &lt;${shortUri}&gt;</small>`;
+				if (anglePos >= 0 && this.slice(i - 4, i) === '&gt;') { // `>`
+					uri = this.slice(anglePos + 4, i - 4);
+					termEnd = anglePos;
+					if (this.at(termEnd - 1) === ' ') termEnd--;
+					uri = encodeURI(uri.replace(/^([a-z]*[^a-z:])/g, 'http://$1'));
+				}
+				let term = this.slice(start + 2, termEnd);
+				if (uri && !this.isTrusted) {
+					let shortUri = uri.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+					term += `<small> &lt;${shortUri}&gt;</small>`;
+					uri += '" rel="noopener';
+				}
+				if (colonPos > 0) {
+					const key = this.slice(start + 2, colonPos).toLowerCase();
+					switch (key) {
+					case 'w':
+					case 'wiki':
+						term = term.slice(term.charAt(key.length + 1) === ' ' ? key.length + 2 : key.length + 1);
+						uri = `//en.wikipedia.org/w/index.php?title=Special:Search&search=${this.toUriComponent(term)}`;
+						term = `wiki: ${term}`;
+						break;
+					case 'pokemon':
+					case 'item':
+						term = term.slice(term.charAt(key.length + 1) === ' ' ? key.length + 2 : key.length + 1);
+
+						let display = '';
+						if (this.isTrusted) {
+							display = `<psicon ${key}="${term}"/>`;
+						} else {
+							display = `[${term}]`;
 						}
-						uri = uri.replace(/^([a-z]*[^a-z:])/g, 'http://$1');
+
+						let dir = key;
+						if (key === 'item') dir += 's';
+
+						uri = `//dex.pokemonshowdown.com/${dir}/${toId(term)}`;
+						term = display;
 					}
 				}
-				this.pushSlice(start);
 				if (!uri) {
-					const encodedTerm = encodeURIComponent(term.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, '\''));
-					uri = `//www.google.com/search?ie=UTF-8&btnI&q=${encodedTerm}`;
+					uri = `//www.google.com/search?ie=UTF-8&btnI&q=${this.toUriComponent(term)}`;
 				}
-				this.buffers.push(`<a href="${uri}" target="_blank" rel="noopener">${term}</a>`);
-				this.offset = i;
+				this.pushSlice(start);
+				this.buffers.push(`<a href="${uri}" target="_blank">${term}</a>`);
+				this.offset = i + 2;
 			}
 			return true;
 		case '<':
@@ -302,12 +362,9 @@ class TextFormatter {
 	 * @return {string}
 	 */
 	get() {
-		let i = this.offset;
-		let beginningOfLine = i;
+		let beginningOfLine = this.offset;
 		// main loop! i tracks our position
-		// i starts at -1 so loop increment can be at the beginning of the loop so we can use continue to continue
-		while (true) {
-			if (i >= this.str.length) break;
+		for (let i = beginningOfLine; i < this.str.length; i++) {
 			const char = this.at(i);
 			switch (char) {
 			case '_':
@@ -320,30 +377,37 @@ class TextFormatter {
 						if (this.at(i + 2) !== ' ') this.pushSpan(char, i, i + 2);
 					}
 					if (i < this.offset) {
-						i = this.offset;
+						i = this.offset - 1;
 						break;
 					}
 				}
-				i++;
-				while (this.at(i) === char) i++;
+				while (this.at(i + 1) === char) i++;
 				break;
-			case '`':
-				this.runLookahead('`', i);
+			case '(':
+				this.stack.push(['(', -1]);
+				break;
+			case ')':
+				this.closeParenSpan(i);
 				if (i < this.offset) {
-					i = this.offset;
+					i = this.offset - 1;
 					break;
 				}
-				i++;
-				while (this.at(i) === '`') i++;
+				break;
+			case '`':
+				if (this.at(i + 1) === '`') this.runLookahead('`', i);
+				if (i < this.offset) {
+					i = this.offset - 1;
+					break;
+				}
+				while (this.at(i + 1) === '`') i++;
 				break;
 			case '[':
 				this.runLookahead('[', i);
 				if (i < this.offset) {
-					i = this.offset;
+					i = this.offset - 1;
 					break;
 				}
-				i++;
-				while (this.at(i) === '[') i++;
+				while (this.at(i + 1) === '[') i++;
 				break;
 			case ':':
 				if (i < 7) break;
@@ -351,7 +415,6 @@ class TextFormatter {
 					if (this.at(i + 1) === ' ') i++;
 					this.pushSpan('spoiler', i + 1, i + 1);
 				}
-				i++;
 				break;
 			case '&': // escaped '<' or '>'
 				if (i === beginningOfLine && this.slice(i, i + 4) === '&gt;') {
@@ -362,28 +425,23 @@ class TextFormatter {
 					this.runLookahead('<', i);
 				}
 				if (i < this.offset) {
-					i = this.offset;
+					i = this.offset - 1;
 					break;
 				}
-				i++;
-				while (this.slice(i, i + 4) === 'lt;&') i += 4;
+				while (this.slice(i + 1, i + 5) === 'lt;&') i += 4;
 				break;
 			case '<': // guaranteed to be <a
 				this.runLookahead('a', i);
 				if (i < this.offset) {
-					i = this.offset;
+					i = this.offset - 1;
 					break;
 				}
-				i++; // should never happen
+				// should never happen
 				break;
 			case '\r':
 			case '\n':
 				this.popAllSpans(i);
-				i++;
-				beginningOfLine = i;
-				break;
-			default:
-				i++;
+				beginningOfLine = i + 1;
 				break;
 			}
 		}
