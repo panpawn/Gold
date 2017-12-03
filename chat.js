@@ -492,11 +492,10 @@ class CommandContext {
 				let from = user.distrust();
 				Monitor.log(`[CrisisMonitor] ${user.name} was automatically demoted from ${from.join(', ')}.`);
 			}
-			room.add(roomMsg).update();
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, `Spamming ${room.title} (Automated moderation)`);
 			this.addModCommand(roomMsg, ` (${user.latestIp})`);
 			for (const alt of knownNames) {
-				room.add(`|unlink|hide|${alt}`);
+				room.add(`|unlink|hide|${alt}`).update();
 			}
 			user.popup(`You have been automatically locked from talking for spamming ${room.title}.\n\nIf you feel like your lock was a mistake or otherwise unjust, PM a global staff member.`);
 			return false;
