@@ -1877,11 +1877,7 @@ Gold.regdate = function (target, callback) {
 		res.on('data', function (chunk) {
 			data += chunk;
 		}).on('end', function () {
-			try {
-				data = JSON.parse(data);
-			} catch (e) {
-				callback(false);
-			}
+			data = JSON.parse(data);
 			let date = data['registertime'];
 			if (date !== 0 && date.toString().length < 13) {
 				while (date.toString().length < 13) {
