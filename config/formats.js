@@ -1408,7 +1408,7 @@ exports.Formats = [
 		gameType: 'doubles',
 		searchShow: false,
 		ruleset: ['[Gen 4] OU'],
-		banlist: ['Explosion'],
+		banlist: ['Explosion', 'Soul Dew'],
 		unbanlist: ['Garchomp', 'Latias', 'Latios', 'Manaphy', 'Mew', 'Salamence', 'Wobbufett', 'Wynaut'],
 	},
 	{
