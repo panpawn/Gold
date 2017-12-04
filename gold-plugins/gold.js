@@ -1866,12 +1866,12 @@ Gold.regdate = function (target, callback) {
 
 	let options = {
 		host: 'pokemonshowdown.com',
-		port: 80,
+		port: 443,
 		path: '/users/' + target + '.json',
 		method: 'GET',
 	};
 
-	http.get(options, function (res) {
+	https.get(options, function (res) {
 		let data = '';
 
 		res.on('data', function (chunk) {
