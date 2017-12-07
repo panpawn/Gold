@@ -34,7 +34,7 @@ const Pokemon = require('./pokemon');
  * @property {Move} move - a move to use (move action only)
  * @property {boolean | 'done'} mega - true if megaing or ultra bursting
  * @property {boolean} zmove - true if zmoving
- * @property {Effect?} sourceEffect - effect that did the action
+ * @property {Effect?} sourceEffect - effect that called the move (eg Instruct) if any
  */
 /**
  * A switch action
@@ -45,6 +45,7 @@ const Pokemon = require('./pokemon');
  * @property {number} speed - speed of pokemon switching (higher first if priority tie)
  * @property {Pokemon} pokemon - the pokemon doing the switch
  * @property {Pokemon} target - pokemon to switch to
+ * @property {Effect?} sourceEffect - effect that called the switch (eg U-turn) if any
  */
 /**
  * A Team Preview choice action
@@ -1341,8 +1342,9 @@ class Battle extends Dex.ModdedDex {
 	/**
 	 * @param {Pokemon} pokemon
 	 * @param {number} [pos]
+	 * @param {Effect?} sourceEffect
 	 */
-	switchIn(pokemon, pos) {
+	switchIn(pokemon, pos, sourceEffect = null) {
 		if (!pokemon || pokemon.isActive) return false;
 		if (!pos) pos = 0;
 		let side = pokemon.side;
@@ -1360,8 +1362,8 @@ class Battle extends Dex.ModdedDex {
 					}
 				}
 			}
-			if (oldActive.switchCopyFlag === 'copyvolatile') {
-				delete oldActive.switchCopyFlag;
+			if (oldActive.switchCopyFlag) {
+				oldActive.switchCopyFlag = false;
 				pokemon.copyVolatileFrom(oldActive);
 			}
 		}
@@ -1381,10 +1383,11 @@ class Battle extends Dex.ModdedDex {
 		}
 		side.active[pos] = pokemon;
 		pokemon.activeTurns = 0;
-		for (let m in pokemon.moveset) {
-			pokemon.moveset[m].used = false;
+		for (let m in pokemon.moveSlots) {
+			pokemon.moveSlots[m].used = false;
 		}
 		this.add('switch', pokemon, pokemon.getDetails);
+		if (sourceEffect) this.log[this.log.length - 1] += `|[from]${sourceEffect.fullname}`;
 		this.insertQueue({pokemon: pokemon, choice: 'runUnnerve'});
 		this.insertQueue({pokemon: pokemon, choice: 'runSwitch'});
 	}
@@ -1463,8 +1466,8 @@ class Battle extends Dex.ModdedDex {
 		pokemon.isActive = true;
 		pokemon.activeTurns = 0;
 		if (this.gen === 2) pokemon.draggedIn = this.turn;
-		for (let m in pokemon.moveset) {
-			pokemon.moveset[m].used = false;
+		for (let m in pokemon.moveSlots) {
+			pokemon.moveSlots[m].used = false;
 		}
 		this.add('drag', pokemon, pokemon.getDetails);
 		if (this.gen >= 5) {
@@ -1520,18 +1523,17 @@ class Battle extends Dex.ModdedDex {
 		let allStale = true;
 		/** @type {?Pokemon} */
 		let oneStale = null;
-		for (let i = 0; i < this.sides.length; i++) {
-			for (let j = 0; j < this.sides[i].active.length; j++) {
-				let pokemon = this.sides[i].active[j];
+		for (const side of this.sides) {
+			for (const pokemon of side.active) {
 				if (!pokemon) continue;
 				pokemon.moveThisTurn = '';
 				pokemon.usedItemThisTurn = false;
 				pokemon.newlySwitched = false;
 
 				pokemon.maybeDisabled = false;
-				for (let entry of pokemon.moveset) {
-					entry.disabled = false;
-					entry.disabledSource = '';
+				for (let moveSlot of pokemon.moveSlots) {
+					moveSlot.disabled = false;
+					moveSlot.disabledSource = '';
 				}
 				this.runEvent('DisableMove', pokemon);
 				if (!pokemon.ateBerry) pokemon.disableMove('belch');
@@ -1550,9 +1552,7 @@ class Battle extends Dex.ModdedDex {
 					this.runEvent('MaybeTrapPokemon', pokemon);
 				}
 				// Disable the faculty to cancel switches if a foe may have a trapping ability
-				let foeSide = pokemon.side.foe;
-				for (let k = 0; k < foeSide.active.length; ++k) {
-					let source = foeSide.active[k];
+				for (const source of pokemon.side.foe.active) {
 					if (!source || source.fainted) continue;
 					let template = (source.illusion || source).template;
 					if (!template.abilities) continue;
@@ -1634,8 +1634,8 @@ class Battle extends Dex.ModdedDex {
 				}
 				pokemon.activeTurns++;
 			}
-			this.sides[i].faintedLastTurn = this.sides[i].faintedThisTurn;
-			this.sides[i].faintedThisTurn = false;
+			side.faintedLastTurn = side.faintedThisTurn;
+			side.faintedThisTurn = false;
 		}
 		const ruleTable = this.getRuleTable(this.getFormat());
 		if (ruleTable.has('endlessbattleclause')) {
@@ -1673,9 +1673,8 @@ class Battle extends Dex.ModdedDex {
 			if (allStale) {
 				this.add('message', "All active Pok\u00e9mon are in an endless loop. Endless Battle Clause activated!");
 				let leppaPokemon = null;
-				for (let i = 0; i < this.sides.length; i++) {
-					for (let j = 0; j < this.sides[i].pokemon.length; j++) {
-						let pokemon = this.sides[i].pokemon[j];
+				for (const side of this.sides) {
+					for (const pokemon of side.pokemon) {
 						if (toId(pokemon.set.item) === 'leppaberry') {
 							if (leppaPokemon) {
 								leppaPokemon = null; // both sides have Leppa
@@ -1708,10 +1707,10 @@ class Battle extends Dex.ModdedDex {
 		if (this.gameType === 'triples' && !this.sides.filter(side => side.pokemonLeft > 1).length) {
 			// If both sides have one Pokemon left in triples and they are not adjacent, they are both moved to the center.
 			let actives = [];
-			for (let i = 0; i < this.sides.length; i++) {
-				for (let j = 0; j < this.sides[i].active.length; j++) {
-					if (!this.sides[i].active[j] || this.sides[i].active[j].fainted) continue;
-					actives.push(this.sides[i].active[j]);
+			for (const side of this.sides) {
+				for (const pokemon of side.active) {
+					if (!pokemon || pokemon.fainted) continue;
+					actives.push(pokemon);
 				}
 			}
 			// @ts-ignore
@@ -2538,8 +2537,8 @@ class Battle extends Dex.ModdedDex {
 					});
 				}
 			} else if (action.choice === 'switch' || action.choice === 'instaswitch') {
-				if (action.pokemon.switchFlag && action.pokemon.switchFlag !== true) {
-					action.pokemon.switchCopyFlag = action.pokemon.switchFlag;
+				if (typeof action.pokemon.switchFlag === 'string') {
+					action.sourceEffect = this.getEffect(action.pokemon.switchFlag);
 				}
 				action.pokemon.switchFlag = false;
 				if (!action.speed) action.speed = action.pokemon.getActionSpeed();
@@ -2633,9 +2632,9 @@ class Battle extends Dex.ModdedDex {
 	}
 
 	/**
-	 * Makes the passed move action happen next (skipping speed order).
+	 * Makes the passed action happen next (skipping speed order).
 	 *
-	 * @param {MoveAction} action
+	 * @param {MoveAction | SwitchAction} action
 	 * @param {Pokemon} [source]
 	 * @param {Effect} [sourceEffect]
 	 */
@@ -2798,8 +2797,12 @@ class Battle extends Dex.ModdedDex {
 			}
 			if (action.pokemon.hp) {
 				action.pokemon.beingCalledBack = true;
-				let lastMove = this.getMove(action.pokemon.lastMove);
-				if (lastMove.selfSwitch !== 'copyvolatile') {
+				const sourceEffect = action.sourceEffect;
+				// @ts-ignore
+				if (sourceEffect && sourceEffect.selfSwitch === 'copyvolatile') {
+					action.pokemon.switchCopyFlag = true;
+				}
+				if (!action.pokemon.switchCopyFlag) {
 					this.runEvent('BeforeSwitchOut', action.pokemon);
 					if (this.gen >= 5) {
 						this.eachEvent('Update');
@@ -2847,7 +2850,7 @@ class Battle extends Dex.ModdedDex {
 				}
 			}
 
-			this.switchIn(action.target, action.pokemon.position);
+			this.switchIn(action.target, action.pokemon.position, action.sourceEffect);
 			break;
 		case 'runUnnerve':
 			this.singleEvent('PreStart', action.pokemon.getAbility(), action.pokemon.abilityData, action.pokemon);
@@ -2938,8 +2941,8 @@ class Battle extends Dex.ModdedDex {
 			return false;
 		}
 
-		let p1switch = this.p1.active.some(mon => mon && mon.switchFlag);
-		let p2switch = this.p2.active.some(mon => mon && mon.switchFlag);
+		let p1switch = this.p1.active.some(mon => mon && !!mon.switchFlag);
+		let p2switch = this.p2.active.some(mon => mon && !!mon.switchFlag);
 
 		if (p1switch && !this.canSwitch(this.p1)) {
 			for (let i = 0; i < this.p1.active.length; i++) {

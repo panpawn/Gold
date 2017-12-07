@@ -772,7 +772,7 @@ exports.BattleScripts = {
 			}
 		}
 		if (move.selfSwitch && pokemon.hp) {
-			pokemon.switchFlag = move.selfSwitch;
+			pokemon.switchFlag = move.fullname;
 		}
 		return damage;
 	},
@@ -853,12 +853,12 @@ exports.BattleScripts = {
 		if (item.zMoveUser && !item.zMoveUser.includes(pokemon.template.species)) return;
 		let atLeastOne = false;
 		let zMoves = [];
-		for (let i = 0; i < pokemon.moves.length; i++) {
-			if (pokemon.moveset[i].pp <= 0) {
+		for (const moveSlot of pokemon.moveSlots) {
+			if (moveSlot.pp <= 0) {
 				zMoves.push(null);
 				continue;
 			}
-			let move = this.getMove(pokemon.moves[i]);
+			let move = this.getMove(moveSlot.move);
 			let zMoveName = this.getZMove(move, pokemon, true) || '';
 			if (zMoveName) {
 				let zMove = this.getMove(zMoveName);
@@ -875,7 +875,7 @@ exports.BattleScripts = {
 	canMegaEvo: function (pokemon) {
 		let altForme = pokemon.baseTemplate.otherFormes && this.getTemplate(pokemon.baseTemplate.otherFormes[0]);
 		let item = pokemon.getItem();
-		if (altForme && altForme.isMega && altForme.requiredMove && pokemon.moves.includes(toId(altForme.requiredMove)) && !item.zMove) return altForme.species;
+		if (altForme && altForme.isMega && altForme.requiredMove && pokemon.baseMoves.includes(toId(altForme.requiredMove)) && !item.zMove) return altForme.species;
 		if (item.megaEvolves !== pokemon.baseTemplate.baseSpecies || item.megaStone === pokemon.species) {
 			return null;
 		}

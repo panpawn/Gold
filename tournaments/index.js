@@ -117,8 +117,7 @@ class Tournament {
 	setCustomRules(rules, output) {
 		let format = Dex.getFormat(this.originalFormat);
 		if (format.team) {
-			output.errorReply(format.name + " does not support custom rules.");
-			return false;
+			output.errorReply(`WARNING: ${format.name} uses generated teams - only in-battle mod rules (like Sleep Clause Mod) will have any effect.`);
 		}
 		format = Dex.getFormat(this.originalFormat, rules);
 		if (!format.customRules) {
@@ -295,9 +294,7 @@ class Tournament {
 		*/
 
 		if (!isAllowAlts) {
-			let users = this.generator.getUsers();
-			for (let i = 0; i < users.length; i++) {
-				let otherUser = Users.get(users[i].userid);
+			for (const otherUser of this.generator.getUsers()) {
 				if (otherUser && otherUser.latestIp === user.latestIp) {
 					output.sendReply('|tournament|error|AltUserAlreadyAdded');
 					return;
@@ -780,7 +777,9 @@ class Tournament {
 		let challenge = this.pendingChallenges.get(player);
 		if (!challenge || !challenge.from) return;
 
-		user.prepBattle(this.teambuilderFormat, 'tournament', user).then(validTeam => this.finishAcceptChallenge(user, challenge, validTeam));
+		user.prepBattle(this.teambuilderFormat, 'tournament', user).then(validTeam =>
+			this.finishAcceptChallenge(user, challenge, validTeam)
+		);
 	}
 	finishAcceptChallenge(user, challenge, validTeam) {
 		if (validTeam === false) return;
@@ -895,6 +894,12 @@ class Tournament {
 		this.isAvailableMatchesInvalidated = true;
 
 		if (this.generator.isTournamentEnded()) {
+			if (!this.room.isPrivate && this.generator.name.includes('Elimination') && !Config.autosavereplays) {
+				let uploader = Users.get(winnerid);
+				if (uploader && uploader.connections[0]) {
+					Chat.parse('/savereplay', room, uploader, uploader.connections[0]);
+				}
+			}
 			this.onTournamentEnd();
 		} else {
 			if (this.autoDisqualifyTimeout !== Infinity) this.runAutoDisqualify();
@@ -959,7 +964,8 @@ class Tournament {
 }
 
 function createTournamentGenerator(generator, args, output) {
-	let Generator = TournamentGenerators[toId(generator)];
+	generator = toId(generator);
+	let Generator = TournamentGenerators[generator];
 	if (!Generator) {
 		output.errorReply(generator + " is not a valid type.");
 		output.errorReply("Valid types: " + Object.keys(TournamentGenerators).join(", "));
@@ -987,7 +993,11 @@ function createTournament(room, format, generator, playerCap, isRated, args, out
 		output.errorReply("Valid formats: " + Object.values(Dex.formats).filter(f => f.tournamentShow).map(format => format.name).join(", "));
 		return;
 	}
-	if (!TournamentGenerators[toId(generator)]) {
+	switch (generator) {
+	case 'elim': generator = 'elimination'; break;
+	case 'rr': generator = 'roundrobin'; break;
+	}
+	if (!TournamentGenerators[generator]) {
 		output.errorReply(generator + " is not a valid type.");
 		output.errorReply("Valid types: " + Object.keys(TournamentGenerators).join(", "));
 		return;
@@ -1153,7 +1163,8 @@ let commands = {
 		rules: 'customrules',
 		customrules: function (tournament, user, params, cmd) {
 			if (params.length < 1) {
-				return this.sendReply("Usage: " + cmd + " <comma-separated arguments>");
+				this.sendReply("Usage: " + cmd + " <comma-separated arguments>");
+				return this.parse('/tour viewrules');
 			}
 			if (tournament.isTournamentStarted) {
 				return this.errorReply("The custom rules cannot be changed once the tournament has started.");
