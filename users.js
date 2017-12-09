@@ -1255,41 +1255,6 @@ class User {
 			this.inRooms.delete(room.id);
 		}
 	}
-	async prepBattle(formatid, type, connection) {
-		// all validation for a battle goes through here
-		if (!connection) connection = this;
-		if (!type) type = 'challenge';
-
-		if (Rooms.global.lockdown && Rooms.global.lockdown !== 'pre') {
-			let message = `The server is restarting. Battles will be available again in a few minutes.`;
-			if (Rooms.global.lockdown === 'ddos') {
-				message = `The server is under attack. Battles cannot be started at this time.`;
-			}
-			connection.popup(message);
-			return false;
-		}
-		let gameCount = this.games.size;
-		if (Monitor.countConcurrentBattle(gameCount, connection)) {
-			return false;
-		}
-		if (Monitor.countPrepBattle(connection.ip || connection.latestIp, connection)) {
-			return false;
-		}
-
-		let format = Dex.getFormat(formatid);
-		if (!format['' + type + 'Show']) {
-			connection.popup(`That format is not available.`);
-			return false;
-		}
-
-		const result = await TeamValidatorAsync(formatid).validateTeam(this.team, this.locked || this.namelocked);
-		if (result.charAt(0) !== '1') {
-			connection.popup(`Your team was rejected for the following reasons:\n\n- ` + result.slice(1).replace(/\n/g, `\n- `));
-			return false;
-		}
-
-		return result.slice(1);
-	}
 
 	updateChallenges() {
 		let challengeTo = this.challengeTo;
@@ -1328,7 +1293,7 @@ class User {
 			atLeastOne = true;
 		});
 		if (!atLeastOne) games = null;
-		let searching = Ladders.matchmaker.getSearches(this);
+		let searching = Ladders.getSearches(this);
 		if (onlyIfExists && !searching.length && !atLeastOne) return;
 		(connection || this).send(`|updatesearch|` + JSON.stringify({
 			searching: searching,
@@ -1336,7 +1301,7 @@ class User {
 		}));
 	}
 	cancelSearches(format) {
-		if (Ladders.matchmaker.cancelSearches(this)) {
+		if (Ladders.cancelSearches(this)) {
 			this.popup(`You are no longer looking for a battle because you changed your username.`);
 		}
 	}
@@ -1353,7 +1318,7 @@ class User {
 			// 10 seconds ago
 			return false;
 		}
-		const ready = await Ladders.matchmaker.prepBattle(connection, format);
+		const ready = await Ladders(format).prepBattle(connection);
 		if (!ready) return false;
 
 		let challenge = {
@@ -1404,7 +1369,7 @@ class User {
 		}
 		const challenge = targetUser.challengeTo;
 
-		const ready = await Ladders.matchmaker.prepBattle(connection, challenge.format);
+		const ready = await Ladders(challenge.format).prepBattle(connection);
 		if (!ready) return false;
 
 		Rooms.createBattle(challenge.format, {
