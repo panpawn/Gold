@@ -2168,7 +2168,7 @@ exports.commands = {
 
 		let entry = targetUser.name + " was forced to choose a new name by " + user.name + (reason ? ": " + reason : "");
 		this.privateModCommand("(" + entry + ")");
-		Ladders.cancelSearch(targetUser);
+		Ladders.cancelSearches(targetUser);
 		targetUser.resetName(true);
 		targetUser.send("|nametaken||" + user.name + " considers your name inappropriate" + (reason ? ": " + reason : "."));
 		//return true;
@@ -2198,7 +2198,7 @@ exports.commands = {
 		}
 
 		this.globalModlog("NAMELOCK", targetUser, ` by ${user.name}${reasonText}`);
-		Ladders.cancelSearch(targetUser);
+		Ladders.cancelSearches(targetUser);
 		Punishments.namelock(targetUser, null, null, reason);
 		Gold.removeAllMoney(targetUser.userid, user.name);
 		targetUser.popup(`|modal|${user.name} has locked your name and you can't change names anymore${reasonText}`);
@@ -3419,7 +3419,7 @@ exports.commands = {
 	'!cancelsearch': true,
 	cancelsearch: function (target, room, user) {
 		if (target) {
-			Ladders.cancelSearch(user, target);
+			Ladders(toId(target)).cancelSearch(user);
 		} else {
 			Ladders.cancelSearches(user);
 		}
@@ -3591,7 +3591,7 @@ exports.commands = {
 			));
 		} else if (cmd === 'laddertop') {
 			if (!trustable) return false;
-			Ladders(target).getTop().then(result => {
+			Ladders(toId(target)).getTop().then(result => {
 				connection.send('|queryresponse|laddertop|' + JSON.stringify(result));
 			});
 		} else {
