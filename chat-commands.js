@@ -408,14 +408,6 @@ exports.commands = {
 	logout: function (target, room, user) {
 		user.resetName();
 	},
-	requesthelp: 'report',
-	report: function (target, room, user) {
-		if (room.id === 'help') {
-			this.sendReply("Ask one of the Moderators (@) in the Help room.");
-		} else {
-			this.parse('/join help');
-		}
-	},
 
 	r: 'reply',
 	reply: function (target, room, user) {
