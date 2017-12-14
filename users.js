@@ -1339,6 +1339,7 @@ class User {
 		}
 	}
 	processChatQueue() {
+		this.chatQueueTimeout = null;
 		if (!this.chatQueue) return;
 		if (!this.chatQueue.length) {
 			this.chatQueue = null;
@@ -1371,7 +1372,6 @@ class User {
 				() => this.processChatQueue(), throttleDelay);
 		} else {
 			this.chatQueue = null;
-			this.chatQueueTimeout = null;
 		}
 	}
 	destroy() {
