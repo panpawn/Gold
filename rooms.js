@@ -17,6 +17,8 @@ const REPORT_USER_STATS_INTERVAL = 10 * 60 * 1000;
 
 const CRASH_REPORT_THROTTLE = 60 * 60 * 1000;
 
+const RETRY_AFTER_LOGIN = null;
+
 const FS = require('./fs');
 
 /*********************************************************
@@ -92,7 +94,12 @@ class BasicRoom {
 		/** @type {string | boolean} */
 		this.isHelp = false;
 		this.isOfficial = false;
-		this.reportJoins = !!Config.reportjoins;
+		this.reportJoins = true;
+		/** @type {string[]?} */
+		this.reportJoinsQueue = null;
+		/** @type {NodeJS.Timer?} */
+		this.reportJoinsInterval = null;
+
 		this.logTimes = false;
 		/** @type {string | boolean} */
 		this.modjoin = false;
@@ -106,6 +113,8 @@ class BasicRoom {
 		this.filterCaps = false;
 		/** @type {Set<string>?} */
 		this.privacySetter = null;
+		/** @type {Map<string, ChatRoom>?} */
+		this.subRooms = null;
 	}
 
 	/**
@@ -220,6 +229,59 @@ class BasicRoom {
 
 	toString() {
 		return this.id;
+	}
+
+	/**
+	 * @param {'j' | 'l' | 'n'} type
+	 * @param {string} entry
+	 */
+	reportJoin(type, entry) {
+		if (this.reportJoins) {
+			this.add(`|${type}|${entry}`).update();
+			return;
+		}
+		let ucType = '';
+		switch (type) {
+		case 'j': ucType = 'J'; break;
+		case 'l': ucType = 'L'; break;
+		case 'n': ucType = 'N'; break;
+		}
+		entry = `|${ucType}|${entry}`;
+		if (this.reportJoinsQueue) {
+			this.reportJoinsQueue.push(entry);
+
+			if (!this.reportJoinsInterval) {
+				this.reportJoinsInterval = setTimeout(
+					() => this.reportRecentJoins(), Config.reportjoinsperiod
+				);
+			}
+		} else {
+			this.send(entry);
+		}
+		this.logEntry(entry);
+	}
+	reportRecentJoins() {
+		this.reportJoinsInterval = null;
+		if (!this.reportJoinsQueue || this.reportJoinsQueue.length === 0) {
+			// nothing to report
+			return;
+		}
+		this.send(this.reportJoinsQueue.join('\n'));
+		this.reportJoinsQueue.length = 0;
+		this.userList = this.getUserList();
+	}
+	getUserList() {
+		let buffer = '';
+		let counter = 0;
+		for (let i in this.users) {
+			if (!this.users[i].named) {
+				continue;
+			}
+			counter++;
+			buffer += ',' + this.users[i].getIdentity(this.id);
+		}
+		let msg = '|users|' + counter + buffer;
+		return msg;
 	}
 
 	// mute handling
@@ -650,26 +712,22 @@ class GlobalRoom extends BasicRoom {
 		let roomsData = {official: [], pspl: [], chat: [], userCount: this.userCount, battleCount: this.battleCount};
 		for (const room of this.chatRooms) {
 			if (!room) continue;
+			if (room.parent) continue;
 			if (room.isPrivate && !(room.isPrivate === 'voice' && user.group !== ' ')) continue;
+			let roomData = {
+				title: room.title,
+				desc: room.desc,
+				userCount: room.userCount,
+			};
+			if (room.subRooms) roomData.subRooms = room.getSubRooms().map(room => room.title);
+
 			if (room.isOfficial) {
-				roomsData.official.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.official.push(roomData);
 			// @ts-ignore
 			} else if (room.pspl) {
-				roomsData.pspl.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.pspl.push(roomData);
 			} else {
-				roomsData.chat.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.chat.push(roomData);
 			}
 		}
 		return roomsData;
@@ -1259,6 +1317,20 @@ class ChatRoom extends BasicRoom {
 		this.chatRoomData = (options.isPersonal ? null : options);
 		Object.assign(this, options);
 		if (this.auth) Object.setPrototypeOf(this.auth, null);
+		/** @type {Room?} */
+		this.parent = null;
+		if (options.parentid) {
+			let main = Rooms(options.parentid);
+
+			if (main) {
+				if (!main.subRooms) main.subRooms = new Map();
+				main.subRooms.set(this.id, this);
+				this.parent = main;
+			}
+		}
+
+		/** @type {Map<string, ChatRoom>?} */
+		this.subRooms = null;
 
 		/** @type {'chat'} */
 		this.type = 'chat';
@@ -1277,11 +1349,15 @@ class ChatRoom extends BasicRoom {
 			}
 		}
 
+		this.reportJoins = !!Config.reportjoins || this.isPersonal;
 		this.reportJoinsQueue = /** @type {(string[])?} */ (null);
-		if (Config.reportjoinsperiod) {
+		if (Config.reportjoinsperiod && !this.reportJoins) {
 			this.userList = this.getUserList();
 			this.reportJoinsQueue = [];
 		}
+		// TypeScript bug: subclass member
+		/** @type {NodeJS.Timer?} */
+		this.reportJoinsInterval = null;
 
 		if (this.isPersonal) {
 			this.modlogStream = Rooms.groupchatModlogStream;
@@ -1298,17 +1374,6 @@ class ChatRoom extends BasicRoom {
 				Rooms('staff').add("|raw|<font color=red><b>" + this.title + " has been automatically deleted from the server due to inactivity.</b></font>").update();
 			}
 		}.bind(this), 2 * 24 * 60 * 60 * 1000); //48 hours
-	}
-
-	reportRecentJoins() {
-		delete this.reportJoinsInterval;
-		if (!this.reportJoinsQueue || this.reportJoinsQueue.length === 0) {
-			// nothing to report
-			return;
-		}
-		this.userList = this.getUserList();
-		this.send(this.reportJoinsQueue.join('\n'));
-		this.reportJoinsQueue.length = 0;
 	}
 
 	async rollLogFile(sync = false) {
@@ -1396,43 +1461,6 @@ class ChatRoom extends BasicRoom {
 		}
 		this.logEntry(entry);
 	}
-
-	getUserList() {
-		let buffer = '';
-		let counter = 0;
-		for (let i in this.users) {
-			if (!this.users[i].named || this.users[i].hidden) {
-				continue;
-			}
-			counter++;
-			buffer += ',' + this.users[i].getIdentity(this.id);
-		}
-		let msg = '|users|' + counter + buffer;
-		return msg;
-	}
-	/**
-	 * @param {'j' | 'l' | 'n'} type
-	 * @param {string} entry
-	 */
-	reportJoin(type, entry) {
-		if (this.reportJoins) {
-			this.add('|' + type + '|' + entry).update();
-			return;
-		}
-		entry = '|' + type.toUpperCase() + '|' + entry;
-		if (this.reportJoinsQueue) {
-			if (!this.reportJoinsInterval) {
-				this.reportJoinsInterval = setTimeout(
-					() => this.reportRecentJoins(), Config.reportjoinsperiod
-				);
-			}
-
-			this.reportJoinsQueue.push(entry);
-		} else {
-			this.send(entry);
-		}
-		this.logEntry(entry);
-	}
 	update() {
 		if (this.log.length <= this.lastUpdate) return;
 		let entries = this.log.slice(this.lastUpdate);
@@ -1482,6 +1510,16 @@ class ChatRoom extends BasicRoom {
 		}
 		if (message) message += '</div>';
 		return message;
+	}
+	/**
+	 * @param {boolean} includeSecret
+	 * @return {ChatRoom[]}
+	 */
+	getSubRooms(includeSecret = false) {
+		if (!this.subRooms) return [];
+		return [...this.subRooms.values()].filter(room =>
+			room.isPrivate !== true || includeSecret
+		);
 	}
 	/**
 	 * @param {User} user
@@ -1749,6 +1787,8 @@ let Rooms = Object.assign(getRoom, {
 
 	RoomGame: require('./room-game').RoomGame,
 	RoomGamePlayer: require('./room-game').RoomGamePlayer,
+
+	RETRY_AFTER_LOGIN,
 
 	RoomBattle: require(roomBattleLoc).RoomBattle,
 	RoomBattlePlayer: require(roomBattleLoc).RoomBattlePlayer,
