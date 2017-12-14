@@ -89,6 +89,8 @@ class BasicRoom {
 		/** @type {boolean | 'hidden' | 'voice'} */
 		this.isPrivate = false;
 		this.isPersonal = false;
+		/** @type {string | boolean} */
+		this.isHelp = false;
 		this.isOfficial = false;
 		this.reportJoins = !!Config.reportjoins;
 		this.logTimes = false;
@@ -892,12 +894,6 @@ class GlobalRoom extends BasicRoom {
 		--this.userCount;
 	}
 	/**
-	 * @param {string} text
-	 */
-	modlog(text) {
-		this.modlogStream.write('[' + (new Date().toJSON()) + '] ' + text + '\n');
-	}
-	/**
 	 * @param {Error} err
 	 * @param {boolean} slow
 	 */
@@ -1454,7 +1450,7 @@ class ChatRoom extends BasicRoom {
 		this.lastUpdate = this.log.length;
 
 		// Set up expire timer to clean up inactive personal rooms.
-		if (this.isPersonal) {
+		if ((this.isPersonal && !this.isHelp) || (this.isHelp && this.isHelp !== 'open')) {
 			if (this.expireTimer) clearTimeout(this.expireTimer);
 			this.expireTimer = setTimeout(() => this.tryExpire(), TIMEOUT_INACTIVE_DEALLOCATE);
 		}
@@ -1689,8 +1685,8 @@ let Rooms = Object.assign(getRoom, {
 		if (p1 === p2) throw new Error(`Players can't battle themselves`);
 		if (!p1) throw new Error(`p1 required`);
 		if (!p2) throw new Error(`p2 required`);
-		Ladders.matchmaker.cancelSearch(p1);
-		Ladders.matchmaker.cancelSearch(p2);
+		Ladders.cancelSearches(p1);
+		Ladders.cancelSearches(p2);
 
 		if (Rooms.global.lockdown === true) {
 			p1.popup("The server is restarting. Battles will be available again in a few minutes.");

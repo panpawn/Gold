@@ -85,7 +85,7 @@ class Battle extends Dex.ModdedDex {
 	 * @param {PRNG} [prng]
 	 */
 	constructor(formatid, rated = false, send = (() => {}), prng = new PRNG()) {
-		let format = Dex.getFormat(formatid);
+		let format = Dex.getFormat(formatid, true);
 		super(format.mod);
 		Object.assign(this, this.data.Scripts);
 
@@ -103,6 +103,7 @@ class Battle extends Dex.ModdedDex {
 
 		this.format = format.id;
 		this.formatid = formatid;
+		this.cachedFormat = format;
 		this.formatData = {id: format.id};
 
 		/**@type {Effect} */
@@ -342,7 +343,8 @@ class Battle extends Dex.ModdedDex {
 	 * @param {string} [format]
 	 */
 	getFormat(format) {
-		return super.getFormat(format || this.formatid);
+		if (!format) return this.cachedFormat;
+		return super.getFormat(format, true);
 	}
 
 	/**
@@ -2272,11 +2274,9 @@ class Battle extends Dex.ModdedDex {
 		// Final modifier. Modifiers that modify damage after min damage check, such as Life Orb.
 		baseDamage = this.runEvent('ModifyDamage', pokemon, target, move, baseDamage);
 
-		// TODO: Find out where this actually goes in the damage calculation
 		if (move.isZ && move.zBrokeProtect) {
 			baseDamage = this.modify(baseDamage, 0.25);
-			this.add('-message', target.name + " couldn't fully protect itself and got hurt! (placeholder)");
-			move.zBrokeProtect = false;
+			this.add('-zbroken', target);
 		}
 
 		if (this.gen !== 5 && !Math.floor(baseDamage)) {

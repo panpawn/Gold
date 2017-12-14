@@ -675,7 +675,7 @@ class Tournament {
 		if (!this.isEnded) this.autoDisqualifyTimer = setTimeout(() => this.runAutoDisqualify(), this.autoDisqualifyTimeout);
 	}
 
-	challenge(user, targetUserid, output) {
+	async challenge(user, targetUserid, output) {
 		if (!this.isTournamentStarted) {
 			output.sendReply('|tournament|error|NotStarted');
 			return;
@@ -710,11 +710,8 @@ class Tournament {
 		this.isAvailableMatchesInvalidated = true;
 		this.update();
 
-		user.prepBattle(this.teambuilderFormat, 'tournament', user).then(validTeam => this.finishChallenge(user, to, output, validTeam));
-	}
-	finishChallenge(user, to, output, validTeam) {
-		let from = this.players[user.userid];
-		if (validTeam === false) {
+		const ready = await Ladders(this.teambuilderFormat).prepBattle(output.connection);
+		if (!ready) {
 			this.generator.setUserBusy(from, false);
 			this.generator.setUserBusy(to, false);
 
@@ -724,8 +721,8 @@ class Tournament {
 		}
 
 		this.lastActionTimes.set(to, Date.now());
-		this.pendingChallenges.set(from, {to: to, team: validTeam});
-		this.pendingChallenges.set(to, {from: from, team: validTeam});
+		this.pendingChallenges.set(from, {to: to, team: ready.team});
+		this.pendingChallenges.set(to, {from: from, team: ready.team});
 		from.sendRoom('|tournament|update|' + JSON.stringify({challenging: to.name}));
 		to.sendRoom('|tournament|update|' + JSON.stringify({challenged: from.name}));
 
@@ -758,7 +755,7 @@ class Tournament {
 		this.isAvailableMatchesInvalidated = true;
 		this.update();
 	}
-	acceptChallenge(user, output) {
+	async acceptChallenge(user, output) {
 		if (!this.isTournamentStarted) {
 			output.sendReply('|tournament|error|NotStarted');
 			return;
@@ -773,12 +770,8 @@ class Tournament {
 		let challenge = this.pendingChallenges.get(player);
 		if (!challenge || !challenge.from) return;
 
-		user.prepBattle(this.teambuilderFormat, 'tournament', user).then(validTeam =>
-			this.finishAcceptChallenge(user, challenge, validTeam)
-		);
-	}
-	finishAcceptChallenge(user, challenge, validTeam) {
-		if (validTeam === false) return;
+		const ready = await Ladders(this.teambuilderFormat).prepBattle(output.connection);
+		if (!ready) return;
 
 		// Prevent battles between offline users from starting
 		let from = Users.get(challenge.from.userid);
@@ -786,14 +779,13 @@ class Tournament {
 
 		// Prevent double accepts and users that have been disqualified while between these two functions
 		if (!this.pendingChallenges.get(challenge.from)) return;
-		let player = this.players[user.userid];
 		if (!this.pendingChallenges.get(player)) return;
 
 		let room = Rooms.createBattle(this.teambuilderFormat, {
 			p1: from,
 			p1team: challenge.team,
 			p2: user,
-			p2team: validTeam,
+			p2team: ready.team,
 			rated: !Ladders.disabled && this.isRated,
 			tour: this,
 		});
@@ -1158,8 +1150,12 @@ let commands = {
 		banlist: 'customrules',
 		rules: 'customrules',
 		customrules: function (tournament, user, params, cmd) {
+			if (cmd === 'banlist') {
+				return this.errorReply('The new syntax is: /tour rules -bannedthing, +unbannedthing, !removedrule, addedrule');
+			}
 			if (params.length < 1) {
-				this.sendReply("Usage: " + cmd + " <comma-separated arguments>");
+				this.sendReply("Usage: /tour rules <list of rules>");
+				this.sendReply("Rules can be: -bannedthing, +unbannedthing, !removedrule, addedrule");
 				return this.parse('/tour viewrules');
 			}
 			if (tournament.isTournamentStarted) {

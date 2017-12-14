@@ -296,11 +296,13 @@ class Validator {
 					isHidden = true;
 
 					if (template.unreleasedHidden && ruleTable.has('-unreleased')) {
-						problems.push(`${name}'s hidden ability is unreleased.`);
+						problems.push(`${name}'s Hidden Ability is unreleased.`);
+					} else if (['entei', 'suicune', 'raikou'].includes(template.id) && format.requirePlus) {
+						problems.push(`${name}'s Hidden Ability is only available from Virtual Console, which is not allowed in this format.`);
 					} else if (dex.gen === 6 && (set.species.endsWith('Orange') || set.species.endsWith('White')) && ability.name === 'Symbiosis') {
-						problems.push(`${name}'s hidden ability is unreleased for the Orange and White forms.`);
+						problems.push(`${name}'s Hidden Ability is unreleased for the Orange and White forms.`);
 					} else if (dex.gen === 5 && set.level < 10 && (template.maleOnlyHidden || template.gender === 'N')) {
-						problems.push(`${name} must be at least level 10 with its hidden ability.`);
+						problems.push(`${name} must be at least level 10 with its Hidden Ability.`);
 					}
 					if (template.maleOnlyHidden) {
 						set.gender = 'M';
@@ -666,10 +668,12 @@ class Validator {
 				throw new Error(`${eventTemplate.species} from ${template.species} doesn't have data for event ${source}`);
 			}
 		} else if (source.charAt(1) === 'V') {
+			const isRestricted = (template.speciesid === 'mew' || template.speciesid === 'celebi');
 			eventData = {
 				generation: 2,
-				perfectIVs: (template.speciesid === 'mew' ? 5 : 3),
+				perfectIVs: isRestricted ? 5 : 3,
 				isHidden: true,
+				shiny: isRestricted ? undefined : 1,
 				from: 'Gen 1-2 Virtual Console transfer',
 			};
 		} else if (source.charAt(1) === 'D') {
