@@ -108,8 +108,14 @@ Config.namefilter = function (name, user) {
 	// Hostfilter stuff
 	if (!user.connections) return name; // this should never happen
 	let conNum = Object.keys(user.connections).length - 1;
-	let ip = user.connections[conNum].ip;
-	let trusted = trustedHack(nameId);
+	const ip = user.connections[conNum].ip;
+	const trusted = trustedHack(nameId);
+
+	if (Config.autoSbanIps && Config.autoSbanIps.includes(ip)) {
+		Users.ShadowBan.addUser(user);
+		Monitor.log(`[IPShadowBanMonitor] SHADOWBANNED: ${name}`);
+		return;
+	}
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
