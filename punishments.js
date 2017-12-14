@@ -836,6 +836,17 @@ Punishments.roomBan = function (room, user, expireTime, userId, ...reason) {
 		curUser.leaveRoom(room.id);
 	}
 
+	if (room.subRooms) {
+		for (const subRoom of room.subRooms.values()) {
+			for (const curUser of affected) {
+				if (subRoom.game && subRoom.game.removeBannedUser) {
+					subRoom.game.removeBannedUser(curUser);
+				}
+				curUser.leaveRoom(subRoom.id);
+			}
+		}
+	}
+
 	return affected;
 };
 
@@ -869,6 +880,17 @@ Punishments.roomBlacklist = function (room, user, expireTime, userId, ...reason)
 			room.game.removeBannedUser(curUser);
 		}
 		curUser.leaveRoom(room.id);
+	}
+
+	if (room.subRooms) {
+		for (const subRoom of room.subRooms.values()) {
+			for (const curUser of affected) {
+				if (subRoom.game && subRoom.game.removeBannedUser) {
+					subRoom.game.removeBannedUser(curUser);
+				}
+				curUser.leaveRoom(subRoom.id);
+			}
+		}
 	}
 
 	return affected;
@@ -1209,6 +1231,7 @@ Punishments.checkNameInRoom = function (user, roomid) {
 	if (!punishment && user.autoconfirmed) {
 		punishment = Punishments.roomUserids.nestedGet(roomid, user.autoconfirmed);
 	}
+	if (!punishment && Rooms(roomid).parent) punishment = Punishments.checkNameInRoom(user, Rooms(roomid).parent);
 	if (!punishment) return false;
 	if (punishment[0] === 'ROOMBAN' || punishment[0] === 'BLACKLIST') {
 		return true;
@@ -1221,7 +1244,8 @@ Punishments.checkNameInRoom = function (user, roomid) {
  * @param {string} roomid
  */
 Punishments.checkNewNameInRoom = function (user, userid, roomid) {
-	const punishment = Punishments.roomUserids.nestedGet(roomid, userid);
+	let punishment = Punishments.roomUserids.nestedGet(roomid, userid);
+	if (!punishment && Rooms(roomid).parent) punishment = Punishments.checkNewNameInRoom(user, userid, Rooms(roomid).parent);
 	if (punishment) {
 		if (punishment[0] !== 'ROOMBAN' && punishment[0] !== 'BLACKLIST') return;
 		const room = Rooms(roomid);
@@ -1229,6 +1253,7 @@ Punishments.checkNewNameInRoom = function (user, userid, roomid) {
 			room.game.removeBannedUser(user);
 		}
 		user.leaveRoom(room.id);
+		return punishment;
 	}
 };
 
@@ -1284,6 +1309,9 @@ Punishments.isRoomBanned = function (user, roomid) {
 			}
 		}
 	}
+
+	if (!punishment && Rooms(roomid).parent) punishment = Punishments.isRoomBanned(user, Rooms(roomid).parent.id);
+	return punishment;
 };
 
 /**

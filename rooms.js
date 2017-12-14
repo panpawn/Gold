@@ -106,6 +106,8 @@ class BasicRoom {
 		this.filterCaps = false;
 		/** @type {Set<string>?} */
 		this.privacySetter = null;
+		/** @type {Map<string, ChatRoom>?} */
+		this.subRooms = null;
 	}
 
 	/**
@@ -650,26 +652,22 @@ class GlobalRoom extends BasicRoom {
 		let roomsData = {official: [], pspl: [], chat: [], userCount: this.userCount, battleCount: this.battleCount};
 		for (const room of this.chatRooms) {
 			if (!room) continue;
+			if (room.parent) continue;
 			if (room.isPrivate && !(room.isPrivate === 'voice' && user.group !== ' ')) continue;
+			let roomData = {
+				title: room.title,
+				desc: room.desc,
+				userCount: room.userCount,
+			};
+			if (room.subRooms && room.subRooms.size) roomData.subRooms = room.getSubRooms().map(room => room.title);
+
 			if (room.isOfficial) {
-				roomsData.official.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.official.push(roomData);
 			// @ts-ignore
 			} else if (room.pspl) {
-				roomsData.pspl.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.pspl.push(roomData);
 			} else {
-				roomsData.chat.push({
-					title: room.title,
-					desc: room.desc,
-					userCount: room.userCount,
-				});
+				roomsData.chat.push(roomData);
 			}
 		}
 		return roomsData;
@@ -1259,6 +1257,20 @@ class ChatRoom extends BasicRoom {
 		this.chatRoomData = (options.isPersonal ? null : options);
 		Object.assign(this, options);
 		if (this.auth) Object.setPrototypeOf(this.auth, null);
+		/** @type {Room?} */
+		this.parent = null;
+		if (options.parentid) {
+			let main = Rooms(options.parentid);
+
+			if (main) {
+				if (!main.subRooms) main.subRooms = new Map();
+				main.subRooms.set(this.id, this);
+				this.parent = main;
+			}
+		}
+
+		/** @type {Map<string, ChatRoom>?} */
+		this.subRooms = null;
 
 		/** @type {'chat'} */
 		this.type = 'chat';
@@ -1482,6 +1494,16 @@ class ChatRoom extends BasicRoom {
 		}
 		if (message) message += '</div>';
 		return message;
+	}
+	/**
+	 * @param {boolean} includeSecret
+	 * @return {ChatRoom[]}
+	 */
+	getSubRooms(includeSecret = false) {
+		if (!this.subRooms) return [];
+		return [...this.subRooms.values()].filter(room =>
+			room.isPrivate !== true || includeSecret
+		);
 	}
 	/**
 	 * @param {User} user
