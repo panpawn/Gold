@@ -14,7 +14,7 @@
 'use strict';
 
 const fs = require('fs');
-const FS = require('./fs');
+const FS = require('./lib/fs');
 const ProcessManager = require('./process-manager');
 
 /** 5 seconds */
