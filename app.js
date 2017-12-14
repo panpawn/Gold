@@ -195,4 +195,4 @@ require('./github'); // GitHub alerts
  * Start up the REPL server
  *********************************************************/
 
-require('./repl').start('app', cmd => eval(cmd));
+require('./lib/repl').start('app', cmd => eval(cmd));
