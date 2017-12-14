@@ -92,7 +92,12 @@ class BasicRoom {
 		/** @type {string | boolean} */
 		this.isHelp = false;
 		this.isOfficial = false;
-		this.reportJoins = !!Config.reportjoins;
+		this.reportJoins = true;
+		/** @type {string[]?} */
+		this.reportJoinsQueue = null;
+		/** @type {NodeJS.Timer?} */
+		this.reportJoinsInterval = null;
+
 		this.logTimes = false;
 		/** @type {string | boolean} */
 		this.modjoin = false;
@@ -222,6 +227,59 @@ class BasicRoom {
 
 	toString() {
 		return this.id;
+	}
+
+	/**
+	 * @param {'j' | 'l' | 'n'} type
+	 * @param {string} entry
+	 */
+	reportJoin(type, entry) {
+		if (this.reportJoins) {
+			this.add(`|${type}|${entry}`).update();
+			return;
+		}
+		let ucType = '';
+		switch (type) {
+		case 'j': ucType = 'J'; break;
+		case 'l': ucType = 'L'; break;
+		case 'n': ucType = 'N'; break;
+		}
+		entry = `|${ucType}|${entry}`;
+		if (this.reportJoinsQueue) {
+			this.reportJoinsQueue.push(entry);
+
+			if (!this.reportJoinsInterval) {
+				this.reportJoinsInterval = setTimeout(
+					() => this.reportRecentJoins(), Config.reportjoinsperiod
+				);
+			}
+		} else {
+			this.send(entry);
+		}
+		this.logEntry(entry);
+	}
+	reportRecentJoins() {
+		this.reportJoinsInterval = null;
+		if (!this.reportJoinsQueue || this.reportJoinsQueue.length === 0) {
+			// nothing to report
+			return;
+		}
+		this.send(this.reportJoinsQueue.join('\n'));
+		this.reportJoinsQueue.length = 0;
+		this.userList = this.getUserList();
+	}
+	getUserList() {
+		let buffer = '';
+		let counter = 0;
+		for (let i in this.users) {
+			if (!this.users[i].named) {
+				continue;
+			}
+			counter++;
+			buffer += ',' + this.users[i].getIdentity(this.id);
+		}
+		let msg = '|users|' + counter + buffer;
+		return msg;
 	}
 
 	// mute handling
@@ -1289,11 +1347,15 @@ class ChatRoom extends BasicRoom {
 			}
 		}
 
+		this.reportJoins = !!Config.reportjoins;
 		this.reportJoinsQueue = /** @type {(string[])?} */ (null);
-		if (Config.reportjoinsperiod) {
+		if (Config.reportjoinsperiod && !this.reportJoins) {
 			this.userList = this.getUserList();
 			this.reportJoinsQueue = [];
 		}
+		// TypeScript bug: subclass member
+		/** @type {NodeJS.Timer?} */
+		this.reportJoinsInterval = null;
 
 		if (this.isPersonal) {
 			this.modlogStream = Rooms.groupchatModlogStream;
@@ -1310,17 +1372,6 @@ class ChatRoom extends BasicRoom {
 				Rooms('staff').add("|raw|<font color=red><b>" + this.title + " has been automatically deleted from the server due to inactivity.</b></font>").update();
 			}
 		}.bind(this), 2 * 24 * 60 * 60 * 1000); //48 hours
-	}
-
-	reportRecentJoins() {
-		delete this.reportJoinsInterval;
-		if (!this.reportJoinsQueue || this.reportJoinsQueue.length === 0) {
-			// nothing to report
-			return;
-		}
-		this.userList = this.getUserList();
-		this.send(this.reportJoinsQueue.join('\n'));
-		this.reportJoinsQueue.length = 0;
 	}
 
 	async rollLogFile(sync = false) {
@@ -1405,43 +1456,6 @@ class ChatRoom extends BasicRoom {
 		let entry = '|userstats|total:' + total + '|guests:' + guests;
 		for (let i in groups) {
 			entry += '|' + i + ':' + groups[i];
-		}
-		this.logEntry(entry);
-	}
-
-	getUserList() {
-		let buffer = '';
-		let counter = 0;
-		for (let i in this.users) {
-			if (!this.users[i].named || this.users[i].hidden) {
-				continue;
-			}
-			counter++;
-			buffer += ',' + this.users[i].getIdentity(this.id);
-		}
-		let msg = '|users|' + counter + buffer;
-		return msg;
-	}
-	/**
-	 * @param {'j' | 'l' | 'n'} type
-	 * @param {string} entry
-	 */
-	reportJoin(type, entry) {
-		if (this.reportJoins) {
-			this.add('|' + type + '|' + entry).update();
-			return;
-		}
-		entry = '|' + type.toUpperCase() + '|' + entry;
-		if (this.reportJoinsQueue) {
-			if (!this.reportJoinsInterval) {
-				this.reportJoinsInterval = setTimeout(
-					() => this.reportRecentJoins(), Config.reportjoinsperiod
-				);
-			}
-
-			this.reportJoinsQueue.push(entry);
-		} else {
-			this.send(entry);
 		}
 		this.logEntry(entry);
 	}
