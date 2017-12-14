@@ -894,11 +894,13 @@ exports.commands = {
 
 		if (!room.chatRoomData) return this.errorReply(`Temporary rooms cannot be subrooms.`);
 		if (room.parent) return this.errorReply(`This room is already a subroom. To change which room this subroom belongs to, remove the subroom first.`);
+		if (room.subRooms) return this.errorReply(`This room is already a parent room, and a parent room cannot be made as a subroom.`);
 
-		const main = Rooms(toId(target));
+		const main = Rooms.search(target);
 
 		if (!main) return this.errorReply(`The room '${target}' does not exist.`);
 		if (main.isPrivate || !main.chatRoomData) return this.errorReply(`Only public rooms can have subrooms.`);
+		if (room === main) return this.errorReply(`You cannot set a room to be a subroom of itself.`);
 
 		room.parent = main;
 		if (!main.subRooms) main.subRooms = new Map();
@@ -921,7 +923,7 @@ exports.commands = {
 			room.users[userid].updateIdentity(room.id);
 		}
 
-		return this.addModCommand(`This room was set as a subroom of ${main.title}.`);
+		return this.addModCommand(`This room was set as a subroom of ${main.title} by ${user.name}.`);
 	},
 
 	removesubroom: 'unsubroom',
@@ -944,7 +946,7 @@ exports.commands = {
 			room.users[userid].updateIdentity(room.id);
 		}
 
-		return this.addModCommand(`This room is no longer a subroom.`);
+		return this.addModCommand(`This room was unset as a subroom by ${user.name}.`);
 	},
 
 	subrooms: function (target, room, user) {
