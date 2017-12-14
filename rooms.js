@@ -719,7 +719,7 @@ class GlobalRoom extends BasicRoom {
 				desc: room.desc,
 				userCount: room.userCount,
 			};
-			if (room.subRooms && room.subRooms.size) roomData.subRooms = room.getSubRooms().map(room => room.title);
+			if (room.subRooms) roomData.subRooms = room.getSubRooms().map(room => room.title);
 
 			if (room.isOfficial) {
 				roomsData.official.push(roomData);
