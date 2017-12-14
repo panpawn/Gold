@@ -46,16 +46,6 @@ let Panagram = (function () {
 			'The first letter is <b>' + this.answer.species[0] + '</b>.',
 			'This Pokémon\'s type is <b>' + this.answer.types.join('/') + '</b>.',
 		].join('<br>');
-
-		this.room.chat = function (user, message, connection) {
-			if (Dex.data.Pokedex[toId(message)] && message.match(/^[a-z ]/i)) message = '/gp ' + message;
-			message = Chat.parse(message, this, user, connection);
-
-			if (message && message !== true) {
-				this.add('|c|' + user.getIdentity(this.id) + '|' + message);
-			}
-			this.update();
-		};
 	}
 	Panagram.prototype.guess = function (user, guess) {
 		if (guess.species === this.answer.species) {
@@ -73,7 +63,6 @@ let Panagram = (function () {
 			pGames[this.room.id] = new Panagram(this.room, this.sessions - 1);
 			this.room.update();
 		} else {
-			this.room.chat = Rooms.Room.prototype.chat;
 			delete pGames[this.room.id];
 			Gold.saveData();
 		}
@@ -92,8 +81,7 @@ exports.commands = {
 			'<code>/panagramend</code> OR <code>/endp</code> - Ends a game of panagram. Requires @ or higher.<br>' +
 			'<code>/panagramskip</code> OR <code>/pskip</code> - Skips the current session of the game of panagram. Requires @ or higher.<br>' +
 			'<code>/panagramhint</code> OR <code>/ph</code> - Gives a hint to the answer.<br>' +
-			'<code>/gp</code> - Guesses the answer.<br>' +
-			'Users can guess answers by simply typing them into the chat as well.'
+			'<code>/gp</code> - Guesses the answer.'
 		);
 	},
 
