@@ -74,7 +74,7 @@ if (cluster.isMaster) {
 			workers.delete(worker.id);
 		} else if (code > 0) {
 			// Worker was killed abnormally, likely because of a crash.
-			require('./crashlogger')(new Error(`Worker ${worker.id} abruptly died with code ${code} and signal ${signal}`), "The main process");
+			require('./lib/crashlogger')(new Error(`Worker ${worker.id} abruptly died with code ${code} and signal ${signal}`), "The main process");
 			// Don't delete the worker so it can be inspected if need be.
 		}
 
@@ -215,7 +215,7 @@ if (cluster.isMaster) {
 	if (Config.crashguard) {
 		// graceful crash
 		process.on('uncaughtException', err => {
-			require('./crashlogger')(err, `Socket process ${cluster.worker.id} (${process.pid})`, true);
+			require('./lib/crashlogger')(err, `Socket process ${cluster.worker.id} (${process.pid})`, true);
 		});
 	}
 
@@ -229,7 +229,7 @@ if (cluster.isMaster) {
 			try {
 				key = fs.readFileSync(key);
 			} catch (e) {
-				require('./crashlogger')(new Error(`Failed to read the configured SSL private key PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(new Error(`Failed to read the configured SSL private key PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		} catch (e) {
 			console.warn('SSL private key config values will not support HTTPS server option values in the future. Please set it to use the absolute path of its PEM file.');
@@ -243,7 +243,7 @@ if (cluster.isMaster) {
 			try {
 				cert = fs.readFileSync(cert);
 			} catch (e) {
-				require('./crashlogger')(new Error(`Failed to read the configured SSL certificate PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(new Error(`Failed to read the configured SSL certificate PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		} catch (e) {
 			console.warn('SSL certificate config values will not support HTTPS server option values in the future. Please set it to use the absolute path of its PEM file.');
@@ -255,7 +255,7 @@ if (cluster.isMaster) {
 				// In case there are additional SSL config settings besides the key and cert...
 				appssl = require('https').createServer(Object.assign({}, Config.ssl.options, {key, cert}));
 			} catch (e) {
-				require('./crashlogger')(`The SSL settings are misconfigured:\n${e.stack}`, `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(`The SSL settings are misconfigured:\n${e.stack}`, `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		}
 	}
