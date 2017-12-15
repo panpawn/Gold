@@ -1518,7 +1518,7 @@ class ChatRoom extends BasicRoom {
 	getSubRooms(includeSecret = false) {
 		if (!this.subRooms) return [];
 		return [...this.subRooms.values()].filter(room =>
-			room.isPrivate !== true || includeSecret
+			!room.isPrivate || includeSecret
 		);
 	}
 	/**
