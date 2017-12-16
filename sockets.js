@@ -302,22 +302,14 @@ if (cluster.isMaster) {
 	// and doing things on our server.
 
 	const sockjs = require('sockjs');
-	const options = {
+	const server = sockjs.createServer({
 		sockjs_url: "//play.pokemonshowdown.com/js/lib/sockjs-1.1.1-nwjsfix.min.js",
-		prefix: '/showdown',
-		log(severity, message) {
-			if (severity === 'error') Monitor.warn(`ERROR: ${message}`);
+		log: (severity, message) => {
+			if (severity === 'error') console.log('ERROR: ' + message);
 		},
-	};
+		prefix: '/showdown',
+	});
 
-	try {
-		const deflate = require('permessage-deflate').configure(Config.wsdeflate);
-		options.faye_server_options = [deflate];
-	} catch (e) {
-		require('./crashlogger')(new Error("Dependency permessage-deflate is not installed or is otherwise unaccessable. No message compression will take place until server restart."), "Sockets");
-	}
-
-	const server = sockjs.createServer(options);
 	const sockets = new Map();
 	const channels = new Map();
 	const subchannels = new Map();
