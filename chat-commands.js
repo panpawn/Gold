@@ -888,8 +888,9 @@ exports.commands = {
 		}
 	},
 
+	setsubroom: 'subroom',
 	subroom: function (target, room, user) {
-		if (!this.can('makeroom')) return;
+		if (!user.can('makeroom')) return this.errorReply(`/subroom - Access denied. Did you mean /subrooms?`);
 		if (!target) return this.parse('/help subroom');
 
 		if (!room.chatRoomData) return this.errorReply(`Temporary rooms cannot be subrooms.`);
@@ -906,8 +907,8 @@ exports.commands = {
 		if (!main.subRooms) main.subRooms = new Map();
 		main.subRooms.set(room.id, room);
 
-		let mainIdx = Rooms.global.chatRoomDataList.findIndex(r => r.title === main.title);
-		let subIdx = Rooms.global.chatRoomDataList.findIndex(r => r.title === room.title);
+		const mainIdx = Rooms.global.chatRoomDataList.findIndex(r => r.title === main.title);
+		const subIdx = Rooms.global.chatRoomDataList.findIndex(r => r.title === room.title);
 
 		// This is needed to ensure that the main room gets loaded before the subroom.
 		if (mainIdx > subIdx) {
@@ -927,6 +928,7 @@ exports.commands = {
 	},
 
 	removesubroom: 'unsubroom',
+	desubroom: 'unsubroom',
 	unsubroom: function (target, room, user) {
 		if (!this.can('makeroom')) return;
 		if (!room.parent || !room.chatRoomData) return this.errorReply(`This room is not currently a subroom of a public room.`);
@@ -949,27 +951,31 @@ exports.commands = {
 		return this.addModCommand(`This room was unset as a subroom by ${user.name}.`);
 	},
 
-	subrooms: function (target, room, user) {
+	parentroom: 'subrooms',
+	subrooms: function (target, room, user, connection, cmd) {
+		if (cmd === 'parentroom' && !room.parent) return this.errorReply(`This room is not a parent room.`);
+		if (room.parent) return this.sendReply(`This is a subroom of ${room.parent.title}.`);
 		if (room.isPrivate) return this.errorReply(`Private rooms cannot have subrooms.`);
 		if (!room.chatRoomData) return this.errorReply(`Temporary rooms cannot have subrooms.`);
 
 		if (!this.runBroadcast()) return;
 
-		let showSecret = !this.broadcasting && user.can('mute', null, room);
+		const showSecret = !this.broadcasting && user.can('mute', null, room);
 
-		let subRooms = room.getSubRooms(showSecret);
+		const subRooms = room.getSubRooms(showSecret);
 
 		if (!subRooms.length) return this.sendReply(`This room doesn't have any subrooms.`);
 
-		let subRoomText = subRooms.map(room => Chat.html `<a href="/${room.id}">${room.title}</a><br/><small>${room.desc}</small>`);
+		const subRoomText = subRooms.map(room => Chat.html`<a href="/${room.id}">${room.title}</a><br/><small>${room.desc}</small>`);
 
 		return this.sendReplyBox(`<p style="font-weight:bold;">${Chat.escapeHTML(room.title)}'s subroom${Chat.plural(subRooms)}:</p><ul><li>${subRoomText.join('</li><br/><li>')}</li></ul></strong>`);
 	},
 
 	subroomhelp: [
-		"/subroom [room] - Marks the current room as a subroom of room. Requires: & ~",
+		"/subroom [room] - Marks the current room as a subroom of [room]. Requires: & ~",
 		"/unsubroom - Unmarks the current room as a subroom. Requires: & ~",
 		"/subrooms - Displays the current room's subrooms.",
+		"/parentroom - Displays the current room's parent room.",
 	],
 
 	roomdesc: function (target, room, user) {
@@ -1362,7 +1368,7 @@ exports.commands = {
 			return;
 		}
 		let roomfounder = (targetRoom.founder ? (room.founder in targetRoom.users ? Gold.nameColor(targetRoom.founder, true) : Gold.nameColor(targetRoom.founder, false)) : false);
-		if (roomfounder) buffer.unshift("Room Founder:<br />" + roomfounder);
+		if (roomfounder) buffer.unshift(`Room Founder:<br />${roomfounder}`);
 		if (targetRoom !== room) buffer.unshift("" + targetRoom.title + " room auth:");
 		connection.send("|popup||html|" + buffer.join("\n\n") + userLookup);
 	},
