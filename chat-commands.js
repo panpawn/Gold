@@ -1042,7 +1042,7 @@ exports.commands = {
 		this.sendReply('|raw|<div class="infobox infobox-limited">' + room.introMessage.replace(/\n/g, '') + '</div>');
 
 		this.privateModCommand(`(${user.name} changed the roomintro.)`);
-		this.logEntry(room.introMessage.replace(/\n/g, ''));
+		this.roomlog(room.introMessage.replace(/\n/g, ''));
 
 		if (room.chatRoomData) {
 			room.chatRoomData.introMessage = room.introMessage;
@@ -1055,7 +1055,7 @@ exports.commands = {
 		if (!room.introMessage) return this.errorReply("This room does not have a introduction set.");
 
 		this.privateModCommand(`(${user.name} deleted the roomintro.)`);
-		this.logEntry(target);
+		this.roomlog(target);
 
 		delete room.introMessage;
 		if (room.chatRoomData) {
@@ -1097,7 +1097,7 @@ exports.commands = {
 		this.sendReply('|raw|<div class="infobox">' + target.replace(/\n/g, '') + '</div>');
 
 		this.privateModCommand(`(${user.name} changed the staffintro.)`);
-		this.logEntry(room.staffMessage.replace(/\n/g, ''));
+		this.roomlog(room.staffMessage.replace(/\n/g, ''));
 
 		if (room.chatRoomData) {
 			room.chatRoomData.staffMessage = room.staffMessage;
@@ -1110,7 +1110,7 @@ exports.commands = {
 		if (!room.staffMessage) return this.errorReply("This room does not have a staff introduction set.");
 
 		this.privateModCommand(`(${user.name} deleted the staffintro.)`);
-		this.logEntry(target);
+		this.roomlog(target);
 
 		delete room.staffMessage;
 		if (room.chatRoomData) {
@@ -1749,7 +1749,7 @@ exports.commands = {
 
 		// Notify staff room when a user is locked outside of it.
 		if (room.id !== 'staff' && Rooms('staff')) {
-			Rooms('staff').addLogMessage(user, `<<${room.id}>> ${lockMessage}`);
+			Rooms('staff').addByUser(user, `<<${room.id}>> ${lockMessage}`);
 		}
 
 		// Use default time for locks.
@@ -1802,7 +1802,7 @@ exports.commands = {
 			this.addModCommand(unlockMessage);
 			// Notify staff room when a user is unlocked outside of it.
 			if (!reason && room.id !== 'staff' && Rooms('staff')) {
-				Rooms('staff').addLogMessage(user, "<<" + room.id + ">> " + unlockMessage);
+				Rooms('staff').addByUser(user, "<<" + room.id + ">> " + unlockMessage);
 			}
 			if (!reason) this.globalModlog("UNLOCK", target, " by " + user.name);
 			if (targetUser) targetUser.popup("" + user.name + " has unlocked you.");
@@ -1864,7 +1864,7 @@ exports.commands = {
 
 		// Notify staff room when a user is banned outside of it.
 		if (room.id !== 'staff' && Rooms('staff')) {
-			Rooms('staff').addLogMessage(user, "<<" + room.id + ">> " + banMessage);
+			Rooms('staff').addByUser(user, "<<" + room.id + ">> " + banMessage);
 		}
 
 		let affected = Punishments.ban(targetUser, null, null, userReason);
@@ -1907,7 +1907,7 @@ exports.commands = {
 			this.addModCommand(unbanMessage);
 			// Notify staff room when a user is unbanned outside of it.
 			if (room.id !== 'staff' && Rooms('staff')) {
-				Rooms('staff').addLogMessage(user, `<<${room.id}>> ${unbanMessage}`);
+				Rooms('staff').addByUser(user, `<<${room.id}>> ${unbanMessage}`);
 			}
 			this.globalModlog("UNBAN", name, ` by ${user.name}`);
 		} else {
@@ -2295,7 +2295,7 @@ exports.commands = {
 
 		// Notify staff room when a user is locked outside of it.
 		if (room.id !== 'staff' && Rooms('staff')) {
-			Rooms('staff').addLogMessage(user, "<<" + room.id + ">> " + lockMessage);
+			Rooms('staff').addByUser(user, "<<" + room.id + ">> " + lockMessage);
 		}
 
 		this.globalModlog("NAMELOCK", targetUser, ` by ${user.name}${reasonText}`);
@@ -2520,7 +2520,7 @@ exports.commands = {
 		let unblacklisted = Punishments.roomUnblacklistAll(room);
 		if (!unblacklisted) return this.errorReply("No users are currently blacklisted in this room to unblacklist.");
 		this.addModCommand(`All blacklists in this room have been lifted by ${user.name}.`);
-		this.logEntry(`Unblacklisted users: ${unblacklisted.join(', ')}`);
+		this.roomlog(`Unblacklisted users: ${unblacklisted.join(', ')}`);
 	},
 	unblacklistallhelp: ["/unblacklistall - Unblacklists all blacklisted users in the current room. Requires #, &, ~"],
 
@@ -2924,7 +2924,7 @@ exports.commands = {
 
 		Rooms.global.startLockdown();
 
-		this.logEntry(user.name + " used /lockdown");
+		this.roomlog(user.name + " used /lockdown");
 	},
 	lockdownhelp: ["/lockdown - locks down the server, which prevents new battles from starting so that the server can eventually be restarted. Requires: ~"],
 
@@ -2937,12 +2937,12 @@ exports.commands = {
 			if (Config.autolockdown) return this.errorReply("The server is already set to automatically kill itself upon the final battle finishing.");
 			Config.autolockdown = true;
 			this.sendReply("The server is now set to automatically kill itself upon the final battle finishing.");
-			this.logEntry(`${user.name} used /autolockdownkill on`);
+			this.roomlog(`${user.name} used /autolockdownkill on`);
 		} else if (this.meansNo(target)) {
 			if (!Config.autolockdown) return this.errorReply("The server is already set to not automatically kill itself upon the final battle finishing.");
 			Config.autolockdown = false;
 			this.sendReply("The server is now set to not automatically kill itself upon the final battle finishing.");
-			this.logEntry(`${user.name} used /autolockdownkill off`);
+			this.roomlog(`${user.name} used /autolockdownkill off`);
 		} else {
 			return this.parse('/help autolockdownkill');
 		}
@@ -2956,7 +2956,7 @@ exports.commands = {
 		if (!this.can('lockdown')) return false;
 		Rooms.global.lockdown = 'pre';
 		this.sendReply("Tournaments have been disabled in preparation for the server restart.");
-		this.logEntry(user.name + " used /prelockdown");
+		this.roomlog(user.name + " used /prelockdown");
 	},
 
 	slowlockdown: function (target, room, user) {
@@ -2964,7 +2964,7 @@ exports.commands = {
 
 		Rooms.global.startLockdown(undefined, true);
 
-		this.logEntry(user.name + " used /slowlockdown");
+		this.roomlog(user.name + " used /slowlockdown");
 	},
 
 	endlockdown: function (target, room, user) {
@@ -2982,7 +2982,7 @@ exports.commands = {
 		}
 		Rooms.global.lockdown = false;
 
-		this.logEntry(user.name + " used /endlockdown");
+		this.roomlog(user.name + " used /endlockdown");
 	},
 
 	emergency: function (target, room, user) {
@@ -2996,7 +2996,7 @@ exports.commands = {
 			if (id !== 'global') curRoom.addRaw("<div class=\"broadcast-red\">The server has entered emergency mode. Some features might be disabled or limited.</div>").update();
 		});
 
-		this.logEntry(user.name + " used /emergency");
+		this.roomlog(user.name + " used /emergency");
 	},
 
 	endemergency: function (target, room, user) {
@@ -3010,7 +3010,7 @@ exports.commands = {
 			if (id !== 'global') curRoom.addRaw("<div class=\"broadcast-green\"><b>The server is no longer in emergency mode.</b></div>").update();
 		});
 
-		this.logEntry(user.name + " used /endemergency");
+		this.roomlog(user.name + " used /endemergency");
 	},
 
 	kill: function (target, room, user) {
@@ -3030,7 +3030,7 @@ exports.commands = {
 			process.exit();
 			return;
 		}
-		room.logEntry(user.name + " used /kill");
+		room.roomlog(user.name + " used /kill");
 		room.destroyLog(() => {
 			process.exit();
 		});
@@ -3059,7 +3059,7 @@ exports.commands = {
 	refreshpage: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
 		Rooms.global.send('|refresh|');
-		this.logEntry(user.name + " used /refreshpage");
+		this.roomlog(user.name + " used /refreshpage");
 	},
 
 	updateserver: function (target, room, user, connection) {
@@ -3079,37 +3079,15 @@ exports.commands = {
 		connection.sendTo(room, "updating...");
 
 		let exec = require('child_process').exec;
-		exec('git diff-index --quiet HEAD --', error => {
-			let cmd = 'git pull --rebase';
-			if (error) {
-				if (error.code === 1) {
-					// The working directory or index have local changes.
-					cmd = 'git stash && ' + cmd + ' && git stash pop';
-				} else {
-					// The most likely case here is that the user does not have
-					// `git` on the PATH (which would be error.code === 127).
-					connection.sendTo(room, "" + error);
-					logQueue.push("" + error);
-					for (let line of logQueue) {
-						room.logEntry(line);
-					}
-					Chat.updateServerLock = false;
-					return;
-				}
+		exec(`git fetch && git rebase --autostash FETCH_HEAD`, (error, stdout, stderr) => {
+			for (let s of ("" + stdout + stderr).split("\n")) {
+				connection.sendTo(room, s);
+				logQueue.push(s);
 			}
-			let entry = "Running `" + cmd + "`";
-			connection.sendTo(room, entry);
-			logQueue.push(entry);
-			exec(cmd, (error, stdout, stderr) => {
-				for (let s of ("" + stdout + stderr).split("\n")) {
-					connection.sendTo(room, s);
-					logQueue.push(s);
-				}
-				for (let line of logQueue) {
-					room.logEntry(line);
-				}
-				Chat.updateServerLock = false;
-			});
+			for (let line of logQueue) {
+				room.roomlog(line);
+			}
+			Chat.updateServerLock = false;
 		});
 	},
 
@@ -3124,7 +3102,7 @@ exports.commands = {
 			Rooms.lobby.modchat = false;
 			Rooms.lobby.addRaw("<div class=\"broadcast-green\"><b>We fixed the crash without restarting the server!</b><br />You may resume talking in the lobby and starting new battles.</div>").update();
 		}
-		this.logEntry(user.name + " used /crashfixed");
+		this.roomlog(user.name + " used /crashfixed");
 	},
 	crashfixedhelp: ["/crashfixed - Ends the active lockdown caused by a crash without the need of a restart. Requires: ~"],
 

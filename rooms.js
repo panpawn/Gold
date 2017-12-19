@@ -123,14 +123,15 @@ class BasicRoom {
 		if (this.id !== 'lobby') message = '>' + this.id + '\n' + message;
 		if (this.userCount) Sockets.channelBroadcast(this.id, message);
 	}
-	sendAuth() { throw new Error(`Obsolete command; use room.sendModCommand`); }
+	sendAuth() { throw new Error(`Obsolete command; use room.sendMods`); }
+	sendModCommand() { throw new Error(`Obsolete command; use room.sendMods`); }
 	push() { throw new Error(`Obsolete command; use room.add`); }
 	/**
 	 * @param {string} data
 	 */
-	sendModCommand(data) {
+	sendMods(data) {
 		if (this.staffRoom) {
-			if (!this.log) throw new Error(`Staff room has no log`);
+			if (!this.log) throw new Error(`Staff room ${this.id} has no log`);
 			this.log.add(data);
 			return;
 		}
@@ -158,8 +159,10 @@ class BasicRoom {
 	 * @return {this}
 	 */
 	add(message) { throw new Error(`should be implemented by subclass`); }
-	logEntry(/** @type {string} */ message) { throw new Error(`should be implemented by subclass`); }
+	roomlog(/** @type {string} */ message) { throw new Error(`should be implemented by subclass`); }
 	modlog(/** @type {string} */ message) { throw new Error(`should be implemented by subclass`); }
+	logEntry() { throw new Error(`room.logEntry has been renamed room.roomlog`); }
+	addLogMessage() { throw new Error(`room.addLogMessage has been renamed room.addByUser`); }
 	/**
 	 * Inserts (sanitized) HTML into the room log.
 	 * @param {string} message
@@ -174,8 +177,16 @@ class BasicRoom {
 	 * @param {User} user
 	 * @param {string} text
 	 */
-	addLogMessage(user, text) {
+	addByUser(user, text) {
 		return this.add('|c|' + user.getIdentity(this) + '|/log ' + text).update();
+	}
+	/**
+	 * Like addByUser, but sends to mods only.
+	 * @param {User} user
+	 * @param {string} text
+	 */
+	sendModsByUser(user, text) {
+		return this.sendMods('|c|' + user.getIdentity(this) + '|/log ' + text);
 	}
 	update() {}
 
@@ -1005,7 +1016,7 @@ class BasicChatRoom extends BasicRoom {
 		this.muteTimer = /** @type {NodeJS.Timer?} */ (null);
 
 		if (Config.logchat) {
-			this.logEntry('NEW CHATROOM: ' + this.id);
+			this.roomlog('NEW CHATROOM: ' + this.id);
 			if (Config.loguserstats) {
 				this.logUserStatsInterval = setInterval(() => this.logUserStats(), Config.loguserstats);
 			}
@@ -1033,7 +1044,7 @@ class BasicChatRoom extends BasicRoom {
 	/**
 	 * @param {string} message
 	 */
-	logEntry(message) {
+	roomlog(message) {
 		this.log.roomlog(message);
 		return this;
 	}
@@ -1041,7 +1052,7 @@ class BasicChatRoom extends BasicRoom {
 	 * @param {string} message
 	 */
 	modlog(message) {
-		this.log.modlog('(' + this.id + ') ' + message);
+		this.log.modlog(message);
 		return this;
 	}
 	logUserStats() {
@@ -1067,7 +1078,7 @@ class BasicChatRoom extends BasicRoom {
 		for (let i in groups) {
 			entry += '|' + i + ':' + groups[i];
 		}
-		this.logEntry(entry);
+		this.roomlog(entry);
 	}
 	update() {
 		if (!this.log.broadcastBuffer) return;
@@ -1119,7 +1130,7 @@ class BasicChatRoom extends BasicRoom {
 		} else {
 			this.send(entry);
 		}
-		this.logEntry(entry);
+		this.roomlog(entry);
 	}
 	/**
 	 * @param {User} user
