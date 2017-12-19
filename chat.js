@@ -207,6 +207,10 @@ class CommandContext {
 		this.target = options.target || ``;
 		this.fullCmd = options.fullCmd || '';
 
+		// broadcast context
+		this.broadcasting = false;
+		this.broadcastToRoom = true;
+
 		// target user
 		this.targetUser = null;
 		this.targetUsername = "";
@@ -549,7 +553,7 @@ class CommandContext {
 		}).join('\n');
 	}
 	sendReply(data) {
-		if (this.broadcasting) {
+		if (this.broadcasting && this.broadcastToRoom) {
 			// broadcasting
 			if (this.pmTarget) {
 				data = this.pmTransform(data);
@@ -651,22 +655,23 @@ class CommandContext {
 	}
 	canBroadcast(suppressMessage) {
 		if (!this.broadcasting && this.cmdToken === BROADCAST_TOKEN) {
-			let message = this.canTalk(suppressMessage || this.message);
-			if (!message) return false;
 			if (!this.pmTarget && !this.user.can('broadcast', null, this.room)) {
 				this.errorReply("You need to be voiced to broadcast this command's information.");
 				this.errorReply("To see it for yourself, use: /" + this.message.substr(1));
 				return false;
 			}
 
-			// broadcast cooldown
-			let broadcastMessage = message.toLowerCase().replace(/[^a-z0-9\s!,]/g, '');
-
 			if (this.room && this.room.lastBroadcast === this.broadcastMessage &&
 					this.room.lastBroadcastTime >= Date.now() - BROADCAST_COOLDOWN) {
 				this.errorReply("You can't broadcast this because it was just broadcasted.");
 				return false;
 			}
+
+			let message = this.canTalk(suppressMessage || this.message);
+			if (!message) return false;
+
+			// broadcast cooldown
+			let broadcastMessage = message.toLowerCase().replace(/[^a-z0-9\s!,]/g, '');
 
 			this.message = message;
 			this.broadcastMessage = broadcastMessage;
@@ -684,22 +689,22 @@ class CommandContext {
 			if (!this.canBroadcast(suppressMessage)) return false;
 		}
 
+		this.broadcasting = true;
+
 		if (this.pmTarget) {
-			this.add('|c~|' + (suppressMessage || this.message));
+			this.sendReply('|c~|' + (suppressMessage || this.message));
 		} else {
 			if (Users.ShadowBan.checkBanned(this.user)) {
 				this.user.sendTo(this.room.id, '|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
 				Users.ShadowBan.addMessage(this.user, `To ${this.room.id}`, (suppressMessage || this.message));
 			} else {
-				this.add('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+				this.sendReply('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
 			}
 		}
 		if (!this.pmTarget) {
 			this.room.lastBroadcast = this.broadcastMessage;
 			this.room.lastBroadcastTime = Date.now();
 		}
-
-		this.broadcasting = true;
 
 		return true;
 	}
