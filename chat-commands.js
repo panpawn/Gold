@@ -1367,6 +1367,21 @@ exports.commands = {
 			connection.popup("The room '" + targetRoom.title + "' has no auth." + userLookup);
 			return;
 		}
+		let curRoom = targetRoom;
+		while (curRoom.parent) {
+			const modjoinSetting = curRoom.modjoin === true ? curRoom.modchat : curRoom.modjoin;
+			const roomType = (modjoinSetting ? `modjoin ${modjoinSetting} ` : ``);
+			const inheritedUserType = (modjoinSetting ? ` of rank ${modjoinSetting} and above` : ``);
+			if (curRoom.parent) {
+				buffer.push(`${curRoom.title} is a ${roomType}subroom of ${curRoom.parent.title}, so ${curRoom.parent.title} users${inheritedUserType} also have authority in this room.`);
+			}
+			curRoom = curRoom.parent;
+		}
+		if (!curRoom.isPrivate) {
+			buffer.push(`${curRoom.title} is a public room, so global auth with no relevant roomauth will have authority in this room.`);
+		} else if (curRoom.isPrivate === 'hidden' || curRoom.isPrivate === 'voice') {
+			buffer.push(`${curRoom.title} is a hidden room, so global auth with no relevant roomauth will have authority in this room.`);
+		}
 		let roomfounder = (targetRoom.founder ? (room.founder in targetRoom.users ? Gold.nameColor(targetRoom.founder, true) : Gold.nameColor(targetRoom.founder, false)) : false);
 		if (roomfounder) buffer.unshift(`Room Founder:<br />${roomfounder}`);
 		if (targetRoom !== room) buffer.unshift("" + targetRoom.title + " room auth:");
