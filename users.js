@@ -414,6 +414,7 @@ class User {
 		this.locked = false;
 		this.semilocked = false;
 		this.namelocked = false;
+		this.permalocked = false;
 		this.prevNames = Object.create(null);
 		this.inRooms = new Set();
 
@@ -755,6 +756,17 @@ class User {
 				Punishments.ban(this, Date.now() + PERMALOCK_CACHE_TIME, userid, `Permabanned as ${name}`);
 			}
 		}
+		if (Users.isTrusted(userid)) {
+			this.trusted = this.userid;
+			this.autoconfirmed = this.userid;
+		}
+		if (this.trusted) {
+			this.locked = null;
+			this.namelocked = null;
+			this.permalocked = null;
+			this.semilocked = null;
+		}
+
 		let user = users.get(userid);
 		let possibleUser = Users(userid);
 		if (possibleUser && possibleUser.namelocked) {
@@ -967,11 +979,6 @@ class User {
 			this.group = usergroups[this.userid].charAt(0);
 		} else {
 			this.group = Config.groupsranking[0];
-		}
-
-		if (Users.isTrusted(this)) {
-			this.trusted = this.userid;
-			this.autoconfirmed = this.userid;
 		}
 
 		if (Config.customavatars && Config.customavatars[this.userid]) {
