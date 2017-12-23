@@ -222,7 +222,7 @@ function generateTable(array, command, isRoom) {
 		if (count === 0) output += "<tr>";
 		let cmdText = array[u];
 		if (isRoom) cmdText = toId(array[u]);
-		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
+		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u].replace('.txt', '')) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';
