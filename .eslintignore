@@ -1,8 +1,5 @@
 tournaments/lib/
 logs/
 dev-tools/globals.js
-<<<<<<< HEAD
-tour.js
-=======
 node_modules/
->>>>>>> upstream/master
+gold-plugins/
