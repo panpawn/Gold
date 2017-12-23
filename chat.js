@@ -495,7 +495,7 @@ class CommandContext {
 			Monitor.log(`[SpamMonitor] LOCKED: ${user.name} for spamming ${room.title}`);
 			if (user.trusted) {
 				let from = user.distrust();
-				Monitor.log(`[CrisisMonitor] ${user.name} was automatically demoted from ${from.join(', ')}.`);
+				if (from.length) Monitor.log(`[CrisisMonitor] ${user.name} was automatically demoted from ${from.join(', ')}.`);
 			}
 			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, `Spamming ${room.title} (Automated moderation)`);
 			this.addModCommand(roomMsg, ` (${user.latestIp})`);
