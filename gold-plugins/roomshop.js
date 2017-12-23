@@ -16,7 +16,14 @@ const fs = require('fs');
 
 const ITEM_CAP = 8; // maximum items a room shop can have
 const PATH = 'config/roomshops.json';
-const RoomShop = require('../' + PATH);
+let RoomShop = Object.create(null);
+function loadRoomShop() {
+	fs.readFile(PATH, 'utf8', function (err, file) {
+		if (err) return;
+		RoomShop = JSON.parse(file);
+	});
+}
+loadRoomShop();
 
 function saveShop() {
 	fs.writeFileSync(PATH, JSON.stringify(RoomShop));
