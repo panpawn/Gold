@@ -78,7 +78,7 @@ exports.commands = {
 				if (publicrooms) publicrooms += " | ";
 				publicrooms += output;
 			}
-		};
+		}
 		buf += '<br />Rooms: ' + (targetUser.hidden && !user.can('hotpatch') ? '<em>(no public rooms)</em>' : (publicrooms || '<em>(no public rooms)</em>'));
 
 		if (!showAll) {

@@ -87,7 +87,7 @@ exports.commands = {
 		let parts = target.split(',');
 		let cmd = parts[0].trim().toLowerCase();
 
-		if (cmd in {'':1, show:1, view:1, display:1}) {
+		if (cmd in {'': 1, show: 1, view: 1, display: 1}) {
 			let message = "";
 			for (let a in Config.customavatars) {
 				message += "<strong>" + Chat.escapeHTML(a) + ":</strong> " + Chat.escapeHTML(Config.customavatars[a]) + "<br />";
