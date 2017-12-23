@@ -313,7 +313,7 @@ function getModlog(connection, roomid = 'global', searchString = '', lines = 20,
 	}
 
 	const hideIps = !user.can('lock');
-	const addModlogButton = Config.modlogbutton && (user.group !== ' ' || (targetRoom && targetRoom.isPrivate !== true));
+	const addModlogButton = Config.modlogbutton && Gold.viewlogsPermissionCheck(user, roomid);
 
 	if (searchString.length > MAX_QUERY_LENGTH) {
 		connection.popup(`Your search query must be shorter than ${MAX_QUERY_LENGTH} characters.`);
