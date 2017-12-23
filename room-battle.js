@@ -498,7 +498,7 @@ class Battle {
 
 		this.tieRequests.push(user.userid);
 
-		setTimeout(() => {// automatically remove request
+		setTimeout(() => { // automatically remove request
 			this.tieRequests.splice(this.tieRequests.indexOf(user.userid), 1);
 		}, REQUEST_TIMEOUT_MINUTES * 60000);
 

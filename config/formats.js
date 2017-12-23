@@ -1576,16 +1576,16 @@ exports.Formats = [
 			let tier = this.getTemplate(set.species).tier;
 			if (set.item === 'Eviolite' && tier !== 'LC') return [set.species + " is not in LC and cannot hold an Eviolite."];
 			const allowed = {
-				'ferroseed':1, 'togetic':1, 'pawniard': 1, 'porygon2':1, 'farfetchd':1, 'ditto':1, 'unown':1,
-				'corsola':1, 'delibird':1, 'volbeat':1, 'illumise':1, 'spinda':1, 'castform':1, 'luvdisc':1, 'pachirisu':1, 'dedenne':1,
-				'smeargle':1, 'pikachu':1, 'pikachucosplay':1, 'pikachulibre':1, 'pikachupopstar':1,
-				'pikachurockstar':1, 'pikachubelle':1, 'pikachuphd':1, 'clefairy':1, 'tangela':1, 'misdreavus':1, 'metang':1, 'monferno':1, 'prinplup':1,
-				'gabite':1, 'meditite':1, 'swirlix':1, 'yanma':1, 'dunsparce':1, 'gurdurr':1, 'machoke':1, 'emolga':1, 'piloswine':1,
-				'combusken':1, 'phione':1, 'chansey':1,
-				'carbink':1, 'gligar':1, 'vullaby':1,
-				'golbat':1,
+				'ferroseed': 1, 'togetic': 1, 'pawniard': 1, 'porygon2': 1, 'farfetchd': 1, 'ditto': 1, 'unown': 1,
+				'corsola': 1, 'delibird': 1, 'volbeat': 1, 'illumise': 1, 'spinda': 1, 'castform': 1, 'luvdisc': 1, 'pachirisu': 1, 'dedenne': 1,
+				'smeargle': 1, 'pikachu': 1, 'pikachucosplay': 1, 'pikachulibre': 1, 'pikachupopstar': 1,
+				'pikachurockstar': 1, 'pikachubelle': 1, 'pikachuphd': 1, 'clefairy': 1, 'tangela': 1, 'misdreavus': 1, 'metang': 1, 'monferno': 1, 'prinplup': 1,
+				'gabite': 1, 'meditite': 1, 'swirlix': 1, 'yanma': 1, 'dunsparce': 1, 'gurdurr': 1, 'machoke': 1, 'emolga': 1, 'piloswine': 1,
+				'combusken': 1, 'phione': 1, 'chansey': 1,
+				'carbink': 1, 'gligar': 1, 'vullaby': 1,
+				'golbat': 1,
 			};
-			const NFEbanlist = {'frogadier':1, 'fraxure':1, 'electabuzz':1, 'magmar':1, 'servine':1, 'murkrow':1, 'grovyle':1};
+			const NFEbanlist = {'frogadier': 1, 'fraxure': 1, 'electabuzz': 1, 'magmar': 1, 'servine': 1, 'murkrow': 1, 'grovyle': 1};
 			let species = toId(set.species);
 			if ((!(species in allowed) && tier !== 'LC' && tier !== 'NFE') || (tier === 'NFE' && (species in NFEbanlist))) {
 				return [set.species + " is banned in MCPX."];

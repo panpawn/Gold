@@ -482,7 +482,7 @@ class CommandContext {
 				const time1 = times[times.length - 2];
 				const time2 = times[times.length - 1];
 				const difference = time2 - time1;
-				if (times.length >= 2 &&  difference < 10000) {
+				if (times.length >= 2 && difference < 10000) {
 					points++;
 				} else {
 					// reset points if there's a break between
