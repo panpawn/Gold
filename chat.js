@@ -37,7 +37,7 @@ const MAX_PARSE_RECURSION = 10;
 const VALID_COMMAND_TOKENS = '/!';
 const BROADCAST_TOKEN = '!';
 
-const FS = require('./fs');
+const FS = require('./lib/fs');
 
 let Chat = module.exports;
 
@@ -206,6 +206,10 @@ class CommandContext {
 		this.cmdToken = options.cmdToken || '';
 		this.target = options.target || ``;
 		this.fullCmd = options.fullCmd || '';
+
+		// broadcast context
+		this.broadcasting = false;
+		this.broadcastToRoom = true;
 
 		// target user
 		this.targetUser = null;
@@ -415,7 +419,7 @@ class CommandContext {
 		try {
 			result = commandHandler.call(this, this.target, this.room, this.user, this.connection, this.cmd, this.message);
 		} catch (err) {
-			require('./crashlogger')(err, 'A chat command', {
+			require('./lib/crashlogger')(err, 'A chat command', {
 				user: this.user.name,
 				room: this.room && this.room.id,
 				pmTarget: this.pmTarget && this.pmTarget.name,
@@ -460,7 +464,7 @@ class CommandContext {
 	}
 
 	checkSpam(room, user) {
-		if (!room || !room.autoLockSpam || user.can('mute', null, room)) return true;
+		if (!room || !room.autoLockSpam || !room.log.chatLog || !room.log.chatLog.length || user.can('mute', null, room)) return true;
 
 		const knownNames = [
 			...user.getAltUsers(true),
@@ -470,7 +474,7 @@ class CommandContext {
 
 		let points = 0;
 		let times = [];
-		for (let log of room.chatLog.slice(-9)) {
+		for (let log of room.log.chatLog.slice(-9)) {
 			const name = toId(log.split('|')[5]);
 			const time = Number(log.split('|')[2]);
 			if (knownNames.includes(name)) {
@@ -549,7 +553,7 @@ class CommandContext {
 		}).join('\n');
 	}
 	sendReply(data) {
-		if (this.broadcasting) {
+		if (this.broadcasting && this.broadcastToRoom) {
 			// broadcasting
 			if (this.pmTarget) {
 				data = this.pmTransform(data);
@@ -559,7 +563,7 @@ class CommandContext {
 				if (Users.ShadowBan.checkBanned(this.user)) {
 					this.user.sendTo(this.room.id, data);
 				} else {
-					this.room.add(data);
+					this.add(data);
 				}
 			}
 		} else {
@@ -608,12 +612,12 @@ class CommandContext {
 		this.room.send(data);
 	}
 	sendModCommand(data) {
-		this.room.sendModCommand(data);
+		this.room.sendModsByUser(this.user, data);
 	}
 	privateModCommand(data, logOnlyText) {
-		this.room.sendModCommand(data);
-		this.logEntry(data);
-		this.room.modlog(data + (logOnlyText || ""));
+		this.room.sendModsByUser(this.user, data);
+		this.roomlog(data);
+		this.room.modlog('(' + this.room.id + ') ' + data + (logOnlyText || ""));
 	}
 	globalModlog(action, user, note) {
 		let buf = `(${this.room.id}) ${action}: `;
@@ -628,16 +632,16 @@ class CommandContext {
 		buf += note;
 		Rooms.global.modlog(buf);
 	}
-	logEntry(data) {
+	roomlog(data) {
 		if (this.pmTarget) return;
-		this.room.logEntry(data);
+		this.room.roomlog(data);
 	}
 	addModCommand(text, logOnlyText) {
-		this.room.addLogMessage(this.user, text);
-		this.room.modlog(text + (logOnlyText || ""));
+		this.room.addByUser(this.user, text);
+		this.room.modlog('(' + this.room.id + ') ' + text + (logOnlyText || ""));
 	}
 	logModCommand(text) {
-		this.room.modlog(text);
+		this.room.modlog('(' + this.room.id + ') ' + text);
 	}
 	update() {
 		if (this.room) this.room.update();
@@ -651,22 +655,23 @@ class CommandContext {
 	}
 	canBroadcast(suppressMessage) {
 		if (!this.broadcasting && this.cmdToken === BROADCAST_TOKEN) {
-			let message = this.canTalk(suppressMessage || this.message);
-			if (!message) return false;
 			if (!this.pmTarget && !this.user.can('broadcast', null, this.room)) {
 				this.errorReply("You need to be voiced to broadcast this command's information.");
 				this.errorReply("To see it for yourself, use: /" + this.message.substr(1));
 				return false;
 			}
 
-			// broadcast cooldown
-			let broadcastMessage = message.toLowerCase().replace(/[^a-z0-9\s!,]/g, '');
-
 			if (this.room && this.room.lastBroadcast === this.broadcastMessage &&
 					this.room.lastBroadcastTime >= Date.now() - BROADCAST_COOLDOWN) {
 				this.errorReply("You can't broadcast this because it was just broadcasted.");
 				return false;
 			}
+
+			let message = this.canTalk(suppressMessage || this.message);
+			if (!message) return false;
+
+			// broadcast cooldown
+			let broadcastMessage = message.toLowerCase().replace(/[^a-z0-9\s!,]/g, '');
 
 			this.message = message;
 			this.broadcastMessage = broadcastMessage;
@@ -684,22 +689,22 @@ class CommandContext {
 			if (!this.canBroadcast(suppressMessage)) return false;
 		}
 
+		this.broadcasting = true;
+
 		if (this.pmTarget) {
-			this.add('|c~|' + (suppressMessage || this.message));
+			this.sendReply('|c~|' + (suppressMessage || this.message));
 		} else {
 			if (Users.ShadowBan.checkBanned(this.user)) {
 				this.user.sendTo(this.room.id, '|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
 				Users.ShadowBan.addMessage(this.user, `To ${this.room.id}`, (suppressMessage || this.message));
 			} else {
-				this.add('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
+				this.sendReply('|c|' + this.user.getIdentity(this.room.id) + '|' + (suppressMessage || this.message));
 			}
 		}
 		if (!this.pmTarget) {
 			this.room.lastBroadcast = this.broadcastMessage;
 			this.room.lastBroadcastTime = Date.now();
 		}
-
-		this.broadcasting = true;
 
 		return true;
 	}
@@ -1344,6 +1349,60 @@ Chat.getDataItemHTML = function (item) {
 	buf += `<span class="col itemdesccol">${item.shortDesc || item.desc}</span> `;
 	buf += `</li><li style="clear:both"></li></ul>`;
 	return buf;
+};
+
+/**
+ * Visualizes eval output in a slightly more readable form
+ * @param {string} value
+ */
+Chat.stringify = function (value, depth = 0) {
+	if (value === undefined) return `undefined`;
+	if (value === null) return `null`;
+	if (typeof value === 'number' || typeof value === 'boolean') {
+		return `${value}`;
+	}
+	if (typeof value === 'string') {
+		return `"${value}"`; // NOT ESCAPED
+	}
+	if (typeof value === 'symbol') {
+		return value.toString();
+	}
+	if (Array.isArray(value)) {
+		if (depth > 10) return `[array]`;
+		return `[` + value.map(elem => Chat.stringify(elem, depth + 1)).join(`, `) + `]`;
+	}
+	if (value instanceof RegExp || value instanceof Date || value instanceof Function) {
+		if (depth && value instanceof Function) return `Function`;
+		return `${value}`;
+	}
+	let constructor = '';
+	if (value.constructor && value.constructor.name && typeof value.constructor.name === 'string') {
+		constructor = value.constructor.name;
+		if (constructor === 'Object') constructor = '';
+	} else {
+		constructor = 'null';
+	}
+	if (value.toString) {
+		try {
+			const stringValue = value.toString();
+			if (typeof stringValue === 'string' && stringValue !== '[object Object]' && stringValue !== `[object ${constructor}]`) {
+				return `${constructor}(${stringValue})`;
+			}
+		} catch (e) {}
+	}
+	let buf = '';
+	for (let k in value) {
+		if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
+		if (depth > 2 || (depth && constructor)) {
+			buf = '...';
+			break;
+		}
+		if (buf) buf += `, `;
+		if (!/^[A-Za-z0-9_$]+$/.test(k)) k = JSON.stringify(k);
+		buf += `${k}: ` + Chat.stringify(value[k], depth + 1);
+	}
+	if (constructor && !buf && constructor !== 'null') return constructor;
+	return `${constructor}{${buf}}`;
 };
 
 Chat.formatText = require('./chat-formatter').formatText;

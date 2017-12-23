@@ -1,6 +1,6 @@
 'use strict';
 
-const FS = require('./../fs');
+const FS = require('./../lib/fs');
 const path = require('path');
 const Dashycode = require('../lib/dashycode');
 const ProcessManager = require('./../process-manager');
@@ -56,7 +56,7 @@ class ModlogManager extends ProcessManager {
 		try {
 			result = '1|' + await runModlog(rooms.split(','), searchString, exactSearch, maxLines);
 		} catch (err) {
-			require('../crashlogger')(err, 'A modlog query', {
+			require('../lib/crashlogger')(err, 'A modlog query', {
 				rooms: rooms,
 				searchString: searchString,
 				exactSearch: exactSearch,
@@ -80,14 +80,14 @@ if (process.send && module === process.mainModule) {
 	global.Config = require('../config/config');
 	process.on('uncaughtException', err => {
 		if (Config.crashguard) {
-			require('../crashlogger')(err, 'A modlog child process');
+			require('../lib/crashlogger')(err, 'A modlog child process');
 		}
 	});
 	global.Dex = require('../sim/dex');
 	global.toId = Dex.getId;
 	process.on('message', message => PM.onMessageDownstream(message));
 	process.on('disconnect', () => process.exit());
-	require('../repl').start('modlog', cmd => eval(cmd));
+	require('../lib/repl').start('modlog', cmd => eval(cmd));
 } else {
 	PM.spawn();
 }
@@ -160,8 +160,8 @@ async function runModlog(rooms, searchString, exactSearch, maxLines) {
 		if (rooms[i] === 'all') {
 			checkAllRooms = true;
 			const fileList = await FS(LOG_PATH).readdir();
-			for (let i = 0; i < fileList.length; i++) {
-				fileNameList.push(fileList[i]);
+			for (const file of fileList) {
+				if (file !== 'README.md') fileNameList.push(file);
 			}
 		} else {
 			fileNameList.push(`modlog_${rooms[i]}.txt`);

@@ -67,7 +67,7 @@ class DatasearchManager extends ProcessManager {
 				result = null;
 			}
 		} catch (err) {
-			require('./../crashlogger')(err, 'A search query', data);
+			require('./../lib/crashlogger')(err, 'A search query', data);
 			result = {error: "Sorry! Our search engine crashed on your query. We've been automatically notified and will fix this crash."};
 		}
 		return result;
@@ -338,7 +338,7 @@ if (process.send && module === process.mainModule) {
 
 	if (Config.crashguard) {
 		process.on('uncaughtException', err => {
-			require('../crashlogger')(err, 'A dexsearch process', true);
+			require('../lib/crashlogger')(err, 'A dexsearch process', true);
 		});
 	}
 
@@ -350,7 +350,7 @@ if (process.send && module === process.mainModule) {
 	process.on('message', message => PM.onMessageDownstream(message));
 	process.on('disconnect', () => process.exit());
 
-	require('../repl').start('dexsearch', cmd => eval(cmd));
+	require('../lib/repl').start('dexsearch', cmd => eval(cmd));
 }
 
 function runDexsearch(target, cmd, canAll, message) {
@@ -686,7 +686,7 @@ function runDexsearch(target, cmd, canAll, message) {
 				if (alts.tiers[tier]) continue;
 				if (Object.values(alts.tiers).includes(false) && alts.tiers[tier] !== false) continue;
 				// some LC Pokemon are also in other tiers and need to be handled separately
-				if (alts.tiers.LC && !dex[mon].prevo && dex[mon].nfe && !Dex.formats.gen7lc.banlist.includes(dex[mon].species)) continue;
+				if (alts.tiers.LC && !dex[mon].prevo && dex[mon].nfe && !Dex.formats.gen7lc.banlist.includes(dex[mon].species) && tier !== 'NFE') continue;
 			}
 
 			for (let type in alts.types) {

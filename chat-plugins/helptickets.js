@@ -1,6 +1,6 @@
 'use strict';
 
-const FS = require('../fs');
+const FS = require('./../lib/fs');
 const TICKET_FILE = 'config/tickets.json';
 const TICKET_CACHE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const TICKET_BAN_DURATION = 48 * 60 * 60 * 1000; // 48 hours
@@ -51,7 +51,7 @@ class HelpTicket extends Rooms.RoomGame {
 		if (toId(this.ticket.claimed) === user.userid) {
 			if (this.claimQueue.length) {
 				this.ticket.claimed = this.claimQueue.shift();
-				this.modnote(user, `This ticket is now claimed by ${this.claimed}.`);
+				this.modnote(user, `This ticket is now claimed by ${this.ticket.claimed}.`);
 			} else {
 				this.ticket.claimed = null;
 				this.modnote(user, `This ticket is no longer claimed.`);
@@ -76,15 +76,14 @@ class HelpTicket extends Rooms.RoomGame {
 		} else {
 			this.modnote(staff, `${staff.name} escalated this ticket.`);
 		}
-		this.ticket.escalator = staff;
+		this.ticket.escalator = staff.name;
 		this.ticket.created = Date.now(); // Bump the ticket so it shows as the newest
 		writeTickets();
 		notifyStaff();
 	}
 
 	modnote(user, text) {
-		this.room.addLogMessage(user, text);
-		this.room.modlog(text);
+		this.room.addByUser(user, text);
 	}
 
 	close(staff) {
@@ -94,8 +93,7 @@ class HelpTicket extends Rooms.RoomGame {
 		writeTickets();
 		this.modnote(staff, `${staff.name} closed this ticket.`);
 		notifyStaff(this.ticket.escalated);
-		if (this.room.expireTimer) clearTimeout(this.room.expireTimer);
-		this.room.expireTimer = setTimeout(() => this.room.tryExpire(), 40 * 60 * 1000);
+		this.room.pokeExpireTimer();
 	}
 
 	deleteTicket(staff) {
@@ -107,6 +105,27 @@ class HelpTicket extends Rooms.RoomGame {
 		this.room.destroy();
 	}
 }
+
+const NOTIFY_ALL_TIMEOUT = 60 * 1000;
+let unclaimedTicketTimer = {upperstaff: null, staff: null};
+function pokeUnclaimedTicketTimer(upper, hasUnclaimed) {
+	const room = Rooms(upper ? 'upperstaff' : 'staff');
+	if (!room) return;
+	if (hasUnclaimed && !unclaimedTicketTimer[room.id]) {
+		unclaimedTicketTimer[room.id] = setTimeout(() => notifyUnclaimedTicket(upper), NOTIFY_ALL_TIMEOUT);
+	} else if (!hasUnclaimed && unclaimedTicketTimer[room.id]) {
+		clearTimeout(unclaimedTicketTimer[room.id]);
+		unclaimedTicketTimer[room.id] = null;
+	}
+}
+function notifyUnclaimedTicket(upper) {
+	const room = Rooms(upper ? 'upperstaff' : 'staff');
+	if (!room) return;
+	clearTimeout(unclaimedTicketTimer[room.id]);
+	unclaimedTicketTimer[room.id] = null;
+	room.send(`|tempnotify|helptickets|Unclaimed help tickets!|There are unclaimed Help tickets`);
+}
+
 
 function notifyStaff(upper) {
 	const room = Rooms(upper ? 'upperstaff' : 'staff');
@@ -133,11 +152,20 @@ function notifyStaff(upper) {
 		const creator = ticket.claimed ? Chat.html`${ticket.creator}` : Chat.html`<strong>${ticket.creator}</strong>`;
 		const notifying = ticket.claimed ? `` : ` notifying`;
 		if (!ticket.claimed) hasUnclaimed = true;
-		buf += `<button class="button${notifying}" name="send" value="/join help-${ticket.userid}">Help ${creator}: ${ticket.type}${escalator}</button> `;
+		buf += `<a class="button${notifying}" href="/help-${ticket.userid}">Help ${creator}: ${ticket.type}${escalator}</a> `;
 		count++;
 	}
-	buf = `|${hasUnclaimed ? 'uhtml' : 'uhtmlchange'}|latest-tickets|<div style="padding:3px">${buf}${count === 0 ? `There are no more open tickets.` : ``}</div>`;
+	buf = `|${hasUnclaimed ? 'uhtml' : 'uhtmlchange'}|latest-tickets|<div class="infobox" style="padding: 6px 4px">${buf}${count === 0 ? `There were open Help tickets, but they've all been closed now.` : ``}</div>`;
 	room.send(buf);
+
+	if (hasUnclaimed) {
+		buf = `|tempnotify|helptickets|Unclaimed help tickets!|There are unclaimed Help tickets`;
+	} else {
+		buf = `|tempnotifyoff|helptickets`;
+	}
+	if (room.userCount) Sockets.channelBroadcast(room.id, `>view-help-tickets\n${buf}`);
+	room.send(`${buf}|There are unclaimed Help tickets`);
+	pokeUnclaimedTicketTimer(upper, hasUnclaimed);
 }
 
 function checkIp(ip) {
@@ -186,10 +214,12 @@ function checkTicketBanned(user) {
 
 // Prevent a desynchronization issue when hotpatching
 for (const room of Rooms.rooms.values()) {
-	if (!room.isHelp) continue;
+	if (!room.isHelp || !room.game) continue;
 	const queue = room.game.claimQueue;
 	const ticket = room.game.ticket;
 	room.game.destroy();
+	room.game = null;
+	if (!ticket) continue;
 	room.game = new HelpTicket(room, tickets[ticket.userid]);
 	room.game.claimQueue = queue;
 }
@@ -219,8 +249,9 @@ exports.pages = {
 				}
 			}
 
+			const isStaff = user.can('lock');
 			buf += `<p><b>Whats going on?</b></p>`;
-			if (user.can('lock')) {
+			if (isStaff) {
 				buf += `<span class="message-error">Global staff cannot make tickets. This form is only for reference.</span>`;
 			} else {
 				buf += `<span class="message-error">Abuse of tickets can result in a punishment.</span>`;
@@ -231,23 +262,28 @@ exports.pages = {
 			buf += `<details style="margin: 3px"><summary>Someone is timerstalling</summary>If someone is timerstalling in your battle, and the battle has <b>not</b> ended, click the button below and a global staff member will take a look.<br /><br /><button class="button" name="send" value="/helpticket submit Timerstalling">Report timerstalling</button></details>`;
 			buf += `<details style="margin: 3px"><summary>I want to report a staff member</summary>If you have a complaint against a room staff member, please PM a Room Owner (marked with a #) in the room.<br /><br />If you have a complaint against a global staff member or Room Owner, please click the appropriate button below. Alternatively, make a post in <a href="http://www.smogon.com/forums/threads/names-passwords-rooms-and-servers-contacting-upper-staff.3538721/#post-6300151">Admin Requests</a>.<br /><br /><button class="button" name="send" value="/helpticket submit Room Owner Complaint">Report a Room Owner</button> <button class="button" name="send" value="/helpticket submit Global Staff Complaint">Report a Global Staff Member</button></details>`;
 			buf += `</details><br /><details style="margin: 3px"><summary>I want to appeal a punishment</summary><br /><b>What would you like to appeal?</b><br />`;
-			if (user.locked) {
-				if (user.locked === user.userid) {
-					if (user.permalocked) {
+			if (user.locked || isStaff) {
+				if (user.locked === user.userid || isStaff) {
+					if (user.permalocked || isStaff) {
 						buf += `<details style="margin: 3px"><summary>I want to appeal my permalock</summary>Please make a post in the <a href="http://www.smogon.com/forums/threads/discipline-appeal-rules.3583479/">Discipline Appeal Forums</a> to appeal a permalock.</details>`;
-					} else {
+					}
+					if (!user.permalocked || isStaff) {
 						buf += `<details style="margin: 3px"><summary>I want to appeal my lock</summary>If you want to appeal your lock, click the button below and a global staff member will be with you shortly. Alternatively, make a post in <a href="http://www.smogon.com/forums/threads/discipline-appeal-rules.3583479/">Discipline Appeals</a>.<br /><br /><button class="button" name="send" value="/helpticket submit Appeal">Appeal your lock</button></details>`;
 					}
-				} else {
+				}
+				if (user.locked !== user.userid || isStaff) {
 					buf += `<details style="margin: 3px"><summary>I'm locked because I have the same IP as someone I don't recognize</summary>If you are locked under a name you don't recognize, click the button below to call a global staff member so we can check.<br /><br /><button class="button" name="send" value="/helpticket submit IP-Appeal">Appeal IP lock</button></details>`;
 				}
-			} else if (user.semilocked) {
-				buf += `<details style="margin: 3px"><summary>I can't talk in chat because of my ISP</summary>Click the button below, and a global staff member will check. <button class="button" name="send" value="/helpticket submit ISP-Appeal">Appeal ISP lock</button></details>`;
+			}
+			if (user.semilocked || isStaff) {
+				buf += `<details style="margin: 3px"><summary>I can't talk in chat because of my ISP</summary>Click the button below, and a global staff member will check. <br /><br /><button class="button" name="send" value="/helpticket submit ISP-Appeal">Appeal ISP lock</button></details>`;
 			}
 			buf += `<details style="margin: 3px"><summary>I want to appeal a mute/roomban/blacklist</summary>Please PM the staff member who punished you. If you dont know who punished you, ask another room staff member; they will redirect you to the correct user. If you are banned or blacklisted from the room, use <code>/roomauth [name of room]</code> to get a list of room staff members. Bold names are online.</details>`;
 			buf += `</details><br /><details style="margin: 3px"><summary>Something else</summary><b>Maybe one of these options will be helpful?</b><br />`;
 			buf += `<details style="margin: 3px"><summary>I lost my password</summary>If you lost your password, click the button below to get in touch with an upper staff member so we can help you recover it. We will need to clarify a few pieces of information before resetting the account. Alternatively, make a post in <a href="http://www.smogon.com/forums/threads/names-passwords-rooms-and-servers-contacting-upper-staff.3538721/#post-6300151">admin requests</a>.<br /><br /><button class="button" name="send" value="/helpticket submit Lost Password">Request a password reset</button></details>`;
-			if (ticket) buf += `<details style="margin: 3px"><summary>I feel my last ticket shouldn't have been closed</summary>If you feel that staff did not properly help you with your last issue, click the button below to get in touch with an upper staff member.<br /><br /><button class="button" name="send" value="/helpticket submit Report Last Ticket">Report last ticket</button></details>`;
+			if (ticket || isStaff) {
+				buf += `<details style="margin: 3px"><summary>I feel my last ticket shouldn't have been closed</summary>If you feel that staff did not properly help you with your last issue, click the button below to get in touch with an upper staff member.<br /><br /><button class="button" name="send" value="/helpticket submit Report Last Ticket">Report last ticket</button></details>`;
+			}
 			buf += `<details style="margin: 3px"><summary>Other</summary>If your issue is not handled above, click the button below to ask for a global. Please be ready to explain the situation.<br /><br /><button class="button" name="send" value="/helpticket submit Other">Call a global staff member</button></details>`;
 			buf += `</details></div>`;
 			return buf;
@@ -584,7 +620,7 @@ exports.commands = {
 		deletehelp: ['/helpticket delete [user] - Deletes a users ticket. Requires: & ~'],
 
 	},
-	tickethelp: [
+	helptickethelp: [
 		'/helpticket create - Creates a new ticket, requesting help from global staff.',
 		'/helpticket list - Lists all tickets. Requires: % @ * & ~',
 		'/helpticket escalate [user], (upperstaff) - Escalates a ticket. If upperstaff is included, the ticket is escalated to upper staff. Requires: % @ * & ~',
