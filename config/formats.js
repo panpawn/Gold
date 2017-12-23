@@ -1651,7 +1651,7 @@ exports.Formats = [
 		],
 
 		mod: 'gen7',
-		ruleset: ['Team Preview', 'Sleep Clause', 'Pokemon', 'Standard', 'Baton Pass Clause', 'Mega Rayquaza Clause'],
+		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard', 'Baton Pass Clause', 'Mega Rayquaza Clause'],
 		banlist: ['Moody', 'Shadow Tag', 'Double Team', 'Fissure', 'Guillotine', 'Horn Drill', 'Minimize', 'Sheer Cold', 'Swagger', ' Red Orb', 'Blue Orb', 'Gengarite', 'Salamencite'],
 	},
 ];
