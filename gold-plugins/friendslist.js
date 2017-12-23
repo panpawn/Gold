@@ -12,8 +12,23 @@ const moment = require('moment');
 const friendsFilepath = 'config/friends.json';
 const settingsFilepath = 'config/friendssettings.json';
 
-const Friends = require('../' + friendsFilepath);
-const NotifySetting = require('../' + settingsFilepath);
+let Friends = Object.create(null);
+function loadFriendsData() {
+	fs.readFile(friendsFilepath, 'utf8', function (err, file) {
+		if (err) return;
+		Friends = JSON.parse(file);
+	});
+}
+loadFriendsData();
+
+let NotifySetting = Object.create(null);
+function loadSettingsData() {
+	fs.readFile(settingsFilepath, 'utf8', function (err, file) {
+		if (err) return;
+		NotifySetting = JSON.parse(file);
+	});
+}
+loadSettingsData();
 
 function getName(user, color, bold) {
 	let name = (Users.getExact(user) && Users(user).connected ? Users.getExact(user).name : user);
@@ -25,12 +40,12 @@ function getName(user, color, bold) {
 }
 
 function updateFriends() {
-	fs.writeFile(friendsFilepath, JSON.stringify(Friends));
+	fs.writeFileSync(friendsFilepath, JSON.stringify(Friends));
 }
 Gold.updateFrens = updateFriends;
 
 function updateSettings() {
-	fs.writeFile(settingsFilepath, JSON.stringify(NotifySetting));
+	fs.writeFileSync(settingsFilepath, JSON.stringify(NotifySetting));
 }
 
 function getFriendsNumber(user) {
