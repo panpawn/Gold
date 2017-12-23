@@ -3,3 +3,4 @@ logs/
 dev-tools/globals.js
 node_modules/
 gold-plugins/
+config/config.js
