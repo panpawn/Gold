@@ -224,7 +224,7 @@ function runRipgrepModlog(paths, regexString, results) {
 	return results;
 }
 
-function prettifyResults(rawResults, room, searchString, exactSearch, addModlogLinks, hideIps, maxLines) {
+function prettifyResults(rawResults, room, searchString, exactSearch, addModlogButton, hideIps, maxLines) {
 	if (rawResults === '0') {
 		return "The modlog query has crashed.";
 	}
@@ -263,6 +263,7 @@ function prettifyResults(rawResults, room, searchString, exactSearch, addModlogL
 			time = new Date();
 		}
 		let [date, timestamp] = Chat.toTimestamp(time, {human: true}).split(' ');
+		const origDate = date;
 		if (date !== curDate) {
 			curDate = date;
 			date = `</p><p>[${date}]<br />`;
@@ -274,11 +275,13 @@ function prettifyResults(rawResults, room, searchString, exactSearch, addModlogL
 		}
 		let parenIndex = line.indexOf(')');
 		let thisRoomID = line.slice(bracketIndex + 3, parenIndex);
-		if (addModlogLinks) {
-			let url = Config.modloglink(time, thisRoomID);
-			if (url) timestamp = `<a href="${url}">${timestamp}</a>`;
+		if (addModlogButton) {
+			let button = Config.modlogbutton(origDate, thisRoomID, timestamp);
+			if (button) timestamp = button;
+		} else {
+			timestamp = `[${timestamp}]`;
 		}
-		return `${date}<small>[${timestamp}] (${thisRoomID})</small>${Chat.escapeHTML(line.slice(parenIndex + 1))}`;
+		return `${date}<small>${timestamp} (${thisRoomID})</small>${Chat.escapeHTML(line.slice(parenIndex + 1))}`;
 	}).join(`<br />`);
 	let preamble;
 	const modlogid = room + (searchString ? '-' + Dashycode.encode(searchString) : '');
@@ -310,7 +313,7 @@ function getModlog(connection, roomid = 'global', searchString = '', lines = 20,
 	}
 
 	const hideIps = !user.can('lock');
-	const addModlogLinks = Config.modloglink && (user.group !== ' ' || (targetRoom && targetRoom.isPrivate !== true));
+	const addModlogButton = Config.modlogbutton && (user.group !== ' ' || (targetRoom && targetRoom.isPrivate !== true));
 
 	if (searchString.length > MAX_QUERY_LENGTH) {
 		connection.popup(`Your search query must be shorter than ${MAX_QUERY_LENGTH} characters.`);
@@ -333,7 +336,7 @@ function getModlog(connection, roomid = 'global', searchString = '', lines = 20,
 	}
 
 	PM.send(roomidList.join(','), searchString, exactSearch, lines).then(response => {
-		connection.send(prettifyResults(response, roomid, searchString, exactSearch === '1', addModlogLinks, hideIps, lines));
+		connection.send(prettifyResults(response, roomid, searchString, exactSearch === '1', addModlogButton, hideIps, lines));
 		if (timed) connection.popup(`The modlog query took ${Date.now() - startTime} ms to complete.`);
 	});
 }
