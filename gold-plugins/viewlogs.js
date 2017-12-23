@@ -212,6 +212,7 @@ function permissionCheck(user, room) {
 	}
 	return true;
 }
+Gold.viewlogsPermissionCheck = permissionCheck;
 
 function generateTable(array, command, isRoom) {
 	let output = '';
