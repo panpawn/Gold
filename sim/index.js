@@ -23,9 +23,10 @@ const PRNG = require('./prng');
  * @param {boolean | string} rated
  * @param {Function} send
  * @param {PRNG} [prng]
+ * @param {object} [pokemonRecord]
  */
-exports.construct = function (format, rated, send, prng) {
-	return new Battle(format, rated, send, prng);
+exports.construct = function (format, rated, send, prng, pokemonRecord) {
+	return new Battle(format, rated, send, prng, pokemonRecord);
 };
 
 exports.Pokemon = Pokemon;
