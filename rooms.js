@@ -1036,6 +1036,16 @@ class BasicChatRoom extends BasicRoom {
 		this.reportJoinsInterval = /** @type {NodeJS.Timer?} */ (null);
 		this.game = /** @type {RoomGame?} */ (null);
 		this.battle = /** @type {RoomBattle?} */ (null);
+
+		this.deleteInactive = setTimeout(function () {
+			if (!this.protect && !this.isOfficial && !this.isPrivate && !this.isPersonal && !this.isStaff && this.messageCount < 40) {
+				Rooms.global.deregisterChatRoom(this.id);
+				this.addRaw('<font color=red><b>This room has been automatically deleted due to inactivity.  It will be removed upon the next server restart.</b></font>');
+				if (this.id !== 'global') this.update();
+				this.modchat = '~';
+				Rooms('staff').add(`|raw|<strong style="color: red;">${this.title} has been automatically deleted from the server due to inactivity.</strong>`).update();
+			}
+		}.bind(this), 2 * 24 * 60 * 60 * 1000); // 48 hours
 	}
 
 	/**

@@ -464,7 +464,7 @@ class CommandContext {
 	}
 
 	checkSpam(room, user) {
-		if (!room || !room.autoLockSpam || user.can('mute', null, room)) return true;
+		if (!room || !room.autoLockSpam || !room.log.chatLog || !room.log.chatLog.length || user.can('mute', null, room)) return true;
 
 		const knownNames = [
 			...user.getAltUsers(true),
@@ -474,7 +474,7 @@ class CommandContext {
 
 		let points = 0;
 		let times = [];
-		for (let log of room.chatLog.slice(-9)) {
+		for (let log of room.log.chatLog.slice(-9)) {
 			const name = toId(log.split('|')[5]);
 			const time = Number(log.split('|')[2]);
 			if (knownNames.includes(name)) {
@@ -563,7 +563,7 @@ class CommandContext {
 				if (Users.ShadowBan.checkBanned(this.user)) {
 					this.user.sendTo(this.room.id, data);
 				} else {
-					this.room.add(data);
+					this.add(data);
 				}
 			}
 		} else {

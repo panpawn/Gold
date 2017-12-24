@@ -1197,12 +1197,19 @@ exports.commands = {
 		if (!room.auth) room.auth = room.chatRoomData.auth = {};
 
 		room.auth[userid] = '#';
-		this.addModCommand("" + name + " was appointed Room Owner by " + user.name + ".");
-		if (targetUser) targetUser.popup("You were appointed Room Owner by " + user.name + " in " + room.id + ".");
-		room.onUpdateIdentity(targetUser);
+		this.addModCommand(`${name} was appointed Room Owner by ${user.name}.`);
+		if (targetUser) {
+			targetUser.popup(`You were appointed Room Owner by ${user.name} in ${room.id}.`);
+			room.onUpdateIdentity(targetUser);
+			if (room.subRooms) {
+				for (const subRoom of room.subRooms.values()) {
+					subRoom.onUpdateIdentity(targetUser);
+				}
+			}
+		}
 		Rooms.global.writeChatRoomData();
 	},
-	roomownerhelp: ["/roomowner [username] - Appoints [username] as a room owner. Removes official status. Requires: & ~"],
+	roomownerhelp: ["/roomowner [username] - Appoints [username] as a room owner. Requires: & ~"],
 
 	roomdeowner: 'deroomowner',
 	deroomowner: function (target, room, user) {
@@ -2318,7 +2325,7 @@ exports.commands = {
 
 		this.globalModlog("NAMELOCK", targetUser, ` by ${user.name}${reasonText}`);
 		Ladders.cancelSearches(targetUser);
-		Punishments.namelock(targetUser, null, null, reason);
+		Punishments.namelock(targetUser, Date.now() + 7 * 24 * 60 * 60 * 1000, null, reason);
 		Gold.removeAllMoney(targetUser.userid, user.name);
 		targetUser.popup(`|modal|${user.name} has locked your name and you can't change names anymore${reasonText}`);
 		return true;

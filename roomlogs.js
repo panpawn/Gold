@@ -40,6 +40,7 @@ class Roomlog {
 		 * @type {string[]}
 		 */
 		this.log = [];
+		this.chatLog = [];
 		this.broadcastBuffer = '';
 
 		/**
@@ -160,10 +161,13 @@ class Roomlog {
 	add(message) {
 		if (message.startsWith('|uhtmlchange|')) return this.uhtmlchange(message);
 		this.roomlog(message);
+		let chatLogMessage = '';
 		if (this.logTimes && message.startsWith('|c|')) {
 			message = '|c:|' + (~~(Date.now() / 1000)) + '|' + message.substr(3);
+			chatLogMessage = `|c:|${Date.now()}|${message.substr(3)}`;
 		}
 		this.log.push(message);
+		if (chatLogMessage) this.chatLog.push(chatLogMessage);
 		this.broadcastBuffer += message + '\n';
 		return this;
 	}
