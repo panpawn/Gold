@@ -253,7 +253,7 @@ let commands = {
 		);
 		this.logModCommand(Chat.escapeHTML(user.name) + " updated the artist quote of the day to \"" + room.chatRoomData.artistQuoteOfTheDay + "\".");
 	},
-	quotehelp:  [
+	quotehelp: [
 		"/aotd quote - View the current Artist Quote of the Day.",
 		"/aotd quote [quote] - Set the Artist Quote of the Day. Requires: # & ~",
 	],

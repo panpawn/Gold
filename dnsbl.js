@@ -19,7 +19,7 @@
 const BLOCKLISTS = ['sbl.spamhaus.org', 'rbl.efnetrbl.org'];
 
 const dns = require('dns');
-const FS = require('./fs');
+const FS = require('./lib/fs');
 
 let Dnsbl = module.exports;
 
@@ -313,6 +313,10 @@ Dnsbl.reverse = function reverseDns(ip) {
 		}
 		if (ip.startsWith('64.150.')) {
 			resolve('illinois.net.res-nohost');
+			return;
+		}
+		if (ip.startsWith('147.129.')) {
+			resolve('ithaca.edu.res-nohost');
 			return;
 		}
 		if (ip.startsWith('189.204.')) {

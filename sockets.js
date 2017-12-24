@@ -74,7 +74,7 @@ if (cluster.isMaster) {
 			workers.delete(worker.id);
 		} else if (code > 0) {
 			// Worker was killed abnormally, likely because of a crash.
-			require('./crashlogger')(new Error(`Worker ${worker.id} abruptly died with code ${code} and signal ${signal}`), "The main process");
+			require('./lib/crashlogger')(new Error(`Worker ${worker.id} abruptly died with code ${code} and signal ${signal}`), "The main process");
 			// Don't delete the worker so it can be inspected if need be.
 		}
 
@@ -188,17 +188,19 @@ if (cluster.isMaster) {
 
 	if (Config.ofe) {
 		try {
-			require.resolve('ofe');
+			require.resolve('node-oom-heapdump');
 		} catch (e) {
 			if (e.code !== 'MODULE_NOT_FOUND') throw e; // should never happen
 			throw new Error(
-				'ofe is not installed, but it is a required dependency if Config.ofe is set to true! ' +
-				'Run npm install ofe and restart the server.'
+				'node-oom-heapdump is not installed, but it is a required dependency if Config.ofe is set to true! ' +
+				'Run npm install node-oom-heapdump and restart the server.'
 			);
 		}
 
 		// Create a heapdump if the process runs out of memory.
-		require('ofe').call();
+		require('node-oom-heapdump')({
+			addTimestamp: true,
+		});
 	}
 
 	// Static HTTP server
@@ -213,7 +215,7 @@ if (cluster.isMaster) {
 	if (Config.crashguard) {
 		// graceful crash
 		process.on('uncaughtException', err => {
-			require('./crashlogger')(err, `Socket process ${cluster.worker.id} (${process.pid})`, true);
+			require('./lib/crashlogger')(err, `Socket process ${cluster.worker.id} (${process.pid})`, true);
 		});
 	}
 
@@ -227,7 +229,7 @@ if (cluster.isMaster) {
 			try {
 				key = fs.readFileSync(key);
 			} catch (e) {
-				require('./crashlogger')(new Error(`Failed to read the configured SSL private key PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(new Error(`Failed to read the configured SSL private key PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		} catch (e) {
 			console.warn('SSL private key config values will not support HTTPS server option values in the future. Please set it to use the absolute path of its PEM file.');
@@ -241,7 +243,7 @@ if (cluster.isMaster) {
 			try {
 				cert = fs.readFileSync(cert);
 			} catch (e) {
-				require('./crashlogger')(new Error(`Failed to read the configured SSL certificate PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(new Error(`Failed to read the configured SSL certificate PEM file:\n${e.stack}`), `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		} catch (e) {
 			console.warn('SSL certificate config values will not support HTTPS server option values in the future. Please set it to use the absolute path of its PEM file.');
@@ -253,7 +255,7 @@ if (cluster.isMaster) {
 				// In case there are additional SSL config settings besides the key and cert...
 				appssl = require('https').createServer(Object.assign({}, Config.ssl.options, {key, cert}));
 			} catch (e) {
-				require('./crashlogger')(`The SSL settings are misconfigured:\n${e.stack}`, `Socket process ${cluster.worker.id} (${process.pid})`, true);
+				require('./lib/crashlogger')(`The SSL settings are misconfigured:\n${e.stack}`, `Socket process ${cluster.worker.id} (${process.pid})`, true);
 			}
 		}
 	}
@@ -300,14 +302,24 @@ if (cluster.isMaster) {
 	// and doing things on our server.
 
 	const sockjs = require('sockjs');
-	const server = sockjs.createServer({
+	const options = {
 		sockjs_url: "//play.pokemonshowdown.com/js/lib/sockjs-1.1.1-nwjsfix.min.js",
-		log: (severity, message) => {
-			if (severity === 'error') console.log('ERROR: ' + message);
-		},
 		prefix: '/showdown',
-	});
+		log(severity, message) {
+			if (severity === 'error') console.log(`ERROR: ${message}`);
+		},
+	};
 
+	if (Config.wsdeflate) {
+		try {
+			const deflate = require('permessage-deflate').configure(Config.wsdeflate);
+			options.faye_server_options = {extensions: [deflate]};
+		} catch (e) {
+			require('./lib/crashlogger')(new Error("Dependency permessage-deflate is not installed or is otherwise unaccessable. No message compression will take place until server restart."), "Sockets");
+		}
+	}
+
+	const server = sockjs.createServer(options);
 	const sockets = new Map();
 	const channels = new Map();
 	const subchannels = new Map();
@@ -568,5 +580,5 @@ if (cluster.isMaster) {
 
 	console.log(`Test your server at http://${Config.bindaddress === '0.0.0.0' ? 'localhost' : Config.bindaddress}:${Config.port}`);
 
-	require('./repl').start(`sockets-${cluster.worker.id}-${process.pid}`, cmd => eval(cmd));
+	require('./lib/repl').start(`sockets-${cluster.worker.id}-${process.pid}`, cmd => eval(cmd));
 }

@@ -5,7 +5,7 @@
 
 'use strict';
 
-const FS = require('../fs');
+const FS = require('./../lib/fs');
 
 const CATEGORIES = {
 	ae: 'Arts and Entertainment',
@@ -429,11 +429,11 @@ class Trivia extends Rooms.RoomGame {
 	 * @return {string}
 	 */
 	formatPlayerList(count) {
-		let playerCount = Object.keys(this.players).length;
-		let from = (!isNaN(count) && count >= 0 && count < playerCount) ? (playerCount - count) : 0;
-		return Object.values(this.players)
+		let players = Object.values(this.players);
+		let to = (isNaN(count) || count < 0 || count > players.length) ? players.length : count;
+		return players
 			.sort((p1, p2) => p2.points - p1.points)
-			.slice(from)
+			.slice(0, to)
 			.map(player => {
 				const buf = Chat.html`${player.name} (${player.points})`;
 				return player.isAbsent ? `<span style="color: #444444">${buf}</span>` : buf;
@@ -658,8 +658,8 @@ class Trivia extends Rooms.RoomGame {
 			` mode trivia under the ${this.category} category with a cap of ` +
 			`${this.cap} points, with ${winner.points} points and ` +
 			`${winner.correctAnswers} correct answers!)`;
-		this.room.sendModCommand(buf);
-		this.room.logEntry(buf);
+		this.room.sendMods(buf);
+		this.room.roomlog(buf);
 		this.room.modlog(buf);
 
 		writeTriviaData();
@@ -1241,7 +1241,7 @@ const commands = {
 		} else if (isAll) {
 			questions = triviaData.questions.slice();
 			if (triviaData.ugm) questions = questions.filter(q => q.category !== 'ugm');
-		} else if (CATEGORIES.hasOwnProperty(category)) {
+		} else if (CATEGORIES[category]) {
 			questions = sliceCategory(category);
 		} else {
 			return this.errorReply(`"${category}" is an invalid category.`);

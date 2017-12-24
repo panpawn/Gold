@@ -107,7 +107,7 @@ exports.commands = {
 		fs.readFile('logs/chat/' + targetRoom.toLowerCase() + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
 			if (err && err.code === "ENOENT") return user.send("|popup||html|<font color=\"red\">No logs found.</font>");
 			if (err) return this.errorReply("/viewlogs - Error: " + err);
-			fs.appendFile('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toId(targetRoom) + ". Date: " + date + '\n');
+			fs.appendFileSync('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toId(targetRoom) + ". Date: " + date + '\n');
 			let filename = require('crypto').randomBytes(4).toString('hex');
 
 			if (!user.can('warn', null, Rooms(targetRoom))) {
@@ -212,6 +212,7 @@ function permissionCheck(user, room) {
 	}
 	return true;
 }
+Gold.viewlogsPermissionCheck = permissionCheck;
 
 function generateTable(array, command, isRoom) {
 	let output = '';
@@ -222,7 +223,7 @@ function generateTable(array, command, isRoom) {
 		if (count === 0) output += "<tr>";
 		let cmdText = array[u];
 		if (isRoom) cmdText = toId(array[u]);
-		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u]) + '</button></td>';
+		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u].replace('.txt', '')) + '</button></td>';
 		count++;
 		if (count > 3) {
 			output += '<tr />';

@@ -15,7 +15,7 @@
 
 let Punishments = module.exports;
 
-const FS = require('./fs');
+const FS = require('./lib/fs');
 
 const PUNISHMENT_FILE = 'config/punishments.tsv';
 const ROOM_PUNISHMENT_FILE = 'config/room-punishments.tsv';
@@ -39,8 +39,11 @@ const AUTOLOCK_POINT_THRESHOLD = 8;
  * @typedef {[string, string, number, string]} Punishment
  */
 
-class PunishmentMap extends Map/*:: <string, Punishment> */ {
-	get(k) {
+/**
+ * @augments {Map<string, Punishment>}
+ */
+class PunishmentMap extends Map {
+	get(/** @type {string} */ k) {
 		const punishment = super.get(k);
 		if (punishment) {
 			if (Date.now() < punishment[2]) return punishment;
@@ -48,7 +51,7 @@ class PunishmentMap extends Map/*:: <string, Punishment> */ {
 		}
 		return undefined;
 	}
-	has(k) {
+	has(/** @type {string} */ k) {
 		return !!this.get(k);
 	}
 	forEach(callback) {
@@ -70,7 +73,7 @@ Punishments.ips = new PunishmentMap();
 Punishments.userids = new PunishmentMap();
 
 /**
- * @augments {Map<string, Punishment>}
+ * @augments {Map<string, Map<string, Punishment>>}
  */
 class NestedPunishmentMap extends Map {
 	nestedSet(k1, k2, value) {
@@ -128,10 +131,16 @@ Punishments.sharedIps = new Map();
  * Persistence
  *********************************************************/
 
-// punishType is an allcaps string, for global punishments they can be one of the following:
-//   'LOCK'
-//   'BAN'
-//   'NAMELOCK'
+// punishType is an allcaps string, for global punishments they can be anything in the punishmentTypes map.
+// This map can be extended with custom punishments by chat plugins.
+// Keys in the map correspond to punishTypes, values signify the way they should be displayed in /alt
+
+/** @type {Map<string, string>} */
+Punishments.punishmentTypes = new Map([
+	['LOCK', 'locked'],
+	['BAN', 'globally banned'],
+	['NAMELOCK', 'namelocked'],
+]);
 
 // For room punishments, they can be anything in the roomPunishmentTypes map.
 // This map can be extended with custom punishments by chat plugins.
@@ -141,6 +150,7 @@ Punishments.sharedIps = new Map();
 //   'BLACKLIST'
 //   'MUTE' (used by getRoomPunishments)
 
+/** @type {Map<string, string>} */
 Punishments.roomPunishmentTypes = new Map([
 	['ROOMBAN', 'banned'],
 	['BLACKLIST', 'blacklisted'],
@@ -831,6 +841,17 @@ Punishments.roomBan = function (room, user, expireTime, userId, ...reason) {
 		curUser.leaveRoom(room.id);
 	}
 
+	if (room.subRooms) {
+		for (const subRoom of room.subRooms.values()) {
+			for (const curUser of affected) {
+				if (subRoom.game && subRoom.game.removeBannedUser) {
+					subRoom.game.removeBannedUser(curUser);
+				}
+				curUser.leaveRoom(subRoom.id);
+			}
+		}
+	}
+
 	return affected;
 };
 
@@ -864,6 +885,17 @@ Punishments.roomBlacklist = function (room, user, expireTime, userId, ...reason)
 			room.game.removeBannedUser(curUser);
 		}
 		curUser.leaveRoom(room.id);
+	}
+
+	if (room.subRooms) {
+		for (const subRoom of room.subRooms.values()) {
+			for (const curUser of affected) {
+				if (subRoom.game && subRoom.game.removeBannedUser) {
+					subRoom.game.removeBannedUser(curUser);
+				}
+				curUser.leaveRoom(subRoom.id);
+			}
+		}
 	}
 
 	return affected;
@@ -1054,10 +1086,14 @@ Punishments.checkRangeBanned = function () {};
 
 /**
  * @param {User} user
+ * @param {string} userid
  * @param {boolean} registered
  */
-Punishments.checkName = function (user, registered) {
-	let userid = user.userid;
+Punishments.checkName = function (user, userid, registered) {
+	if (userid.startsWith('guest')) return;
+	for (const roomid of user.inRooms) {
+		Punishments.checkNewNameInRoom(user, userid, roomid);
+	}
 	let punishment = Punishments.userids.get(userid);
 	if (!punishment && user.namelocked) {
 		punishment = Punishments.userids.get(user.namelocked);
@@ -1093,10 +1129,12 @@ Punishments.checkName = function (user, registered) {
 		user.resetName();
 		user.updateIdentity();
 	} else {
-		if (!user.lockNotified) {
+		if (punishUserid === '#hostfilter') {
+			user.popup(`Due to spam, you can't chat using a proxy. (Your IP ${user.latestIp} appears to be a proxy.)`);
+		} else if (!user.lockNotified) {
 			user.send(`|popup|You are locked${bannedUnder}. Your lock will expire in a few days.${reason}${appeal}`);
-			user.lockNotified = true;
 		}
+		user.lockNotified = true;
 		Punishments.punish(user, punishment);
 		user.locked = punishUserid;
 		user.updateIdentity();
@@ -1204,6 +1242,7 @@ Punishments.checkNameInRoom = function (user, roomid) {
 	if (!punishment && user.autoconfirmed) {
 		punishment = Punishments.roomUserids.nestedGet(roomid, user.autoconfirmed);
 	}
+	if (!punishment && Rooms(roomid).parent) punishment = Punishments.checkNameInRoom(user, Rooms(roomid).parent);
 	if (!punishment) return false;
 	if (punishment[0] === 'ROOMBAN' || punishment[0] === 'BLACKLIST') {
 		return true;
@@ -1216,7 +1255,8 @@ Punishments.checkNameInRoom = function (user, roomid) {
  * @param {string} roomid
  */
 Punishments.checkNewNameInRoom = function (user, userid, roomid) {
-	const punishment = Punishments.roomUserids.nestedGet(roomid, userid);
+	let punishment = Punishments.roomUserids.nestedGet(roomid, userid);
+	if (!punishment && Rooms(roomid).parent) punishment = Punishments.checkNewNameInRoom(user, userid, Rooms(roomid).parent);
 	if (punishment) {
 		if (punishment[0] !== 'ROOMBAN' && punishment[0] !== 'BLACKLIST') return;
 		const room = Rooms(roomid);
@@ -1224,6 +1264,7 @@ Punishments.checkNewNameInRoom = function (user, userid, roomid) {
 			room.game.removeBannedUser(user);
 		}
 		user.leaveRoom(room.id);
+		return punishment;
 	}
 };
 
@@ -1279,6 +1320,8 @@ Punishments.isRoomBanned = function (user, roomid) {
 			}
 		}
 	}
+
+	if (Rooms(roomid).parent) return Punishments.isRoomBanned(user, Rooms(roomid).parent.id);
 };
 
 /**

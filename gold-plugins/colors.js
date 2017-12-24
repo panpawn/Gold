@@ -102,11 +102,10 @@ let colorCache = {};
 
 // Mains custom username colors
 // https://play.pokemonshowdown.com/js/config.js
-let mainCustomColors = {
+const mainCustomColors = {
 	'theimmortal': 'taco',
 	'bmelts': 'testmelts',
 	'zarel': 'aeo',
-	'greatsage': 'test454',
 	'jumpluff': 'zacchaeus',
 	'zacchaeus': 'jumpluff',
 	'kraw': 'kraw1',
@@ -122,7 +121,6 @@ let mainCustomColors = {
 	'heartsonfire': 'haatsuonfaiyaa',
 	'royalty': 'wonder9',
 	'limi': 'azure2',
-	'haunter': 'cathy',
 	'ginganinja': 'piratesandninjas',
 	'aurora': 'c6n6fek',
 	'jdarden': 'danielcross',
@@ -210,7 +208,6 @@ let mainCustomColors = {
 	'spy': 'spydreigon',
 	'kinguu': 'dodmen',
 	'dodmen': 'kinguu',
-	'halite': 'cjilkposqknolssss',
 	'magnemite': 'dsfsdffs',
 	'ace': 'sigilyph143',
 	'leftiez': 'xxxxnbbhiojll',
@@ -242,7 +239,15 @@ let mainCustomColors = {
 	'nv': 'larvitar',
 	'iyarito': 'gengarito',
 	'speks': 'goojna',
-	'cathy': '', //{color: '#ff5cb6'}
+	'cheese': 'soccerzxii',
+	'lyren': 'solarisfaux',
+	'tiksi': 'tikse',
+	'ev': 'eeveegeneral',
+	'sigilyph': 'diving',
+	'halite': 'rosasite',
+	'false': 'o5t9w5jl',
+	'wally': 'wallythebully',
+	'cathy': '' //{color: '#ff5cb6'}
 };
 
 // hashColor function

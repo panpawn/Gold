@@ -38,6 +38,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			Gold.pmUpperStaff(user.name + ' has been automatically locked/shadowbanned for sending a message containing a banned word' +
 			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
 			Users.ShadowBan.addUser(user);
+			return false;
 		}
 	}
 
@@ -51,6 +52,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			modlog(`${user.name} was shadow banned by the Server. (Advertising) (${connection.ip})`);
 			Gold.pmUpperStaff(user.name + " has been sbanned for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
 			Monitor.log("[AdvMonitor] SHADOWBANNED: " + user.name + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message);
+			return false;
 		}
 	}
 
@@ -65,14 +67,6 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 			modlog(`${user.name} was shadow banned by the Server. (Message contained: ${autoSban}) (${connection.ip})`);
 			Gold.pmUpperStaff(user.name + " has been sbanned for triggering autosban" + msg, "~Server");
 			Monitor.log(`[TextMonitor] SHADOWBANNED: ${user.name}: ${msg}`);
-		}
-	}
-
-	if (room && room.log && room.log.length === 0) { // Firsting isn't cool anymore
-		let firsts = ['first', 'f1rst', '1', '1st', 'f1r5t', 'fir5t'];
-		let regEx = new RegExp(firsts.join('|'), "g");
-		if (message.toLowerCase().match(regEx)) {
-			user.sendTo(room, "Wow, you're first? What a great accomplishment. Seriously, great job. Yeah, being first isn't cool anymore.");
 			return false;
 		}
 	}
@@ -112,9 +106,16 @@ Config.namefilter = function (name, user) {
 	}
 
 	// Hostfilter stuff
+	if (!user.connections) return name; // this should never happen
 	let conNum = Object.keys(user.connections).length - 1;
-	let ip = user.connections[conNum].ip;
-	let trusted = trustedHack(nameId);
+	const ip = user.connections[conNum].ip;
+	const trusted = trustedHack(nameId);
+
+	if (Config.autoSbanIps && Config.autoSbanIps.includes(ip)) {
+		Users.ShadowBan.addUser(user);
+		Monitor.log(`[IPShadowBanMonitor] SHADOWBANNED: ${name}`);
+		return;
+	}
 
 	Dnsbl.reverse(ip).then(host => {
 		if (!host) return;
@@ -292,4 +293,29 @@ exports.commands = {
 
 		return this.sendReplyBox(buff);
 	},
+
+	spamautolock: 'autolockspam',
+	autolockspam: function (target, room, user) {
+		if (!this.can('pban')) return false;
+		if (!target) return this.sendReply(`This room currently will ${(room.autoLockSpam ? 'autolock' : 'NOT autolock')} spammers.`);
+		if (this.meansYes(target)) {
+			if (room.autoLockSpam) return this.errorReply("This room is already automatically locking spammers.");
+			room.autoLockSpam = true;
+			this.privateModCommand(`(${user.name} set this room to automatically lock spammers.)`);
+		} else if (this.meansNo(target)) {
+			if (!room.autoLockSpam) return this.errorReply("This room already is not automatically locking spammers.");
+			room.autoLockSpam = false;
+			this.privateModCommand(`(${user.name} set this room to no longer automatically lock spammers.)`);
+		} else if (target === 'help') {
+			return this.parse('/help autolockspam');
+		}
+		if (room.chatRoomData) {
+			room.chatRoomData.autoLockSpam = room.autoLockSpam;
+			Rooms.global.writeChatRoomData();
+		}
+	},
+	autolockspamhelp: [
+		"/autolockspam on - Enables automatically locking spammers in the current room. Requires: & ~",
+		"/autolockspam off - Disables automatically locking spammers in the current room. Requires: & ~",
+	],
 };

@@ -156,6 +156,13 @@ class RoomSettings {
 			return `${this.button('Hangman enabled', true)} ${this.button('off', null, 'hangman disable')}`;
 		}
 	}
+	autoLockSpammers() { // permission checking done in display as this is "secret"
+		if (this.room.autoLockSpam) {
+			return `${this.button('Enable', true)} ${this.button('Disable', null, 'autolockspam off')}`;
+		} else {
+			return `${this.button('Enable', null, 'autolockspam on')} ${this.button('Disable', true)}`;
+		}
+	}
 	generateDisplay(user, room, connection) {
 		let output = Chat.html`<div class="infobox">Room Settings for ${this.room.title}<br />`;
 		output += `<strong>Modchat:</strong> <br />${this.modchat()}<br />`;
@@ -163,6 +170,7 @@ class RoomSettings {
 		output += `<strong>Stretch filter:</strong> <br />${this.stretching()}<br />`;
 		output += `<strong>Caps filter:</strong> <br />${this.capitals()}<br />`;
 		output += `<strong>Emoji filter:</strong> <br />${this.emojis()}<br />`;
+		if (this.user.can('pban')) output += `<strong>Automatically lock spammers:</strong><br />${this.autoLockSpammers()}<br />`;
 		output += `<strong>Slowchat:</strong> <br />${this.slowchat()}<br />`;
 		output += `<strong>Tournaments:</strong> <br />${this.tourStatus()}<br />`;
 		output += `<strong>Blacklist:</strong> <br />${this.blacklist()}<br />`;
@@ -429,7 +437,7 @@ exports.commands = {
 
 	emojis: 'emojifilter',
 	emoji: 'emojifilter',
-	emojifilter : function (target, room, user) {
+	emojifilter: function (target, room, user) {
 		if (!target) {
 			const emojiSetting = (room.filterEmojis ? "ON" : "OFF");
 			return this.sendReply(`This room's emoji filter is currently: ${emojiSetting}`);

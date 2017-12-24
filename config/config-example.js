@@ -24,6 +24,22 @@ exports.bindaddress = '0.0.0.0';
 //   to 1.
 exports.workers = 1;
 
+// wsdeflate - compresses WebSocket messages
+//	 Toggles use of the Sec-WebSocket-Extension permessage-deflate extension.
+//	 This compresses messages sent and received over a WebSocket connection
+//	 using the zlib compression algorithm. As a caveat, message compression
+//	 may make messages take longer to procress.
+exports.wsdeflate = null;
+/**exports.wsdeflate = {
+	level: 5,
+	memLevel: 8,
+	strategy: 0,
+	noContextTakeover: true,
+	requestNoContextTakeover: true,
+	maxWindowBits: 15,
+	requestMaxWindowBits: 15,
+};**/
+
 // TODO: allow SSL to actually be possible to use for third-party servers at
 // some point.
 
@@ -35,9 +51,9 @@ exports.workers = 1;
 exports.proxyip = false;
 
 // ofe - write heapdumps if sockets.js workers run out of memory.
-//   If you wish to enable this, you will need to install ofe, as it is not a
-//   installed by default:
-//     $ npm install --no-save ofe
+//   If you wish to enable this, you will need to install node-oom-heapdump,
+//   as it is sometimes not installed by default:
+//     $ npm install node-oom-heapdump
 exports.ofe = false;
 
 // Pokemon of the Day - put a pokemon's name here to make it Pokemon of the Day
@@ -80,7 +96,7 @@ Y929lRybWEiKUr+4Yw2O1W0CAwEAAQ==
 //   otherwise, all crashes will lock down the server. If you wish to enable
 //   this setting, you will need to install nodemailer, as it is not installed
 //   by default:
-//     $ npm install --no-save nodemailer
+//     $ npm install nodemailer
 /**exports.crashguardemail = {
 	options: {
 		host: 'mail.example.com',
