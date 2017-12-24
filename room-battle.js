@@ -56,9 +56,9 @@ function loadPokemonRecord() {
 					let losses = row[2];
 					let level = row[3];
 					pokemonRecord[species] = {
-						wins   : wins,
-						losses : losses,
-						level  : level,
+						wins: wins,
+						losses: losses,
+						level: level,
 					};
 				}
 			}
