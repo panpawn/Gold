@@ -13,6 +13,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const FS = require('./lib/fs');
 const ProcessManager = require('./process-manager');
 
@@ -32,6 +33,52 @@ const DISCONNECTION_TICKS = 13;
 const TIMER_COOLDOWN = 20 * 1000;
 
 global.Config = require('./config/config');
+
+// Once it's been loaded, this is an object taking species names to the
+// number of wins and losses for random teams with that species.
+let pokemonRecord;
+
+// Load the pokemon record initially.
+loadPokemonRecord();
+
+function loadPokemonRecord(initial) {
+	var filename;
+	if (initial) {
+		// Static initial version of the pokmeon record - all pokemon at level 50.
+		filename = 'config/pokemon-match-records-initial.tsv';
+	}
+	else {
+		// Default version of the pokemon record - updated as matches are played.
+		filename = 'config/pokemon-match-records.tsv';
+	}
+
+	fs.readFile(filename, (err, recordData) => {
+		if (err && !initial) {
+			// If the pokemon record doesn't exist yet, load the initial version.
+			loadPokemonRecord(true);
+		}
+		if (!err) {
+			pokemonRecord = {};
+			let dataLines = ('' + recordData).split('\n');
+			for (let i = 1; i < dataLines.length; i++) {
+				let line = dataLines[i].trim();
+				if (!line) continue;
+				let row = line.split('\t');
+				if (row.length === 4) {
+					let species = row[0].toLowerCase();
+					let wins = row[1];
+					let losses = row[2];
+					let level = row[3];
+					pokemonRecord[species] = {
+						wins: wins,
+						losses: losses,
+						level: level,
+					};
+				}
+			}
+		}
+	});
+}
 
 class SimulatorManager extends ProcessManager {
 	onMessageUpstream(message) {
@@ -538,11 +585,15 @@ class Battle {
 			break;
 
 		case 'winupdate':
-			for (const line of lines.slice(3)) {
+			for (const line of lines.slice(4)) {
 				this.room.add(line);
 			}
 			this.started = true;
 			if (!this.ended) {
+				if (this.format === 'gen1randomautoleveladjusted') {
+					this.updateRecord(lines[3]);
+				}
+
 				this.ended = true;
 				this.onEnd(lines[2]);
 				this.removeAllPlayers();
@@ -589,6 +640,89 @@ class Battle {
 			break;
 		}
 		Monitor.activeIp = null;
+	}
+	updateRecord(teamString) {
+		let teamArray = teamString.split("\t");
+		if (teamArray.length > 2) {
+			let winnerPokemon = [];
+			let loserPokemon = [];
+			let currTeam;
+			for (let i = 0; i < teamArray.length; i++) {
+				let currEntry = teamArray[i];
+				if (currEntry === '') {
+					continue;
+				} else if (currEntry === 'WinningTeam') {
+					currTeam = 'Winners';
+				} else if (currEntry === 'LosingTeam') {
+					currTeam = 'Losers';
+				} else if (currTeam === 'Winners') {
+					winnerPokemon.push(currEntry);
+				} else if (currTeam === 'Losers') {
+					loserPokemon.push(currEntry);
+				}
+			}
+
+			if (!winnerPokemon.length || !loserPokemon.length) {
+				return;
+			}
+
+			let speciesInBattle = {};
+
+			for (let i = 0; i < winnerPokemon.length; i++) {
+				let species = winnerPokemon[i];
+				speciesInBattle[species] = 'win';
+				pokemonRecord[species.toLowerCase()].wins++;
+			}
+			for (let i = 0; i < loserPokemon.length; i++) {
+				let species = loserPokemon[i];
+				speciesInBattle[species] = 'loss';
+				pokemonRecord[species.toLowerCase()].losses++;
+			}
+
+			if (!this.saving) {
+				this.saving = true;
+				let stream = fs.createWriteStream('config/pokemon-match-records.tsv');
+				stream.write('Species\tNumWins\tNumLosses\tLevel\n');
+
+				for (let species in pokemonRecord) {
+					let wins = parseInt(pokemonRecord[species].wins);
+					let losses = parseInt(pokemonRecord[species].losses);
+					let level = parseInt(pokemonRecord[species].level);
+					let winProportion = wins / (wins + losses);
+
+					// Adjust the level if the win proportion (x) does not satisfy
+					// 0.49 < x < 0.51, the pokmeon appeared in this battle, and a
+					// random factor is satisfied. The random factor is used to
+					// prevent too much level sliding as we wait for the win
+					// proportion to adjust over many matches.
+					if (speciesInBattle[species]) {
+						let adjust = false;
+						if (winProportion >= 0.51 && level > 1) {
+							adjust = -1;
+						} else if (winProportion <= 0.49 && level < 100) {
+							adjust = 1;
+						}
+
+						if (adjust !== false) {
+							// It should be harder to adjust the level as we have
+							// more data, so if there is a win proportion
+							// discrepancy, the chance to adjust the level is
+							// 1 / sqrt(totalMatches). So e.g. at 100 matches,
+							// the chance to adjust is 1/10.
+							if (Math.random() < 1 / Math.sqrt(wins + losses)) {
+								level += adjust;
+								pokemonRecord[species.toLowerCase()].level = level;
+							}
+						}
+					}
+
+					stream.write(species + '\t' + wins + '\t' + losses + '\t' + level + '\n');
+				}
+
+				stream.end();
+				this.saving = false;
+			}
+		}
 	}
 	async onEnd(winner) {
 		// Declare variables here in case we need them for non-rated battles logging.
@@ -902,7 +1036,8 @@ if (process.send && module === process.mainModule) {
 			const id = data[0];
 			if (!Battles.has(id)) {
 				try {
-					const battle = Sim.construct(data[2], data[3], sendBattleMessage);
+					loadPokemonRecord();
+					const battle = Sim.construct(data[2], data[3], sendBattleMessage, undefined, pokemonRecord);
 					battle.id = id;
 					Battles.set(id, battle);
 				} catch (err) {
