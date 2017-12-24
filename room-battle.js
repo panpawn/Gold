@@ -42,12 +42,11 @@ let pokemonRecord;
 loadPokemonRecord();
 
 function loadPokemonRecord(initial) {
-	var filename;
+	let filename;
 	if (initial) {
 		// Static initial version of the pokmeon record - all pokemon at level 50.
 		filename = 'config/pokemon-match-records-initial.tsv';
-	}
-	else {
+	} else {
 		// Default version of the pokemon record - updated as matches are played.
 		filename = 'config/pokemon-match-records.tsv';
 	}
