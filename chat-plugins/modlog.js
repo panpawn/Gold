@@ -275,8 +275,8 @@ function prettifyResults(rawResults, room, searchString, exactSearch, addModlogB
 		}
 		let parenIndex = line.indexOf(')');
 		let thisRoomID = line.slice(bracketIndex + 3, parenIndex);
-		if (addModlogButton) {
-			let button = Config.modlogbutton(origDate, thisRoomID, timestamp);
+		if (addModlogButton && thisRoomID !== 'global') {
+			const button = Config.modlogbutton(origDate, thisRoomID, timestamp);
 			if (button) timestamp = button;
 		} else {
 			timestamp = `[${timestamp}]`;
