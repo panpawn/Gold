@@ -1046,10 +1046,9 @@ class BasicChatRoom extends BasicRoom {
 		this.battle = /** @type {RoomBattle?} */ (null);
 
 		this.deleteInactive = setTimeout(function () {
-			if (!this.protect && !this.isOfficial && !this.isPrivate && !this.isPersonal && !this.isStaff && this.messageCount < 40) {
+			if (this.id !== 'global' && this.type !== 'battle' && !this.protect && !this.isOfficial && !this.isPrivate && !this.isPersonal && !this.isStaff && this.messageCount < 40) {
 				Rooms.global.deregisterChatRoom(this.id);
-				this.addRaw('<font color=red><b>This room has been automatically deleted due to inactivity.  It will be removed upon the next server restart.</b></font>');
-				if (this.id !== 'global') this.update();
+				this.add('<font color=red><b>This room has been automatically deleted due to inactivity.  It will be removed upon the next server restart.</b></font>').update();
 				this.modchat = '~';
 				Rooms('staff').add(`|raw|<strong style="color: red;">${this.title} has been automatically deleted from the server due to inactivity.</strong>`).update();
 			}
