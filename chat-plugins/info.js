@@ -190,8 +190,10 @@ exports.commands = {
 		}
 		this.sendReplyBox(buf);
 	},
-	whoishelp: ["/whois - Get details on yourself: alts, group, IP address, and rooms.",
-		"/whois [username] - Get details on a username: alts (Requires: % @ * & ~), group, IP address (Requires: @ * & ~), and rooms."],
+	whoishelp: [
+		`/whois - Get details on yourself: alts, group, IP address, and rooms.`,
+		`/whois [username] - Get details on a username: alts (Requires: % @ * & ~), group, IP address (Requires: @ * & ~), and rooms.`,
+	],
 
 	'!offlinewhois': true,
 	checkpunishment: 'offlinewhois',
@@ -277,7 +279,7 @@ exports.commands = {
 			this.sendReply('IP ' + target + ': ' + (host || "ERROR"));
 		});
 	},
-	hosthelp: ["/host [ip] - Gets the host for a given IP. Requires: & ~"],
+	hosthelp: [`/host [ip] - Gets the host for a given IP. Requires: & ~`],
 
 	'!ipsearch': true,
 	searchip: 'ipsearch',
@@ -335,7 +337,7 @@ exports.commands = {
 		}
 		return this.sendReply(results.join('; '));
 	},
-	ipsearchhelp: ["/ipsearch [ip|range|host], (room) - Find all users with specified IP, IP range, or host. If a room is provided only users in the room will be shown. Requires: & ~"],
+	ipsearchhelp: [`/ipsearch [ip|range|host], (room) - Find all users with specified IP, IP range, or host. If a room is provided only users in the room will be shown. Requires: & ~`],
 
 	checkchallenges: function (target, room, user) {
 		if (!this.can('ban', null, room)) return false;
@@ -375,7 +377,7 @@ exports.commands = {
 		}
 		this.sendReplyBox(challenges.join(`<br />`));
 	},
-	checkchallengeshelp: ["!checkchallenges [user1], [user2] - Check if the specified users are challenging each other. Requires: @ * # & ~"],
+	checkchallengeshelp: [`!checkchallenges [user1], [user2] - Check if the specified users are challenging each other. Requires: @ * # & ~`],
 
 	/*********************************************************
 	 * Client fallback
@@ -614,9 +616,11 @@ exports.commands = {
 		}
 		this.sendReply(buffer);
 	},
-	datahelp: ["/data [pokemon/item/move/ability] - Get details on this pokemon/item/move/ability/nature.",
-		"/data [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.",
-		"!data [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~"],
+	datahelp: [
+		`/data [pokemon/item/move/ability] - Get details on this pokemon/item/move/ability/nature.`,
+		`/data [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
+		`!data [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~`,
+	],
 
 	'!details': true,
 	dt: 'details',
@@ -624,9 +628,11 @@ exports.commands = {
 		if (!target) return this.parse('/help details');
 		this.run('data');
 	},
-	detailshelp: ["/details [pokemon/item/move/ability] - Get additional details on this pokemon/item/move/ability/nature.",
-		"/details [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.",
-		"!details [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~"],
+	detailshelp: [
+		`/details [pokemon/item/move/ability] - Get additional details on this pokemon/item/move/ability/nature.`,
+		`/details [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
+		`!details [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~`,
+	],
 
 	'!weakness': true,
 	weaknesses: 'weakness',
@@ -704,10 +710,12 @@ exports.commands = {
 		buffer.push('<span class="message-effect-immune">Immunities</span>: ' + (immunities.join(', ') || '<font color=#999999>None</font>'));
 		this.sendReplyBox(buffer.join('<br />'));
 	},
-	weaknesshelp: ["/weakness [pokemon] - Provides a Pok\u00e9mon's resistances, weaknesses, and immunities, ignoring abilities.",
-		"/weakness [type 1]/[type 2] - Provides a type or type combination's resistances, weaknesses, and immunities, ignoring abilities.",
-		"!weakness [pokemon] - Shows everyone a Pok\u00e9mon's resistances, weaknesses, and immunities, ignoring abilities. Requires: + % @ * # & ~",
-		"!weakness [type 1]/[type 2] - Shows everyone a type or type combination's resistances, weaknesses, and immunities, ignoring abilities. Requires: + % @ * # & ~"],
+	weaknesshelp: [
+		`/weakness [pokemon] - Provides a Pok\u00e9mon's resistances, weaknesses, and immunities, ignoring abilities.`,
+		`/weakness [type 1]/[type 2] - Provides a type or type combination's resistances, weaknesses, and immunities, ignoring abilities.`,
+		`!weakness [pokemon] - Shows everyone a Pok\u00e9mon's resistances, weaknesses, and immunities, ignoring abilities. Requires: + % @ * # & ~`,
+		`!weakness [type 1]/[type 2] - Shows everyone a type or type combination's resistances, weaknesses, and immunities, ignoring abilities. Requires: + % @ * # & ~`,
+	],
 
 	'!effectiveness': true,
 	eff: 'effectiveness',
@@ -770,8 +778,10 @@ exports.commands = {
 
 		this.sendReplyBox("" + atkName + " is " + factor + "x effective against " + defName + "." + additionalInfo);
 	},
-	effectivenesshelp: ["/effectiveness [attack], [defender] - Provides the effectiveness of a move or type on another type or a Pok\u00e9mon.",
-		"!effectiveness [attack], [defender] - Shows everyone the effectiveness of a move or type on another type or a Pok\u00e9mon."],
+	effectivenesshelp: [
+		`/effectiveness [attack], [defender] - Provides the effectiveness of a move or type on another type or a Pok\u00e9mon.`,
+		`!effectiveness [attack], [defender] - Shows everyone the effectiveness of a move or type on another type or a Pok\u00e9mon.`,
+	],
 
 	'!coverage': true,
 	cover: 'coverage',
@@ -951,9 +961,11 @@ exports.commands = {
 			this.sendReplyBox('Coverage for ' + sources.join(' + ') + ':<br />' + buffer);
 		}
 	},
-	coveragehelp: ["/coverage [move 1], [move 2] ... - Provides the best effectiveness match-up against all defending types for given moves or attacking types",
-		"!coverage [move 1], [move 2] ... - Shows this information to everyone.",
-		"Adding the parameter 'all' or 'table' will display the information with a table of all type combinations."],
+	coveragehelp: [
+		`/coverage [move 1], [move 2] ... - Provides the best effectiveness match-up against all defending types for given moves or attacking types`,
+		`!coverage [move 1], [move 2] ... - Shows this information to everyone.`,
+		`Adding the parameter 'all' or 'table' will display the information with a table of all type combinations.`,
+	],
 
 	'!statcalc': true,
 	statcalc: function (target, room, user) {
@@ -1152,9 +1164,11 @@ exports.commands = {
 		}
 		return this.sendReplyBox('Base ' + statValue + (calcHP ? ' HP ' : ' ') + 'at level ' + level + ' with ' + iv + ' IVs, ' + ev + (nature === 1.1 ? '+' : (nature === 0.9 ? '-' : '')) + ' EVs' + (modifier > 0 && !calcHP ? ' at ' + (positiveMod ? '+' : '-') + modifier : '') + ': <b>' + Math.floor(output) + '</b>.');
 	},
-	statcalchelp: ["/statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Calculates what the actual stat of a Pokémon is with the given parameters. For example, '/statcalc lv50 100 30iv positive 252ev scarf' calculates the speed of a base 100 scarfer with HP Ice in Battle Spot, and '/statcalc uninvested 90 neutral' calculates the attack of an uninvested Crobat.",
-		"!statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Shows this information to everyone.",
-		"Inputing 'hp' as an argument makes it use the formula for HP. Instead of giving nature, '+' and '-' can be appended to the EV amount (e.g. 252+ev) to signify a boosting or inhibiting nature."],
+	statcalchelp: [
+		`/statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Calculates what the actual stat of a Pokémon is with the given parameters. For example, '/statcalc lv50 100 30iv positive 252ev scarf' calculates the speed of a base 100 scarfer with HP Ice in Battle Spot, and '/statcalc uninvested 90 neutral' calculates the attack of an uninvested Crobat.`,
+		`!statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Shows this information to everyone.`,
+		`Inputing 'hp' as an argument makes it use the formula for HP. Instead of giving nature, '+' and '-' can be appended to the EV amount (e.g. 252+ev) to signify a boosting or inhibiting nature.`,
+	],
 
 	/*********************************************************
 	 * Informational commands
@@ -1189,9 +1203,11 @@ exports.commands = {
 			`~ <strong>Global Administrator</strong> -  They can do anything, like change what this message says` : ``)
 		);
 	},
-	groupshelp: ["/groups - Explains what the symbols (like % and @) before people's names mean.",
-		"/groups [global|room] - Explains only global or room symbols.",
-		"!groups - Shows everyone that information. Requires: + % @ * # & ~"],
+	groupshelp: [
+		`/groups - Explains what the symbols (like % and @) before people's names mean.`,
+		`/groups [global|room] - Explains only global or room symbols.`,
+		`!groups - Shows everyone that information. Requires: + % @ * # & ~`,
+	],
 
 	'!punishments': true,
 	punishments: function (target, room, user) {
@@ -1211,8 +1227,10 @@ exports.commands = {
 			"<strong>globalban</strong> - Globally bans (makes them unable to connect and play games) for a week."
 		);
 	},
-	punishmentshelp: ["/punishments - Explains punishments.",
-		"!punishments - Show everyone that information. Requires: + % @ * # & ~"],
+	punishmentshelp: [
+		`/punishments - Explains punishments.`,
+		`!punishments - Show everyone that information. Requires: + % @ * # & ~`,
+	],
 
 	'!opensource': true,
 	repo: 'opensource',
@@ -1230,8 +1248,10 @@ exports.commands = {
 			"- <a href=\"https://github.com/Zarel/Pokemon-Showdown-Dex\">Main's Dex source code</a>"
 		);
 	},
-	opensourcehelp: ["/opensource - Links to PS's source code repository.",
-		"!opensource - Show everyone that information. Requires: + % @ * # & ~"],
+	opensourcehelp: [
+		`/opensource - Links to PS's source code repository.`,
+		`!opensource - Show everyone that information. Requires: + % @ * # & ~`,
+	],
 
 
 	'!privacypolicy': true,
@@ -1271,8 +1291,10 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox("You can <button name=\"avatars\">change your avatar</button> by clicking on it in the <button name=\"openOptions\"><i class=\"fa fa-cog\"></i> Options</button> menu in the upper right. Custom avatars are only obtainable by staff.");
 	},
-	avatarshelp: ["/avatars - Explains how to change avatars.",
-		"!avatars - Show everyone that information. Requires: + % @ * # & ~"],
+	avatarshelp: [
+		`/avatars - Explains how to change avatars.`,
+		`!avatars - Show everyone that information. Requires: + % @ * # & ~`,
+	],
 
 	'!optionsbutton': true,
 	optionbutton: 'optionsbutton',
@@ -1300,8 +1322,10 @@ exports.commands = {
 			"- <a href=\"http://www.smogon.com/xyhub/tiers\">What are the rules for each format? What is 'Sleep Clause'?</a>"
 		);
 	},
-	introhelp: ["/intro - Provides an introduction to competitive Pok\u00e9mon.",
-		"!intro - Show everyone that information. Requires: + % @ * # & ~"],
+	introhelp: [
+		`/intro - Provides an introduction to competitive Pok\u00e9mon.`,
+		`!intro - Show everyone that information. Requires: + % @ * # & ~`,
+	],
 
 	'!smogintro': true,
 	mentoring: 'smogintro',
@@ -1326,8 +1350,10 @@ exports.commands = {
 			"- <a href=\"https://pokemonshowdown.com/damagecalc/\">Damage Calculator</a>"
 		);
 	},
-	calchelp: ["/calc - Provides a link to a damage calculator",
-		"!calc - Shows everyone a link to a damage calculator. Requires: + % @ * # & ~"],
+	calchelp: [
+		`/calc - Provides a link to a damage calculator`,
+		`!calc - Shows everyone a link to a damage calculator. Requires: + % @ * # & ~`,
+	],
 
 	'!cap': true,
 	capintro: 'cap',
@@ -1341,8 +1367,10 @@ exports.commands = {
 			"- <a href=\"http://www.smogon.com/forums/threads/3593752/\">Sample SM CAP teams</a>"
 		);
 	},
-	caphelp: ["/cap - Provides an introduction to the Create-A-Pok\u00e9mon project.",
-		"!cap - Show everyone that information. Requires: + % @ * # & ~"],
+	caphelp: [
+		`/cap - Provides an introduction to the Create-A-Pok\u00e9mon project.`,
+		`!cap - Show everyone that information. Requires: + % @ * # & ~`,
+	],
 
 	'!gennext': true,
 	gennext: function (target, room, user) {
@@ -1578,10 +1606,12 @@ exports.commands = {
 			Rooms.global.writeChatRoomData();
 		}
 	},
-	ruleshelp: ["/rules - Show links to room rules and global rules.",
-		"!rules - Show everyone links to room rules and global rules. Requires: + % @ * # & ~",
-		"/rules [url] - Change the room rules URL. Requires: # & ~",
-		"/rules remove - Removes a room rules URL. Requires: # & ~"],
+	ruleshelp: [
+		`/rules - Show links to room rules and global rules.`,
+		`!rules - Show everyone links to room rules and global rules. Requires: + % @ * # & ~`,
+		`/rules [url] - Change the room rules URL. Requires: # & ~`,
+		`/rules remove - Removes a room rules URL. Requires: # & ~`,
+	],
 
 	'!faq': true,
 	faq: function (target, room, user) {
@@ -1613,8 +1643,10 @@ exports.commands = {
 		}
 		this.sendReplyBox(buffer.join("<br />"));
 	},
-	faqhelp: ["/faq [theme] - Provides a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them.",
-		"!faq [theme] - Shows everyone a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them. Requires: + % @ * # & ~"],
+	faqhelp: [
+		`/faq [theme] - Provides a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them.`,
+		`!faq [theme] - Shows everyone a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them. Requires: + % @ * # & ~`,
+	],
 
 	'!smogdex': true,
 	analysis: 'smogdex',
@@ -1762,8 +1794,10 @@ exports.commands = {
 			return this.sendReplyBox(`Pok&eacute;mon, item, move, ability, or format not found for generation ${generation.toUpperCase()}.`);
 		}
 	},
-	smogdexhelp: ["/analysis [pokemon], [generation], [format] - Links to the Smogon University analysis for this Pok\u00e9mon in the given generation.",
-		"!analysis [pokemon], [generation], [format] - Shows everyone this link. Requires: + % @ * # & ~"],
+	smogdexhelp: [
+		`/analysis [pokemon], [generation], [format] - Links to the Smogon University analysis for this Pok\u00e9mon in the given generation.`,
+		`!analysis [pokemon], [generation], [format] - Shows everyone this link. Requires: + % @ * # & ~`,
+	],
 
 	'!veekun': true,
 	veekun: function (target, broadcast, user) {
@@ -1835,8 +1869,10 @@ exports.commands = {
 			return this.sendReplyBox("Pok&eacute;mon, item, move, ability, or nature not found.");
 		}
 	},
-	veekunhelp: ["/veekun [pokemon] - Links to Veekun website for this pokemon/item/move/ability/nature.",
-		"!veekun [pokemon] - Shows everyone this link. Requires: + % @ * # & ~"],
+	veekunhelp: [
+		`/veekun [pokemon] - Links to Veekun website for this pokemon/item/move/ability/nature.`,
+		`!veekun [pokemon] - Shows everyone this link. Requires: + % @ * # & ~`,
+	],
 
 	'!register': true,
 	register: function () {
@@ -1949,10 +1985,12 @@ exports.commands = {
 		let sumFragment = "<br />Sum" + offsetFragment + (removeOutlier ? " except " + (removeOutlier > 0 ? "highest" : "lowest") : "");
 		return this.sendReplyBox("" + diceQuantity + " rolls (1 - " + diceFaces + ")" + (trackRolls ? ": " + rolls.join(", ") : "") + sumFragment + ": " + rollSum);
 	},
-	dicehelp: ["/dice [max number] - Randomly picks a number between 1 and the number you choose.",
-		"/dice [number of dice]d[number of sides] - Simulates rolling a number of dice, e.g., /dice 2d4 simulates rolling two 4-sided dice.",
-		"/dice [number of dice]d[number of sides][+/-][offset] - Simulates rolling a number of dice and adding an offset to the sum, e.g., /dice 2d6+10: two standard dice are rolled; the result lies between 12 and 22.",
-		"/dice [number of dice]d[number of sides]-[H/L] - Simulates rolling a number of dice with removal of extreme values, e.g., /dice 3d8-L: rolls three 8-sided dice; the result ignores the lowest value."],
+	dicehelp: [
+		`/dice [max number] - Randomly picks a number between 1 and the number you choose.`,
+		`/dice [number of dice]d[number of sides] - Simulates rolling a number of dice, e.g., /dice 2d4 simulates rolling two 4-sided dice.`,
+		`/dice [number of dice]d[number of sides][+/-][offset] - Simulates rolling a number of dice and adding an offset to the sum, e.g., /dice 2d6+10: two standard dice are rolled; the result lies between 12 and 22.`,
+		`/dice [number of dice]d[number of sides]-[H/L] - Simulates rolling a number of dice with removal of extreme values, e.g., /dice 3d8-L: rolls three 8-sided dice; the result ignores the lowest value.`,
+	],
 
 	'!pickrandom': true,
 	pr: 'pickrandom',
@@ -1964,7 +2002,7 @@ exports.commands = {
 		const pickedOption = options[Math.floor(Math.random() * options.length)];
 		return this.sendReplyBox('<em>We randomly picked:</em> ' + Chat.escapeHTML(pickedOption).trim());
 	},
-	pickrandomhelp: ["/pick [option], [option], ... - Randomly selects an item from a list containing 2 or more elements."],
+	pickrandomhelp: [`/pick [option], [option], ... - Randomly selects an item from a list containing 2 or more elements.`],
 
 	showimage: function (target, room, user) {
 		if (!target) return this.parse('/help showimage');
@@ -2009,9 +2047,7 @@ exports.commands = {
 
 		this.sendReply('|raw|<img src="' + Chat.escapeHTML(image) + '" ' + 'style="width: ' + Chat.escapeHTML(width) + '; height: ' + Chat.escapeHTML(height) + '" />');
 	},
-	showimagehelp: ["/showimage [url], [width], [height] - Show an image. " +
-		"Any CSS units may be used for the width or height (default: px)." +
-		"Requires: # & ~"],
+	showimagehelp: [`/showimage [url], [width], [height] - Show an image. Any CSS units may be used for the width or height (default: px). Requires: # & ~`],
 
 	htmlbox: function (target, room, user, connection, cmd, message) {
 		if (!target) return this.parse('/help htmlbox');
@@ -2048,8 +2084,8 @@ exports.commands = {
 		this.addBox(target);
 	},
 	htmlboxhelp: [
-		"/htmlbox [message] - Displays a message, parsing HTML code contained.",
-		"!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #",
+		`/htmlbox [message] - Displays a message, parsing HTML code contained.`,
+		`!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #`,
 	],
 };
 
