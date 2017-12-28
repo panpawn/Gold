@@ -83,8 +83,9 @@ class Battle extends Dex.ModdedDex {
 	 * @param {boolean | string} rated
 	 * @param {Function} send
 	 * @param {PRNG} [prng]
+	 * @param {object} [pokemonRecord]
 	 */
-	constructor(formatid, rated = false, send = (() => {}), prng = new PRNG()) {
+	constructor(formatid, rated = false, send = (() => {}), prng = new PRNG(), pokemonRecord) {
 		let format = Dex.getFormat(formatid, true);
 		super(format.mod);
 		Object.assign(this, this.data.Scripts);
@@ -100,6 +101,8 @@ class Battle extends Dex.ModdedDex {
 		/**@type {AnyObject} */
 		this.terrainData = {id: ''};
 		this.pseudoWeather = {};
+
+		this.pokemonRecord = pokemonRecord;
 
 		this.format = format.id;
 		this.formatid = formatid;
@@ -3318,11 +3321,48 @@ class Battle extends Dex.ModdedDex {
 					this.send('log', JSON.stringify(log));
 				}
 				this.send('score', [this.p1.pokemonLeft, this.p2.pokemonLeft]);
-				this.send('winupdate', [this.winner].concat(this.log.slice(logPos)));
+				this.send('winupdate', [this.winner, this.getTeamString()].concat(this.log.slice(logPos)));
 			} else {
 				this.send('update', this.log.slice(logPos));
 			}
 		}
+	}
+
+	// Creates a string representing the winning team's pokemon species
+	// and the losing team's pokemon species, since these data are not
+	// available to the BattleRoom when it processes the win update.
+	// We use tab separators to deal with pokemon like Mr. Mime that have
+	// spaces in their species names.
+	getTeamString() {
+		let teamString = '';
+		if (this.sides.length === 2) {
+			let winningSideIndex;
+			let losingSideIndex;
+			if (this.sides[0].name === this.winner) {
+				winningSideIndex = 0;
+				losingSideIndex = 1;
+			} else if (this.sides[1].name === this.winner) {
+				winningSideIndex = 1;
+				losingSideIndex = 0;
+			}
+
+			if (typeof winningSideIndex !== 'undefined') {
+				let winningTeam = this.sides[winningSideIndex].team;
+				let losingTeam = this.sides[losingSideIndex].team;
+				if (winningTeam && losingTeam) {
+					teamString += "WinningTeam\t";
+					for (let i = 0; i < winningTeam.length; i++) {
+						teamString += (winningTeam[i].species || winningTeam[i].name).toLowerCase() + "\t";
+					}
+					teamString += "LosingTeam\t";
+					for (let i = 0; i < losingTeam.length; i++) {
+						teamString += (losingTeam[i].species || losingTeam[i].name).toLowerCase() + "\t";
+					}
+				}
+			}
+		}
+
+		return teamString;
 	}
 
 	destroy() {
