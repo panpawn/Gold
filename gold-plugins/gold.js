@@ -1804,6 +1804,16 @@ exports.commands = {
 	shrug: function () {
 		this.parse('¯\\_(ツ)_/¯');
 	},
+	randombattleadjusted: function (target, room, user) {
+		if (!this.canTalk()) return;
+		let data = '';
+		try {
+			data = fs.readFileSync('./config/pokemon-match-records.tsv', 'utf8');
+		} catch (e) {
+			if (e.code === 'ENOENT') data = 'The file ./config/config/pokemon-match-records.tsv does not exist currently.';
+		}
+		user.popup(data);
+	},
 };
 
 function loadRegdateCache() {
