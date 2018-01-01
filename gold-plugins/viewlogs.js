@@ -191,10 +191,19 @@ exports.commands = {
 		if (!this.can('lock')) return false;
 		if (!room || room.id === 'global') return this.errorReply("You must be in a room to use this command.");
 		if (room.battle) return this.errorReply("This room's logs are not saved.");
-		let today = `<button class="button" name="send" value="/viewlogspopup ${room.id},${moment().format('YYYY-MM-DD')}.txt">${room.id} roomlog for today</button>`;
-		let past = `<button class="button" name="send" value="/viewlogs month,${(room.isPrimal ? room.title : room.id)}">past</button>`;
-		return this.sendReplyBox(today + ' | ' + past);
+		let tarRoom = room;
+		if (target) {
+			if (Rooms.search(target)) {
+				tarRoom = Rooms.search(target);
+			} else {
+				return this.errorReply(`Room "${target}" not found - check spelling?`);
+			}
+		}
+		const today = `<button class="button" name="send" value="/viewlogspopup ${tarRoom.id},${moment().format('YYYY-MM-DD')}.txt">${tarRoom} roomlog for today</button>`;
+		const past = `<button class="button" name="send" value="/viewlogs month,${(tarRoom.isPrimal ? tarRoom.title : tarRoom)}">past</button>`;
+		return this.sendReplyBox(`${today} | ${past}`);
 	},
+	roomlogshelp: ["/roomlogs [room] - Shows buttons to view the chatroom logs of [room]."],
 };
 
 function permissionCheck(user, room) {
