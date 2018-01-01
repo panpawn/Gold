@@ -75,7 +75,7 @@ function getAdded(user) {
 			}
 		});
 	});
-	if (output.length < 1) output.push("No one has added this user to their friendslist yet.");
+	if (!output.length) output.push("No one has added this user to their friendslist yet.");
 	reply += output;
 	return reply;
 }
@@ -163,7 +163,7 @@ exports.commands = {
 		case 'clear':
 		case 'deleteall':
 		case 'removeall':
-			if (!Friends[user.userid] || Friends[user.userid].lenth < 1) return this.errorReply("You do not have any friends added to your friendslist yet.");
+			if (!Friends[user.userid] || !Friends[user.userid].length) return this.errorReply("You do not have any friends added to your friendslist yet.");
 			if (user.lastCommand !== '/friendslist removeall') {
 				user.lastCommand = '/friendslist removeall';
 				this.errorReply("This command will clear your friendslist entirely.");
@@ -203,14 +203,14 @@ exports.commands = {
 		default:
 			if (!this.runBroadcast()) return;
 			if (!target[0]) {
-				if (!Friends[user.userid] || Friends[user.userid].length < 1) {
+				if (!Friends[user.userid] || !Friends[user.userid].length) {
 					this.parse('/help friendslist');
 					return this.errorReply("You do not have any friends added to your friendslist yet.");
 				}
 				return this.sendReplyBox(formatList(user.userid, user.userid));
 			} else {
 				target[0] = toId(target[0]);
-				if (!Friends[target[0]] || Friends[target[0]].length < 1 || target[0] === 'constructor') {
+				if (!Friends[target[0]] || !Friends[target[0]].length || target[0] === 'constructor') {
 					return this.errorReply("This user does not have any friends added to their friendslist yet.");
 				}
 				return this.sendReplyBox(formatList(target[0], user.userid));
