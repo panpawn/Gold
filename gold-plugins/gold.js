@@ -343,10 +343,10 @@ exports.commands = {
 		if (!this.can('pban')) return false;
 		if (room.battle) return this.sendReply("You cannot clearall in battle rooms.");
 
-		let len = room.log.length;
+		let len = room.log.log.length;
 		let users = [];
 		while (len--) {
-			room.log[len] = '';
+			room.log.log[len] = '';
 		}
 		for (let u in room.users) {
 			if (!Users.get(u) || !Users.get(u).connected) continue;
