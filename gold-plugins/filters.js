@@ -112,8 +112,8 @@ Config.namefilter = function (name, user) {
 	const trusted = trustedHack(nameId);
 
 	if (Config.autoSbanIps && Config.autoSbanIps.includes(ip)) {
-		Users.ShadowBan.addUser(user);
-		Monitor.log(`[IPShadowBanMonitor] SHADOWBANNED: ${name}`);
+		const added = Users.ShadowBan.addUser(user, true);
+		if (added) Monitor.log(`[IPShadowBanMonitor] SHADOWBANNED: ${name}`);
 		return;
 	}
 

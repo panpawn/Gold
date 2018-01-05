@@ -1,7 +1,8 @@
 'use strict';
 
 const ROOM_NAME = "Shadow Ban Room";
-let room = Rooms.get(toId(ROOM_NAME));
+const room = Rooms.get(toId(ROOM_NAME));
+
 if (!room) {
 	Rooms.global.addChatRoom(ROOM_NAME);
 	room = Rooms.get(toId(ROOM_NAME));
@@ -98,7 +99,15 @@ exports.checkBanned = function (user) {
 	return true;
 };
 
-let addUser = exports.addUser = function (user) {
+let addUser = exports.addUser = function (user, force) {
+	if (force) {
+		const u = toId(user);
+		if (room.addedUsers[u]) return false;
+		room.addedUsers[u] = 1;
+		room.add(`||Added user: ${u}`).update();
+		Rooms.global.writeChatRoomData();
+	}
+
 	let targets = getAllAlts(user);
 	for (let u in targets) {
 		if (room.addedUsers[u]) {
@@ -112,8 +121,7 @@ let addUser = exports.addUser = function (user) {
 
 	if (targets.length > 0) {
 		Rooms.global.writeChatRoomData();
-		room.add("||Added users: " + targets.join(", "));
-		room.update();
+		room.add("||Added users: " + targets.join(", ")).update();
 	}
 
 	return targets;
