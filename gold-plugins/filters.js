@@ -97,12 +97,26 @@ function loadBannedNames() {
 loadBannedNames();
 
 
-Config.namefilter = function (name, user) {
-	let badNames = Config.bannedNames, badHosts = Object.keys(Gold.lockedHosts), nameId = toId(name);
-	for (let x in badNames) {
-		if (nameId.indexOf(badNames[x]) > -1 && badNames[x] !== '') {
-			Monitor.log('[NameFilter] should probably FR: ' + name);
+Chat.namefilter = function (name, user) {
+	const badHosts = Object.keys(Gold.lockedHosts);
+	const nameId = toId(name);
+
+	let badNameMatch = false;
+	Config.bannedNames.forEach(badName => {
+		if (badNameMatch) return;
+		if (badName && nameId.includes(badName)) {
+			badNameMatch = true;
 		}
+	});
+	if (badNameMatch) {
+		user.send('|nametaken||Your name contains a banned word. Please change it to something appropriate.');
+		user.forceRenamed = name;
+		return false;
+	}
+
+	if (user.forceRenamed) {
+		Monitor.log(`[NameMonitor] ${name} (forcerenamed from ${user.forceRenamed})`);
+		user.forceRenamed = undefined;
 	}
 
 	// Hostfilter stuff

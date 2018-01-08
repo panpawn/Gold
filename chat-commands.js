@@ -2301,11 +2301,13 @@ exports.commands = {
 		}
 		if (!this.can('forcerename', targetUser)) return false;
 
+		const prevName = targetUser.name;
 		let entry = targetUser.name + " was forced to choose a new name by " + user.name + (reason ? ": " + reason : "");
 		this.privateModCommand("(" + entry + ")");
 		Ladders.cancelSearches(targetUser);
 		targetUser.resetName(true);
 		targetUser.send("|nametaken||" + user.name + " considers your name inappropriate" + (reason ? ": " + reason : "."));
+		targetUser.forceRenamed = `${prevName}${reason ? `, ${reason}` : ``}`;
 		//return true;
 	},
 	forcerenamehelp: [`/forcerename OR /fr [username], [reason] - Forcibly change a user's name and shows them the [reason]. Requires: % @ * & ~`],
