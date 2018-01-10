@@ -45,7 +45,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 	// advertising
 	let pre_matches = (message.match(/[pP][sS][iI][mM].[uU][sS]|[pP][sS][iI][mM] [uU][sS]|[pP][sS][mM].[uU][sS]|[pP][sS][mM] [uU][sS]/g) || []).length;
 	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server); }).length : 0);
-	if (!user.can('hotpatch') && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
+	if (!user.can('hotpatch') && (targetUser && !targetUser.can('lock')) && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
 		if (user.locked) return false;
 		if (!Users.ShadowBan.checkBanned(user)) {
 			Users.ShadowBan.addUser(user);
@@ -73,10 +73,9 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 
 	return message;
 };
-Config.chatfilter = exports.chatfilter;
 
 function modlog(message) {
-	fs.appendFile(`logs/modlog/modlog_staff.txt`, `[${(new Date().toJSON())}] (staff) ${message}\n`);
+	fs.appendFileSync(`logs/modlog/modlog_staff.txt`, `[${(new Date().toJSON())}] (staff) ${message}\n`);
 }
 /*********************
  * Namefilter Magic *

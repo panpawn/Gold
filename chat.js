@@ -1273,7 +1273,10 @@ Chat.loadPlugins = function () {
 	// finally, load custom Gold plugins
 	for (let file of FS('gold-plugins/').readdirSync()) {
 		if (file.substr(-3) !== '.js') continue;
-		Object.assign(commands, require('./gold-plugins/' + file).commands);
+		const plugin = require(`./gold-plugins/${file}`);
+		Object.assign(commands, plugin.commands);
+
+		if (plugin.chatfilter) Chat.filters.push(plugin.chatfilter);
 	}
 };
 
