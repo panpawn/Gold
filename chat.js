@@ -677,14 +677,19 @@ class CommandContext {
 	sendModCommand(data) {
 		this.room.sendModsByUser(this.user, data);
 	}
-	/**
-	 * @param {string} data
-	 * @param {?string} logOnlyText
-	 */
+
 	privateModCommand(data, logOnlyText) {
 		this.room.sendModsByUser(this.user, data);
 		this.roomlog(data);
 		this.room.modlog('(' + this.room.id + ') ' + data + (logOnlyText || ""));
+		// throw new Error(`this.privateModCommand has been renamed to this.privateModAction, which no longer writes to modlog.`);
+	}
+	/**
+	 * @param {string} msg
+	 */
+	privateModAction(msg) {
+		this.room.sendMods(msg);
+		this.roomlog(msg);
 	}
 	/**
 	 * @param {string} action
@@ -699,10 +704,41 @@ class CommandContext {
 			let userid = user.getLastId();
 			buf += `[${userid}]`;
 			if (user.autoconfirmed && user.autoconfirmed !== userid) buf += ` ac:[${user.autoconfirmed}]`;
+			const alts = user.getAltUsers(false, true).map(user => user.getLastName()).join(', ');
+			if (alts.length) buf += ` alts:[${alts}]`;
 			buf += ` [${user.latestIp}]`;
 		}
 		buf += note;
+
 		Rooms.global.modlog(buf);
+		this.room.modlog(buf);
+	}
+	/**
+	 * @param {string} action
+	 * @param {string | User} user
+	 * @param {string} note
+	 * @param {object} options
+	 */
+	modlog(action, user, note, options = {}) {
+		let buf = `(${this.room.id}) ${action}: `;
+		if (user) {
+			if (typeof user === 'string') {
+				buf += `[${toId(user)}]`;
+			} else {
+				let userid = user.getLastId();
+				buf += `[${userid}]`;
+				if (!options.noalts) {
+					if (user.autoconfirmed && user.autoconfirmed !== userid) buf += ` ac:[${user.autoconfirmed}]`;
+					const alts = user.getAltUsers(false, true).map(user => user.getLastName()).join(', ');
+					if (alts.length) buf += ` alts:[${alts}]`;
+				}
+				if (!options.noip) buf += ` [${user.latestIp}]`;
+			}
+		}
+		buf += ` by ${this.user.userid}`;
+		if (note) buf += `: ${note}`;
+
+		this.room.modlog(buf);
 	}
 	/**
 	 * @param {string} data
@@ -711,19 +747,20 @@ class CommandContext {
 		if (this.pmTarget) return;
 		this.room.roomlog(data);
 	}
-	/**
-	 * @param {string} text
-	 * @param {?string} logOnlyText
-	 */
+	logEntry(data) {
+		this.roomlog(data);
+		// throw new Error(`this.logEntry has been renamed to this.roomlog.`);
+	}
 	addModCommand(text, logOnlyText) {
 		this.room.addByUser(this.user, text);
 		this.room.modlog('(' + this.room.id + ') ' + text + (logOnlyText || ""));
+		// throw new Error(`this.addModCommand has been renamed to this.addModAction, which no longer writes to modlog.`);
 	}
 	/**
-	 * @param {string} text
+	 * @param {string} msg
 	 */
-	logModCommand(text) {
-		this.room.modlog('(' + this.room.id + ') ' + text);
+	addModAction(msg) {
+		this.room.addByUser(this.user, msg);
 	}
 	update() {
 		if (this.room) this.room.update();
