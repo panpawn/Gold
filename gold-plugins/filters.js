@@ -70,6 +70,13 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 		}
 	}
 
+	if (room && room.id === 'lobby') { // lag test messages
+		if (message.toLocaleString() === 'test' || message === '.' || toId(message) === 'lagtest' || toId(message) === 'testlag') {
+			user.sendTo(room.id, `|c:|${~~(Date.now() / 1000)}|${user.getIdentity(room.id)}|${message}`);
+			return false;
+		}
+	}
+
 	return message;
 };
 
