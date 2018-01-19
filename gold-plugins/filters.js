@@ -31,13 +31,12 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 	for (let x in bannedMessages) {
 		if (message.toLowerCase().indexOf(bannedMessages[x]) > -1 && bannedMessages[x] !== '' && message.substr(0, 1) !== '/') {
 			if (user.locked) return false;
-			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, "Said a banned word: " + bannedMessages[x]);
-			user.popup('You have been automatically locked for sending a message containing a banned word.');
-			Monitor.log('[PornMonitor] LOCKED/SHADOWBANNED: ' + user.name + ' __(' + (room ? 'In ' + room.id : 'Private message to ' + targetUser.name) + ')__ for trying to say "' + message + '"');
+			Punishments.lock(user, Date.now() + 7 * 24 * 60 * 60 * 1000, null, `Attempted to link an inappropriate website`);
+			user.popup('You have been automatically locked for sending a message containing an inappropriate website.');
+			Monitor.log(`[PornMonitor] LOCKED: ${user.name} ${room ? `<<${room.id}>>` : `(PM to ${targetUser.name})`} for trying to say "${message}"`);
 			modlog(`${user.name} was locked from talking by the Server (${bannedMessages[x]}) (${connection.ip})`);
-			Gold.pmUpperStaff(user.name + ' has been automatically locked/shadowbanned for sending a message containing a banned word' +
+			Gold.pmUpperStaff(user.name + ' has been automatically locked for sending a message containing a banned word' +
 			(room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + ' **Message:** ' + message, '~Server');
-			Users.ShadowBan.addUser(user);
 			return false;
 		}
 	}
@@ -45,14 +44,14 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 	// advertising
 	let pre_matches = (message.match(/[pP][sS][iI][mM].[uU][sS]|[pP][sS][iI][mM] [uU][sS]|[pP][sS][mM].[uU][sS]|[pP][sS][mM] [uU][sS]/g) || []).length;
 	let final_check = (pre_matches >= 1 ? adWhitelist.filter(server => { return ~message.indexOf(server); }).length : 0);
-	if (!user.can('hotpatch') && (targetUser && !targetUser.can('lock')) && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
-		if (user.locked) return false;
-		if (!Users.ShadowBan.checkBanned(user)) {
-			Users.ShadowBan.addUser(user);
-			modlog(`${user.name} was shadow banned by the Server. (Advertising) (${connection.ip})`);
-			Gold.pmUpperStaff(user.name + " has been sbanned for attempting to advertise" + (room ? ". **Room:**" + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message, "~Server");
-			Monitor.log("[AdvMonitor] SHADOWBANNED: " + user.name + (room ? ". **Room:** " + room.id : " in a private message to " + targetUser.name + ".") + " **Message:** " + message);
+	if (!user.can('lock') && (pre_matches >= 1 && final_check === 0 || pre_matches >= 2 && final_check >= 1 || message.match(adRegex))) {
+		const location = (room ? ` in <<${room.id}>>` : `(in a PM to ${targetUser.name})`);
+		if (room && !room.isPrivate) {
+			user.sendTo(room.id, `|html|<div class="message-error">Advertising other servers is against our rules, so your message was not sent.</div>`);
+			Monitor.log(`[AdvMonitor] ${user.name} tried to say: "${message}" ${location}`);
 			return false;
+		} else { // PMs
+			Monitor.log(`[AdvMonitor] ${user.name} said: "${message}" ${location}`);
 		}
 	}
 
