@@ -394,6 +394,7 @@ exports.grouplist = [
 		globalonly: true,
 		tournamentsmanagement: true,
 		gamemanagement: true,
+		exportinputlog: true,
 	},
 	{
 		symbol: '#',
@@ -425,6 +426,7 @@ exports.grouplist = [
 		roomonly: true,
 		tournamentsmanagement: true,
 		gamemanagement: true,
+		joinbattle: true,
 	},
 	{
 		symbol: '\u2606',

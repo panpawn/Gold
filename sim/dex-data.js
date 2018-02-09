@@ -214,6 +214,8 @@ class RuleTable extends Map {
 		 * @type {[string, string, number, string[]][]}
 		 */
 		this.complexTeamBans = [];
+		/** @type {[Function, string]?} */
+		this.checkLearnset = null;
 	}
 	/**
 	 * @param {string} thing
@@ -366,6 +368,11 @@ class Format extends Effect {
 		this.challengeShow = this.challengeShow;
 		/** @type {boolean | undefined} */
 		this.tournamentShow = this.tournamentShow;
+
+		/** @type {AnyObject?} */
+		this.timer = this.timer;
+		/** @type {boolean} */
+		this.noLog = !!this.noLog;
 
 		/**
 		 * @type {((this: Validator, set: PokemonSet, teamHas: AnyObject) => string[] | false)?}
@@ -578,9 +585,16 @@ class Template extends Effect {
 		 * Other forms. List of names of cosmetic forms. These should have
 		 * `aliases.js` aliases to this entry, but not have their own
 		 * entry in `pokedex.js`.
-		 * @type {?string[]}
+		 * @type {string[]?}
 		 */
 		this.otherForms = this.otherForms || null;
+
+		/**
+		 * Other formes. List of names of formes, appears only on the base
+		 * forme. Unlike forms, these have their own entry in `pokedex.js`.
+		 * @type {string[]?}
+		 */
+		this.otherFormes = this.otherFormes || null;
 
 		/**
 		 * Forme letter. One-letter version of the forme name. Usually the
@@ -627,6 +641,13 @@ class Template extends Effect {
 		 * @type {string}
 		 */
 		this.tier = this.tier || '';
+
+		/**
+		 * Doubles Tier. The Pokemon's location in the Smogon doubles tier system.
+		 * Do not use for LC bans.
+		 * @type {string}
+		 */
+		this.doublesTier = this.doublesTier || '';
 
 		/**
 		 * Evolutions. Array because many Pokemon have multiple evolutions.
