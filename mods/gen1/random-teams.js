@@ -225,7 +225,7 @@ class RandomGen1Teams extends RandomGen2Teams {
 		return pokemon;
 	}
 	// Random set generation for Gen 1 Random Battles.
-	randomSet(template, slot, usePokemonRecord) {
+	randomSet(template, slot) {
 		if (slot === undefined) slot = 1;
 		template = this.getTemplate(template);
 		if (!template.exists) template = this.getTemplate('pikachu'); // Because Gen 1.
@@ -338,27 +338,21 @@ class RandomGen1Teams extends RandomGen2Teams {
 			} // End of the check for more than 4 moves on moveset.
 		}
 
-		let level;
-		if (usePokemonRecord) {
-			level = parseInt(this.pokemonRecord[template.name.toLowerCase()].level);
-		} else {
-			let levelScale = {
-				LC: 88,
-				NFE: 80,
-				UU: 74,
-				OU: 68,
-				Uber: 65,
-			};
+		let levelScale = {
+			LC: 88,
+			NFE: 80,
+			UU: 74,
+			OU: 68,
+			Uber: 65,
+		};
 
-			let customScale = {
-				Mewtwo: 62,
-				Caterpie: 99, Metapod: 99, Weedle: 99, Kakuna: 99, Magikarp: 99,
-				Ditto: 88,
-			};
-
-			level = levelScale[template.tier] || 80;
-			if (customScale[template.name]) level = customScale[template.name];
-		}
+		let customScale = {
+			Mewtwo: 62,
+			Caterpie: 99, Metapod: 99, Weedle: 99, Kakuna: 99, Magikarp: 99,
+			Ditto: 88,
+		};
+		let level = levelScale[template.tier] || 80;
+		if (customScale[template.name]) level = customScale[template.name];
 
 		return {
 			name: template.name,
@@ -371,35 +365,6 @@ class RandomGen1Teams extends RandomGen2Teams {
 			shiny: false,
 			gender: false,
 		};
-	}
-	// Random team generation for Gen 1 Auto Level Adjusted Random Battles.
-	// This format automatically adjusts pokemon levels so that each pokemon
-	// has equal value on a team on average. As such, we remove a lot of the
-	// logic in the standard random team generation that serves to balance
-	// pokemon.
-	randomAutoLevelAdjustedTeam(side) {
-		let pokemonLeft = 0;
-		let pokemon = [];
-
-		let n = 1;
-		let pokemonPool = [];
-		for (let id in this.data.FormatsData) {
-			// FIXME: Not ES-compliant
-			if (n++ > 151 || !this.data.FormatsData[id].randomBattleMoves) continue;
-			pokemonPool.push(id);
-		}
-
-		while (pokemonPool.length && pokemonLeft < 6) {
-			let template = this.getTemplate(this.sampleNoReplace(pokemonPool));
-			if (!template.exists) continue;
-
-			let set = this.randomSet(template, pokemon.length, true);
-			pokemon.push(set);
-
-			pokemonLeft++;
-		}
-
-		return pokemon;
 	}
 }
 

@@ -979,7 +979,7 @@ class ModdedDex {
 	 */
 	getTeamGenerator(format, seed) {
 		const TeamGenerator = require(dexes['base'].forFormat(format).dataDir + '/random-teams');
-		return new TeamGenerator(format, seed, this.pokemonRecord);
+		return new TeamGenerator(format, seed);
 	}
 	/**
 	 * @param {Format} format
