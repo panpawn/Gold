@@ -202,40 +202,40 @@ try {
 			let badgeList = {
 				'dev': {
 					title: 'Developer',
-					img: 'http://www.smogon.com/media/forums/images/badges/factory_foreman.png',
+					img: 'http://smogon.com/forums/media/badges/factory_foreman.png',
 				}, 'admin': {
 					title: 'Server Administrator',
-					img: 'http://www.smogon.com/media/forums/images/badges/sop.png',
+					img: 'http://smogon.com/forums/media/badges/sop.png',
 				}, 'fgs': {
 					title: 'Former Gold Staff',
-					img: 'http://www.smogon.com/media/forums/images/badges/forummod_alum.png',
+					img: 'http://smogon.com/forums/media/badges/forummod_alum.png',
 				}, 'leader': {
 					title: 'Server Leader',
-					img: 'http://www.smogon.com/media/forums/images/badges/aop.png',
+					img: 'http://smogon.com/forums/media/badges/aop.png',
 				}, 'mod': {
 					title: 'Exceptional Staff Member',
-					img: 'http://www.smogon.com/media/forums/images/badges/pyramid_king.png',
+					img: 'http://smogon.com/forums/media/badges/pyramid_king.png',
 				}, 'rf': {
 					title: 'Successful Room Founder',
-					img: 'http://www.smogon.com/media/forums/images/badges/forumsmod.png',
+					img: 'http://smogon.com/forums/media/badges/forumsmod.png',
 				}, 'comcun': {
 					title: 'Community Contributor',
-					img: 'http://www.smogon.com/media/forums/images/badges/cc.png',
+					img: 'http://smogon.com/forums/media/badges/cc.png',
 				}, 'art': {
 					title: 'Artist',
-					img: 'http://www.smogon.com/media/forums/images/badges/ladybug.png',
+					img: 'http://smogon.com/forums/media/badges/ladybug.png',
 				}, 'vip': {
 					title: 'VIP User',
-					img: 'http://www.smogon.com/media/forums/images/badges/zeph.png',
+					img: 'http://smogon.com/forums/media/badges/zeph.png',
 				}, 'twinner': {
 					title: 'Special Event Winner',
-					img: 'http://www.smogon.com/media/forums/images/badges/spl.png',
+					img: 'http://smogon.com/forums/media/badges/spl.png',
 				}, 'creator': {
 					title: 'Server Creator',
-					img: 'http://www.smogon.com/media/forums/images/badges/dragon.png',
+					img: 'http://smogon.com/forums/media/badges/dragon.png',
 				}, 'udc': {
 					title: 'UDC Winner',
-					img: 'http://www.smogon.com/media/forums/images/badges/worldcup.png',
+					img: 'http://smogon.com/forums/media/badges/worldcup.png',
 				},
 			};
 			if (displayall) {
