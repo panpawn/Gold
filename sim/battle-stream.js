@@ -13,6 +13,7 @@
 
 const Streams = require('./../lib/streams');
 const Battle = require('./battle');
+const PokemonRecord = require('./../pokemon-record');
 
 /**
  * Like string.split(delimiter), but only recognizes the first `limit`
@@ -94,6 +95,7 @@ class BattleStream extends Streams.ObjectReadWriteStream {
 				if (Array.isArray(data)) data = data.join("\n");
 				this.push(`${type}\n${data}`);
 			};
+			PokemonRecord.loadPokemonRecord();
 			this.battle = new Battle(options);
 			break;
 		case 'player':
