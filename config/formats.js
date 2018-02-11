@@ -407,11 +407,11 @@ exports.Formats = [
 
 		mod: 'sharedpower',
 		ruleset: ['[Gen 7] OU', 'Evasion Abilities Clause'],
-		banlist: ['Gyarados-Mega', 'Shedinja', 'Emergency Exit ++ Regenerator', 'Wimp Out ++ Regenerator'],
+		banlist: ['Beedrill-Mega', 'Gyarados-Mega', 'Shedinja', 'Emergency Exit ++ Regenerator', 'Wimp Out ++ Regenerator'],
 		unbanlist: ['Aegislash', 'Blaziken', 'Blaziken-Mega', 'Deoxys-Defense'],
 		restrictedAbilities: [
-			'Chlorophyll', 'Comatose', 'Fluffy', 'Fur Coat', 'Huge Power', 'Illusion', 'Imposter', 'Mold Breaker',
-			'Protean', 'Pure Power', 'Quick Feet', 'Rattled', 'Sand Rush', 'Simple', 'Slush Rush', 'Speed Boost',
+			'Chlorophyll', 'Comatose', 'Fluffy', 'Fur Coat', 'Harvest', 'Huge Power', 'Illusion', 'Imposter', 'Mold Breaker',
+			'Multiscale', 'Protean', 'Pure Power', 'Quick Feet', 'Rattled', 'Sand Rush', 'Simple', 'Slush Rush', 'Speed Boost',
 			'Surge Surfer', 'Swift Swim', 'Teravolt', 'Tinted Lens', 'Trace', 'Unburden', 'Water Bubble', 'Weak Armor',
 		],
 		onBeforeSwitchIn: function (pokemon) {
@@ -456,7 +456,7 @@ exports.Formats = [
 		maxLevel: 50,
 		defaultLevel: 50,
 		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
-		banlist: ['Combusken', 'Eviolite', 'Light Ball', 'Shadow Tag'],
+		banlist: ['Combusken', 'Eviolite', 'Light Ball', 'Shadow Tag', 'Conversion'],
 		onValidateSet: function (set) {
 			let template = this.getTemplate(set.species);
 			if (!template.prevo) return [`${set.species} is not an evolved Pokemon.`];
@@ -836,7 +836,7 @@ exports.Formats = [
 		name: "[Gen 6] OU",
 		desc: [
 			`&bullet; <a href="http://www.smogon.com/dex/xy/tags/ou/">ORAS OU Banlist</a>`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3596900/">ORAS OU Viability Rankings</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3623399/">ORAS OU Viability Rankings</a>`,
 		],
 
 		mod: 'gen6',
@@ -1343,8 +1343,8 @@ exports.Formats = [
 
 		mod: 'gen4',
 		searchShow: false,
-		ruleset: ['Pokemon', 'Standard'],
-		banlist: ['Uber', 'OU', 'BL', 'UU', 'BL2'],
+		ruleset: ['[Gen 4] UU'],
+		banlist: ['UU', 'BL2'],
 	},
 	{
 		name: "[Gen 4] Custom Game",
@@ -1437,6 +1437,15 @@ exports.Formats = [
 		mod: 'gen2',
 		searchShow: false,
 		ruleset: ['Pokemon', 'Standard'],
+	},
+	{
+		name: "[Gen 2] UU",
+		desc: [`&bullet; <a href="http://www.smogon.com/forums/threads/3576710/">GSC UU</a>`],
+
+		mod: 'gen2',
+		searchShow: false,
+		ruleset: ['[Gen 2] OU'],
+		banlist: ['OU', 'BL'],
 	},
 	{
 		name: "[Gen 2] Custom Game",
