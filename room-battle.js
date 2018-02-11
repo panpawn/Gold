@@ -13,7 +13,10 @@
 
 'use strict';
 
+const fs = require('fs');
 const FS = require('./lib/fs');
+
+const PokemonRecord = require('./pokemon-record');
 
 /** 5 seconds */
 const TICK_TIME = 5;
@@ -342,6 +345,7 @@ class Battle {
 	 */
 	constructor(room, formatid, options) {
 		let format = Dex.getFormat(formatid, true);
+
 		this.gameid = 'battle';
 		this.id = room.id;
 		/** @type {GameRoom} */
@@ -351,6 +355,11 @@ class Battle {
 		this.allowRenames = (!options.rated && !options.tour);
 
 		this.format = formatid;
+
+		if (this.format === 'gen1randomautoleveladjusted') {
+			PokemonRecord.loadPokemonRecord();
+		}
+
 		/**
 		 * The lower player's rating, for searching purposes.
 		 * 0 for unrated battles. 1 for unknown ratings.
@@ -608,16 +617,102 @@ class Battle {
 
 		case 'end':
 			this.logData = JSON.parse(lines[1]);
+
 			this.score = this.logData.score;
 			this.inputLog = this.logData.inputLog;
 			this.started = true;
 			if (!this.ended) {
 				this.ended = true;
+				if (this.format === 'gen1randomautoleveladjusted') {
+					this.updateRecord(this.logData);
+				}
 				this.onEnd(this.logData.winner);
 				this.removeAllPlayers();
 			}
 			this.checkActive();
 			break;
+		}
+	}
+
+	updateRecord(logData) {
+		let winner = logData.winner;
+		let p1 = logData.p1;
+		let p2 = logData.p2;
+		let winnerPokemon;
+		let loserPokemon;
+		if (winner === p1) {
+			winnerPokemon = logData.p1team;
+			loserPokemon = logData.p2team;
+		} else if (winner === p2) {
+			winnerPokemon = logData.p2team;
+			loserPokemon = logData.p1team;
+		}
+
+		if (!loserPokemon || !loserPokemon.length || !winnerPokemon || !winnerPokemon.length) {
+			return;
+		}
+
+		let speciesInBattle = {};
+
+		for (let i = 0; i < winnerPokemon.length; i++) {
+			let species = winnerPokemon[i].species || winnerPokemon[i].name;
+			if (species) {
+				species = species.toLowerCase();
+			}
+			speciesInBattle[species] = 'win';
+			global.pokemonRecord[species].wins++;
+		}
+		for (let i = 0; i < loserPokemon.length; i++) {
+			let species = loserPokemon[i].species || loserPokemon[i].name;
+			if (species) {
+				species = species.toLowerCase();
+			}
+			speciesInBattle[species] = 'loss';
+			global.pokemonRecord[species].losses++;
+		}
+
+		if (!this.saving) {
+			this.saving = true;
+			let stream = fs.createWriteStream('config/pokemon-match-records.tsv');
+			stream.write('Species\tNumWins\tNumLosses\tLevel\n');
+
+			for (let species in global.pokemonRecord) {
+				let wins = parseInt(global.pokemonRecord[species].wins);
+				let losses = parseInt(global.pokemonRecord[species].losses);
+				let level = parseInt(global.pokemonRecord[species].level);
+				let winProportion = wins / (wins + losses);
+
+				// Adjust the level if the win proportion (x) does not satisfy
+				// 0.49 < x < 0.51, the pokmeon appeared in this battle, and a
+				// random factor is satisfied. The random factor is used to
+				// prevent too much level sliding as we wait for the win
+				// proportion to adjust over many matches.
+				if (speciesInBattle[species]) {
+					let adjust = false;
+					if (winProportion >= 0.51 && level > 1) {
+						adjust = -1;
+					} else if (winProportion <= 0.49 && level < 100) {
+						adjust = 1;
+					}
+
+					if (adjust !== false) {
+						// It should be harder to adjust the level as we have
+						// more data, so if there is a win proportion
+						// discrepancy, the chance to adjust the level is
+						// 1 / sqrt(totalMatches). So e.g. at 100 matches,
+						// the chance to adjust is 1/10.
+						if (Math.random() < 1 / Math.sqrt(wins + losses)) {
+							level += adjust;
+							global.pokemonRecord[species].level = level;
+						}
+					}
+				}
+
+				stream.write(species + '\t' + wins + '\t' + losses + '\t' + level + '\n');
+			}
+
+			stream.end();
+			this.saving = false;
 		}
 	}
 	/**

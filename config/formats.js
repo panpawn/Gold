@@ -1610,4 +1610,11 @@ exports.Formats = [
 		ruleset: ['Team Preview', 'Sleep Clause Mod', 'Pokemon', 'Standard', 'Baton Pass Clause', 'Mega Rayquaza Clause'],
 		banlist: ['Moody', 'Shadow Tag', 'Double Team', 'Fissure', 'Guillotine', 'Horn Drill', 'Minimize', 'Sheer Cold', 'Swagger', ' Red Orb', 'Blue Orb', 'Gengarite', 'Salamencite'],
 	},
+	{
+		name: "[Gen 1] Random Auto Level Adjusted",
+
+		mod: 'gen1',
+		team: 'randomAutoLevelAdjusted',
+		ruleset: ['Pokemon', 'Standard'],
+	},
 ];
