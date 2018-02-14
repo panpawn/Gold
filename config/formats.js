@@ -407,41 +407,39 @@ exports.Formats = [
 
 		mod: 'sharedpower',
 		ruleset: ['[Gen 7] OU', 'Evasion Abilities Clause'],
-		banlist: ['Beedrill-Mega', 'Gyarados-Mega', 'Shedinja', 'Emergency Exit ++ Regenerator', 'Wimp Out ++ Regenerator'],
+		banlist: ['Gyarados-Mega', 'Shedinja', 'Emergency Exit ++ Regenerator', 'Wimp Out ++ Regenerator', 'Prankster ++ Substitute'],
 		unbanlist: ['Aegislash', 'Blaziken', 'Blaziken-Mega', 'Deoxys-Defense'],
 		restrictedAbilities: [
-			'Chlorophyll', 'Comatose', 'Fluffy', 'Fur Coat', 'Harvest', 'Huge Power', 'Illusion', 'Imposter', 'Mold Breaker',
-			'Multiscale', 'Protean', 'Pure Power', 'Quick Feet', 'Rattled', 'Sand Rush', 'Simple', 'Slush Rush', 'Speed Boost',
-			'Surge Surfer', 'Swift Swim', 'Teravolt', 'Tinted Lens', 'Trace', 'Unburden', 'Water Bubble', 'Weak Armor',
+			'Chlorophyll', 'Comatose', 'Fluffy', 'Fur Coat', 'Huge Power', 'Illusion', 'Imposter', 'Innards Out', 'Magic Guard',
+			'Mold Breaker', 'Protean', 'Pure Power', 'Quick Feet', 'Rattled', 'Sand Rush', 'Simple', 'Skill Link', 'Slush Rush',
+			'Speed Boost', 'Surge Surfer', 'Swift Swim', 'Teravolt', 'Tinted Lens', 'Trace', 'Unburden', 'Water Bubble', 'Weak Armor',
 		],
+		getSharedPower: function (pokemon) {
+			let sharedPower = new Set();
+			for (const ally of pokemon.side.pokemon) sharedPower.add(ally.baseAbility);
+			for (const ability of this.restrictedAbilities) sharedPower.delete(toId(ability));
+			sharedPower.delete(pokemon.baseAbility);
+			return sharedPower;
+		},
 		onBeforeSwitchIn: function (pokemon) {
-			let restrictedAbilities = this.getFormat().restrictedAbilities.map(toId);
-			for (const ally of pokemon.side.pokemon) {
-				if (ally.baseAbility !== pokemon.baseAbility && !restrictedAbilities.includes(ally.baseAbility)) {
-					let effect = 'ability' + ally.baseAbility;
-					pokemon.volatiles[effect] = {id: effect, target: pokemon};
-				}
+			for (const ability of this.getFormat().getSharedPower(pokemon)) {
+				let effect = 'ability' + ability;
+				pokemon.volatiles[effect] = {id: effect, target: pokemon};
 			}
 		},
 		onSwitchInPriority: 2,
 		onSwitchIn: function (pokemon) {
-			let restrictedAbilities = this.getFormat().restrictedAbilities.map(toId);
-			for (const ally of pokemon.side.pokemon) {
-				if (ally.baseAbility !== pokemon.baseAbility && !restrictedAbilities.includes(ally.baseAbility)) {
-					let effect = 'ability' + ally.baseAbility;
-					delete pokemon.volatiles[effect];
-					pokemon.addVolatile(effect);
-				}
+			for (const ability of this.getFormat().getSharedPower(pokemon)) {
+				let effect = 'ability' + ability;
+				delete pokemon.volatiles[effect];
+				pokemon.addVolatile(effect);
 			}
 		},
 		onAfterMega: function (pokemon) {
-			let restrictedAbilities = this.getFormat().restrictedAbilities.map(toId);
 			pokemon.removeVolatile('ability' + pokemon.baseAbility);
-			for (const ally of pokemon.side.pokemon) {
-				if (ally.baseAbility !== pokemon.baseAbility && !restrictedAbilities.includes(ally.baseAbility)) {
-					let effect = 'ability' + ally.baseAbility;
-					pokemon.addVolatile(effect);
-				}
+			for (const ability of this.getFormat().getSharedPower(pokemon)) {
+				let effect = 'ability' + ability;
+				pokemon.addVolatile(effect);
 			}
 		},
 	},
@@ -990,7 +988,7 @@ exports.Formats = [
 			'Aegislash', 'Altaria-Mega', 'Arceus', 'Blaziken', 'Charizard-Mega-X', 'Darkrai', 'Deoxys-Base', 'Deoxys-Attack', 'Dialga', 'Genesect', 'Gengar-Mega',
 			'Giratina', 'Greninja', 'Groudon', 'Ho-Oh', 'Hoopa-Unbound', 'Kangaskhan-Mega', 'Kyogre', 'Kyurem-White', 'Lucario-Mega', 'Lugia', 'Mawile-Mega', 'Metagross-Mega',
 			'Mewtwo', 'Palkia', 'Rayquaza', 'Reshiram', 'Sableye-Mega', 'Salamence-Mega', 'Shaymin-Sky', 'Slowbro-Mega', 'Talonflame', 'Xerneas', 'Yveltal', 'Zekrom',
-			'Smooth Rock', 'Soul Dew',
+			'Damp Rock', 'Smooth Rock', 'Soul Dew',
 		],
 	},
 	{
