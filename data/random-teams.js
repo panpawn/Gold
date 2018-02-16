@@ -188,8 +188,6 @@ class RandomTeams extends Dex.ModdedDex {
 				level++;
 			}
 
-			// Random gender--already handled by PS
-
 			// Random happiness
 			let happiness = this.random(256);
 
@@ -199,6 +197,7 @@ class RandomTeams extends Dex.ModdedDex {
 			team.push({
 				name: template.baseSpecies,
 				species: template.species,
+				gender: template.gender,
 				item: item,
 				ability: ability,
 				moves: moves,
@@ -335,6 +334,7 @@ class RandomTeams extends Dex.ModdedDex {
 			team.push({
 				name: template.baseSpecies,
 				species: template.species,
+				gender: template.gender,
 				item: item,
 				ability: ability,
 				moves: m,
@@ -778,7 +778,6 @@ class RandomTeams extends Dex.ModdedDex {
 					break;
 				case 'thunderbolt':
 					if (hasMove['discharge'] || (hasMove['raindance'] && hasMove['thunder']) || (hasMove['voltswitch'] && hasMove['wildcharge'])) rejected = true;
-					if (hasMove['voltswitch'] && !counter.setupType && !counter['speedsetup'] && template.types.length > 1 && (!counter[template.types.find(type => type !== 'Electric')]) || !!counter['Status']) rejected = true;
 					break;
 				case 'thunderpunch':
 					if (hasAbility['Galvanize'] && !!counter['Normal']) rejected = true;
@@ -1050,7 +1049,7 @@ class RandomTeams extends Dex.ModdedDex {
 					(counter['physicalsetup'] + counter['specialsetup'] < 2 && (!counter.setupType || counter.setupType === 'Mixed' || (move.category !== counter.setupType && move.category !== 'Status') || counter[counter.setupType] + counter.Status > 3))) {
 					// Reject Status or non-STAB
 					if (!isSetup && !move.weather && moveid !== 'judgment' && moveid !== 'rest' && moveid !== 'sleeptalk') {
-						if (move.category === 'Status' || !hasType[move.type] || (move.basePower && move.basePower < 40 && !move.multihit)) rejected = true;
+						if (move.category === 'Status' || !hasType[move.type] || move.selfSwitch || move.basePower && move.basePower < 40 && !move.multihit) rejected = true;
 					}
 				}
 
@@ -1515,6 +1514,7 @@ class RandomTeams extends Dex.ModdedDex {
 		return {
 			name: template.baseSpecies,
 			species: species,
+			gender: template.gender,
 			moves: moves,
 			ability: ability,
 			evs: evs,
@@ -2512,6 +2512,7 @@ class RandomTeams extends Dex.ModdedDex {
 		return {
 			name: template.baseSpecies,
 			species: species,
+			gender: template.gender,
 			moves: moves,
 			ability: ability,
 			evs: evs,
