@@ -1546,21 +1546,6 @@ exports.Formats = [
 		},
 	},
 	{
-		name: "Middle Cup",
-
-		searchShow: false,
-		maxLevel: 50,
-		defaultLevel: 50,
-		onValidateSet: function (set) {
-			let template = this.getTemplate(set.species || set.name);
-			if (!template.evos || template.evos.length === 0 || !template.prevo) {
-				return [set.species + " is not the middle Pokémon in an evolution chain."];
-			}
-		},
-		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
-		banlist: ['Chansey', 'Frogadier', 'Eviolite'],
-	},
-	{
 		name: "Doubles Monotype",
 		desc: [
 			"All Pok&eacute;mon on a team must share a type.  This is the 'doubles' version of traditional Monotype.",
