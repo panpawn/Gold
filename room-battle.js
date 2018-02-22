@@ -1081,7 +1081,6 @@ if (!PM.isParentProcess) {
 		});
 		global.__version = ('' + out).trim();
 	} catch (e) {}
-	console.log('v:' + global.__version);
 
 	if (Config.crashguard) {
 		// graceful crash - allow current battles to finish before restarting
