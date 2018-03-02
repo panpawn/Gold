@@ -870,6 +870,7 @@ class GlobalRoom extends BasicRoom {
 	startLockdown(err, slow = false) {
 		if (this.lockdown && err) return;
 		let devRoom = Rooms('development');
+		// @ts-ignore
 		const stack = (err ? Chat.escapeHTML(err.stack).split(`\n`).slice(0, 2).join(`<br />`) : ``);
 		for (const [id, curRoom] of Rooms.rooms) {
 			if (id === 'global') continue;
@@ -951,6 +952,7 @@ class GlobalRoom extends BasicRoom {
 			return;
 		}
 		this.lastReportedCrash = time;
+		// @ts-ignore
 		const stack = (err ? Chat.escapeHTML(err.stack).split(`\n`).slice(0, 2).join(`<br />`) : ``);
 		const crashMessage = `|html|<div class="broadcast-red"><b>The server has crashed:</b> ${stack}</div>`;
 		const devRoom = Rooms('development');
@@ -1218,6 +1220,7 @@ class BasicChatRoom extends BasicRoom {
 		this.users[user.userid] = user;
 		this.userCount++;
 
+		if (this.poll) this.poll.onConnect(user, connection);
 		if (this.game && this.game.onJoin) this.game.onJoin(user, connection);
 		return true;
 	}
@@ -1577,7 +1580,6 @@ let Rooms = Object.assign(getRoom, {
 		if (p2) p2.joinRoom(room);
 		if (p1) Monitor.countBattle(p1.latestIp, p1.name);
 		if (p2) Monitor.countBattle(p2.latestIp, p2.name);
-		if (p1 && p2) Rooms.global.onCreateBattleRoom(p1, p2, room, options);
 		return room;
 	},
 

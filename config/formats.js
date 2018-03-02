@@ -273,15 +273,25 @@ exports.Formats = [
 	{
 		name: "[Gen 7] Doubles OU",
 		desc: [
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3623271/">Doubles OU Metagame Discussion</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3629155/">Doubles OU Metagame Discussion</a>`,
 			`&bullet; <a href="http://www.smogon.com/forums/threads/3623347/">Doubles OU Viability Rankings</a>`,
 			`&bullet; <a href="http://www.smogon.com/forums/threads/3590987/">Doubles OU Sample Teams</a>`,
 		],
 
 		mod: 'gen7',
 		gameType: 'doubles',
+		searchShow: false,
 		ruleset: ['Pokemon', 'Standard Doubles', 'Swagger Clause', 'Team Preview'],
 		banlist: ['DUber', 'Power Construct', 'Eevium Z', 'Dark Void', 'Gravity ++ Grass Whistle', 'Gravity ++ Hypnosis', 'Gravity ++ Lovely Kiss', 'Gravity ++ Sing', 'Gravity ++ Sleep Powder'],
+	},
+	{
+		name: "[Gen 7] Doubles OU (suspect test)",
+		desc: [`&bullet; <a href="http://www.smogon.com/forums/threads/3629155/">Doubles OU Suspect Test</a>`],
+
+		mod: 'gen7',
+		gameType: 'doubles',
+		challengeShow: false,
+		ruleset: ['[Gen 7] Doubles OU'],
 	},
 	{
 		name: "[Gen 7] Doubles Ubers",
@@ -380,67 +390,32 @@ exports.Formats = [
 		column: 2,
 	},
 	{
-		name: "[Gen 7] Shared Power",
+		name: "[Gen 7] 2v2 Doubles",
 		desc: [
-			`All of the team's abilities are active at once, except those that are restricted.`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3623341/">Shared Power</a>`,
-		],
-
-		mod: 'sharedpower',
-		ruleset: ['[Gen 7] OU', 'Evasion Abilities Clause'],
-		banlist: ['Banette-Mega', 'Gyarados-Mega', 'Shedinja', 'Emergency Exit ++ Regenerator', 'Prankster ++ Substitute', 'Wimp Out ++ Regenerator'],
-		unbanlist: ['Aegislash', 'Blaziken', 'Blaziken-Mega', 'Deoxys-Defense'],
-		restrictedAbilities: [
-			'Chlorophyll', 'Comatose', 'Fluffy', 'Fur Coat', 'Huge Power', 'Illusion', 'Imposter', 'Innards Out', 'Magic Guard', 'Mold Breaker',
-			'Multiscale', 'Protean', 'Pure Power', 'Quick Feet', 'Rattled', 'Regenerator', 'Sand Rush', 'Simple', 'Skill Link', 'Slush Rush',
-			'Speed Boost', 'Sturdy', 'Surge Surfer', 'Swift Swim', 'Teravolt', 'Tinted Lens', 'Trace', 'Unburden', 'Water Bubble', 'Weak Armor',
-		],
-		getSharedPower: function (pokemon) {
-			let sharedPower = new Set();
-			for (const ally of pokemon.side.pokemon) sharedPower.add(ally.baseAbility);
-			for (const ability of this.restrictedAbilities) sharedPower.delete(toId(ability));
-			sharedPower.delete(pokemon.baseAbility);
-			return sharedPower;
-		},
-		onBeforeSwitchIn: function (pokemon) {
-			for (const ability of this.getFormat().getSharedPower(pokemon)) {
-				let effect = 'ability' + ability;
-				pokemon.volatiles[effect] = {id: effect, target: pokemon};
-			}
-		},
-		onSwitchInPriority: 2,
-		onSwitchIn: function (pokemon) {
-			for (const ability of this.getFormat().getSharedPower(pokemon)) {
-				let effect = 'ability' + ability;
-				delete pokemon.volatiles[effect];
-				pokemon.addVolatile(effect);
-			}
-		},
-		onAfterMega: function (pokemon) {
-			pokemon.removeVolatile('ability' + pokemon.baseAbility);
-			for (const ability of this.getFormat().getSharedPower(pokemon)) {
-				let effect = 'ability' + ability;
-				pokemon.addVolatile(effect);
-			}
-		},
-	},
-	{
-		name: "[Gen 7] Middle Cup",
-		desc: [
-			`Only Pok&eacute;mon that are in the middle stage of an evolutionary line are allowed.`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3588047/">Middle Cup</a>`,
+			`Double battle where you bring four Pok&eacute;mon to Team Preview and choose only two.`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3606989/">2v2 Doubles</a>`,
 		],
 
 		mod: 'gen7',
-		maxLevel: 50,
-		defaultLevel: 50,
-		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
-		banlist: ['Combusken', 'Eviolite', 'Light Ball', 'Shadow Tag', 'Conversion'],
-		onValidateSet: function (set) {
-			let template = this.getTemplate(set.species);
-			if (!template.prevo) return [`${set.species} is not an evolved Pokemon.`];
-			if (!template.nfe) return [`${set.species} does not have an evolution.`];
+		gameType: 'doubles',
+		// searchShow: false,
+		teamLength: {
+			validate: [2, 4],
+			battle: 2,
 		},
+		ruleset: ['Gen 7] Doubles OU'],
+		banlist: ['Tapu Lele', 'Focus Sash', 'Perish Song'],
+	},
+	{
+		name: "[Gen 7] Nature Swap",
+		desc: [
+			`Pok&eacute;mon have their base stats swapped depending on their nature.`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3612727/">Nature Swap</a>`,
+		],
+
+		mod: 'natureswap',
+		ruleset: ['[Gen 7] OU'],
+		banlist: ['Blissey', 'Chansey', 'Cloyster', 'Hoopa-Unbound', 'Kyurem-Black'],
 	},
 	{
 		section: "Other Metagames",
@@ -484,8 +459,8 @@ exports.Formats = [
 		ruleset: ['Pokemon', 'Species Clause', 'Nickname Clause', 'Moody Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Swagger Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Team Preview'],
 		banlist: [
 			'Illegal', 'Unreleased', 'Arceus', 'Darkrai', 'Deoxys-Base', 'Deoxys-Attack', 'Deoxys-Defense', 'Dialga', 'Giratina', 'Groudon', 'Ho-Oh',
-			'Kangaskhan-Mega', 'Kyogre', 'Kyurem-White', 'Lugia', 'Lunala', 'Marshadow', 'Mewtwo', 'Necrozma-Dawn-Wings', 'Necrozma-Dusk-Mane',
-			'Palkia', 'Rayquaza', 'Reshiram', 'Salamence-Mega', 'Shaymin-Sky', 'Solgaleo', 'Xerneas', 'Yveltal', 'Zekrom',
+			'Jirachi', 'Kangaskhan-Mega', 'Kyogre', 'Kyurem-Black', 'Kyurem-White', 'Lugia', 'Lunala', 'Marshadow', 'Mewtwo', 'Necrozma-Dawn-Wings',
+			'Necrozma-Dusk-Mane', 'Palkia', 'Rayquaza', 'Reshiram', 'Salamence-Mega', 'Shaymin-Sky', 'Solgaleo', 'Xerneas', 'Yveltal', 'Zekrom',
 			'Focus Sash', 'Flash', 'Kinesis', 'Leaf Tornado', 'Mirror Shot', 'Mud Bomb', 'Mud-Slap', 'Muddy Water', 'Night Daze', 'Octazooka', 'Perish Song', 'Sand Attack', 'Smokescreen',
 			'Chansey + Charm + Seismic Toss', 'Chansey + Charm + Psywave',
 		],
@@ -501,11 +476,11 @@ exports.Formats = [
 		mod: 'mixandmega',
 		ruleset: ['Pokemon', 'Standard', 'Mega Rayquaza Clause', 'Team Preview'],
 		banlist: ['Shadow Tag', 'Gengarite', 'Baton Pass', 'Electrify'],
-		restrictedStones: ['Beedrillite', 'Blazikenite', 'Kangaskhanite', 'Mawilite', 'Medichamite', 'Ultranecrozium Z'],
+		restrictedStones: ['Beedrillite', 'Blazikenite', 'Kangaskhanite', 'Mawilite', 'Medichamite', 'Pidgeotite', 'Ultranecrozium Z'],
 		cannotMega: [
-			'Arceus', 'Darkrai', 'Deoxys', 'Deoxys-Attack', 'Deoxys-Speed', 'Dialga', 'Dragonite', 'Giratina', 'Groudon', 'Ho-Oh', 'Kyogre',
-			'Kyurem-Black', 'Kyurem-White', 'Lugia', 'Lunala', 'Marshadow', 'Mewtwo', 'Necrozma-Dawn-Wings', 'Necrozma-Dusk-Mane', 'Palkia',
-			'Pheromosa', 'Rayquaza', 'Regigigas', 'Reshiram', 'Shaymin-Sky', 'Slaking', 'Solgaleo', 'Xerneas', 'Yveltal', 'Zekrom',
+			'Arceus', 'Deoxys', 'Deoxys-Attack', 'Deoxys-Speed', 'Dialga', 'Dragonite', 'Giratina', 'Groudon', 'Ho-Oh', 'Kyogre',
+			'Kyurem-Black', 'Kyurem-White', 'Lugia', 'Lunala', 'Marshadow', 'Mewtwo', 'Necrozma-Dawn-Wings', 'Necrozma-Dusk-Mane',
+			'Palkia', 'Pheromosa', 'Rayquaza', 'Regigigas', 'Reshiram', 'Slaking', 'Solgaleo', 'Xerneas', 'Yveltal', 'Zekrom',
 		],
 		onValidateTeam: function (team) {
 			let itemTable = {};
@@ -585,7 +560,6 @@ exports.Formats = [
 			`&bullet; <a href="http://www.smogon.com/forums/threads/3598418/">Camomons</a>`,
 		],
 		mod: 'gen7',
-		searchShow: false,
 		ruleset: ['[Gen 7] OU'],
 		banlist: ['Kartana', 'Kyurem-Black', 'Shedinja'],
 		onModifyTemplate: function (template, target, source) {
@@ -609,26 +583,10 @@ exports.Formats = [
 		],
 
 		mod: 'gen7',
+		searchShow: false,
 		ruleset: ['[Gen 7] OU', 'STABmons Move Legality'],
 		banlist: ['Blacephalon', 'Kartana', 'Komala', 'Kyurem-Black', 'Silvally', 'Tapu Koko', 'Tapu Lele', 'Aerodactylite', 'King\'s Rock', 'Metagrossite', 'Razor Fang'],
 		restrictedMoves: ['Acupressure', 'Belly Drum', 'Chatter', 'Geomancy', 'Lovely Kiss', 'Shell Smash', 'Shift Gear', 'Thousand Arrows'],
-	},
-	{
-		name: "[Gen 7] 2v2 Doubles",
-		desc: [
-			`Double battle where you bring four Pok&eacute;mon to Team Preview and choose only two.`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3606989/">2v2 Doubles</a>`,
-		],
-
-		mod: 'gen7',
-		gameType: 'doubles',
-		searchShow: false,
-		teamLength: {
-			validate: [2, 4],
-			battle: 2,
-		},
-		ruleset: ['Gen 7] Doubles OU'],
-		banlist: ['Tapu Lele', 'Focus Sash', 'Perish Song'],
 	},
 	{
 		name: "[Gen 6] Gen-NEXT OU",
@@ -647,10 +605,10 @@ exports.Formats = [
 		column: 2,
 	},
 	{
-		name: "[Gen 6] Battle Factory",
+		name: "[Gen 7] Battle Factory",
 		desc: [`Randomized teams of Pok&eacute;mon for a generated Smogon tier with sets that are competitively viable.`],
 
-		mod: 'gen6',
+		mod: 'gen7',
 		team: 'randomFactory',
 		ruleset: ['Pokemon', 'Sleep Clause Mod', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Mega Rayquaza Clause'],
 	},
@@ -724,6 +682,15 @@ exports.Formats = [
 		ruleset: ['PotD', 'Pokemon', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
 	},
 	{
+		name: "[Gen 6] Battle Factory",
+		desc: [`Randomized teams of Pok&eacute;mon for a generated Smogon tier with sets that are competitively viable.`],
+
+		mod: 'gen6',
+		team: 'randomGen6Factory',
+		searchShow: false,
+		ruleset: ['Pokemon', 'Sleep Clause Mod', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Mega Rayquaza Clause'],
+	},
+	{
 		name: "[Gen 5] Random Battle",
 
 		mod: 'gen5',
@@ -776,41 +743,40 @@ exports.Formats = [
 		column: 3,
 	},
 	{
-		name: "[Gen 3] UU",
-		desc: [
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3585923/">ADV UU Metagame Discussion</a>`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3548578/">ADV UU Viability Rankings</a>`,
-		],
+		name: "[Gen 1] 1v1",
+		desc: [`&bullet; <a href="http://www.smogon.com/forums/posts/7523781/">RBY 1v1</a>`],
 
-		mod: 'gen3',
-		// searchShow: false,
-		ruleset: ['[Gen 3] OU'],
-		banlist: ['OU', 'BL'],
+		mod: 'gen1',
+		teamLength: {
+			validate: [1, 3],
+			battle: 1,
+		},
+		ruleset: ['[Gen 1] OU'],
+		banlist: [
+			'Flash', 'Kinesis', 'Sand Attack', 'Smokescreen',
+			'Bind', 'Clamp', 'Fire Spin', 'Wrap',
+			'Explosion', 'Self-Destruct',
+			'Hypnosis', 'Lovely Kiss', 'Sing', 'Sleep Powder', 'Spore',
+		],
 	},
 	{
-		name: "[Gen 4] LC",
+		name: "[Gen 4] UU",
 		desc: [
-			`&bullet; <a href="http://www.smogon.com/dp/articles/little_cup_guide">DPP LC Guide</a>`,
-			`&bullet; <a href="http://www.smogon.com/forums/posts/7336500/">DPP LC Viability Ranking</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3532624/">DPP UU Metagame Discussion</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3503638/">DPP UU Viability Ranking</a>`,
 		],
 
 		mod: 'gen4',
 		// searchShow: false,
-		maxLevel: 5,
-		ruleset: ['Pokemon', 'Standard', 'Little Cup'],
-		banlist: ['LC Uber', 'Misdreavus', 'Murkrow', 'Scyther', 'Sneasel', 'Tangela', 'Yanma', 'Berry Juice', 'Deep Sea Tooth', 'Dragon Rage', 'Sonic Boom'],
+		ruleset: ['Pokemon', 'Standard'],
+		banlist: ['Uber', 'OU', 'BL'],
 	},
 	{
-		name: "[Gen 2] OU + Ho-Oh + Celebi",
-		desc: [
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3556533/">GSC OU Viability Ranking</a>`,
-			`&bullet; <a href="http://www.smogon.com/forums/posts/6431086/">GSC Sample Teams</a>`,
-		],
+		name: "[Gen 3] OU (no Tyranitar)",
 
-		mod: 'gen2',
-		ruleset: ['Pokemon', 'Standard'],
-		banlist: ['Uber'],
-		unbanlist: ['Celebi', 'Ho-Oh'],
+		mod: 'gen3',
+		ruleset: ['[Gen 3] OU'],
+		banlist: ['Tyranitar'],
 	},
 
 	// Past Gens OU
@@ -1311,18 +1277,6 @@ exports.Formats = [
 		banlist: ['Arceus'],
 	},
 	{
-		name: "[Gen 4] UU",
-		desc: [
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3532624/">DPP UU Metagame Discussion</a>`,
-			`&bullet; <a href="http://www.smogon.com/forums/threads/3503638/">DPP UU Viability Ranking</a>`,
-		],
-
-		mod: 'gen4',
-		searchShow: false,
-		ruleset: ['Pokemon', 'Standard'],
-		banlist: ['Uber', 'OU', 'BL'],
-	},
-	{
 		name: "[Gen 4] NU",
 		desc: [
 			`&bullet; <a href="http://www.smogon.com/forums/threads/3583742/">DPP NU Metagame Discussion</a>`,
@@ -1333,6 +1287,19 @@ exports.Formats = [
 		searchShow: false,
 		ruleset: ['[Gen 4] UU'],
 		banlist: ['UU', 'BL2'],
+	},
+	{
+		name: "[Gen 4] LC",
+		desc: [
+			`&bullet; <a href="http://www.smogon.com/dp/articles/little_cup_guide">DPP LC Guide</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/posts/7336500/">DPP LC Viability Ranking</a>`,
+		],
+
+		mod: 'gen4',
+		searchShow: false,
+		maxLevel: 5,
+		ruleset: ['Pokemon', 'Standard', 'Little Cup'],
+		banlist: ['LC Uber', 'Misdreavus', 'Murkrow', 'Scyther', 'Sneasel', 'Tangela', 'Yanma', 'Berry Juice', 'Deep Sea Tooth', 'Dragon Rage', 'Sonic Boom'],
 	},
 	{
 		name: "[Gen 4] Custom Game",
@@ -1397,6 +1364,18 @@ exports.Formats = [
 		searchShow: false,
 		ruleset: ['Pokemon', 'Standard'],
 		banlist: ['Wobbuffet + Leftovers'],
+	},
+	{
+		name: "[Gen 3] UU",
+		desc: [
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3585923/">ADV UU Metagame Discussion</a>`,
+			`&bullet; <a href="http://www.smogon.com/forums/threads/3548578/">ADV UU Viability Rankings</a>`,
+		],
+
+		mod: 'gen3',
+		searchShow: false,
+		ruleset: ['[Gen 3] OU'],
+		banlist: ['OU', 'BL'],
 	},
 	{
 		name: "[Gen 3] Custom Game",

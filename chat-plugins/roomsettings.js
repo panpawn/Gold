@@ -163,6 +163,14 @@ class RoomSettings {
 			return `${this.button('Enable', null, 'autolockspam on')} ${this.button('Disable', true)}`;
 		}
 	}
+	mafia() {
+		if (!this.user.can('editroom', null, this.room)) return this.button(this.room.mafiaEnabled ? 'Mafia enabled' : 'off', true);
+		if (this.room.mafiaEnabled) {
+			return `${this.button('Mafia enabled', true)} ${this.button('off', null, 'mafia disable')}`;
+		} else {
+			return `${this.button('Mafia enabled', null, 'mafia enable')} ${this.button('off', true)}`;
+		}
+	}
 	generateDisplay(user, room, connection) {
 		let output = Chat.html`<div class="infobox">Room Settings for ${this.room.title}<br />`;
 		output += `<strong>Modchat:</strong> <br />${this.modchat()}<br />`;
@@ -176,6 +184,7 @@ class RoomSettings {
 		output += `<strong>Blacklist:</strong> <br />${this.blacklist()}<br />`;
 		output += `<strong>UNO:</strong> <br />${this.uno()}<br />`;
 		output += `<strong>Hangman:</strong> <br />${this.hangman()}<br />`;
+		output += `<strong>Mafia:</strong> <br />${this.mafia()}<br />`;
 		output += '</div>';
 
 		this.user.sendTo(this.room, `|uhtml${(this.sameCommand ? '' : 'change')}|roomsettings|${output}`);
