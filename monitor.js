@@ -80,8 +80,8 @@ const Monitor = module.exports = {
 	 */
 	adminlog(text) {
 		this.notice(text);
-		if (Rooms('upperstaff')) {
-			Rooms('upperstaff').add(`|c|~|${text}`).update();
+		if (Rooms('staff')) {
+			Rooms('staff').add(`|c|~|${text}`).update();
 		}
 	},
 
