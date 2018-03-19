@@ -222,6 +222,23 @@ class Battle extends Dex.ModdedDex {
 		return this.prng.next(m, n);
 	}
 
+	/**
+	 * @param {number} numerator
+	 * @param {number} denominator
+	 */
+	randomChance(numerator, denominator) {
+		return this.prng.randomChance(numerator, denominator);
+	}
+
+	/**
+	 * @param {ReadonlyArray<T>} items
+	 * @return {T}
+	 * @template T
+	 */
+	sample(items) {
+		return this.prng.sample(items);
+	}
+
 	resetRNG() {
 		this.prng = new PRNG(this.prng.startingSeed);
 	}
@@ -542,17 +559,6 @@ class Battle extends Dex.ModdedDex {
 			return -(b.thing.abilityOrder - a.thing.abilityOrder);
 		}
 		return 0;
-	}
-
-	/**
-	 * @param {Pokemon | Side} [thing]
-	 * @param {string} [callbackType]
-	 */
-	getResidualStatuses(thing, callbackType) {
-		let statuses = this.getRelevantEffectsInner(thing || this, callbackType || 'residualCallback', null, null, false, true, 'duration');
-		statuses.sort((a, b) => this.comparePriority(a, b));
-		//if (statuses[0]) this.debug('match ' + (callbackType || 'residualCallback') + ': ' + statuses[0].status.id);
-		return statuses;
 	}
 
 	/**
@@ -1098,11 +1104,11 @@ class Battle extends Dex.ModdedDex {
 			statuses.push({status: item, callback: item[callbackType], statusData: thing.itemData, end: thing.clearItem, thing: thing});
 			this.resolveLastPriority(statuses, callbackType);
 		}
-		let baseSpecies = this.getEffect(thing.template.baseSpecies);
+		let species = thing.baseTemplate;
 		// @ts-ignore
-		if (baseSpecies[callbackType] !== undefined) {
+		if (species[callbackType] !== undefined) {
 			// @ts-ignore
-			statuses.push({status: baseSpecies, callback: baseSpecies[callbackType], statusData: thing.speciesData, end: function () {}, thing: thing});
+			statuses.push({status: species, callback: species[callbackType], statusData: thing.speciesData, end: function () {}, thing: thing});
 			this.resolveLastPriority(statuses, callbackType);
 		}
 
@@ -1472,7 +1478,7 @@ class Battle extends Dex.ModdedDex {
 		if (!canSwitchIn.length) {
 			return null;
 		}
-		return canSwitchIn[this.random(canSwitchIn.length)];
+		return this.sample(canSwitchIn);
 	}
 
 	/**
@@ -2203,7 +2209,7 @@ class Battle extends Dex.ModdedDex {
 		move.crit = move.willCrit || false;
 		if (move.willCrit === undefined) {
 			if (critRatio) {
-				move.crit = (this.random(critMult[critRatio]) === 0);
+				move.crit = this.randomChance(1, critMult[critRatio]);
 			}
 		}
 
@@ -2467,7 +2473,7 @@ class Battle extends Dex.ModdedDex {
 			let allyActives = pokemon.side.active;
 			let adjacentAllies = [allyActives[pokemon.position - 1], allyActives[pokemon.position + 1]];
 			adjacentAllies = adjacentAllies.filter(active => active && !active.fainted);
-			if (adjacentAllies.length) return adjacentAllies[Math.floor(this.random() * adjacentAllies.length)];
+			if (adjacentAllies.length) return this.sample(adjacentAllies);
 			return pokemon;
 		}
 		if (move.target === 'self' || move.target === 'all' || move.target === 'allySide' || move.target === 'allyTeam' || move.target === 'adjacentAllyOrSelf') {
@@ -2479,7 +2485,7 @@ class Battle extends Dex.ModdedDex {
 				let frontPosition = foeActives.length - 1 - pokemon.position;
 				let adjacentFoes = foeActives.slice(frontPosition < 1 ? 0 : frontPosition - 1, frontPosition + 2);
 				adjacentFoes = adjacentFoes.filter(active => active && !active.fainted);
-				if (adjacentFoes.length) return adjacentFoes[Math.floor(this.random() * adjacentFoes.length)];
+				if (adjacentFoes.length) return this.sample(adjacentFoes);
 				// no valid target at all, return a foe for any possible redirection
 			}
 		}

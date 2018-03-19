@@ -4,19 +4,17 @@ exports.BattleScripts = {
 	spreadModify: function (stats, set) {
 		const modStats = {atk: 10, def: 10, spa: 10, spd: 10, spe: 10};
 		let nature = this.getNature(set.nature);
-		if (nature.plus) {
-			let minusEVs = set.evs[nature.minus];
-			let plusEVs = set.evs[nature.plus];
-			let minusIVs = set.ivs[nature.minus];
-			let plusIVs = set.ivs[nature.plus];
-			set.evs[nature.minus] = plusEVs;
-			set.evs[nature.plus] = minusEVs;
-			set.ivs[nature.minus] = plusIVs;
-			set.ivs[nature.plus] = minusIVs;
-		}
 		for (let statName in modStats) {
 			let stat = stats[statName];
-			modStats[statName] = Math.floor(Math.floor(2 * stat + set.ivs[statName] + Math.floor(set.evs[statName] / 4)) * set.level / 100 + 5);
+			let usedStat = statName;
+			if (nature.plus) {
+				if (statName === nature.minus) {
+					usedStat = nature.plus;
+				} else if (statName === nature.plus) {
+					usedStat = nature.minus;
+				}
+			}
+			modStats[statName] = Math.floor(Math.floor(2 * stat + set.ivs[usedStat] + Math.floor(set.evs[usedStat] / 4)) * set.level / 100 + 5);
 		}
 		if ('hp' in stats) {
 			let stat = stats['hp'];

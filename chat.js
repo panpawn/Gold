@@ -493,7 +493,6 @@ class CommandContext {
 	 */
 	checkSpam(room, user) {
 		if (!room || !room.autoLockSpam || !room.log.chatLog || !room.log.chatLog.length || user.can('mute', null, room)) return true;
-
 		const knownNames = [
 			...user.getAltUsers(true),
 			...Object.keys(user.prevNames),
@@ -890,6 +889,7 @@ class CommandContext {
 			if (room) {
 				if (lockType && !room.isHelp) {
 					this.errorReply(`You are ${lockType} and can't talk in chat. ${lockExpiration}`);
+					// this.sendReply(`|html|<a href="view-help-request-appeal-lock" class="button">Get help with this</a>`);
 					return false;
 				}
 				if (room.isMuted(user)) {
@@ -938,99 +938,101 @@ class CommandContext {
 			}
 		}
 
-		if (typeof message === 'string') {
-			if (!message) {
-				connection.popup("Your message can't be blank.");
-				return false;
-			}
-			let length = message.length;
-			length += 10 * message.replace(/[^\ufdfd]*/g, '').length;
-			if (length > MAX_MESSAGE_LENGTH && !user.can('ignorelimits')) {
-				this.errorReply("Your message is too long: " + message);
-				return false;
-			}
+		if (typeof message !== 'string') return true;
 
-			// remove zalgo
-			message = message.replace(/[\u0300-\u036f\u0483-\u0489\u0610-\u0615\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06ED\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]{3,}/g, '');
-			if (/[\u115f\u1160\u239b-\u23b9]/.test(message)) {
-				this.errorReply("Your message contains banned characters.");
-				return false;
-			}
-
-			if (!this.checkBanwords(room, message)) {
-				if (room.id === 'lobby' && !user.can('hotpatch')) {
-					if (!user.banwordInfractions) user.banwordInfractions = 0;
-					user.banwordInfractions++;
-					let muteTime = (user.banwordInfractions === 1 ? 3 : 6 + (user.banwordInfractions * 2));
-					this.errorReply("Your message contained banned words.  You have been muted for " + muteTime + "  minutes as a result.");
-					this.privateModCommand("(" + user.name + " was automatically muted for saying: " + message + ")");
-					room.mute(user, muteTime * 60 * 1000);
-					room.add(user.name + " was automatically muted by the server for " + muteTime + " minutes. (Your message contained a banned word.)").update();
-					return false;
-				}
-			}
-
-			// If the corresponding config option is set, non-AC users cannot send links, except to staff.
-			if (Config.restrictLinks && !user.autoconfirmed) {
-				const links = message.match(Chat.linkRegex);
-				const allLinksWhitelisted = !links || links.every(link => {
-					link = link.toLowerCase();
-					const domainMatches = /^(?:http:\/\/|https:\/\/)?(?:[^/]*\.)?([^/.]*\.[^/.]*)\.?($|\/|:)/.exec(link);
-					const domain = domainMatches && domainMatches[1];
-					const hostMatches = /^(?:http:\/\/|https:\/\/)?([^/]*[^/.])\.?($|\/|:)/.exec(link);
-					let host = hostMatches && hostMatches[1];
-					if (host && host.startsWith('www.')) host = host.slice(4);
-					if (!domain || !host) return false;
-					return LINK_WHITELIST.includes(host) || LINK_WHITELIST.includes(`*.${domain}`);
-				});
-				if (!allLinksWhitelisted && !(targetUser && targetUser.can('lock'))) {
-					this.errorReply("Your account must be autoconfirmed to send links to other users, except for global staff.");
-					return false;
-				}
-			}
-
-			if (!this.checkFormat(room, user, message) && !user.can('mute', null, room)) {
-				return false;
-			}
-
-			if (!this.checkSpam(room, user)) {
-				return false;
-			}
-
-			if (!this.checkSlowchat(room, user) && !user.can('mute', null, room)) {
-				// @ts-ignore
-				this.errorReply("This room has slow-chat enabled. You can only talk once every " + room.slowchat + " seconds.");
-			}
-
-			if (!this.checkBanwords(room, user.name) && !user.can('bypassall')) {
-				this.errorReply(`Your username contains a phrase banned by this room.`);
-				return false;
-			}
-
-			let gameFilter = this.checkGameFilter();
-			if (gameFilter && !user.can('bypassall')) {
-				this.errorReply(gameFilter);
-				return false;
-			}
-
-			if (room) {
-				let normalized = message.trim();
-				if (!user.can('bypassall') && (room.id === 'lobby' || room.id === 'help') && (normalized === user.lastMessage) &&
-						((Date.now() - user.lastMessageTime) < MESSAGE_COOLDOWN)) {
-					this.errorReply("You can't send the same message again so soon.");
-					return false;
-				}
-				user.lastMessage = message;
-				user.lastMessageTime = Date.now();
-			}
-
-			if (Chat.filters.length) {
-				return Chat.filter.call(this, message, user, room, connection, targetUser);
-			}
-			return message;
+		if (!message) {
+			connection.popup("Your message can't be blank.");
+			return false;
+		}
+		let length = message.length;
+		length += 10 * message.replace(/[^\ufdfd]*/g, '').length;
+		if (length > MAX_MESSAGE_LENGTH && !user.can('ignorelimits')) {
+			this.errorReply("Your message is too long: " + message);
+			return false;
 		}
 
-		return true;
+		// remove zalgo
+		message = message.replace(/[\u0300-\u036f\u0483-\u0489\u0610-\u0615\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06ED\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]{3,}/g, '');
+		if (/[\u115f\u1160\u239b-\u23b9]/.test(message)) {
+			this.errorReply("Your message contains banned characters.");
+			return false;
+		}
+
+		// If the corresponding config option is set, non-AC users cannot send links, except to staff.
+		if (Config.restrictLinks && !user.autoconfirmed) {
+			const links = message.match(Chat.linkRegex);
+			const allLinksWhitelisted = !links || links.every(link => {
+				link = link.toLowerCase();
+				const domainMatches = /^(?:http:\/\/|https:\/\/)?(?:[^/]*\.)?([^/.]*\.[^/.]*)\.?($|\/|:)/.exec(link);
+				const domain = domainMatches && domainMatches[1];
+				const hostMatches = /^(?:http:\/\/|https:\/\/)?([^/]*[^/.])\.?($|\/|:)/.exec(link);
+				let host = hostMatches && hostMatches[1];
+				if (host && host.startsWith('www.')) host = host.slice(4);
+				if (!domain || !host) return false;
+				return LINK_WHITELIST.includes(host) || LINK_WHITELIST.includes(`*.${domain}`);
+			});
+			if (!allLinksWhitelisted && !(targetUser && targetUser.can('lock'))) {
+				this.errorReply("Your account must be autoconfirmed to send links to other users, except for global staff.");
+				return false;
+			}
+		}
+
+		if (!this.checkFormat(room, user, message) && !user.can('mute', null, room)) {
+			return false;
+		}
+
+		if (!this.checkSpam(room, user)) {
+			return false;
+		}
+
+		if (!this.checkSlowchat(room, user) && !user.can('mute', null, room)) {
+			// @ts-ignore
+			this.errorReply("This room has slow-chat enabled. You can only talk once every " + room.slowchat + " seconds.");
+			return false;
+		}
+
+		if (!this.checkBanwords(room, user.name) && !user.can('bypassall')) {
+			this.errorReply(`Your username contains a phrase banned by this room.`);
+			return false;
+		}
+		if (!this.checkBanwords(room, message) && !user.can('mute', null, room)) {
+			if (room.id === 'lobby' && !user.can('hotpatch')) {
+				if (!user.banwordInfractions) user.banwordInfractions = 0;
+				user.banwordInfractions++;
+				let muteTime = (user.banwordInfractions === 1 ? 3 : 6 + (user.banwordInfractions * 2));
+				this.errorReply("Your message contained banned words.  You have been muted for " + muteTime + "  minutes as a result.");
+				this.privateModCommand("(" + user.name + " was automatically muted for saying: " + message + ")");
+				room.mute(user, muteTime * 60 * 1000);
+				room.add(user.name + " was automatically muted by the server for " + muteTime + " minutes. (Your message contained a banned word.)").update();
+				return false;
+			} else {
+				this.errorReply("Your message contained banned words.");
+				return false;
+			}
+		}
+
+		let gameFilter = this.checkGameFilter();
+		if (gameFilter && !user.can('bypassall')) {
+			this.errorReply(gameFilter);
+			return false;
+		}
+
+		if (room) {
+			let normalized = message.trim();
+			if (!user.can('bypassall') && (room.id === 'lobby' || room.id === 'help') && (normalized === user.lastMessage) &&
+					((Date.now() - user.lastMessageTime) < MESSAGE_COOLDOWN)) {
+				this.errorReply("You can't send the same message again so soon.");
+				return false;
+			}
+			user.lastMessage = message;
+			user.lastMessageTime = Date.now();
+		}
+
+		if (Chat.filters.length) {
+			return Chat.filter.call(this, message, user, room, connection, targetUser);
+		}
+
+		return message;
 	}
 	/**
 	 * @param {string} uri
@@ -1403,6 +1405,39 @@ Chat.plural = function (num, plural = 's', singular = '') {
 		num = Number(num);
 	}
 	return (num !== 1 ? plural : singular);
+};
+
+/**
+ * Counts the thing passed.
+ *
+ *     Chat.count(2, "days") === "2 days"
+ *     Chat.count(1, "days") === "1 day"
+ *     Chat.count(["foo"], "things are") === "1 thing is"
+ *
+ * @param  {any} num
+ * @param  {string} singular
+ * @param  {string} plural
+ * @return {string}
+ */
+Chat.count = function (num, plural, singular = "") {
+	if (num && typeof num.length === 'number') {
+		num = num.length;
+	} else if (num && typeof num.size === 'number') {
+		num = num.size;
+	} else {
+		num = Number(num);
+	}
+	if (!singular) {
+		if (plural.endsWith("s")) {
+			singular = plural.slice(0, -1);
+		} else if (plural.endsWith("s have")) {
+			singular = plural.slice(0, -6) + " has";
+		} else if (plural.endsWith("s were")) {
+			singular = plural.slice(0, -6) + " was";
+		}
+	}
+	const space = singular.startsWith('<') ? '' : ' ';
+	return `${num}${space}${num > 1 ? plural : singular}`;
 };
 
 /**
