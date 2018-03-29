@@ -758,6 +758,9 @@ class CommandContext {
 		this.room.modlog('(' + this.room.id + ') ' + text + (logOnlyText || ""));
 		// throw new Error(`this.addModCommand has been renamed to this.addModAction, which no longer writes to modlog.`);
 	}
+	logModCommand(text) {
+		this.room.modlog(text);
+	}
 	/**
 	 * @param {string} msg
 	 */
