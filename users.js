@@ -1082,22 +1082,13 @@ class User {
 		this.updateReady(connection);
 	}
 	debugData() {
-		let str = '' + this.group + this.name + ' (' + this.userid + ')';
-		for (let i = 0; i < this.connections.length; i++) {
-			let connection = this.connections[i];
-			str += ' socket' + i + '[';
-			let first = true;
-			for (let j of connection.inRooms) {
-				if (first) {
-					first = false;
-				} else {
-					str += ', ';
-				}
-				str += j;
-			}
-			str += ']';
+		let str = `${this.group}${this.name} (${this.userid})`;
+		for (const [i, connection] of this.connections.entries()) {
+			str += ` socket${i}[`;
+			str += [...connection.inRooms].join(`, `);
+			str += `]`;
 		}
-		if (!this.connected) str += ' (DISCONNECTED)';
+		if (!this.connected) str += ` (DISCONNECTED)`;
 		return str;
 	}
 	/**
@@ -1215,8 +1206,8 @@ class User {
 	 */
 	onDisconnect(connection) {
 		Gold.updateSeen(this.userid);
-		for (let i = 0; i < this.connections.length; i++) {
-			if (this.connections[i] === connection) {
+		for (const [i, connected] of this.connections.entries()) {
+			if (connected === connection) {
 				// console.log('DISCONNECT: ' + this.userid);
 				if (this.connections.length <= 1) {
 					this.markInactive();
