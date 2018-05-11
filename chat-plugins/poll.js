@@ -36,7 +36,7 @@ class Poll {
 		let userid = user.userid;
 
 		if (userid in this.voters || ip in this.voterIps) {
-			user.sendTo(this.room, "You have already voted for this poll.");
+			return user.sendTo(this.room, `You have already voted for this poll.`);
 		}
 
 		this.voters[userid] = option;
@@ -123,9 +123,9 @@ class Poll {
 		for (let i in this.room.users) {
 			let user = this.room.users[i];
 			if (user.userid in this.voters) {
-				user.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + results[this.voters[user.userid]]);
+				user.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${results[this.voters[user.userid]]}`);
 			} else if (user.latestIp in this.voterIps) {
-				user.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + results[this.voterIps[user.latestIp]]);
+				user.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${results[this.voterIps[user.latestIp]]}`);
 			}
 		}
 	}
@@ -133,17 +133,17 @@ class Poll {
 	updateTo(user, connection) {
 		if (!connection) connection = user;
 		if (user.userid in this.voters) {
-			connection.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + this.generateResults(false, this.voters[user.userid]));
+			connection.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${this.generateResults(false, this.voters[user.userid])}`);
 		} else if (user.latestIp in this.voterIps) {
-			connection.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + this.generateResults(false, this.voterIps[user.latestIp]));
+			connection.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${this.generateResults(false, this.voterIps[user.latestIp])}`);
 		} else {
-			connection.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + this.generateVotes());
+			connection.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${this.generateVotes()}`);
 		}
 	}
 
 	updateFor(user) {
 		if (user.userid in this.voters) {
-			user.sendTo(this.room, '|uhtmlchange|poll' + this.room.pollNumber + '|' + this.generateResults(false, this.voters[user.userid]));
+			user.sendTo(this.room, `|uhtmlchange|poll${this.room.pollNumber}|${this.generateResults(false, this.voters[user.userid])}`);
 		}
 	}
 
@@ -159,11 +159,11 @@ class Poll {
 		for (let i in this.room.users) {
 			let thisUser = this.room.users[i];
 			if (thisUser.userid in this.voters) {
-				thisUser.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + results[this.voters[thisUser.userid]]);
+				thisUser.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${results[this.voters[thisUser.userid]]}`);
 			} else if (thisUser.latestIp in this.voterIps) {
-				thisUser.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + results[this.voterIps[thisUser.latestIp]]);
+				thisUser.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${results[this.voterIps[thisUser.latestIp]]}`);
 			} else {
-				thisUser.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + votes);
+				thisUser.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${votes}`);
 			}
 		}
 	}
@@ -171,11 +171,11 @@ class Poll {
 	displayTo(user, connection) {
 		if (!connection) connection = user;
 		if (user.userid in this.voters) {
-			connection.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + this.generateResults(false, this.voters[user.userid]));
+			connection.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${this.generateResults(false, this.voters[user.userid])}`);
 		} else if (user.latestIp in this.voterIps) {
-			connection.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + this.generateResults(false, this.voterIps[user.latestIp]));
+			connection.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${this.generateResults(false, this.voterIps[user.latestIp])}`);
 		} else {
-			connection.sendTo(this.room, '|uhtml|poll' + this.room.pollNumber + '|' + this.generateVotes());
+			connection.sendTo(this.room, `|uhtml|poll${this.room.pollNumber}|${this.generateVotes()}`);
 		}
 	}
 
@@ -186,8 +186,8 @@ class Poll {
 	end() {
 		let results = this.generateResults(true);
 
-		this.room.send('|uhtmlchange|poll' + this.room.pollNumber + '|<div class="infobox">(The poll has ended &ndash; scroll down to see the results)</div>');
-		this.room.add('|html|' + results);
+		this.room.send(`|uhtmlchange|poll${this.room.pollNumber}|<div class="infobox">(The poll has ended &ndash; scroll down to see the results)</div>`);
+		this.room.add(`|html|${results}`).update();
 	}
 }
 
@@ -238,9 +238,9 @@ exports.commands = {
 			room.poll = new Poll(room, {source: params[0], supportHTML: supportHTML, username: user.name}, options);
 			room.poll.display();
 
-			this.roomlog("" + user.name + " used " + message);
+			this.roomlog(`${user.name} used ${message}`);
 			this.modlog('POLL');
-			return this.privateModAction("(A poll was started by " + user.name + ".)");
+			return this.privateModAction(`(A poll was started by ${user.name}.)`);
 		},
 		newhelp: [`/poll create [question], [option1], [option2], [...] - Creates a poll. Requires: % @ * # & ~`],
 
@@ -282,13 +282,13 @@ exports.commands = {
 					room.poll.end();
 					delete room.poll;
 				}, (timeout * 60000));
-				room.add("The poll timer was turned on: the poll will end in " + timeout + " minute(s).");
+				room.add(`The poll timer was turned on: the poll will end in ${timeout} minute(s).`);
 				this.modlog('POLL TIMER', null, `${timeout} minutes`);
-				return this.privateModAction("(The poll timer was set to " + timeout + " minute(s) by " + user.name + ".)");
+				return this.privateModAction(`(The poll timer was set to ${timeout} minute(s) by ${user.name}.)`);
 			} else {
 				if (!this.runBroadcast()) return;
 				if (room.poll.timeout) {
-					return this.sendReply("The poll timer is on and will end in " + room.poll.timeoutMins + " minute(s).");
+					return this.sendReply(`The poll timer is on and will end in ${room.poll.timeoutMins} minute(s).`);
 				} else {
 					return this.sendReply("The poll timer is off.");
 				}
@@ -317,7 +317,7 @@ exports.commands = {
 			room.poll.end();
 			delete room.poll;
 			this.modlog('POLL END');
-			return this.privateModAction("(The poll was ended by " + user.name + ".)");
+			return this.privateModAction(`(The poll was ended by ${user.name}.)`);
 		},
 		endhelp: [`/poll end - Ends a poll and displays the results. Requires: % @ * # & ~`],
 

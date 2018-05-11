@@ -12,7 +12,11 @@
 
 'use strict';
 
-exports.commands = {
+/** @typedef {(this: CommandContext, target: string, room: BasicChatRoom, user: User, connection: Connection, cmd: string, message: string) => (void)} ChatHandler */
+/** @typedef {{[k: string]: ChatHandler | string | true | string[]}} ChatCommands */
+
+/** @type {ChatCommands} */
+const commands = {
 
 	'!whois': true,
 	ip: 'whois',
@@ -304,7 +308,7 @@ exports.commands = {
 		let [ip, roomid] = this.splitOne(target);
 		let targetRoom = roomid ? Rooms(roomid) : null;
 		if (!targetRoom && targetRoom !== null) return this.errorReply(`The room "${roomid}" does not exist.`);
-		let results = [];
+		let results = /** @type {string[]} */ ([]);
 		let isAll = (cmd === 'ipsearchall');
 
 		if (/[a-z]/.test(ip)) {
@@ -350,7 +354,7 @@ exports.commands = {
 
 	checkchallenges: function (target, room, user) {
 		if (!this.can('ban', null, room)) return false;
-		if (!this.runBroadcast()) return;
+		if (!this.runBroadcast(true)) return;
 		if (!this.broadcasting) {
 			this.errorReply(`This command must be broadcast:`);
 			return this.parse(`/help checkchallenges`);
@@ -483,6 +487,7 @@ exports.commands = {
 		}
 
 		if (showDetails) {
+			/** @type {AnyObject} */
 			let details;
 			if (newTargets[0].searchType === 'pokemon') {
 				let pokemon = mod.getTemplate(newTargets[0].name);
@@ -506,9 +511,9 @@ exports.commands = {
 				};
 				if (pokemon.color && mod.gen >= 5) details["Dex Colour"] = pokemon.color;
 				if (pokemon.eggGroups && mod.gen >= 2) details["Egg Group(s)"] = pokemon.eggGroups.join(", ");
-				let evos = [];
-				pokemon.evos.forEach(evo => {
-					evo = mod.getTemplate(evo);
+				let evos = /** @type {string[]} */ ([]);
+				pokemon.evos.forEach(evoName => {
+					const evo = mod.getTemplate(evoName);
 					if (evo.gen <= mod.gen) {
 						evos.push(evo.name + " (" + evo.evoLevel + ")");
 					}
@@ -656,9 +661,10 @@ exports.commands = {
 		if (!target) return this.parse('/help weakness');
 		if (!this.runBroadcast()) return;
 		target = target.trim();
-		let mod = target.split(',');
-		mod = Dex.mod(toId(mod[mod.length - 1])) || Dex;
+		let modName = target.split(',');
+		let mod = Dex.mod(toId(modName[modName.length - 1])) || Dex;
 		let targets = target.split(/ ?[,/] ?/);
+		/** @type {{types: string[], [k: string]: any}} */
 		let pokemon = mod.getTemplate(targets[0]);
 		let type1 = mod.getType(targets[0]);
 		let type2 = mod.getType(targets[1]);
@@ -986,7 +992,7 @@ exports.commands = {
 
 		let targets = target.split(' ');
 
-		let lvlSet, natureSet, ivSet, evSet, baseSet, modSet = false;
+		let lvlSet, natureSet, ivSet, evSet, baseSet, modSet, realSet = false;
 
 		let pokemon;
 		let useStat = '';
@@ -996,9 +1002,10 @@ exports.commands = {
 		let nature = 1.0;
 		let iv = 31;
 		let ev = 252;
-		let statValue = -1;
+		let baseStat = -1;
 		let modifier = 0;
 		let positiveMod = true;
+		let realStat;
 
 		for (const arg of targets) {
 			let lowercase = arg.toLowerCase();
@@ -1131,6 +1138,7 @@ exports.commands = {
 				if (modifier > 6) {
 					return this.sendReplyBox('Modifier should be a number between -6 and +6');
 				}
+				if (modSet) continue;
 			}
 
 			if (!pokemon) {
@@ -1144,42 +1152,95 @@ exports.commands = {
 
 			let tempStat = parseInt(arg);
 
+			if (!realSet) {
+				if (lowercase.endsWith('real')) {
+					realStat = tempStat;
+					realSet = true;
+
+					if (isNaN(realStat)) {
+						return this.sendReplyBox('Invalid value for target real stat: ' + Chat.escapeHTML(arg));
+					}
+					if (realStat < 0) {
+						return this.sendReplyBox('The target real stat must be greater than 0.');
+					}
+					continue;
+				}
+			}
+
 			if (!isNaN(tempStat) && !baseSet && tempStat > 0 && tempStat < 256) {
-				statValue = tempStat;
+				baseStat = tempStat;
 				baseSet = true;
 			}
 		}
 
 		if (pokemon) {
 			if (useStat) {
-				statValue = pokemon[useStat];
+				baseStat = pokemon[useStat];
 			} else {
 				return this.sendReplyBox('No stat found.');
 			}
 		}
 
-		if (statValue < 0) {
+		if (realSet) {
+			if (!baseSet) {
+				if (calcHP) {
+					baseStat = Math.ceil((100 * realStat - 10 - level * (ev / 4 + iv + 100)) / (2 * level));
+				} else {
+					if (!positiveMod) {
+						realStat *= (2 + modifier) / 2;
+					} else {
+						realStat *= 2 / (2 + modifier);
+					}
+
+					baseStat = Math.ceil((100 * Math.ceil(realStat) - nature * (level * (ev / 4 + iv) + 500)) / (2 * level * nature));
+				}
+				if (baseStat < 0) {
+					return this.sendReplyBox('No valid value for base stat possible with given parameters.');
+				}
+			} else if (!evSet) {
+				if (calcHP) {
+					ev = Math.ceil(100 * (realStat - 10) / level - 2 * (baseStat + 50));
+				} else {
+					if (!positiveMod) {
+						realStat *= (2 + modifier) / 2;
+					} else {
+						realStat *= 2 / (2 + modifier);
+					}
+
+					ev = Math.ceil(-1 * (2 * (nature * (baseStat * level + 250) - 50 * Math.ceil(realStat))) / (level * nature));
+				}
+				ev -= 31;
+				if (ev < 0) iv += ev;
+				ev *= 4;
+				if (iv < 0 || ev > 255) {
+					return this.sendReplyBox('No valid EV/IV combination possible with given parameters. Maybe try a different nature?' + ev);
+				}
+			} else {
+				return this.sendReplyBox('Too many parameters given; nothing to calculate.');
+			}
+		} else if (baseStat < 0) {
 			return this.sendReplyBox('No valid value for base stat found.');
 		}
 
 		let output;
 
 		if (calcHP) {
-			output = (((iv + (2 * statValue) + (ev / 4) + 100) * level) / 100) + 10;
+			output = (((iv + (2 * baseStat) + (ev / 4) + 100) * level) / 100) + 10;
 		} else {
-			output = Math.floor(nature * Math.floor((((iv + (2 * statValue) + (ev / 4)) * level) / 100) + 5));
+			output = Math.floor(nature * Math.floor((((iv + (2 * baseStat) + (ev / 4)) * level) / 100) + 5));
 			if (positiveMod) {
 				output *= (2 + modifier) / 2;
 			} else {
 				output *= 2 / (2 + modifier);
 			}
 		}
-		return this.sendReplyBox('Base ' + statValue + (calcHP ? ' HP ' : ' ') + 'at level ' + level + ' with ' + iv + ' IVs, ' + ev + (nature === 1.1 ? '+' : (nature === 0.9 ? '-' : '')) + ' EVs' + (modifier > 0 && !calcHP ? ' at ' + (positiveMod ? '+' : '-') + modifier : '') + ': <b>' + Math.floor(output) + '</b>.');
+		return this.sendReplyBox('Base ' + baseStat + (calcHP ? ' HP ' : ' ') + 'at level ' + level + ' with ' + iv + ' IVs, ' + ev + (nature === 1.1 ? '+' : (nature === 0.9 ? '-' : '')) + ' EVs' + (modifier > 0 && !calcHP ? ' at ' + (positiveMod ? '+' : '-') + modifier : '') + ': <b>' + Math.floor(output) + '</b>.');
 	},
 	statcalchelp: [
 		`/statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Calculates what the actual stat of a Pokémon is with the given parameters. For example, '/statcalc lv50 100 30iv positive 252ev scarf' calculates the speed of a base 100 scarfer with HP Ice in Battle Spot, and '/statcalc uninvested 90 neutral' calculates the attack of an uninvested Crobat.`,
 		`!statcalc [level] [base stat] [IVs] [nature] [EVs] [modifier] (only base stat is required) - Shows this information to everyone.`,
 		`Inputing 'hp' as an argument makes it use the formula for HP. Instead of giving nature, '+' and '-' can be appended to the EV amount (e.g. 252+ev) to signify a boosting or inhibiting nature.`,
+		`An actual stat can be given in place of a base stat or EVs. In this case, the minumum base stat or EVs necessary to have that real stat with the given parameters will be determined. For example, '/statcalc 502real 252+ +1' calculates the minimum base speed necessary for a positive natured fully invested scarfer to outspeed`,
 	],
 
 	/*********************************************************
@@ -1280,7 +1341,7 @@ exports.commands = {
 	'!suggestions': true,
 	suggestions: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		this.sendReplyBox(`<a href="http://www.smogon.com/forums/threads/3534365/">Make a suggestion for Pok&eacute;mon Showdown</a>`);
+		this.sendReplyBox(`<a href="https://www.smogon.com/forums/threads/3534365/">Make a suggestion for Pok&eacute;mon Showdown</a>`);
 	},
 
 	'!bugs': true,
@@ -1288,12 +1349,12 @@ exports.commands = {
 	bugs: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (room && room.battle) {
-			this.sendReplyBox(`<center><button name="saveReplay"><i class="fa fa-upload"></i> Save Replay</button> &mdash; <a href="http://www.smogon.com/forums/threads/3520646/">Questions</a> &mdash; <a href="http://www.smogon.com/forums/threads/3469932/">Bug Reports</a></center>`);
+			this.sendReplyBox(`<center><button name="saveReplay"><i class="fa fa-upload"></i> Save Replay</button> &mdash; <a href="https://www.smogon.com/forums/threads/3520646/">Questions</a> &mdash; <a href="https://www.smogon.com/forums/threads/3469932/">Bug Reports</a></center>`);
 		} else {
 			this.sendReplyBox(
 				`Have a replay showcasing a bug on Pok&eacute;mon Showdown?<br />` +
-				`- <a href="http://www.smogon.com/forums/threads/3520646/">Questions</a><br />` +
-				`- <a href="http://www.smogon.com/forums/threads/3469932/">Bug Reports</a> (ask in <a href="/help">Help</a> before posting in the thread if you're unsure)`
+				`- <a href="https://www.smogon.com/forums/threads/3520646/">Questions</a><br />` +
+				`- <a href="https://www.smogon.com/forums/threads/3469932/">Bug Reports</a> (ask in <a href="/help">Help</a> before posting in the thread if you're unsure)`
 			);
 		}
 	},
@@ -1328,10 +1389,10 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox(
 			`New to competitive Pok&eacute;mon?<br />` +
-			`- <a href="http://www.smogon.com/forums/threads/3496279/">Beginner's Guide to Pok&eacute;mon Showdown</a><br />` +
-			`- <a href="http://www.smogon.com/dp/articles/intro_comp_pokemon">An introduction to competitive Pok&eacute;mon</a><br />` +
-			`- <a href="http://www.smogon.com/bw/articles/bw_tiers">What do 'OU', 'UU', etc mean?</a><br />` +
-			`- <a href="http://www.smogon.com/xyhub/tiers">What are the rules for each format? What is 'Sleep Clause'?</a>`
+			`- <a href="https://www.smogon.com/forums/threads/3496279/">Beginner's Guide to Pok&eacute;mon Showdown</a><br />` +
+			`- <a href="https://www.smogon.com/dp/articles/intro_comp_pokemon">An introduction to competitive Pok&eacute;mon</a><br />` +
+			`- <a href="https://www.smogon.com/bw/articles/bw_tiers">What do 'OU', 'UU', etc mean?</a><br />` +
+			`- <a href="https://www.smogon.com/xyhub/tiers">What are the rules for each format? What is 'Sleep Clause'?</a>`
 		);
 	},
 	introhelp: [
@@ -1345,9 +1406,9 @@ exports.commands = {
 	smogintro: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox(
-			`Welcome to Smogon's official simulator! The <a href="http://www.smogon.com/forums/forums/264">Smogon Info / Intro Hub</a> can help you get integrated into the community.<br />` +
-			`- <a href="http://www.smogon.com/forums/threads/3526346">Useful Smogon Info</a><br />` +
-			`- <a href="http://www.smogon.com/forums/threads/3498332">Tiering FAQ</a><br />`
+			`Welcome to Smogon's official simulator! The <a href="https://www.smogon.com/forums/forums/264">Smogon Info / Intro Hub</a> can help you get integrated into the community.<br />` +
+			`- <a href="https://www.smogon.com/forums/threads/3526346">Useful Smogon Info</a><br />` +
+			`- <a href="https://www.smogon.com/forums/threads/3498332">Tiering FAQ</a><br />`
 		);
 	},
 
@@ -1373,10 +1434,10 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		this.sendReplyBox(
 			`An introduction to the Create-A-Pok&eacute;mon project:<br />` +
-			`- <a href="http://www.smogon.com/cap/">CAP project website and description</a><br />` +
-			`- <a href="http://www.smogon.com/forums/threads/48782/">What Pok&eacute;mon have been made?</a><br />` +
-			`- <a href="http://www.smogon.com/forums/forums/311">Talk about the metagame here</a><br />` +
-			`- <a href="http://www.smogon.com/forums/threads/3593752/">Sample SM CAP teams</a>`
+			`- <a href="https://www.smogon.com/cap/">CAP project website and description</a><br />` +
+			`- <a href="https://www.smogon.com/forums/threads/48782/">What Pok&eacute;mon have been made?</a><br />` +
+			`- <a href="https://www.smogon.com/forums/forums/311">Talk about the metagame here</a><br />` +
+			`- <a href="https://www.smogon.com/forums/threads/3593752/">Sample SM CAP teams</a>`
 		);
 	},
 	caphelp: [
@@ -1408,9 +1469,9 @@ exports.commands = {
 		if (!this.runBroadcast()) return;
 		if (!target) {
 			return this.sendReplyBox(
-				`- <a href="http://www.smogon.com/tiers/">Smogon Tiers</a><br />` +
-				`- <a href="http://www.smogon.com/forums/threads/3498332/">Tiering FAQ</a><br />` +
-				`- <a href="http://www.smogon.com/xyhub/tiers">The banlists for each tier</a><br />` +
+				`- <a href="https://www.smogon.com/tiers/">Smogon Tiers</a><br />` +
+				`- <a href="https://www.smogon.com/forums/threads/3498332/">Tiering FAQ</a><br />` +
+				`- <a href="https://www.smogon.com/xyhub/tiers">The banlists for each tier</a><br />` +
 				"<br /><em>Type /formatshelp <strong>[format|section]</strong> to get details about an available format or group of formats.</em>"
 			);
 		}
@@ -1508,10 +1569,10 @@ exports.commands = {
 
 	'!roomhelp': true,
 	roomhelp: function (target, room, user) {
-		if (!this.canBroadcast('!htmlbox')) return;
+		if (!this.canBroadcast(false, '!htmlbox')) return;
 		if (this.broadcastMessage && !this.can('declare', null, room)) return false;
 
-		if (!this.runBroadcast('!htmlbox')) return;
+		if (!this.runBroadcast(false, '!htmlbox')) return;
 		this.sendReplyBox(
 			`<strong>Room drivers (%)</strong> can use:<br />` +
 			`- /warn OR /k <em>username</em>: warn a user and show the Pok&eacute;mon Showdown rules<br />` +
@@ -1541,7 +1602,7 @@ exports.commands = {
 			`- !showimage <em>[url], [width], [height]</em>: show an image to the room<br />` +
 			`- /roomsettings: change a variety of room settings, including modchat, capsfilter, etc<br />` +
 			`<br />` +
-			`More detailed help can be found in the <a href="http://www.smogon.com/forums/posts/6774654/">roomauth guide</a><br />` +
+			`More detailed help can be found in the <a href="https://www.smogon.com/forums/posts/6774654/">roomauth guide</a><br />` +
 			`<br />` +
 			`Tournament Help:<br />` +
 			`- /tour create <em>format</em>, elimination: create a new single elimination tournament in the current room.<br />` +
@@ -1550,7 +1611,7 @@ exports.commands = {
 			`- /tour start: start the tournament in the current room<br />` +
 			`- /tour banlist [pokemon], [talent], [...]: ban moves, abilities, Pokémon or items from being used in a tournament (it must be created first)<br />` +
 			`<br />` +
-			`More detailed help can be found in the <a href="http://www.smogon.com/forums/posts/6777489/">tournaments guide</a><br />` +
+			`More detailed help can be found in the <a href="https://www.smogon.com/forums/posts/6777489/">tournaments guide</a><br />` +
 			`</div>`
 		);
 	},
@@ -1573,9 +1634,9 @@ exports.commands = {
 		if (!this.can('lockdown')) return false;
 
 		let buf = `<strong>${process.pid}</strong> - Main<br />`;
-		Sockets.workers.forEach(worker => {
+		for (const worker of Sockets.workers.values()) {
 			buf += `<strong>${worker.pid || worker.process.pid}</strong> - Sockets ${worker.id}<br />`;
-		});
+		}
 
 		const processManagers = require('../lib/process-manager').processManagers;
 		for (const manager of processManagers) {
@@ -1646,22 +1707,22 @@ exports.commands = {
 
 		let buffer = [];
 		if (showAll || target === 'staff') {
-			buffer.push(`<a href="http://www.smogon.com/forums/posts/6774482/">Staff FAQ</a>`);
+			buffer.push(`<a href="https://www.smogon.com/forums/posts/6774482/">Staff FAQ</a>`);
 		}
 		if (showAll || target === 'autoconfirmed' || target === 'ac') {
 			buffer.push(`A user is autoconfirmed when they have won at least one rated battle and have been registered for one week or longer.`);
 		}
 		if (showAll || target === 'coil') {
-			buffer.push(`<a href="http://www.smogon.com/forums/threads/3508013/">What is COIL?</a>`);
+			buffer.push(`<a href="https://www.smogon.com/forums/threads/3508013/">What is COIL?</a>`);
 		}
 		if (showAll || target === 'tiering' || target === 'tiers' || target === 'tier') {
-			buffer.push(`<a href="http://www.smogon.com/ingame/battle/tiering-faq">Tiering FAQ</a>`);
+			buffer.push(`<a href="https://www.smogon.com/ingame/battle/tiering-faq">Tiering FAQ</a>`);
 		}
 		if (showAll || target === 'badge' || target === 'badges') {
-			buffer.push(`<a href="http://www.smogon.com/badge_faq">Badge FAQ</a>`);
+			buffer.push(`<a href="https://www.smogon.com/badge_faq">Badge FAQ</a>`);
 		}
 		if (showAll || !buffer.length) {
-			buffer.unshift(`<a href="http://www.smogon.com/forums/posts/6774128/">Frequently Asked Questions</a>`);
+			buffer.unshift(`<a href="https://www.smogon.com/forums/posts/6774128/">Frequently Asked Questions</a>`);
 		}
 		this.sendReplyBox(buffer.join(`<br />`));
 	},
@@ -1758,28 +1819,28 @@ exports.commands = {
 			// Special case for Meowstic-M
 			if (speciesid === 'meowstic') speciesid = 'meowsticm';
 			if (pokemon.tier === 'CAP') {
-				this.sendReplyBox(`<a href="http://www.smogon.com/cap/pokemon/strategies/${speciesid}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} ${pokemon.name} analysis preview</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a> <a href="http://smogon.com/cap/">CAP Project</a>`);
+				this.sendReplyBox(`<a href="https://www.smogon.com/cap/pokemon/strategies/${speciesid}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} ${pokemon.name} analysis preview</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a> <a href="http://smogon.com/cap/">CAP Project</a>`);
 			} else {
-				this.sendReplyBox(`<a href="http://www.smogon.com/dex/${generation}/pokemon/${speciesid}${(formatId ? '/' + formatId : '')}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} ${pokemon.name} analysis</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a>`);
+				this.sendReplyBox(`<a href="https://www.smogon.com/dex/${generation}/pokemon/${speciesid}${(formatId ? '/' + formatId : '')}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} ${pokemon.name} analysis</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a>`);
 			}
 		}
 
 		// Item
 		if (item.exists && genNumber > 1 && item.gen <= genNumber) {
 			atLeastOne = true;
-			this.sendReplyBox(`<a href="http://www.smogon.com/dex/${generation}/items/${item.id}">${generation.toUpperCase()} ${item.name} item analysis</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a>`);
+			this.sendReplyBox(`<a href="https://www.smogon.com/dex/${generation}/items/${item.id}">${generation.toUpperCase()} ${item.name} item analysis</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a>`);
 		}
 
 		// Ability
 		if (ability.exists && genNumber > 2 && ability.gen <= genNumber) {
 			atLeastOne = true;
-			this.sendReplyBox(`<a href="http://www.smogon.com/dex/${generation}/abilities/${ability.id}">${generation.toUpperCase()} ${ability.name} ability analysis</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a>`);
+			this.sendReplyBox(`<a href="https://www.smogon.com/dex/${generation}/abilities/${ability.id}">${generation.toUpperCase()} ${ability.name} ability analysis</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a>`);
 		}
 
 		// Move
 		if (move.exists && move.gen <= genNumber) {
 			atLeastOne = true;
-			this.sendReplyBox(`<a href="http://www.smogon.com/dex/${generation}/moves/${toId(move.name)}">${generation.toUpperCase()} ${move.name} move analysis</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a>`);
+			this.sendReplyBox(`<a href="https://www.smogon.com/dex/${generation}/moves/${toId(move.name)}">${generation.toUpperCase()} ${move.name} move analysis</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a>`);
 		}
 
 		// Format
@@ -1809,7 +1870,7 @@ exports.commands = {
 			}
 			if (formatName) {
 				atLeastOne = true;
-				this.sendReplyBox(`<a href="http://www.smogon.com/dex/${generation}/formats/${formatId}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} format analysis</a>, brought to you by <a href="http://www.smogon.com">Smogon University</a>`);
+				this.sendReplyBox(`<a href="https://www.smogon.com/dex/${generation}/formats/${formatId}">${generation.toUpperCase()} ${Chat.escapeHTML(formatName)} format analysis</a>, brought to you by <a href="https://www.smogon.com">Smogon University</a>`);
 			}
 		}
 
@@ -1824,9 +1885,8 @@ exports.commands = {
 
 	'!veekun': true,
 	veekun: function (target, broadcast, user) {
-		if (!this.runBroadcast()) return;
-
 		if (!target) return this.parse('/help veekun');
+		if (!this.runBroadcast()) return;
 
 		let baseLink = 'http://veekun.com/dex/';
 
@@ -1845,13 +1905,20 @@ exports.commands = {
 			let baseSpecies = pokemon.baseSpecies || pokemon.species;
 			let forme = pokemon.forme;
 
-			// Showdown and Veekun have different naming for this gender difference forme of Meowstic.
-			if (baseSpecies === 'Meowstic' && forme === 'F') {
-				forme = 'Female';
+			// Showdown and Veekun have different names for various formes
+			if (baseSpecies === 'Meowstic' && forme === 'F') forme = 'Female';
+			if (baseSpecies === 'Zygarde' && forme === '10%') forme = '10';
+			if (baseSpecies === 'Necrozma' && !Dex.getTemplate(baseSpecies + forme).battleOnly) forme = forme.substr(0, 4);
+			if (baseSpecies === 'Pikachu' && Dex.getTemplate(baseSpecies + forme).gen === 7) forme += '-Cap';
+			if (forme.endsWith('Totem')) {
+				if (baseSpecies === 'Raticate') forme = 'Totem-Alola';
+				if (baseSpecies === 'Marowak') forme = 'Totem';
+				if (baseSpecies === 'Mimikyu') forme += forme === 'Busted-Totem' ? '-Busted' : '-Disguised';
 			}
 
 			let link = baseLink + 'pokemon/' + baseSpecies.toLowerCase();
 			if (forme) {
+				if (baseSpecies === 'Arceus' || baseSpecies === 'Silvally') link += '/flavor';
 				link += '?form=' + forme.toLowerCase();
 			}
 
@@ -1861,6 +1928,7 @@ exports.commands = {
 		// Item
 		if (item.exists) {
 			atLeastOne = true;
+			if (item.isNonstandard) return this.errorReply(`${item.name} is not a real item.`);
 			let link = baseLink + 'items/' + item.name.toLowerCase();
 			this.sendReplyBox(`<a href="${link}">${item.name} item description</a> by Veekun`);
 		}
@@ -1868,7 +1936,7 @@ exports.commands = {
 		// Ability
 		if (ability.exists) {
 			atLeastOne = true;
-			if (ability.isNonstandard) return this.sendReply(ability.name + ' is not a real ability.');
+			if (ability.isNonstandard) return this.errorReply(`${ability.name} is not a real ability.`);
 			let link = baseLink + 'abilities/' + ability.name.toLowerCase();
 			this.sendReplyBox(`<a href="${link}">${ability.name} ability description</a> by Veekun`);
 		}
@@ -1876,7 +1944,7 @@ exports.commands = {
 		// Move
 		if (move.exists) {
 			atLeastOne = true;
-			if (move.isNonstandard) return this.errorReply(move.name + ' is not a real move.');
+			if (move.isNonstandard) return this.errorReply(`${move.name} is not a real move.`);
 			let link = baseLink + 'moves/' + move.name.toLowerCase();
 			this.sendReplyBox(`<a href="${link}">${move.name} move description</a> by Veekun`);
 		}
@@ -1926,7 +1994,7 @@ exports.commands = {
 	roll: 'dice',
 	dice: function (target, room, user) {
 		if (!target || target.match(/[^\d\sdHL+-]/i)) return this.parse('/help dice');
-		if (!this.runBroadcast()) return;
+		if (!this.runBroadcast(true)) return;
 
 		// ~30 is widely regarded as the sample size required for sum to be a Gaussian distribution.
 		// This also sets a computation time constraint for safety.
@@ -2026,7 +2094,7 @@ exports.commands = {
 	pickrandom: function (target, room, user) {
 		let options = target.split(',');
 		if (options.length < 2) return this.parse('/help pick');
-		if (!this.runBroadcast()) return false;
+		if (!this.runBroadcast(true)) return false;
 		const pickedOption = options[Math.floor(Math.random() * options.length)].trim();
 		return this.sendReplyBox(Chat.html`<em>We randomly picked:</em> ${pickedOption}`);
 	},
@@ -2080,10 +2148,10 @@ exports.commands = {
 		target = this.canHTML(target);
 		if (!target) return;
 
-		if (!this.canBroadcast('!htmlbox')) return;
+		if (!this.canBroadcast(true, '!htmlbox')) return;
 		if (this.broadcastMessage && !this.can('declare', null, room)) return false;
 
-		if (!this.runBroadcast('!htmlbox')) return;
+		if (!this.runBroadcast(true, '!htmlbox')) return;
 
 		if (user.userid === 'ponybot') {
 			if (!this.can('announce', null, room)) return;
@@ -2113,7 +2181,32 @@ exports.commands = {
 		`/htmlbox [message] - Displays a message, parsing HTML code contained.`,
 		`!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #`,
 	],
+	changeuhtml: 'adduhtml',
+	adduhtml: function (target, room, user, connection, cmd) {
+		if (!target) return this.parse('/help ' + cmd);
+		if (!this.canTalk()) return;
+
+		let [name, html] = this.splitOne(target);
+		name = toId(name);
+		html = this.canHTML(html);
+		if (!html) return;
+		if (!this.can('addhtml', null, room)) return;
+
+		if (!user.can('addhtml')) {
+			html += Chat.html`<div style="float:right;color:#888;font-size:8pt">[${user.name}]</div><div style="clear:both"></div>`;
+		}
+
+		this.add(`|uhtml${(cmd === 'changeuhtml' ? 'change' : '')}|${name}|${html}`);
+	},
+	adduhtmlhelp: [
+		`/adduhtml [name], [message] - Shows everyone a message that can change, parsing HTML code contained.`,
+	],
+	changeuhtmlhelp: [
+		`/changeuhtml [name], [message] - Changes a message previously shown with /adduhtml`,
+	],
 };
+
+exports.commands = commands;
 
 process.nextTick(() => {
 	Dex.includeData();

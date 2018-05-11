@@ -242,20 +242,20 @@ class Validator {
 				if (banReason) problems.push(`Mega evolutions are ${banReason}.`);
 			}
 		}
-		if (!templateOverride && postMegaTemplate.tier) {
-			banReason = ruleTable.check('pokemontag:' + toId(postMegaTemplate.tier), setHas);
-			if (banReason) {
-				problems.push(`${postMegaTemplate.species} is in ${postMegaTemplate.tier}, which is ${banReason}.`);
+		if (!templateOverride) {
+			if (ruleTable.has('-unreleased') && postMegaTemplate.isUnreleased) {
+				problems.push(`${name} (${postMegaTemplate.species}) is unreleased.`);
+			} else if (postMegaTemplate.tier) {
+				banReason = ruleTable.check('pokemontag:' + toId(postMegaTemplate.tier), setHas);
+				if (banReason) {
+					problems.push(`${postMegaTemplate.species} is in ${postMegaTemplate.tier}, which is ${banReason}.`);
+				} else if (postMegaTemplate.doublesTier) {
+					banReason = ruleTable.check('pokemontag:' + toId(postMegaTemplate.doublesTier), setHas);
+					if (banReason) {
+						problems.push(`${postMegaTemplate.species} is in ${postMegaTemplate.doublesTier}, which is ${banReason}.`);
+					}
+				}
 			}
-		}
-		if (!templateOverride && postMegaTemplate.doublesTier) {
-			banReason = ruleTable.check('pokemontag:' + toId(postMegaTemplate.doublesTier), setHas);
-			if (banReason) {
-				problems.push(`${postMegaTemplate.species} is in ${postMegaTemplate.doublesTier}, which is ${banReason}.`);
-			}
-		}
-		if (!templateOverride && ruleTable.has('-unreleased') && postMegaTemplate.isUnreleased) {
-			problems.push(`${name} (${postMegaTemplate.species}) is unreleased.`);
 		}
 
 		banReason = ruleTable.check('ability:' + toId(set.ability), setHas);
@@ -489,6 +489,9 @@ class Validator {
 		if (ruleTable.has('-illegal') && set.level < (template.evoLevel || 0)) {
 			// FIXME: Event pokemon given at a level under what it normally can be attained at gives a false positive
 			problems.push(`${name} must be at least level ${template.evoLevel} to be evolved.`);
+		}
+		if (ruleTable.has('-illegal') && template.id === 'keldeo' && set.moves.includes('secretsword') && (format.requirePlus || format.requirePentagon)) {
+			problems.push(`${name} has Secret Sword, which is only compatible with Keldeo-Ordinary obtained from Gen 5.`);
 		}
 		if (!lsetData.sources && lsetData.sourcesBefore <= 3 && dex.getAbility(set.ability).gen === 4 && !template.prevo && dex.gen <= 5) {
 			problems.push(`${name} has a gen 4 ability and isn't evolved - it can't use moves from gen 3.`);
@@ -1284,7 +1287,7 @@ class Validator {
 			template.species !== 'Unown' && template.baseSpecies !== 'Pikachu');
 	}
 	/**
-	 * @param {SparseStatsTable? | undefined} [stats]
+	 * @param {SparseStatsTable?} [stats]
 	 * @param {number} [fillNum]
 	 * @return {StatsTable}
 	 */

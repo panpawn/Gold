@@ -18,15 +18,18 @@ let BattleScripts = {
 	 */
 	runMove: function (move, pokemon, targetLoc, sourceEffect, zMove, externalMove) {
 		let target = this.getTarget(pokemon, zMove || move, targetLoc);
+		let baseMove = this.getMoveCopy(move);
+		const pranksterBoosted = baseMove.pranksterBoosted;
 		if (!sourceEffect && toId(move) !== 'struggle' && !zMove) {
 			let changedMove = this.runEvent('OverrideAction', pokemon, target, move);
 			if (changedMove && changedMove !== true) {
-				move = changedMove;
+				baseMove = this.getMoveCopy(changedMove);
+				if (pranksterBoosted) baseMove.pranksterBoosted = pranksterBoosted;
 				target = null;
 			}
 		}
-		let baseMove = this.getMove(move);
 		move = zMove ? this.getZMoveCopy(baseMove, pokemon) : baseMove;
+
 		if (!target && target !== false) target = this.resolveTarget(pokemon, move);
 
 		// copy the priority for Quick Guard
@@ -146,7 +149,7 @@ let BattleScripts = {
 		}
 		if (this.activeMove) {
 			move.priority = this.activeMove.priority;
-			move.pranksterBoosted = move.hasBounced ? false : this.activeMove.pranksterBoosted;
+			if (!move.hasBounced) move.pranksterBoosted = this.activeMove.pranksterBoosted;
 		}
 		let baseTarget = move.target;
 		if (!target && target !== false) target = this.resolveTarget(pokemon, move);
@@ -351,6 +354,15 @@ let BattleScripts = {
 			return this.moveHit(target, pokemon, move);
 		}
 
+		hitResult = this.runEvent('TryImmunity', target, pokemon, move);
+		if (!hitResult) {
+			if (hitResult !== null) {
+				if (!move.spreadHit) this.attrLastMove('[miss]');
+				this.add('-miss', pokemon, target);
+			}
+			return false;
+		}
+
 		if (move.ignoreImmunity === undefined) {
 			move.ignoreImmunity = (move.category === 'Status');
 		}
@@ -373,7 +385,7 @@ let BattleScripts = {
 			this.add('-immune', target, '[msg]');
 			return false;
 		}
-		if (this.gen >= 7 && move.pranksterBoosted && target.side !== pokemon.side && !this.getImmunity('prankster', target)) {
+		if (this.gen >= 7 && move.pranksterBoosted && pokemon.hasAbility('prankster') && target.side !== pokemon.side && !this.getImmunity('prankster', target)) {
 			this.debug('natural prankster immunity');
 			if (!target.illusion) this.add('-hint', "In gen 7, Dark is immune to Prankster moves.");
 			this.add('-immune', target, '[msg]');
@@ -648,8 +660,8 @@ let BattleScripts = {
 		}
 
 		if (target) {
-			/**@type {?boolean | number} */
-			let didSomething = false;
+			/**@type {?boolean | number | undefined} */
+			let didSomething = undefined;
 
 			damage = this.getDamage(pokemon, target, moveData);
 
@@ -735,32 +747,51 @@ let BattleScripts = {
 				didSomething = didSomething || hitResult;
 			}
 			if (moveData.forceSwitch) {
-				if (this.canSwitch(target.side)) didSomething = true; // at least defer the fail message to later
+				hitResult = this.canSwitch(target.side);
+				didSomething = didSomething || hitResult;
 			}
 			if (moveData.selfSwitch) {
-				// If the move is Parting Shot and it fails to change the target's stats in gen 7, didSomething will be null instead of false.
+				// If the move is Parting Shot and it fails to change the target's stats in gen 7, didSomething will be null instead of undefined.
 				// Leaving didSomething as null will cause this function to return before setting the switch flag, preventing the switch.
-				if (this.canSwitch(pokemon.side) && (didSomething !== null || this.gen < 7)) didSomething = true; // at least defer the fail message to later
+				if (this.canSwitch(pokemon.side) && (didSomething !== null || this.gen < 7)) {
+					didSomething = true;
+				} else {
+					didSomething = didSomething || false;
+				}
 			}
 			// Hit events
 			//   These are like the TryHit events, except we don't need a FieldHit event.
 			//   Scroll up for the TryHit event documentation, and just ignore the "Try" part. ;)
-			hitResult = null;
 			if (move.target === 'all' && !isSelf) {
-				if (moveData.onHitField) hitResult = this.singleEvent('HitField', moveData, {}, target, pokemon, move);
+				if (moveData.onHitField) {
+					hitResult = this.singleEvent('HitField', moveData, {}, target, pokemon, move);
+					didSomething = didSomething || hitResult;
+				}
 			} else if ((move.target === 'foeSide' || move.target === 'allySide') && !isSelf) {
-				if (moveData.onHitSide) hitResult = this.singleEvent('HitSide', moveData, {}, target.side, pokemon, move);
+				if (moveData.onHitSide) {
+					hitResult = this.singleEvent('HitSide', moveData, {}, target.side, pokemon, move);
+					didSomething = didSomething || hitResult;
+				}
 			} else {
-				if (moveData.onHit) hitResult = this.singleEvent('Hit', moveData, {}, target, pokemon, move);
+				if (moveData.onHit) {
+					hitResult = this.singleEvent('Hit', moveData, {}, target, pokemon, move);
+					didSomething = didSomething || hitResult;
+				}
 				if (!isSelf && !isSecondary) {
 					this.runEvent('Hit', target, pokemon, move);
 				}
-				if (moveData.onAfterHit) hitResult = this.singleEvent('AfterHit', moveData, {}, target, pokemon, move);
+				if (moveData.onAfterHit) {
+					hitResult = this.singleEvent('AfterHit', moveData, {}, target, pokemon, move);
+					didSomething = didSomething || hitResult;
+				}
 			}
 
-			if (!hitResult && !didSomething && !moveData.self && !moveData.selfdestruct) {
+			// Move didn't fail because it didn't try to do anything
+			if (didSomething === undefined) didSomething = true;
+
+			if (!didSomething && !moveData.self && !moveData.selfdestruct) {
 				if (!isSelf && !isSecondary) {
-					if (hitResult === false || didSomething === false) this.add('-fail', pokemon);
+					if (didSomething === false) this.add('-fail', pokemon);
 				}
 				this.debug('move failed because it did nothing');
 				return false;

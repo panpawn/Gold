@@ -316,7 +316,7 @@ class ModdedDex {
 	}
 
 	/**
-	 * @param {string | Template | undefined} [name]
+	 * @param {string | Template} [name]
 	 * @return {Template}
 	 */
 	getTemplate(name) {
@@ -374,7 +374,10 @@ class ModdedDex {
 			// Inherit any statuses from the base species (Arceus, Silvally).
 			const baseSpeciesStatuses = this.data.Statuses[toId(template.baseSpecies)];
 			if (baseSpeciesStatuses !== undefined) {
-				Object.assign(template, baseSpeciesStatuses);
+				for (const key in baseSpeciesStatuses) {
+					// @ts-ignore
+					if (!(key in template)) template[key] = baseSpeciesStatuses[key];
+				}
 			}
 			if (!template.tier && !template.doublesTier && template.baseSpecies !== template.species) {
 				if (template.baseSpecies === 'Mimikyu') {
@@ -406,7 +409,7 @@ class ModdedDex {
 		return this.data.Learnsets[id].learnset;
 	}
 	/**
-	 * @param {string | Move | undefined} [name]
+	 * @param {string | Move} [name]
 	 * @return {Move}
 	 */
 	getMove(name) {
@@ -458,7 +461,7 @@ class ModdedDex {
 		return moveCopy;
 	}
 	/**
-	 * @param {?string | Effect} name
+	 * @param {?string | Effect} [name]
 	 * @return {Effect}
 	 */
 	getEffect(name) {
@@ -521,7 +524,7 @@ class ModdedDex {
 		return validatedFormatid;
 	}
 	/**
-	 * @param {string | Format | undefined} [name]
+	 * @param {string | Format} [name]
 	 * @return {Format}
 	 */
 	getFormat(name, isTrusted = false) {
@@ -565,7 +568,7 @@ class ModdedDex {
 		return effect;
 	}
 	/**
-	 * @param {string | Item | undefined} [name]
+	 * @param {string | Item} [name]
 	 * @return {Item}
 	 */
 	getItem(name) {
@@ -598,7 +601,7 @@ class ModdedDex {
 		return item;
 	}
 	/**
-	 * @param {string | Ability | undefined} [name]
+	 * @param {string | Ability} [name]
 	 * @return {Ability}
 	 */
 	getAbility(name = '') {
@@ -879,7 +882,7 @@ class ModdedDex {
 				// valid pokemontags
 				const validTags = [
 					// singles tiers
-					'uber', 'ou', 'bl', 'uu', 'bl2', 'ru', 'bl3', 'nu', 'bl4', 'pu', 'nfe', 'lcuber', 'lc', 'cap', 'caplc', 'capnfe',
+					'uber', 'ou', 'uubl', 'uu', 'rubl', 'ru', 'nubl', 'nu', 'publ', 'pu', 'nfe', 'lcuber', 'lc', 'cap', 'caplc', 'capnfe',
 					//doubles tiers
 					'duber', 'dou', 'dbl', 'duu',
 					// custom tags
@@ -995,13 +998,13 @@ class ModdedDex {
 	clampIntRange(num, min, max) {
 		if (typeof num !== 'number') num = 0;
 		num = Math.floor(num);
-		if (num < min) num = min;
+		if (min !== undefined && num < min) num = min;
 		if (max !== undefined && num > max) num = max;
 		return num;
 	}
 
 	/**
-	 * @param {Format} format
+	 * @param {Format | string} format
 	 * @param {PRNG | PRNGSeed?} [seed]
 	 */
 	getTeamGenerator(format, seed = null) {
@@ -1009,7 +1012,7 @@ class ModdedDex {
 		return new TeamGenerator(format, seed);
 	}
 	/**
-	 * @param {Format} format
+	 * @param {Format | string} format
 	 * @param {PRNG | PRNGSeed?} [seed]
 	 */
 	generateTeam(format, seed = null) {
@@ -1042,7 +1045,7 @@ class ModdedDex {
 				searchResults.push({
 					isInexact: isInexact,
 					searchType: searchTypes[result],
-					name: res.name,
+					name: res.species ? res.species : res.name,
 				});
 			}
 		}

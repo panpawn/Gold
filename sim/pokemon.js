@@ -14,7 +14,7 @@
  * @property {string} id
  * @property {number} pp
  * @property {number} maxpp
- * @property {string} target
+ * @property {string} [target]
  * @property {string | boolean} disabled
  * @property {string} [disabledSource]
  * @property {boolean} used
@@ -101,6 +101,7 @@ class Pokemon {
 		this.moveThisTurnResult = undefined;
 
 		this.lastDamage = 0;
+		/**@type {?{pokemon: Pokemon, damage?: number, thisTurn: boolean, move?: string}} */
 		this.lastAttackedBy = null;
 		this.usedItemThisTurn = false;
 		this.newlySwitched = false;
@@ -210,6 +211,8 @@ class Pokemon {
 		// This is used in gen 1 only, here to avoid code repetition.
 		// Only declared if gen 1 to avoid declaring an object we aren't going to need.
 		if (this.battle.gen === 1) this.modifiedStats = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
+		/**@type {?boolean} */
+		this.subFainted = null;
 
 		this.isStale = 0;
 		this.isStaleCon = 0;
@@ -235,6 +238,8 @@ class Pokemon {
 
 		/**@type {string | undefined} */
 		this.originalSpecies = undefined;
+		/**@type {?boolean} */
+		this.gluttonyFlag = null;
 	}
 	get moves() {
 		return this.moveSlots.map(moveSlot => moveSlot.id);
@@ -485,29 +490,31 @@ class Pokemon {
 	deductPP(move, amount, target) {
 		move = this.battle.getMove(move);
 		let ppData = this.getMoveData(move);
-		if (!ppData) return false;
+		if (!ppData) return 0;
 		ppData.used = true;
-		if (!ppData.pp) return false;
+		if (!ppData.pp) return 0;
 
-		ppData.pp -= amount || 1;
-		if (ppData.pp <= 0) {
+		if (!amount) amount = 1;
+		ppData.pp -= amount;
+		if (ppData.pp < 0) {
+			amount += ppData.pp;
 			ppData.pp = 0;
 		}
 		if (ppData.virtual) {
 			for (const foeActive of this.side.foe.active) {
 				if (foeActive.isStale >= 2) {
 					if (move.selfSwitch) this.isStalePPTurns++;
-					return true;
+					return amount;
 				}
 			}
 		}
 		this.isStalePPTurns = 0;
-		return true;
+		return amount;
 	}
 
 	/**
 	 * @param {Move} move
-	 * @param {number} targetLoc
+	 * @param {number} [targetLoc]
 	 */
 	moveUsed(move, targetLoc) {
 		this.lastMove = move;
@@ -661,11 +668,12 @@ class Pokemon {
 	}
 
 	/**
-	 * @param {AnyObject} boost
+	 * @param {SparseBoostsTable} boost
 	 */
 	boostBy(boost) {
 		let delta = 0;
 		for (let i in boost) {
+			// @ts-ignore
 			delta = boost[i];
 			this.boosts[i] += delta;
 			if (this.boosts[i] > 6) {
@@ -769,6 +777,7 @@ class Pokemon {
 		for (let j in pokemon.boosts) {
 			this.boosts[j] = pokemon.boosts[j];
 		}
+		if (this.battle.gen >= 6 && pokemon.volatiles['focusenergy']) this.addVolatile('focusenergy');
 		if (effect) {
 			this.battle.add('-transform', this, pokemon, '[from] ' + effect.fullname);
 		} else {

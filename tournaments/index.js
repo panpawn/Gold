@@ -156,8 +156,8 @@ class Tournament {
 			if (this.autoDisqualifyTimer) clearTimeout(this.autoDisqualifyTimer);
 			this.inProgressMatches.forEach(match => {
 				if (match) {
-					delete match.room.tour;
-					delete match.room.parent;
+					match.room.tour = null;
+					match.room.parent = null;
 					match.room.addRaw("<div class=\"broadcast-red\"><b>The tournament was forcefully ended.</b><br />You can finish playing, but this battle is no longer considered a tournament battle.</div>");
 				}
 			});
@@ -290,7 +290,9 @@ class Tournament {
 		*/
 
 		if (!isAllowAlts) {
-			for (const otherUser of this.generator.getUsers()) {
+			for (let otherUser of this.generator.getUsers()) {
+				if (!otherUser) continue;
+				otherUser = Users(otherUser.userid);
 				if (otherUser && otherUser.latestIp === user.latestIp) {
 					output.sendReply('|tournament|error|AltUserAlreadyAdded');
 					return;
@@ -782,6 +784,7 @@ class Tournament {
 		if (!this.pendingChallenges.get(player)) return;
 
 		let room = Rooms.createBattle(this.teambuilderFormat, {
+			isPrivate: this.room.isPrivate,
 			p1: from,
 			p1team: challenge.team,
 			p2: user,
@@ -838,6 +841,9 @@ class Tournament {
 		}
 	}
 	onBattleWin(room, winnerid) {
+		room.tour = null;
+		room.parent = null;
+
 		let from = this.players[room.p1.userid];
 		let to = this.players[room.p2.userid];
 		let winner = this.players[winnerid];
@@ -1080,7 +1086,7 @@ let commands = {
 			if (tournament.customRules.length < 1) {
 				return this.errorReply("The tournament does not have any custom rules.");
 			}
-			this.sendReplyBox("This tournament includes:<br />" + tournament.getCustomRules());
+			this.sendReply("|html|<div class='infobox infobox-limited'>This tournament includes:<br />" + tournament.getCustomRules() + "</div>");
 		},
 	},
 	creation: {
@@ -1169,8 +1175,8 @@ let commands = {
 				return this.errorReply("The custom rules cannot be changed once the tournament has started.");
 			}
 			if (tournament.setCustomRules(params, this)) {
-				this.room.addRaw("<div class='infobox'>This tournament includes:<br />" + tournament.getCustomRules() + "</div>");
-				this.privateModAction("(" + user.name + " set the tournament's custom rules to " + tournament.customRules.join(", ") + ".)");
+				this.room.addRaw("<div class='infobox infobox-limited'>This tournament includes:<br />" + tournament.getCustomRules() + "</div>");
+				this.privateModAction("(" + user.name + " updated the tournament's custom rules.)");
 				this.modlog('TOUR RULES', null, tournament.customRules.join(", "));
 			}
 		},
@@ -1596,7 +1602,7 @@ Chat.commands.tournamenthelp = function (target, room, user) {
 		`- banuser/unbanuser &lt;user>: Bans/unbans a user from joining tournaments in this room. Lasts 2 weeks.<br />` +
 		`- setprize [prize] - Manually sets the prize (bucks) for a tournament. Requires &, ~<br />` +
 		`- prize - Displays the current bucks prize of the running tournament, if it's a bucks tournament.<br />` +
-		`More detailed help can be found <a href="http://www.smogon.com/forums/threads/3570628/#post-6777489">here</a>`
+		`More detailed help can be found <a href="https://www.smogon.com/forums/threads/3570628/#post-6777489">here</a>`
 	);
 };
 

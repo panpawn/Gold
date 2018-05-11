@@ -101,7 +101,7 @@ async function runModlog(roomidList, searchString, exactSearch, maxLines) {
 			checkAllRooms = true;
 			const fileList = await FS(LOG_PATH).readdir();
 			for (const file of fileList) {
-				if (file !== 'README.md') fileNameList.push(file);
+				if (file !== 'README.md' && file !== 'modlog_global.txt') fileNameList.push(file);
 			}
 		} else {
 			fileNameList.push(`modlog_${roomid}.txt`);
@@ -121,7 +121,7 @@ async function runModlog(roomidList, searchString, exactSearch, maxLines) {
 		regexString = searchString.replace(/[\\.+*?()|[\]{}^$]/g, '\\$&');
 	} else {
 		searchString = toId(searchString);
-		regexString = `[^a-zA-Z0-9]${searchString.split('').join('[^a-zA-Z0-9]*')}[^a-zA-Z0-9]`;
+		regexString = `[^a-zA-Z0-9]${searchString.split('').join('[^a-zA-Z0-9]*')}([^a-zA-Z0-9]|\\z)`;
 	}
 
 	let results = new SortedLimitedLengthList(maxLines);
@@ -155,7 +155,7 @@ async function checkRoomModlog(path, regex, results) {
 function runRipgrepModlog(paths, regexString, results) {
 	let stdout;
 	try {
-		stdout = execFileSync('rg', ['-i', '-e', regexString, '--no-filename', '--no-line-number', ...paths], {cwd: path.normalize(`${__dirname}/../`)});
+		stdout = execFileSync('rg', ['-i', '-e', regexString, '--no-filename', '--no-line-number', ...paths, '-g', '!modlog_global.txt'], {cwd: path.normalize(`${__dirname}/../`)});
 	} catch (error) {
 		return results;
 	}
