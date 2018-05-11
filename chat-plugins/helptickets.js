@@ -849,7 +849,8 @@ let commands = {
 				return this.errorReply(`The reason is too long. It cannot exceed 300 characters.`);
 			}
 
-			let name, userid;
+			let name = '';
+			let userid = '';
 
 			if (targetUser) {
 				name = targetUser.getLastName();
@@ -911,7 +912,9 @@ let commands = {
 			for (let i in affected) {
 				let targetTicket = punishment;
 				let userid = (typeof affected[i] !== 'string' ? affected[i].getLastId() : toId(affected[i]));
-				if (Rooms(`help-${userid}`)) Rooms(`help-${userid}`).destroy();
+				const helpRoom = /** @type {ChatRoom?} */ (Rooms(`help-${ticket.userid}`));
+				if (helpRoom.game) helpRoom.game.close(user);
+				helpRoom.destroy();
 				ticketBans[userid] = targetTicket;
 			}
 			writeTickets();
