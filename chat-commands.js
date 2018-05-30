@@ -2032,6 +2032,11 @@ const commands = {
 	},
 	unbanallhelp: [`/unbanall - Unban all IP addresses. Requires: & ~`],
 
+	unlinkaccounts: function (target, room, user) {
+		
+	},
+	unlinkaccountshelp: [],
+
 	deroomvoiceall: function (target, room, user) {
 		if (!this.can('editroom', null, room)) return false;
 		if (!room.auth) return this.errorReply("Room does not have roomauth.");
