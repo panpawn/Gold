@@ -2833,6 +2833,7 @@ const commands = {
 				Chat.uncache('./chat');
 				Chat.uncache('./chat-commands');
 				Chat.uncacheDir('./chat-plugins');
+				Chat.uncacheDir('./gold-plugins');
 				global.Chat = require('./chat');
 
 				let runningTournaments = Tournaments.tournaments;

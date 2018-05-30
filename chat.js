@@ -1350,13 +1350,21 @@ Chat.loadPlugins = function () {
 		if (plugin.hostfilter) Chat.hostfilters.push(plugin.hostfilter);
 		if (plugin.loginfilter) Chat.loginfilters.push(plugin.loginfilter);
 	}
+
 	// finally, load custom Gold plugins
-	for (let file of FS('gold-plugins/').readdirSync()) {
+	let goldFiles = FS('gold-plugins/').readdirSync();
+
+	for (const file of goldFiles) {
 		if (file.substr(-3) !== '.js') continue;
 		const plugin = require(`./gold-plugins/${file}`);
+
 		Object.assign(commands, plugin.commands);
+		Object.assign(pages, plugin.pages);
 
 		if (plugin.chatfilter) Chat.filters.push(plugin.chatfilter);
+		if (plugin.namefilter) Chat.namefilters.push(plugin.namefilter);
+		if (plugin.hostfilter) Chat.hostfilters.push(plugin.hostfilter);
+		if (plugin.loginfilter) Chat.loginfilters.push(plugin.loginfilter);
 	}
 };
 
