@@ -140,9 +140,10 @@ exports.commands = {
 				if (!(parts[2] || parts[3])) return this.errorReply("Usage: /emote add, [emoticon], [link]");
 				let emoteName = parts[1];
 				if (Gold.emoticons.chatEmotes[emoteName]) return this.errorReply(`ERROR - the emoticon: ${emoteName} already exists.`);
+				if (emoteName.toLowerCase() === 'fukya') return this.errorReply(`no jd, BAD. VERY BAD.`);
 				let link = parts.splice(2, parts.length).join(',');
-				let fileTypes = [".gif", ".png", ".jpg"];
-				if (!~fileTypes.indexOf(link.substr(-4))) return this.errorReply("ERROR: the emoticon you are trying to add must be a gif, png, or jpg.");
+				let fileTypes = [".png", ".jpg"];
+				if (!~fileTypes.indexOf(link.substr(-4))) return this.errorReply("ERROR: the emoticon you are trying to add must be a png or a jpg.");
 				emotes[emoteName] = Gold.emoticons.chatEmotes[emoteName] = link;
 				saveEmotes();
 				this.sendReply(`The emoticon ${emoteName} has been added.`);
