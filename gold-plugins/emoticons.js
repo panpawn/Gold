@@ -22,7 +22,7 @@ Gold.emoticons = {
 		let patterns = [], metachars = /[[\]{}()*+?.\\|^$\-,&#\s]/g;
 
 		for (let i in this.chatEmotes) {
-			if (this.chatEmotes[i]) {
+			if (this.chatEmotes[i] && i.toLowerCase() !== 'fukya') {
 				patterns.push(`(${i.replace(metachars, "\\$&")})`);
 			}
 		}
