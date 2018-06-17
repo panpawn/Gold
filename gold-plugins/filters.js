@@ -198,6 +198,7 @@ Gold.evadeMonitor = function (user, name, punished) {
 	}
 	let points = 0;
 	let matched = false;
+	if (!user) return; // expired user object :[
 	let userAgent = user.useragent;
 	let ip = user.latestIp;
 
