@@ -274,6 +274,7 @@ class BasicRoom {
 	 * @param {User} user
 	 */
 	checkModjoin(user) {
+
 		if (this.staffRoom && !user.isStaff && (!this.auth || (this.auth[user.userid] || ' ') === ' ')) return false;
 		if (user.userid in this.users) return true;
 		if (!this.modjoin) return true;
