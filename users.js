@@ -102,7 +102,7 @@ function merge(user1, user2) {
  * Usage:
  *   Users.get(userid or username)
  *
- * Returns the corresponding User object, or undefined if no matching
+ * Returns the corresponding User object, or null if no matching
  * was found.
  *
  * By default, this function will track users across name changes.
@@ -485,7 +485,9 @@ class User {
 		this.locked = false;
 		/** @type {?false | string} */
 		this.semilocked = false;
+		/** @type {?boolean} */
 		this.namelocked = false;
+		/** @type {?false | string} */
 		this.permalocked = false;
 		this.prevNames = Object.create(null);
 		this.inRooms = new Set();
@@ -636,6 +638,7 @@ class User {
 		if (room && room.auth) {
 			group = room.getAuth(this);
 			if (targetUser) targetGroup = room.getAuth(targetUser);
+			if (room.isPrivate === true && this.can('makeroom')) group = this.group;
 		} else {
 			group = this.group;
 			if (targetUser) targetGroup = targetUser.group;
@@ -743,7 +746,7 @@ class User {
 			const game = Rooms(roomid).game;
 			if (!game || game.ended) continue; // should never happen
 			if (game.allowRenames || !this.named) continue;
-			this.popup(`You can't change your name right now because you're in ${Rooms(roomid).title}, which doesn't allow renaming.`);
+			this.popup(`You can't change your name right now because you're in ${game.title}, which doesn't allow renaming.`);
 			return false;
 		}
 
@@ -966,7 +969,7 @@ class User {
 		this.name = name;
 
 		let joining = !this.named;
-		this.named = !userid.startsWith('guest') || this.namelocked;
+		this.named = !userid.startsWith('guest') || !!this.namelocked;
 
 		for (const connection of this.connections) {
 			//console.log('' + name + ' renaming: socket ' + i + ' of ' + this.connections.length);
@@ -1740,5 +1743,5 @@ let Users = Object.assign(getUser, {
 	}, 1000 * 60 * 30),
 	socketConnect: socketConnect,
 });
-
+// @ts-ignore
 module.exports = Users;

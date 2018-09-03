@@ -48,8 +48,7 @@ let BattleItems = {
 					priority: action.priority + 0.1,
 					pokemon: action.pokemon,
 					move: action.move,
-					// @ts-ignore
-					target: action.target,
+					targetLoc: action.targetLoc,
 				});
 			}
 		},
@@ -205,7 +204,8 @@ let BattleItems = {
 				this.effectData.numConsecutive = 0;
 				this.effectData.lastMove = '';
 			},
-			onBeforeMove: function (pokemon, target, move) {
+			onTryMovePriority: -2,
+			onTryMove: function (pokemon, target, move) {
 				if (!pokemon.hasItem('metronome')) {
 					pokemon.removeVolatile('metronome');
 					return;

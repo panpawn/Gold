@@ -432,213 +432,219 @@ const commands = {
 			}
 		}
 		let mod = Dex;
+		/** @type {Format?} */
+		let format = null;
 		if (sep[1] && toId(sep[1]) in Dex.dexes) {
 			mod = Dex.mod(toId(sep[1]));
-		} else if (sep[1] && Dex.getFormat(sep[1]).mod) {
-			mod = Dex.mod(Dex.getFormat(sep[1]).mod);
+		} else if (sep[1]) {
+			format = Dex.getFormat(sep[1]);
+			if (!format.exists) {
+				return this.errorReply(`Unrecognized format or mod "${format.name}"`);
+			}
+			mod = Dex.mod(format.mod);
 		} else if (room && room.battle) {
-			mod = Dex.forFormat(room.battle.format);
+			format = Dex.getFormat(room.battle.format);
+			mod = Dex.mod(format.mod);
 		}
 		let newTargets = mod.dataSearch(target);
 		let showDetails = (cmd === 'dt' || cmd === 'details');
-		if (newTargets && newTargets.length) {
-			for (const [i, newTarget] of newTargets.entries()) {
-				if (newTarget.isInexact && !i) {
-					buffer = `No Pok\u00e9mon, item, move, ability or nature named '${target}' was found${Dex.gen > mod.gen ? ` in Gen ${mod.gen}` : ""}. Showing the data of '${newTargets[0].name}' instead.\n`;
-				}
-				switch (newTarget.searchType) {
-				case 'nature':
-					let nature = Dex.getNature(newTarget.name);
-					buffer += "" + nature.name + " nature: ";
-					if (nature.plus) {
-						let statNames = {'atk': "Attack", 'def': "Defense", 'spa': "Special Attack", 'spd': "Special Defense", 'spe': "Speed"};
-						buffer += "+10% " + statNames[nature.plus] + ", -10% " + statNames[nature.minus] + ".";
-					} else {
-						buffer += "No effect.";
-					}
-					return this.sendReply(buffer);
-				case 'pokemon':
-					let template = mod.getTemplate(newTarget.name);
-					let tier = template.tier;
-					if (room && (room.id === 'smogondoubles' ||
-						['gen7doublesou', 'gen7doublesubers', 'gen7doublesuu'].includes(room.battle && room.battle.format))) {
-						tier = template.doublesTier;
-					}
-					buffer += `|raw|${Chat.getDataPokemonHTML(template, mod.gen, tier)}\n`;
-					break;
-				case 'item':
-					let item = mod.getItem(newTarget.name);
-					buffer += `|raw|${Chat.getDataItemHTML(item)}\n`;
-					break;
-				case 'move':
-					let move = mod.getMove(newTarget.name);
-					buffer += `|raw|${Chat.getDataMoveHTML(move)}\n`;
-					break;
-				case 'ability':
-					let ability = mod.getAbility(newTarget.name);
-					buffer += `|raw|${Chat.getDataAbilityHTML(ability)}\n`;
-					break;
-				default:
-					throw new Error(`Unrecognized searchType`);
-				}
-			}
-		} else {
+		if (!newTargets || !newTargets.length) {
 			return this.errorReply(`No Pok\u00e9mon, item, move, ability or nature named '${target}' was found${Dex.gen > mod.gen ? ` in Gen ${mod.gen}` : ""}. (Check your spelling?)`);
 		}
 
-		if (showDetails) {
+		for (const [i, newTarget] of newTargets.entries()) {
+			if (newTarget.isInexact && !i) {
+				buffer = `No Pok\u00e9mon, item, move, ability or nature named '${target}' was found${Dex.gen > mod.gen ? ` in Gen ${mod.gen}` : ""}. Showing the data of '${newTargets[0].name}' instead.\n`;
+			}
 			/** @type {AnyObject} */
-			let details;
-			if (newTargets[0].searchType === 'pokemon') {
-				let pokemon = mod.getTemplate(newTargets[0].name);
-				let weighthit = 20;
-				if (pokemon.weightkg >= 200) {
-					weighthit = 120;
-				} else if (pokemon.weightkg >= 100) {
-					weighthit = 100;
-				} else if (pokemon.weightkg >= 50) {
-					weighthit = 80;
-				} else if (pokemon.weightkg >= 25) {
-					weighthit = 60;
-				} else if (pokemon.weightkg >= 10) {
-					weighthit = 40;
-				}
-				details = {
-					"Dex#": pokemon.num,
-					"Gen": pokemon.gen || 'CAP',
-					"Height": pokemon.heightm + " m",
-					"Weight": pokemon.weightkg + " kg <em>(" + weighthit + " BP)</em>",
-				};
-				if (pokemon.color && mod.gen >= 5) details["Dex Colour"] = pokemon.color;
-				if (pokemon.eggGroups && mod.gen >= 2) details["Egg Group(s)"] = pokemon.eggGroups.join(", ");
-				let evos = /** @type {string[]} */ ([]);
-				pokemon.evos.forEach(evoName => {
-					const evo = mod.getTemplate(evoName);
-					if (evo.gen <= mod.gen) {
-						evos.push(evo.name + " (" + evo.evoLevel + ")");
-					}
-				});
-				if (!evos.length) {
-					details['<font color="#686868">Does Not Evolve</font>'] = "";
+			let details = null;
+			switch (newTarget.searchType) {
+			case 'nature':
+				let nature = Dex.getNature(newTarget.name);
+				buffer += "" + nature.name + " nature: ";
+				if (nature.plus) {
+					let statNames = {'atk': "Attack", 'def': "Defense", 'spa': "Special Attack", 'spd': "Special Defense", 'spe': "Speed"};
+					buffer += "+10% " + statNames[nature.plus] + ", -10% " + statNames[nature.minus] + ".";
 				} else {
-					details["Evolution"] = evos.join(", ");
+					buffer += "No effect.";
 				}
-			} else if (newTargets[0].searchType === 'move') {
-				let move = mod.getMove(newTargets[0].name);
-				details = {
-					"Priority": move.priority,
-					"Gen": move.gen || 'CAP',
-				};
-
-				if (move.secondary || move.secondaries) details["&#10003; Secondary effect"] = "";
-				if (move.flags['contact']) details["&#10003; Contact"] = "";
-				if (move.flags['sound']) details["&#10003; Sound"] = "";
-				if (move.flags['bullet']) details["&#10003; Bullet"] = "";
-				if (move.flags['pulse']) details["&#10003; Pulse"] = "";
-				if (!move.flags['protect'] && !/(ally|self)/i.test(move.target)) details["&#10003; Bypasses Protect"] = "";
-				if (move.flags['authentic']) details["&#10003; Bypasses Substitutes"] = "";
-				if (move.flags['defrost']) details["&#10003; Thaws user"] = "";
-				if (move.flags['bite']) details["&#10003; Bite"] = "";
-				if (move.flags['punch']) details["&#10003; Punch"] = "";
-				if (move.flags['powder']) details["&#10003; Powder"] = "";
-				if (move.flags['reflectable']) details["&#10003; Bounceable"] = "";
-				if (move.flags['gravity'] && mod.gen >= 4) details["&#10007; Suppressed by Gravity"] = "";
-
-				if (mod.gen >= 7) {
-					if (move.zMovePower) {
-						details["Z-Power"] = move.zMovePower;
-					} else if (move.zMoveEffect) {
-						details["Z-Effect"] = {
-							'clearnegativeboost': "Restores negative stat stages to 0",
-							'crit2': "Crit ratio +2",
-							'heal': "Restores HP 100%",
-							'curse': "Restores HP 100% if user is Ghost type, otherwise Attack +1",
-							'redirect': "Redirects opposing attacks to user",
-							'healreplacement': "Restores replacement's HP 100%",
-						}[move.zMoveEffect];
-					} else if (move.zMoveBoost) {
-						details["Z-Effect"] = "";
-						let boost = move.zMoveBoost;
-						let stats = {atk: 'Attack', def: 'Defense', spa: 'Sp. Atk', spd: 'Sp. Def', spe: 'Speed', accuracy: 'Accuracy', evasion: 'Evasiveness'};
-						for (let i in boost) {
-							details["Z-Effect"] += " " + stats[i] + " +" + boost[i];
+				return this.sendReply(buffer);
+			case 'pokemon':
+				let pokemon = mod.getTemplate(newTarget.name);
+				if (format && format.onModifyTemplate) {
+					pokemon = format.onModifyTemplate.call(require('../sim/battle'), pokemon) || pokemon;
+				}
+				let tier = pokemon.tier;
+				if (room && (room.id === 'smogondoubles' ||
+					['gen7doublesou', 'gen7doublesubers', 'gen7doublesuu'].includes(room.battle && room.battle.format))) {
+					tier = pokemon.doublesTier;
+				}
+				buffer += `|raw|${Chat.getDataPokemonHTML(pokemon, mod.gen, tier)}\n`;
+				if (showDetails) {
+					let weighthit = 20;
+					if (pokemon.weightkg >= 200) {
+						weighthit = 120;
+					} else if (pokemon.weightkg >= 100) {
+						weighthit = 100;
+					} else if (pokemon.weightkg >= 50) {
+						weighthit = 80;
+					} else if (pokemon.weightkg >= 25) {
+						weighthit = 60;
+					} else if (pokemon.weightkg >= 10) {
+						weighthit = 40;
+					}
+					details = {
+						"Dex#": pokemon.num,
+						"Gen": pokemon.gen || 'CAP',
+						"Height": pokemon.heightm + " m",
+						"Weight": pokemon.weightkg + " kg <em>(" + weighthit + " BP)</em>",
+					};
+					if (pokemon.color && mod.gen >= 5) details["Dex Colour"] = pokemon.color;
+					if (pokemon.eggGroups && mod.gen >= 2) details["Egg Group(s)"] = pokemon.eggGroups.join(", ");
+					let evos = /** @type {string[]} */ ([]);
+					pokemon.evos.forEach(evoName => {
+						const evo = mod.getTemplate(evoName);
+						if (evo.gen <= mod.gen) {
+							evos.push(evo.name + " (" + evo.evoLevel + ")");
 						}
-					} else if (move.isZ) {
-						details["&#10003; Z-Move"] = "";
-						details["Z-Crystal"] = mod.getItem(move.isZ).name;
-						if (move.basePower !== 1) {
-							details["User"] = mod.getItem(move.isZ).zMoveUser.join(", ");
-							details["Required Move"] = mod.getItem(move.isZ).zMoveFrom;
-						}
+					});
+					if (!evos.length) {
+						details['<font color="#686868">Does Not Evolve</font>'] = "";
 					} else {
-						details["Z-Effect"] = "None";
+						details["Evolution"] = evos.join(", ");
 					}
 				}
+				break;
+			case 'item':
+				let item = mod.getItem(newTarget.name);
+				buffer += `|raw|${Chat.getDataItemHTML(item)}\n`;
+				if (showDetails) {
+					details = {
+						"Gen": item.gen,
+					};
 
-				details["Target"] = {
-					'normal': "One Adjacent Pok\u00e9mon",
-					'self': "User",
-					'adjacentAlly': "One Ally",
-					'adjacentAllyOrSelf': "User or Ally",
-					'adjacentFoe': "One Adjacent Opposing Pok\u00e9mon",
-					'allAdjacentFoes': "All Adjacent Opponents",
-					'foeSide': "Opposing Side",
-					'allySide': "User's Side",
-					'allyTeam': "User's Side",
-					'allAdjacent': "All Adjacent Pok\u00e9mon",
-					'any': "Any Pok\u00e9mon",
-					'all': "All Pok\u00e9mon",
-				}[move.target] || "Unknown";
-
-				if (move.id === 'snatch' && mod.gen >= 3) {
-					details['<a href="https://pokemonshowdown.com/dex/moves/snatch">Snatchable Moves</a>'] = '';
-				}
-				if (move.id === 'mirrormove') {
-					details['<a href="https://pokemonshowdown.com/dex/moves/mirrormove">Mirrorable Moves</a>'] = '';
-				}
-				if (move.isUnreleased) {
-					details["Unreleased in Gen " + mod.gen] = "";
-				}
-			} else if (newTargets[0].searchType === 'item') {
-				let item = mod.getItem(newTargets[0].name);
-				details = {
-					"Gen": item.gen,
-				};
-
-				if (mod.gen >= 4) {
-					if (item.fling) {
-						details["Fling Base Power"] = item.fling.basePower;
-						if (item.fling.status) details["Fling Effect"] = item.fling.status;
-						if (item.fling.volatileStatus) details["Fling Effect"] = item.fling.volatileStatus;
-						if (item.isBerry) details["Fling Effect"] = "Activates the Berry's effect on the target.";
-						if (item.id === 'whiteherb') details["Fling Effect"] = "Restores the target's negative stat stages to 0.";
-						if (item.id === 'mentalherb') details["Fling Effect"] = "Removes the effects of Attract, Disable, Encore, Heal Block, Taunt, and Torment from the target.";
-					} else {
-						details["Fling"] = "This item cannot be used with Fling.";
+					if (mod.gen >= 4) {
+						if (item.fling) {
+							details["Fling Base Power"] = item.fling.basePower;
+							if (item.fling.status) details["Fling Effect"] = item.fling.status;
+							if (item.fling.volatileStatus) details["Fling Effect"] = item.fling.volatileStatus;
+							if (item.isBerry) details["Fling Effect"] = "Activates the Berry's effect on the target.";
+							if (item.id === 'whiteherb') details["Fling Effect"] = "Restores the target's negative stat stages to 0.";
+							if (item.id === 'mentalherb') details["Fling Effect"] = "Removes the effects of Attract, Disable, Encore, Heal Block, Taunt, and Torment from the target.";
+						} else {
+							details["Fling"] = "This item cannot be used with Fling.";
+						}
+					}
+					if (item.naturalGift && mod.gen >= 3) {
+						details["Natural Gift Type"] = item.naturalGift.type;
+						details["Natural Gift Base Power"] = item.naturalGift.basePower;
+					}
+					if (item.isUnreleased) {
+						details["Unreleased in Gen " + mod.gen] = "";
 					}
 				}
-				if (item.naturalGift && mod.gen >= 3) {
-					details["Natural Gift Type"] = item.naturalGift.type;
-					details["Natural Gift Base Power"] = item.naturalGift.basePower;
+				break;
+			case 'move':
+				let move = mod.getMove(newTarget.name);
+				buffer += `|raw|${Chat.getDataMoveHTML(move)}\n`;
+				if (showDetails) {
+					details = {
+						"Priority": move.priority,
+						"Gen": move.gen || 'CAP',
+					};
+
+					if (move.secondary || move.secondaries) details["&#10003; Secondary effect"] = "";
+					if (move.flags['contact']) details["&#10003; Contact"] = "";
+					if (move.flags['sound']) details["&#10003; Sound"] = "";
+					if (move.flags['bullet']) details["&#10003; Bullet"] = "";
+					if (move.flags['pulse']) details["&#10003; Pulse"] = "";
+					if (!move.flags['protect'] && !/(ally|self)/i.test(move.target)) details["&#10003; Bypasses Protect"] = "";
+					if (move.flags['authentic']) details["&#10003; Bypasses Substitutes"] = "";
+					if (move.flags['defrost']) details["&#10003; Thaws user"] = "";
+					if (move.flags['bite']) details["&#10003; Bite"] = "";
+					if (move.flags['punch']) details["&#10003; Punch"] = "";
+					if (move.flags['powder']) details["&#10003; Powder"] = "";
+					if (move.flags['reflectable']) details["&#10003; Bounceable"] = "";
+					if (move.flags['gravity'] && mod.gen >= 4) details["&#10007; Suppressed by Gravity"] = "";
+
+					if (mod.gen >= 7) {
+						if (move.zMovePower) {
+							details["Z-Power"] = move.zMovePower;
+						} else if (move.zMoveEffect) {
+							details["Z-Effect"] = {
+								'clearnegativeboost': "Restores negative stat stages to 0",
+								'crit2': "Crit ratio +2",
+								'heal': "Restores HP 100%",
+								'curse': "Restores HP 100% if user is Ghost type, otherwise Attack +1",
+								'redirect': "Redirects opposing attacks to user",
+								'healreplacement': "Restores replacement's HP 100%",
+							}[move.zMoveEffect];
+						} else if (move.zMoveBoost) {
+							details["Z-Effect"] = "";
+							let boost = move.zMoveBoost;
+							let stats = {atk: 'Attack', def: 'Defense', spa: 'Sp. Atk', spd: 'Sp. Def', spe: 'Speed', accuracy: 'Accuracy', evasion: 'Evasiveness'};
+							for (let i in boost) {
+								details["Z-Effect"] += " " + stats[i] + " +" + boost[i];
+							}
+						} else if (move.isZ) {
+							details["&#10003; Z-Move"] = "";
+							details["Z-Crystal"] = mod.getItem(move.isZ).name;
+							if (move.basePower !== 1) {
+								details["User"] = mod.getItem(move.isZ).zMoveUser.join(", ");
+								details["Required Move"] = mod.getItem(move.isZ).zMoveFrom;
+							}
+						} else {
+							details["Z-Effect"] = "None";
+						}
+					}
+
+					details["Target"] = {
+						'normal': "One Adjacent Pok\u00e9mon",
+						'self': "User",
+						'adjacentAlly': "One Ally",
+						'adjacentAllyOrSelf': "User or Ally",
+						'adjacentFoe': "One Adjacent Opposing Pok\u00e9mon",
+						'allAdjacentFoes': "All Adjacent Opponents",
+						'foeSide': "Opposing Side",
+						'allySide': "User's Side",
+						'allyTeam': "User's Side",
+						'allAdjacent': "All Adjacent Pok\u00e9mon",
+						'any': "Any Pok\u00e9mon",
+						'all': "All Pok\u00e9mon",
+					}[move.target] || "Unknown";
+
+					if (move.id === 'snatch' && mod.gen >= 3) {
+						details['<a href="https://pokemonshowdown.com/dex/moves/snatch">Snatchable Moves</a>'] = '';
+					}
+					if (move.id === 'mirrormove') {
+						details['<a href="https://pokemonshowdown.com/dex/moves/mirrormove">Mirrorable Moves</a>'] = '';
+					}
+					if (move.isUnreleased) {
+						details["Unreleased in Gen " + mod.gen] = "";
+					}
 				}
-				if (item.isUnreleased) {
-					details["Unreleased in Gen " + mod.gen] = "";
-				}
-			} else {
-				details = {};
+				break;
+			case 'ability':
+				let ability = mod.getAbility(newTarget.name);
+				buffer += `|raw|${Chat.getDataAbilityHTML(ability)}\n`;
+				break;
+			default:
+				throw new Error(`Unrecognized searchType`);
 			}
 
-			buffer += '|raw|<font size="1">' + Object.keys(details).map(detail => {
-				if (details[detail] === '') return detail;
-				return '<font color="#686868">' + detail + ':</font> ' + details[detail];
-			}).join("&nbsp;|&ThickSpace;") + '</font>';
+			if (details) {
+				buffer += '|raw|<font size="1">' + Object.keys(details).map(detail => {
+					if (details[detail] === '') return detail;
+					return '<font color="#686868">' + detail + ':</font> ' + details[detail];
+				}).join("&nbsp;|&ThickSpace;") + '</font>\n';
+			}
 		}
 		this.sendReply(buffer);
 	},
 	datahelp: [
-		`/data [pokemon/item/move/ability] - Get details on this pokemon/item/move/ability/nature.`,
-		`/data [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
-		`!data [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~`,
+		`/data [pokemon/item/move/ability/nature] - Get details on this pokemon/item/move/ability/nature.`,
+		`/data [pokemon/item/move/ability/nature], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
+		`!data [pokemon/item/move/ability/nature] - Show everyone these details. Requires: + % @ * # & ~`,
 	],
 
 	'!details': true,
@@ -648,9 +654,9 @@ const commands = {
 		this.run('data');
 	},
 	detailshelp: [
-		`/details [pokemon/item/move/ability] - Get additional details on this pokemon/item/move/ability/nature.`,
-		`/details [pokemon/item/move/ability], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
-		`!details [pokemon/item/move/ability] - Show everyone these details. Requires: + % @ * # & ~`,
+		`/details [pokemon/item/move/ability/nature] - Get additional details on this pokemon/item/move/ability/nature.`,
+		`/details [pokemon/item/move/ability/nature], Gen [generation number/format name] - Get details on this pokemon/item/move/ability/nature for that generation/format.`,
+		`!details [pokemon/item/move/ability/nature] - Show everyone these details. Requires: + % @ * # & ~`,
 	],
 
 	'!weakness': true,
@@ -1349,12 +1355,12 @@ const commands = {
 	bugs: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (room && room.battle) {
-			this.sendReplyBox(`<center><button name="saveReplay"><i class="fa fa-upload"></i> Save Replay</button> &mdash; <a href="https://www.smogon.com/forums/threads/3520646/">Questions</a> &mdash; <a href="https://www.smogon.com/forums/threads/3469932/">Bug Reports</a></center>`);
+			this.sendReplyBox(`<center><button name="saveReplay"><i class="fa fa-upload"></i> Save Replay</button> &mdash; <a href="https://www.smogon.com/forums/threads/3520646/">Questions</a> &mdash; <a href="https://www.smogon.com/forums/threads/3634749/">Bug Reports</a></center>`);
 		} else {
 			this.sendReplyBox(
 				`Have a replay showcasing a bug on Pok&eacute;mon Showdown?<br />` +
 				`- <a href="https://www.smogon.com/forums/threads/3520646/">Questions</a><br />` +
-				`- <a href="https://www.smogon.com/forums/threads/3469932/">Bug Reports</a> (ask in <a href="/help">Help</a> before posting in the thread if you're unsure)`
+				`- <a href="https://www.smogon.com/forums/threads/3634749/">Bug Reports</a> (ask in <a href="/help">Help</a> before posting in the thread if you're unsure)`
 			);
 		}
 	},
@@ -1436,8 +1442,8 @@ const commands = {
 			`An introduction to the Create-A-Pok&eacute;mon project:<br />` +
 			`- <a href="https://www.smogon.com/cap/">CAP project website and description</a><br />` +
 			`- <a href="https://www.smogon.com/forums/threads/48782/">What Pok&eacute;mon have been made?</a><br />` +
-			`- <a href="https://www.smogon.com/forums/forums/311">Talk about the metagame here</a><br />` +
-			`- <a href="https://www.smogon.com/forums/threads/3593752/">Sample SM CAP teams</a>`
+			`- <a href="https://www.smogon.com/forums/forums/477">Talk about the metagame here</a><br />` +
+			`- <a href="https://www.smogon.com/forums/threads/3634419/">Sample SM CAP teams</a>`
 		);
 	},
 	caphelp: [
@@ -1667,8 +1673,8 @@ const commands = {
 			return this.errorReply(`This is not a room you can set the rules of.`);
 		}
 		if (!this.can('editroom', null, room)) return;
-		if (target.length > 100) {
-			return this.errorReply(`Error: Room rules link is too long (must be under 100 characters). You can use a URL shortener to shorten the link.`);
+		if (target.length > 150) {
+			return this.errorReply(`Error: Room rules link is too long (must be under 150 characters). You can use a URL shortener to shorten the link.`);
 		}
 
 		target = target.trim();
@@ -1715,6 +1721,9 @@ const commands = {
 		if (showAll || target === 'coil') {
 			buffer.push(`<a href="https://www.smogon.com/forums/threads/3508013/">What is COIL?</a>`);
 		}
+		if (showAll || target === 'ladder' || target === 'ladderhelp' || target === 'decay') {
+			buffer.push(`<a href="https://pokemonshowdown.com/pages/ladderhelp">How the ladder works</a>`);
+		}
 		if (showAll || target === 'tiering' || target === 'tiers' || target === 'tier') {
 			buffer.push(`<a href="https://www.smogon.com/ingame/battle/tiering-faq">Tiering FAQ</a>`);
 		}
@@ -1727,8 +1736,8 @@ const commands = {
 		this.sendReplyBox(buffer.join(`<br />`));
 	},
 	faqhelp: [
-		`/faq [theme] - Provides a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them.`,
-		`!faq [theme] - Shows everyone a link to the FAQ. Add deviation, doubles, randomcap, restart, or staff for a link to these questions. Add all for all of them. Requires: + % @ * # & ~`,
+		`/faq [theme] - Provides a link to the FAQ. Add autoconfirmed, badges, coil, ladder, staff, or tiers for a link to these questions. Add all for all of them.`,
+		`!faq [theme] - Shows everyone a link to the FAQ. Add autoconfirmed, badges, coil, ladder, staff, or tiers for a link to these questions. Add all for all of them. Requires: + % @ * # & ~`,
 	],
 
 	'!smogdex': true,
@@ -2092,9 +2101,13 @@ const commands = {
 	pr: 'pickrandom',
 	pick: 'pickrandom',
 	pickrandom: function (target, room, user) {
-		let options = target.split(',');
-		if (options.length < 2) return this.parse('/help pick');
+		if (!target) return false;
+		if (!target.includes(',')) return this.parse('/help pick');
 		if (!this.runBroadcast(true)) return false;
+		if (this.broadcasting) {
+			[, target] = Chat.splitFirst(this.message, ' ');
+		}
+		let options = target.split(',');
 		const pickedOption = options[Math.floor(Math.random() * options.length)].trim();
 		return this.sendReplyBox(Chat.html`<em>We randomly picked:</em> ${pickedOption}`);
 	},
@@ -2143,7 +2156,7 @@ const commands = {
 	},
 	showimagehelp: [`/showimage [url], [width], [height] - Show an image. Any CSS units may be used for the width or height (default: px). Requires: # & ~`],
 
-	htmlbox: function (target, room, user, connection, cmd, message) {
+	htmlbox: function (target, room, user) {
 		if (!target) return this.parse('/help htmlbox');
 		target = this.canHTML(target);
 		if (!target) return;
@@ -2163,9 +2176,13 @@ const commands = {
 
 		this.addBox(target);
 	},
-
-	addhtmlbox: function (target, room, user, connection, cmd, message) {
-		if (!target) return this.parse('/help htmlbox');
+	htmlboxhelp: [
+		`/htmlbox [message] - Displays a message, parsing HTML code contained.`,
+		`!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #`,
+	],
+	addmodhtmlbox: 'addhtmlbox',
+	addhtmlbox: function (target, room, user, connection, cmd) {
+		if (!target) return this.parse('/help ' + cmd);
 		if (!this.canTalk()) return;
 		target = this.canHTML(target);
 		if (!target) return;
@@ -2175,12 +2192,20 @@ const commands = {
 			target += Chat.html`<div style="float:right;color:#888;font-size:8pt">[${user.name}]</div><div style="clear:both"></div>`;
 		}
 
-		this.addBox(target);
+		if (cmd === 'addmodhtmlbox') {
+			this.addModBox(target);
+		} else {
+			this.addBox(target);
+		}
 	},
-	htmlboxhelp: [
-		`/htmlbox [message] - Displays a message, parsing HTML code contained.`,
-		`!htmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #`,
+	addhtmlboxhelp: [
+		`/addhtmlbox [message] - Shows everyone a message, parsing HTML code contained. Requires: ~ & #`,
 	],
+	addmodhtmlboxhelp: [
+		`/addmodhtmlbox [message] - Shows staff a message, parsing HTML code contained. Requires: ~ & #`,
+	],
+	changemoduhtml: 'adduhtml',
+	addmoduhtml: 'adduhtml',
 	changeuhtml: 'adduhtml',
 	adduhtml: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse('/help ' + cmd);
@@ -2196,13 +2221,24 @@ const commands = {
 			html += Chat.html`<div style="float:right;color:#888;font-size:8pt">[${user.name}]</div><div style="clear:both"></div>`;
 		}
 
-		this.add(`|uhtml${(cmd === 'changeuhtml' ? 'change' : '')}|${name}|${html}`);
+		html = `|uhtml${(cmd === 'changeuhtml' || cmd === 'changemoduhtml' ? 'change' : '')}|${name}|${html}`;
+		if (cmd === 'addmoduhtml' || cmd === 'changemoduhtml') {
+			this.room.sendMods(html);
+		} else {
+			this.add(html);
+		}
 	},
 	adduhtmlhelp: [
-		`/adduhtml [name], [message] - Shows everyone a message that can change, parsing HTML code contained.`,
+		`/adduhtml [name], [message] - Shows everyone a message that can change, parsing HTML code contained.  Requires: ~ & #`,
 	],
 	changeuhtmlhelp: [
-		`/changeuhtml [name], [message] - Changes a message previously shown with /adduhtml`,
+		`/changeuhtml [name], [message] - Changes the message previously shown with /adduhtml [name]. Requires: ~ & #`,
+	],
+	addmoduhtmlhelp: [
+		`/addmoduhtml [name], [message] - Shows staff a message that can change, parsing HTML code contained. Requires: ~ & #`,
+	],
+	changemoduhtmlhelp: [
+		`/changemoduhtml [name], [message] - Changes the staff message previously shown with /addmoduhtml [name]. Requires: ~ & #`,
 	],
 };
 

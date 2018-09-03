@@ -3,11 +3,11 @@
 List of flags and their descriptions:
 
 authentic: Ignores a target's substitute.
-bite: Power is multiplied by 1.5 when used by a Pokemon with the Ability Strong Jaw.
-bullet: Has no effect on Pokemon with the Ability Bulletproof.
+bite: Power is multiplied by 1.5 when used by a Pokemon with the Strong Jaw Ability.
+bullet: Has no effect on Pokemon with the Bulletproof Ability.
 charge: The user is unable to make a move between turns.
 contact: Makes contact.
-dance: When used by a Pokemon, other Pokemon with the Ability Dancer can attempt to execute the same move.
+dance: When used by a Pokemon, other Pokemon with the Dancer Ability can attempt to execute the same move.
 defrost: Thaws the user if executed successfully while the user is frozen.
 distance: Can target a Pokemon positioned anywhere in a Triple Battle.
 gravity: Prevented from being executed or selected during Gravity's effect.
@@ -15,14 +15,14 @@ heal: Prevented from being executed or selected during Heal Block's effect.
 mirror: Can be copied by Mirror Move.
 mystery: Unknown effect.
 nonsky: Prevented from being executed or selected in a Sky Battle.
-powder: Has no effect on Grass-type Pokemon, Pokemon with the Ability Overcoat, and Pokemon holding Safety Goggles.
+powder: Has no effect on Grass-type Pokemon, Pokemon with the Overcoat Ability, and Pokemon holding Safety Goggles.
 protect: Blocked by Detect, Protect, Spiky Shield, and if not a Status move, King's Shield.
-pulse: Power is multiplied by 1.5 when used by a Pokemon with the Ability Mega Launcher.
-punch: Power is multiplied by 1.2 when used by a Pokemon with the Ability Iron Fist.
+pulse: Power is multiplied by 1.5 when used by a Pokemon with the Mega Launcher Ability.
+punch: Power is multiplied by 1.2 when used by a Pokemon with the Iron Fist Ability.
 recharge: If this move is successful, the user must recharge on the following turn and cannot make a move.
-reflectable: Bounced back to the original user by Magic Coat or the Ability Magic Bounce.
+reflectable: Bounced back to the original user by Magic Coat or the Magic Bounce Ability.
 snatch: Can be stolen from the original user and instead used by another Pokemon using Snatch.
-sound: Has no effect on Pokemon with the Ability Soundproof.
+sound: Has no effect on Pokemon with the Soundproof Ability.
 
 */
 
@@ -44,7 +44,7 @@ let BattleMovedex = {
 		flags: {},
 		isZ: "pikashuniumz",
 		critRatio: 3,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		contestType: "Cool",
@@ -62,7 +62,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 100,
@@ -81,7 +81,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 100,
@@ -125,7 +125,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Poison",
 		zMoveEffect: 'clearnegativeboost',
@@ -144,7 +144,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "poisoniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		contestType: "Cool",
@@ -185,7 +185,6 @@ let BattleMovedex = {
 			return move.basePower;
 		},
 		category: "Physical",
-		desc: "Power doubles if the user has no held item.",
 		shortDesc: "Power doubles if the user has no held item.",
 		id: "acrobatics",
 		isViable: true,
@@ -193,7 +192,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 100,
@@ -214,6 +213,7 @@ let BattleMovedex = {
 		onHit: function (target) {
 			let stats = [];
 			for (let stat in target.boosts) {
+				// @ts-ignore
 				if (target.boosts[stat] < 6) {
 					stats.push(stat);
 				}
@@ -227,7 +227,7 @@ let BattleMovedex = {
 				return false;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "adjacentAllyOrSelf",
 		type: "Normal",
 		zMoveEffect: 'crit2',
@@ -238,7 +238,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Physical",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "aerialace",
 		isViable: true,
@@ -246,7 +245,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 120,
@@ -266,7 +265,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, distance: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 180,
@@ -295,7 +294,7 @@ let BattleMovedex = {
 				return false;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -317,7 +316,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -336,7 +335,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Flying",
 		zMovePower: 120,
@@ -377,7 +376,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "fightiniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		contestType: "Cool",
@@ -404,7 +403,7 @@ let BattleMovedex = {
 			if (pokemon.side.active[newPosition].fainted) return false;
 			this.swapPosition(pokemon, newPosition, '[from] move: Ally Switch');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveBoost: {spe: 2},
@@ -425,7 +424,7 @@ let BattleMovedex = {
 		boosts: {
 			spd: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -497,7 +496,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 100,
@@ -508,7 +507,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user has 1/16 of its maximum HP, rounded down, restored at the end of each turn while it remains active. If the user uses Baton Pass, the replacement will receive the healing effect.",
+		desc: "The user has 1/16 of its maximum HP, rounded down, restored at the end of each turn while it remains active. If Big Root is held by the user, the HP recovered is 1.3x normal, rounded half down. If the user uses Baton Pass, the replacement will receive the healing effect.",
 		shortDesc: "User recovers 1/16 max HP per turn.",
 		id: "aquaring",
 		name: "Aqua Ring",
@@ -525,7 +524,7 @@ let BattleMovedex = {
 				this.heal(pokemon.maxhp / 16);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Water",
 		zMoveBoost: {def: 1},
@@ -536,7 +535,6 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 90,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "aquatail",
 		isViable: true,
@@ -544,7 +542,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 175,
@@ -555,7 +553,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 15,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "armthrust",
 		name: "Arm Thrust",
@@ -563,7 +561,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -574,7 +572,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Every Pokemon in the user's party is cured of its major status condition. Active Pokemon with the Ability Sap Sipper are not cured, unless they are the user.",
+		desc: "Every Pokemon in the user's party is cured of its major status condition. Active Pokemon with the Sap Sipper Ability are not cured, unless they are the user.",
 		shortDesc: "Cures the user's party of all status conditions.",
 		id: "aromatherapy",
 		isViable: true,
@@ -614,7 +612,7 @@ let BattleMovedex = {
 		boosts: {
 			spd: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "adjacentAlly",
 		type: "Fairy",
 		zMoveBoost: {spd: 2},
@@ -625,7 +623,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "A random move among those known by the user's party members is selected for use. Does not select Assist, Belch, Bestow, Bounce, Chatter, Circle Throw, Copycat, Counter, Covet, Destiny Bond, Detect, Dig, Dive, Dragon Tail, Endure, Feint, Fly, Focus Punch, Follow Me, Helping Hand, Hold Hands, King's Shield, Mat Block, Me First, Metronome, Mimic, Mirror Coat, Mirror Move, Nature Power, Phantom Force, Protect, Rage Powder, Roar, Shadow Force, Sketch, Sky Drop, Sleep Talk, Snatch, Spiky Shield, Struggle, Switcheroo, Thief, Transform, Trick, or Whirlwind.",
+		desc: "A random move among those known by the user's party members is selected for use. Does not select Assist, Baneful Bunker, Beak Blast, Belch, Bestow, Bounce, Chatter, Circle Throw, Copycat, Counter, Covet, Destiny Bond, Detect, Dig, Dive, Dragon Tail, Endure, Feint, Fly, Focus Punch, Follow Me, Helping Hand, Hold Hands, King's Shield, Mat Block, Me First, Metronome, Mimic, Mirror Coat, Mirror Move, Nature Power, Phantom Force, Protect, Rage Powder, Roar, Shadow Force, Shell Trap, Sketch, Sky Drop, Sleep Talk, Snatch, Spiky Shield, Spotlight, Struggle, Switcheroo, Thief, Transform, Trick, Whirlwind, or any Z-Move.",
 		shortDesc: "Uses a random move known by a team member.",
 		id: "assist",
 		name: "Assist",
@@ -639,7 +637,7 @@ let BattleMovedex = {
 				for (const moveSlot of pokemon.moveSlots) {
 					let move = moveSlot.id;
 					let noAssist = [
-						'assist', 'belch', 'bestow', 'bounce', 'chatter', 'circlethrow', 'copycat', 'counter', 'covet', 'destinybond', 'detect', 'dig', 'dive', 'dragontail', 'endure', 'feint', 'fly', 'focuspunch', 'followme', 'helpinghand', 'kingsshield', 'matblock', 'mefirst', 'metronome', 'mimic', 'mirrorcoat', 'mirrormove', 'naturepower', 'phantomforce', 'protect', 'ragepowder', 'roar', 'shadowforce', 'sketch', 'skydrop', 'sleeptalk', 'snatch', 'spikyshield', 'struggle', 'switcheroo', 'thief', 'transform', 'trick', 'whirlwind',
+						'assist', 'banefulbunker', 'beakblast', 'belch', 'bestow', 'bounce', 'chatter', 'circlethrow', 'copycat', 'counter', 'covet', 'destinybond', 'detect', 'dig', 'dive', 'dragontail', 'endure', 'feint', 'fly', 'focuspunch', 'followme', 'helpinghand', 'holdhands', 'kingsshield', 'matblock', 'mefirst', 'metronome', 'mimic', 'mirrorcoat', 'mirrormove', 'naturepower', 'phantomforce', 'protect', 'ragepowder', 'roar', 'shadowforce', 'shelltrap', 'sketch', 'skydrop', 'sleeptalk', 'snatch', 'spikyshield', 'spotlight', 'struggle', 'switcheroo', 'thief', 'transform', 'trick', 'whirlwind',
 					];
 					if (!noAssist.includes(move) && !this.getMove(move).isZ) {
 						moves.push(move);
@@ -653,7 +651,7 @@ let BattleMovedex = {
 			}
 			this.useMove(randomMove, target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		contestType: "Cute",
@@ -695,7 +693,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 120,
@@ -736,7 +734,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 175,
@@ -747,7 +745,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to become infatuated, making it unable to attack 50% of the time. Fails if both the user and the target are the same gender, if either is genderless, or if the target is already infatuated. The effect ends when either the user or the target is no longer active. Pokemon with the Ability Oblivious or protected by the Ability Aroma Veil are immune.",
+		desc: "Causes the target to become infatuated, making it unable to attack 50% of the time. Fails if both the user and the target are the same gender, if either is genderless, or if the target is already infatuated. The effect ends when either the user or the target is no longer active. Pokemon with the Oblivious Ability or protected by the Aroma Veil Ability are immune.",
 		shortDesc: "A target of the opposite gender gets infatuated.",
 		id: "attract",
 		name: "Attract",
@@ -793,7 +791,7 @@ let BattleMovedex = {
 				this.add('-end', pokemon, 'Attract', '[silent]');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -804,7 +802,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 80,
 		category: "Special",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "aurasphere",
 		isViable: true,
@@ -812,7 +809,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {bullet: 1, protect: 1, pulse: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Fighting",
 		zMovePower: 160,
@@ -824,7 +821,7 @@ let BattleMovedex = {
 		basePower: 65,
 		category: "Special",
 		desc: "Has a 10% chance to lower the target's Attack by 1 stage.",
-		shortDesc: "10% chance to lower the foe's Attack by 1.",
+		shortDesc: "10% chance to lower the target's Attack by 1.",
 		id: "aurorabeam",
 		name: "Aurora Beam",
 		pp: 20,
@@ -888,7 +885,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'move: Aurora Veil');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Ice",
 		zMoveBoost: {spe: 1},
@@ -940,7 +937,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Steel",
 		zMoveEffect: 'clearnegativeboost',
@@ -966,7 +963,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: -4,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 120,
@@ -987,7 +984,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMoveBoost: {def: 1},
@@ -1039,8 +1036,13 @@ let BattleMovedex = {
 				}
 				return null;
 			},
+			onHit: function (target, source, move) {
+				if (move.zPowered && move.flags['contact']) {
+					source.trySetStatus('psn', target);
+				}
+			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -1051,7 +1053,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 15,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "barrage",
 		name: "Barrage",
@@ -1059,7 +1061,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -1080,7 +1082,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -1100,7 +1102,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		selfSwitch: 'copyvolatile',
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -1139,7 +1141,7 @@ let BattleMovedex = {
 		onAfterMove: function (pokemon) {
 			pokemon.removeVolatile('beakblast');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		zMovePower: 180,
@@ -1165,7 +1167,7 @@ let BattleMovedex = {
 			move.allies = pokemon.side.pokemon.filter(ally => ally === pokemon || !ally.fainted && !ally.status);
 			move.multihit = move.allies.length;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 100,
@@ -1184,7 +1186,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1},
 		// Move disabling implemented in Battle#nextTurn in sim/battle.js
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMovePower: 190,
@@ -1209,7 +1211,7 @@ let BattleMovedex = {
 			this.directDamage(target.maxhp / 2);
 			this.boost({atk: 12}, target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -1231,16 +1233,15 @@ let BattleMovedex = {
 			if (target.item) {
 				return false;
 			}
-			let yourItem = source.takeItem();
-			if (!yourItem) return false;
-			if (!this.singleEvent('TakeItem', yourItem, source.itemData, source, target, move, yourItem)) return;
-			if (!target.setItem(yourItem)) {
-				source.item = yourItem.id;
+			let myItem = source.takeItem();
+			if (!myItem) return false;
+			if (!this.singleEvent('TakeItem', myItem, source.itemData, target, source, move, myItem) || !target.setItem(myItem)) {
+				source.item = myItem.id;
 				return false;
 			}
-			this.add('-item', target, yourItem.name, '[from] move: Bestow', '[of] ' + source);
+			this.add('-item', target, myItem.name, '[from] move: Bestow', '[of] ' + source);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 2},
@@ -1251,7 +1252,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Physical",
-		desc: "The user spends two turns locked into this move and then, on the second turn after using this move, the user attacks the last Pokemon that hit it, inflicting double the damage in HP it lost during the two turns. If the last Pokemon that hit it is no longer on the field, the user attacks a random foe instead. If the user is prevented from moving during this move's use, the effect ends. This move does not check accuracy.",
+		desc: "The user spends two turns locked into this move and then, on the second turn after using this move, the user attacks the last Pokemon that hit it, inflicting double the damage in HP it lost to attacks during the two turns. If the last Pokemon that hit it is no longer active, the user attacks a random opposing Pokemon instead. If the user is prevented from moving during this move's use, the effect ends. This move does not check accuracy and does not ignore type immunity.",
 		shortDesc: "Waits 2 turns; deals double the damage taken.",
 		id: "bide",
 		name: "Bide",
@@ -1314,7 +1315,7 @@ let BattleMovedex = {
 				this.add('-end', pokemon, 'move: Bide', '[silent]');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMovePower: 100,
@@ -1325,7 +1326,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 15,
 		category: "Physical",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "bind",
 		name: "Bind",
@@ -1333,7 +1334,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -1373,7 +1374,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "darkiniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		contestType: "Cool",
@@ -1393,7 +1394,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 200,
@@ -1453,7 +1454,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Prevents the target from switching out. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the target leaves the field using Baton Pass, the replacement will remain trapped. The effect ends if the user leaves the field.",
-		shortDesc: "The target cannot switch out.",
+		shortDesc: "Prevents the target from switching out.",
 		id: "block",
 		name: "Block",
 		pp: 5,
@@ -1462,7 +1463,7 @@ let BattleMovedex = {
 		onHit: function (target, source, move) {
 			return target.addVolatile('trapped', source, move, 'trapper');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -1481,7 +1482,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "grassiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		contestType: "Cool",
@@ -1578,7 +1579,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "bonerush",
 		name: "Bone Rush",
@@ -1586,7 +1587,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 140,
@@ -1606,7 +1607,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 100,
@@ -1625,7 +1626,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, sound: 1, authentic: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Normal",
 		zMovePower: 200,
@@ -1636,7 +1637,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 85,
 		category: "Physical",
-		desc: "Has a 30% chance to paralyze the target. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister. If the user is holding a Power Herb, the move completes in one turn.",
+		desc: "Has a 30% chance to paralyze the target. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister, and Gust and Twister have doubled power when used against it. If the user is holding a Power Herb, the move completes in one turn.",
 		shortDesc: "Bounces turn 1. Hits turn 2. 30% paralyze.",
 		id: "bounce",
 		name: "Bounce",
@@ -1699,7 +1700,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
 		recoil: [33, 100],
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 190,
@@ -1718,7 +1719,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "normaliumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		contestType: "Cool",
@@ -1744,7 +1745,7 @@ let BattleMovedex = {
 				pokemon.side.removeSideCondition('auroraveil');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 140,
@@ -1764,11 +1765,11 @@ let BattleMovedex = {
 		flags: {protect: 1, mirror: 1},
 		onBasePowerPriority: 4,
 		onBasePower: function (basePower, pokemon, target) {
-			if (target.hp * 2 < target.maxhp) {
+			if (target.hp * 2 <= target.maxhp) {
 				return this.chainModify(2);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 120,
@@ -1786,7 +1787,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Dark",
 		zMovePower: 120,
@@ -1843,7 +1844,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "If this move is successful and the user has not fainted, it steals the target's held Berry if it is holding one and eats it immediately. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "If this move is successful and the user has not fainted, it steals the target's held Berry if it is holding one and eats it immediately, gaining its effects even if the user's item is being ignored. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "User steals and eats the target's Berry.",
 		id: "bugbite",
 		name: "Bug Bite",
@@ -1860,7 +1861,7 @@ let BattleMovedex = {
 				if (item.onEat) source.ateBerry = true;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 120,
@@ -1907,7 +1908,7 @@ let BattleMovedex = {
 			atk: 1,
 			def: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Fighting",
 		zMoveBoost: {atk: 1},
@@ -1919,7 +1920,7 @@ let BattleMovedex = {
 		basePower: 60,
 		category: "Physical",
 		desc: "Has a 100% chance to lower the target's Speed by 1 stage.",
-		shortDesc: "100% chance to lower adjacent Pkmn Speed by 1.",
+		shortDesc: "100% chance lower adjacent Pkmn Speed by 1.",
 		id: "bulldoze",
 		name: "Bulldoze",
 		pp: 20,
@@ -1949,7 +1950,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 100,
@@ -1960,7 +1961,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "bulletseed",
 		isViable: true,
@@ -1969,7 +1970,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 140,
@@ -1998,7 +1999,7 @@ let BattleMovedex = {
 				this.add('-start', pokemon, 'typechange', pokemon.types.join('/'), '[from] move: Burn Up');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 195,
@@ -2021,7 +2022,7 @@ let BattleMovedex = {
 			spa: 1,
 			spd: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -2054,7 +2055,7 @@ let BattleMovedex = {
 			if (!target.setType(newType)) return false;
 			this.add('-start', target, 'typechange', newType);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {evasion: 1},
@@ -2065,7 +2066,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Lowers the target's Special Attack by 2 stages. The target is unaffected if both the user and the target are the same gender, or if either is genderless. Pokemon with the Ability Oblivious are immune.",
+		desc: "Lowers the target's Special Attack by 2 stages. The target is unaffected if both the user and the target are the same gender, or if either is genderless. Pokemon with the Oblivious Ability are immune.",
 		shortDesc: "Lowers the foe(s) Sp. Atk by 2 if opposite gender.",
 		id: "captivate",
 		name: "Captivate",
@@ -2081,7 +2082,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMoveBoost: {spd: 2},
@@ -2092,7 +2093,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 210,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "catastropika",
 		name: "Catastropika",
@@ -2100,7 +2100,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1},
 		isZ: "pikaniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		contestType: "Cool",
@@ -2110,8 +2110,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "It is your birthday.",
-		shortDesc: "No competitive use. Or any use.",
+		shortDesc: "No competitive use.",
 		id: "celebrate",
 		name: "Celebrate",
 		pp: 40,
@@ -2120,7 +2119,7 @@ let BattleMovedex = {
 		onTryHit: function (target, source) {
 			this.add('-activate', target, 'move: Celebrate');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -2132,7 +2131,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Raises the user's Special Defense by 1 stage. If the user uses an Electric-type attack on the next turn, its power will be doubled.",
-		shortDesc: "Boosts next Electric move and user's Sp. Def by 1.",
+		shortDesc: "+1 SpD, user's Electric move next turn 2x power.",
 		id: "charge",
 		name: "Charge",
 		pp: 20,
@@ -2158,7 +2157,7 @@ let BattleMovedex = {
 		boosts: {
 			spd: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Electric",
 		zMoveBoost: {spd: 1},
@@ -2204,7 +2203,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMoveBoost: {def: 1},
@@ -2247,7 +2246,7 @@ let BattleMovedex = {
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ignoreDefensive: true,
 		ignoreEvasion: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -2258,7 +2257,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 60,
 		category: "Physical",
-		desc: "If both the user and the target have not fainted, the target is forced to switch out and be replaced with a random unfainted ally. This effect fails if the target used Ingrain previously, has the Ability Suction Cups, or this move hit a substitute.",
+		desc: "If both the user and the target have not fainted, the target is forced to switch out and be replaced with a random unfainted ally. This effect fails if the target is under the effect of Ingrain, has the Suction Cups Ability, or this move hit a substitute.",
 		shortDesc: "Forces the target to switch to a random ally.",
 		id: "circlethrow",
 		isViable: true,
@@ -2277,7 +2276,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 35,
 		category: "Physical",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "clamp",
 		name: "Clamp",
@@ -2285,7 +2284,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 100,
@@ -2309,7 +2308,7 @@ let BattleMovedex = {
 				def: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Dragon",
 		zMovePower: 185,
@@ -2337,7 +2336,9 @@ let BattleMovedex = {
 			},
 		},
 		isZ: "kommoniumz",
-		secondary: false,
+		secondary: {
+			// Sheer Force negates the selfBoost even though it is not secondary
+		},
 		target: "allAdjacentFoes",
 		type: "Dragon",
 		contestType: "Cool",
@@ -2347,8 +2348,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 50,
 		category: "Special",
-		desc: "Resets all of the target's stat stages to 0.",
-		shortDesc: "Eliminates the target's stat changes.",
+		shortDesc: "Resets all of the target's stat stages to 0.",
 		id: "clearsmog",
 		isViable: true,
 		name: "Clear Smog",
@@ -2359,7 +2359,7 @@ let BattleMovedex = {
 			target.clearBoosts();
 			this.add('-clearboost', target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMovePower: 100,
@@ -2384,7 +2384,7 @@ let BattleMovedex = {
 				spd: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 190,
@@ -2396,7 +2396,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Raises the user's Attack, Defense, and accuracy by 1 stage.",
-		shortDesc: "Raises user's Attack, Defense, and accuracy by 1.",
+		shortDesc: "Raises user's Attack, Defense, accuracy by 1.",
 		id: "coil",
 		isViable: true,
 		name: "Coil",
@@ -2408,7 +2408,7 @@ let BattleMovedex = {
 			def: 1,
 			accuracy: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Poison",
 		zMoveEffect: 'clearnegativeboost',
@@ -2419,7 +2419,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 18,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "cometpunch",
 		name: "Comet Punch",
@@ -2427,7 +2427,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -2448,7 +2448,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -2467,7 +2467,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		volatileStatus: 'confusion',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMoveBoost: {spa: 1},
@@ -2530,7 +2530,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "rockiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		contestType: "Cool",
@@ -2552,7 +2552,7 @@ let BattleMovedex = {
 			if (target.hasType(type) || !target.setType(type)) return false;
 			this.add('-start', target, 'typechange', type);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -2591,7 +2591,7 @@ let BattleMovedex = {
 			if (!source.setType(randomType)) return false;
 			this.add('-start', source, 'typechange', randomType);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -2602,7 +2602,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user uses the last move used by any Pokemon, including itself. Fails if no move has been used, or if the last move used was Assist, Baneful Bunker, Belch, Bestow, Chatter, Circle Throw, Copycat, Counter, Covet, Destiny Bond, Detect, Dragon Tail, Endure, Feint, Focus Punch, Follow Me, Helping Hand, Hold Hands, King's Shield, Mat Block, Me First, Metronome, Mimic, Mirror Coat, Mirror Move, Nature Power, Protect, Rage Powder, Roar, Sketch, Sleep Talk, Snatch, Spiky Shield, Struggle, Switcheroo, Thief, Transform, Trick, or Whirlwind.",
+		desc: "The user uses the last move used by any Pokemon, including itself. Fails if no move has been used, or if the last move used was Assist, Baneful Bunker, Beak Blast, Belch, Bestow, Chatter, Circle Throw, Copycat, Counter, Covet, Destiny Bond, Detect, Dragon Tail, Endure, Feint, Focus Punch, Follow Me, Helping Hand, Hold Hands, King's Shield, Mat Block, Me First, Metronome, Mimic, Mirror Coat, Mirror Move, Nature Power, Protect, Rage Powder, Roar, Shell Trap, Sketch, Sleep Talk, Snatch, Spiky Shield, Spotlight, Struggle, Switcheroo, Thief, Transform, Trick, Whirlwind, or any Z-Move.",
 		shortDesc: "Uses the last move used in the battle.",
 		id: "copycat",
 		name: "Copycat",
@@ -2616,7 +2616,7 @@ let BattleMovedex = {
 			}
 			this.useMove(this.lastMove.id, pokemon);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {accuracy: 1},
@@ -2627,8 +2627,8 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 100,
 		category: "Special",
-		desc: "If the user moves after the target, the target's Ability is rendered ineffective as long as it remains active. If the target uses Baton Pass, the replacement will remain under this effect. If the target's Ability is Multitype or Stance Change, this effect does not happen.",
-		shortDesc: "Nullifies the foe(s) Ability if the target moves first.",
+		desc: "If the user moves after the target, the target's Ability is rendered ineffective as long as it remains active. If the target uses Baton Pass, the replacement will remain under this effect. If the target's Ability is Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, or Stance Change, this effect does not happen, and receiving the effect through Baton Pass ends the effect immediately.",
+		shortDesc: "Nullifies the foe(s) Ability if the foe(s) move first.",
 		id: "coreenforcer",
 		isViable: true,
 		name: "Core Enforcer",
@@ -2645,7 +2645,7 @@ let BattleMovedex = {
 			if (target.newlySwitched || this.willMove(target)) return;
 			target.addVolatile('gastroacid');
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Dragon",
 		zMovePower: 140,
@@ -2664,7 +2664,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "steeliumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		contestType: "Cool",
@@ -2685,7 +2685,7 @@ let BattleMovedex = {
 			def: 1,
 			spd: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveBoost: {spd: 1},
@@ -2707,7 +2707,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 3,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Grass",
 		zMoveEffect: 'clearnegativeboost',
@@ -2728,7 +2728,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Grass",
 		zMoveEffect: 'clearnegativeboost',
@@ -2743,7 +2743,7 @@ let BattleMovedex = {
 			return pokemon.volatiles['counter'].damage || 1;
 		},
 		category: "Physical",
-		desc: "Deals damage to the last foe to hit the user with a physical attack this turn equal to twice the HP lost by the user from that attack. If the user did not lose HP from the attack, this move deals damage with a Base Power of 1 instead. If that foe's position is no longer in use, the damage is done to a random foe in range. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by a foe's physical attack this turn.",
+		desc: "Deals damage to the last opposing Pokemon to hit the user with a physical attack this turn equal to twice the HP lost by the user from that attack. If the user did not lose HP from the attack, this move deals 1 HP of damage instead. If that opposing Pokemon's position is no longer in use and there is another opposing Pokemon on the field, the damage is done to it instead. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by an opposing Pokemon's physical attack this turn.",
 		shortDesc: "If hit by physical attack, returns double damage.",
 		id: "counter",
 		name: "Counter",
@@ -2770,14 +2770,13 @@ let BattleMovedex = {
 				return source.side.foe.active[this.effectData.position];
 			},
 			onAfterDamage: function (damage, target, source, effect) {
-				// @ts-ignore
 				if (effect && effect.effectType === 'Move' && source.side !== target.side && this.getCategory(effect) === 'Physical') {
 					this.effectData.position = source.position;
 					this.effectData.damage = 2 * damage;
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "scripted",
 		type: "Fighting",
 		zMovePower: 100,
@@ -2788,14 +2787,14 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "If this attack was successful and the user has not fainted, it steals the target's held item if the user is not holding one. The target's item is not stolen if it is a Mail or Z-Crystal, or if the target is a Kyogre holding a Blue Orb, a Groudon holding a Red Orb, a Giratina holding a Griseous Orb, an Arceus holding a Plate, a Genesect holding a Drive, a Silvally holding a Memory, or a Pokemon that can Mega Evolve holding the Mega Stone for its species. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "If this attack was successful and the user has not fainted, it steals the target's held item if the user is not holding one. The target's item is not stolen if it is a Mail or Z-Crystal, or if the target is a Kyogre holding a Blue Orb, a Groudon holding a Red Orb, a Giratina holding a Griseous Orb, an Arceus holding a Plate, a Genesect holding a Drive, a Silvally holding a Memory, or a Pokemon that can Mega Evolve holding the Mega Stone for its species. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "If the user has no item, it steals the target's.",
 		id: "covet",
 		name: "Covet",
 		pp: 25,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		onHit: function (target, source) {
+		onAfterHit: function (target, source, move) {
 			if (source.item || source.volatiles['gem']) {
 				return;
 			}
@@ -2803,13 +2802,13 @@ let BattleMovedex = {
 			if (!yourItem) {
 				return;
 			}
-			if (!source.setItem(yourItem)) {
+			if (!this.singleEvent('TakeItem', yourItem, target.itemData, source, target, move, yourItem) || !source.setItem(yourItem)) {
 				target.item = yourItem.id; // bypass setItem so we don't break choicelock or anything
 				return;
 			}
 			this.add('-item', source, yourItem, '[from] move: Covet', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 120,
@@ -2829,7 +2828,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 180,
@@ -2864,7 +2863,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Fairy",
 		zMoveBoost: {spd: 1},
@@ -2884,7 +2883,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 180,
@@ -2974,7 +2973,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -2986,7 +2985,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "If the user is not a Ghost type, lowers the user's Speed by 1 stage and raises the user's Attack and Defense by 1 stage. If the user is a Ghost type, the user loses 1/2 of its maximum HP, rounded down and even if it would cause fainting, in exchange for the target losing 1/4 of its maximum HP, rounded down, at the end of each turn while it is active. If the target uses Baton Pass, the replacement will continue to be affected. Fails if there is no target or if the target is already affected.",
-		shortDesc: "Curses if Ghost, else +1 Atk, +1 Def, -1 Spe.",
+		shortDesc: "Curses if Ghost, else -1 Spe, +1 Atk, +1 Def.",
 		id: "curse",
 		name: "Curse",
 		pp: 10,
@@ -3020,7 +3019,7 @@ let BattleMovedex = {
 				this.damage(pokemon.maxhp / 4);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		nonGhostTarget: "self",
 		type: "Ghost",
@@ -3032,14 +3031,13 @@ let BattleMovedex = {
 		accuracy: 95,
 		basePower: 50,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "cut",
 		name: "Cut",
 		pp: 30,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -3073,7 +3071,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Causes the target to fall asleep. This move cannot be used successfully unless the user's current form, while considering Transform, is Darkrai.",
-		shortDesc: "Darkrai: Puts the foe(s) to sleep.",
+		shortDesc: "Darkrai: Causes the foe(s) to fall asleep.",
 		id: "darkvoid",
 		isViable: true,
 		name: "Dark Void",
@@ -3089,7 +3087,7 @@ let BattleMovedex = {
 			this.add('-hint', "Only a Pokemon whose form is Darkrai can use this move.");
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Dark",
 		zMoveEffect: 'clearnegativeboost',
@@ -3110,7 +3108,7 @@ let BattleMovedex = {
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ignoreEvasion: true,
 		ignoreDefensive: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 160,
@@ -3129,7 +3127,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Fairy",
 		zMovePower: 160,
@@ -3152,7 +3150,7 @@ let BattleMovedex = {
 			def: 1,
 			spd: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Bug",
 		zMoveBoost: {def: 1},
@@ -3177,7 +3175,7 @@ let BattleMovedex = {
 		effect: {
 			noCopy: true,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {accuracy: 1},
@@ -3217,7 +3215,7 @@ let BattleMovedex = {
 			}
 			return success;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		zMoveBoost: {accuracy: 1},
@@ -3228,7 +3226,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the user's next turn, if an opposing Pokemon's attack knocks the user out, that Pokemon faints as well, unless the attack was Doom Desire or Future Sight. Fails if the user used this move successfully last turn.",
+		desc: "Until the user's next move, if an opposing Pokemon's attack knocks the user out, that Pokemon faints as well, unless the attack was Doom Desire or Future Sight. Fails if the user used this move successfully as its last move, disregarding moves used through the Dancer Ability.",
 		shortDesc: "If an opponent knocks out the user, it also faints.",
 		id: "destinybond",
 		isViable: true,
@@ -3265,7 +3263,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('destinybond');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Ghost",
 		zMoveEffect: 'redirect',
@@ -3292,7 +3290,7 @@ let BattleMovedex = {
 		onHit: function (pokemon) {
 			pokemon.addVolatile('stall');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Fighting",
 		zMoveBoost: {evasion: 1},
@@ -3310,7 +3308,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "dragoniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		contestType: "Cool",
@@ -3386,7 +3384,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 160,
@@ -3406,6 +3404,11 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1, authentic: 1},
 		volatileStatus: 'disable',
+		onTryHit: function (target) {
+			if (!target.lastMove || target.lastMove.isZ) {
+				return false;
+			}
+		},
 		effect: {
 			duration: 4,
 			noCopy: true, // doesn't get copied by Baton Pass
@@ -3455,7 +3458,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -3473,7 +3476,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, sound: 1, authentic: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Fairy",
 		zMovePower: 100,
@@ -3546,7 +3549,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 160,
@@ -3611,7 +3614,7 @@ let BattleMovedex = {
 			this.add('-start', source, 'Doom Desire');
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 200,
@@ -3631,7 +3634,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [33, 100],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -3650,7 +3653,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -3669,7 +3672,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -3680,7 +3683,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 15,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "doubleslap",
 		name: "Double Slap",
@@ -3688,7 +3691,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -3709,7 +3712,7 @@ let BattleMovedex = {
 		boosts: {
 			evasion: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -3733,7 +3736,7 @@ let BattleMovedex = {
 				spa: -2,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 195,
@@ -3789,7 +3792,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "dragonclaw",
 		isViable: true,
@@ -3797,7 +3799,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 160,
@@ -3820,7 +3822,7 @@ let BattleMovedex = {
 			atk: 1,
 			spe: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Dragon",
 		zMoveEffect: 'clearnegativeboost',
@@ -3831,7 +3833,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "dragonhammer",
 		isViable: true,
@@ -3839,7 +3840,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 175,
@@ -3850,7 +3851,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 85,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "dragonpulse",
 		isViable: true,
@@ -3858,7 +3858,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, pulse: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Dragon",
 		zMovePower: 160,
@@ -3870,14 +3870,13 @@ let BattleMovedex = {
 		basePower: 0,
 		damage: 40,
 		category: "Special",
-		desc: "Deals 40 HP of damage to the target.",
-		shortDesc: "Always does 40 HP of damage.",
+		shortDesc: "Deals 40 HP of damage to the target.",
 		id: "dragonrage",
 		name: "Dragon Rage",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 100,
@@ -3909,7 +3908,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 60,
 		category: "Physical",
-		desc: "If both the user and the target have not fainted, the target is forced to switch out and be replaced with a random unfainted ally. This effect fails if the target used Ingrain previously, has the Ability Suction Cups, or this move hit a substitute.",
+		desc: "If both the user and the target have not fainted, the target is forced to switch out and be replaced with a random unfainted ally. This effect fails if the target used Ingrain previously, has the Suction Cups Ability, or this move hit a substitute.",
 		shortDesc: "Forces the target to switch to a random ally.",
 		id: "dragontail",
 		isViable: true,
@@ -3936,7 +3935,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, heal: 1},
 		drain: [3, 4],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMovePower: 100,
@@ -3956,7 +3955,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 140,
@@ -3981,7 +3980,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 180,
@@ -3992,7 +3991,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "drillpeck",
 		isViable: true,
@@ -4000,7 +3998,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 160,
@@ -4020,7 +4018,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 160,
@@ -4039,7 +4037,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 100,
@@ -4096,14 +4094,14 @@ let BattleMovedex = {
 		basePower: 100,
 		category: "Physical",
 		desc: "Damage doubles if the target is using Dig.",
-		shortDesc: "Hits adjacent Pokemon. Power doubles on Dig.",
+		shortDesc: "Hits adjacent Pokemon. Double damage on Dig.",
 		id: "earthquake",
 		isViable: true,
 		name: "Earthquake",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Ground",
 		zMovePower: 180,
@@ -4144,7 +4142,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -4165,7 +4163,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMoveBoost: {spd: 1},
@@ -4176,14 +4174,13 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 100,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "eggbomb",
 		name: "Egg Bomb",
 		pp: 10,
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 180,
@@ -4244,7 +4241,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Electric Terrain');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Electric",
 		zMoveBoost: {spe: 1},
@@ -4255,7 +4252,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target's move to become Electric type this turn. Fails if the target already moved this turn.",
+		desc: "Causes the target's move to become Electric type this turn. Among effects that can change a move's type, this effect happens last. Fails if the target already moved this turn.",
 		shortDesc: "Changes the target's move to Electric this turn.",
 		id: "electrify",
 		name: "Electrify",
@@ -4277,7 +4274,7 @@ let BattleMovedex = {
 				move.type = 'Electric';
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMoveBoost: {spa: 1},
@@ -4305,14 +4302,14 @@ let BattleMovedex = {
 			return 40;
 		},
 		category: "Special",
-		desc: "The power of this move depends on (user's current Speed / target's current Speed), rounded down. Power is equal to 150 if the result is 4 or more, 120 if 3, 80 if 2, 60 if 1, 40 if less than 1.",
+		desc: "The power of this move depends on (user's current Speed / target's current Speed), rounded down. Power is equal to 150 if the result is 4 or more, 120 if 3, 80 if 2, 60 if 1, 40 if less than 1. If the target's current Speed is 0, this move's power is 40.",
 		shortDesc: "More power the faster the user is than the target.",
 		id: "electroball",
 		name: "Electro Ball",
 		pp: 10,
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 160,
@@ -4365,7 +4362,7 @@ let BattleMovedex = {
 				this.add('-end', pokemon, 'Embargo');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {spa: 1},
@@ -4397,8 +4394,8 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "For 3 turns, the target is forced to repeat its last move used. If the affected move runs out of PP, the effect ends. Fails if the target is already under this effect, if it has not made a move, if the move has 0 PP, or if the move is Assist, Copycat, Encore, Me First, Metronome, Mimic, Mirror Move, Nature Power, Sketch, Sleep Talk, Struggle, Transform, or a Z-Move.",
-		shortDesc: "The target repeats its last move for 3 turns.",
+		desc: "For its next 3 turns, the target is forced to repeat its last move used. If the affected move runs out of PP, the effect ends. Fails if the target is already under this effect, if it has not made a move, if the move has 0 PP, or if the move is Assist, Copycat, Encore, Me First, Metronome, Mimic, Mirror Move, Nature Power, Sketch, Sleep Talk, Struggle, Transform, or any Z-Move.",
+		shortDesc: "Target repeats its last move for its next 3 turns.",
 		id: "encore",
 		isViable: true,
 		name: "Encore",
@@ -4447,7 +4444,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -4475,7 +4472,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -4487,7 +4484,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "The user will survive attacks made by other Pokemon during this turn with at least 1 HP. This move has a 1/X chance of being successful, where X starts at 1 and triples each time this move is successfully used. X resets to 1 if this move fails or if the user's last move used is not Baneful Bunker, Detect, Endure, King's Shield, Protect, Quick Guard, Spiky Shield, or Wide Guard. Fails if the user moves last this turn.",
-		shortDesc: "The user survives the next hit with at least 1 HP.",
+		shortDesc: "User survives attacks this turn with at least 1 HP.",
 		id: "endure",
 		name: "Endure",
 		pp: 10,
@@ -4514,7 +4511,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -4549,7 +4546,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target's Ability to become the same as the user's. Fails if the target's Ability is Multitype, Stance Change, Truant, or the same Ability as the user, or if the user's Ability is Flower Gift, Forecast, Illusion, Imposter, Multitype, Stance Change, Trace, or Zen Mode.",
+		desc: "Causes the target's Ability to become the same as the user's. Fails if the target's Ability is Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, Stance Change, Truant, or the same Ability as the user, or if the user's Ability is Battle Bond, Comatose, Disguise, Flower Gift, Forecast, Illusion, Imposter, Multitype, Power Construct, Power of Alchemy, Receiver, RKS System, Schooling, Shields Down, Stance Change, Trace, or Zen Mode.",
 		shortDesc: "The target's Ability changes to match the user's.",
 		id: "entrainment",
 		name: "Entrainment",
@@ -4572,7 +4569,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -4594,7 +4591,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Fire",
 		zMovePower: 200,
@@ -4605,7 +4602,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 250,
 		category: "Physical",
-		desc: "The user faints after using this move, even if this move fails for having no target. This move is prevented from executing if any active Pokemon has the Ability Damp.",
+		desc: "The user faints after using this move, even if this move fails for having no target. This move is prevented from executing if any active Pokemon has the Damp Ability.",
 		shortDesc: "Hits adjacent Pokemon. The user faints.",
 		id: "explosion",
 		isViable: true,
@@ -4614,7 +4611,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		selfdestruct: "always",
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Normal",
 		zMovePower: 200,
@@ -4663,7 +4660,7 @@ let BattleMovedex = {
 			spd: 2,
 			spe: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		contestType: "Beautiful",
@@ -4681,7 +4678,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 2,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -4706,7 +4703,7 @@ let BattleMovedex = {
 				return this.chainModify(2);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -4717,14 +4714,13 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Physical",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "feintattack",
 		name: "Feint Attack",
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 120,
@@ -4735,7 +4731,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Prevents all active Pokemon from switching next turn. A Pokemon can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. Fails if this move was used successfully last turn.",
+		desc: "Prevents all active Pokemon from switching next turn. A Pokemon can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. Fails if the effect is already active.",
 		shortDesc: "Prevents all Pokemon from switching next turn.",
 		id: "fairylock",
 		name: "Fairy Lock",
@@ -4752,7 +4748,7 @@ let BattleMovedex = {
 				pokemon.tryTrap();
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Fairy",
 		zMoveBoost: {def: 1},
@@ -4763,14 +4759,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "fairywind",
 		name: "Fairy Wind",
 		pp: 30,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMovePower: 100,
@@ -4821,7 +4816,7 @@ let BattleMovedex = {
 		boosts: {
 			spd: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {spa: 1},
@@ -4840,7 +4835,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		noFaint: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -4861,7 +4856,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		zMoveBoost: {def: 1},
@@ -4881,7 +4876,7 @@ let BattleMovedex = {
 		flags: {mirror: 1},
 		breaksProtect: true,
 		// Breaking protection implemented in scripts.js
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -4902,7 +4897,7 @@ let BattleMovedex = {
 		onAfterMoveSecondarySelf: function (pokemon, target, move) {
 			if (!target || target.fainted || target.hp <= 0) this.boost({atk: 3}, pokemon, pokemon, move);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 100,
@@ -4953,7 +4948,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1},
 		selfdestruct: "ifHit",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 180,
@@ -5044,7 +5039,7 @@ let BattleMovedex = {
 			return 80;
 		},
 		category: "Special",
-		desc: "If one of the user's allies chose to use Grass Pledge or Water Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Grass Pledge, the ally uses Fire Pledge with 150 Base Power and a sea of fire appears on the target's side for 4 turns, which causes damage to non-Fire types equal to 1/8 of their maximum HP, rounded down, at the end of each turn during effect. If combined with Water Pledge, the ally uses Water Pledge with 150 Base Power and a rainbow appears on the user's side for 4 turns, which doubles secondary effect chances but does not stack with the Ability Serene Grace. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Fire Gem.",
+		desc: "If one of the user's allies chose to use Grass Pledge or Water Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Grass Pledge, the ally uses Fire Pledge with 150 power and a sea of fire appears on the target's side for 4 turns, which causes damage to non-Fire types equal to 1/8 of their maximum HP, rounded down, at the end of each turn during effect, including the last turn. If combined with Water Pledge, the ally uses Water Pledge with 150 power and a rainbow appears on the user's side for 4 turns, which doubles secondary effect chances but does not stack with the Serene Grace Ability. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Fire Gem.",
 		shortDesc: "Use with Grass or Water Pledge for added effect.",
 		id: "firepledge",
 		name: "Fire Pledge",
@@ -5091,7 +5086,6 @@ let BattleMovedex = {
 				this.add('-sideend', targetSide, 'Fire Pledge');
 			},
 			onResidual: function (side) {
-				// @ts-ignore
 				for (const pokemon of side.active) {
 					if (pokemon && !pokemon.hasType('Fire')) {
 						this.damage(pokemon.maxhp / 8, pokemon);
@@ -5099,7 +5093,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 160,
@@ -5132,7 +5126,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 35,
 		category: "Special",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "firespin",
 		name: "Fire Spin",
@@ -5140,7 +5134,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 100,
@@ -5166,7 +5160,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 175,
@@ -5177,7 +5171,7 @@ let BattleMovedex = {
 		accuracy: 30,
 		basePower: 0,
 		category: "Physical",
-		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Ability Sturdy are immune.",
+		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Sturdy Ability are immune.",
 		shortDesc: "OHKOs the target. Fails if user is a lower level.",
 		id: "fissure",
 		name: "Fissure",
@@ -5185,7 +5179,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, nonsky: 1},
 		ohko: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 180,
@@ -5215,14 +5209,14 @@ let BattleMovedex = {
 			return 20;
 		},
 		category: "Physical",
-		desc: "Deals damage to the target based on the amount of HP the user has left. X is equal to (user's current HP * 48 / user's maximum HP), rounded down; the base power of this attack is 20 if X is 33 to 48, 40 if X is 17 to 32, 80 if X is 10 to 16, 100 if X is 5 to 9, 150 if X is 2 to 4, and 200 if X is 0 or 1.",
+		desc: "The power of this move is 20 if X is 33 to 48, 40 if X is 17 to 32, 80 if X is 10 to 16, 100 if X is 5 to 9, 150 if X is 2 to 4, and 200 if X is 0 or 1, where X is equal to (user's current HP * 48 / user's maximum HP), rounded down.",
 		shortDesc: "More power the less HP the user has left.",
 		id: "flail",
 		name: "Flail",
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -5233,7 +5227,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 70,
 		category: "Special",
-		desc: "If this move is successful, each ally adjacent to the target loses 1/16 of its maximum HP, rounded down, unless it has the Ability Magic Guard.",
+		desc: "If this move is successful, the target's ally loses 1/16 of its maximum HP, rounded down, unless it has the Magic Guard Ability.",
 		shortDesc: "Damages Pokemon next to the target as well.",
 		id: "flameburst",
 		name: "Flame Burst",
@@ -5260,7 +5254,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 140,
@@ -5373,7 +5367,7 @@ let BattleMovedex = {
 		boosts: {
 			accuracy: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {evasion: 1},
@@ -5419,7 +5413,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {spd: 1},
@@ -5443,7 +5437,7 @@ let BattleMovedex = {
 				spa: -2,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMovePower: 195,
@@ -5454,7 +5448,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Physical",
-		desc: "The power of this move is based on the user's held item. The held item is lost and it activates for the target if applicable. If there is no target or the target avoids this move by protecting itself, the user's held item is still lost. The user can regain a thrown item with Recycle or the Ability Harvest. Fails if the user has no held item, if the held item cannot be thrown, if the user is under the effect of Embargo or Magic Room, or if the user has the Ability Klutz.",
+		desc: "The power of this move is based on the user's held item. The held item is lost and it activates for the target if applicable. If there is no target or the target avoids this move by protecting itself, the user's held item is still lost. The user can regain a thrown item with Recycle or the Harvest Ability. Fails if the user has no held item, if the held item cannot be thrown, if the user is under the effect of Embargo or Magic Room, or if the user has the Klutz Ability.",
 		shortDesc: "Flings the user's item at the target. Power varies.",
 		id: "fling",
 		name: "Fling",
@@ -5490,7 +5484,7 @@ let BattleMovedex = {
 			this.add("-enditem", source, item.name, '[from] move: Fling');
 			this.runEvent('AfterUseItem', source, null, null, item);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 100,
@@ -5515,7 +5509,7 @@ let BattleMovedex = {
 				return this.heal(Math.ceil(target.maxhp * 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMoveEffect: 'clearnegativeboost',
@@ -5526,7 +5520,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Raises the Defense of all Grass-type Pokemon on the field by 1 stage.",
+		desc: "Raises the Defense of all active Grass-type Pokemon by 1 stage. Fails if there are no active Grass-type Pokemon.",
 		shortDesc: "Raises Defense by 1 of all active Grass types.",
 		id: "flowershield",
 		name: "Flower Shield",
@@ -5549,7 +5543,7 @@ let BattleMovedex = {
 			}
 			return success;
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Fairy",
 		zMoveBoost: {def: 1},
@@ -5560,7 +5554,7 @@ let BattleMovedex = {
 		accuracy: 95,
 		basePower: 90,
 		category: "Physical",
-		desc: "This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister. If the user is holding a Power Herb, the move completes in one turn.",
+		desc: "This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister, and Gust and Twister have doubled power when used against it. If the user is holding a Power Herb, the move completes in one turn.",
 		shortDesc: "Flies up on first turn, then strikes the next turn.",
 		id: "fly",
 		name: "Fly",
@@ -5600,7 +5594,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 175,
@@ -5618,11 +5612,10 @@ let BattleMovedex = {
 		pp: 10,
 		flags: {contact: 1, protect: 1, mirror: 1, gravity: 1, distance: 1, nonsky: 1},
 		onEffectiveness: function (typeMod, type, move) {
-			// @ts-ignore
 			return typeMod + this.getEffectiveness('Flying', type);
 		},
 		priority: 0,
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Fighting",
 		zMovePower: 170,
@@ -5679,7 +5672,7 @@ let BattleMovedex = {
 				return critRatio + 2;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {accuracy: 1},
@@ -5718,7 +5711,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 200,
@@ -5729,7 +5722,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the end of the turn, all single-target attacks from the foe's team are redirected to the user if they are in range. Such attacks are redirected to the user before they can be reflected by Magic Coat or the Ability Magic Bounce, or drawn in by the Abilities Lightning Rod or Storm Drain. Fails if it is not a Double or Triple Battle.",
+		desc: "Until the end of the turn, all single-target attacks from the opposing side are redirected to the user. Such attacks are redirected to the user before they can be reflected by Magic Coat or the Magic Bounce Ability, or drawn in by the Lightning Rod or Storm Drain Abilities. Fails if it is not a Double Battle or Battle Royal. This effect is ignored while the user is under the effect of Sky Drop.",
 		shortDesc: "The foes' moves target the user on the turn used.",
 		id: "followme",
 		name: "Follow Me",
@@ -5757,7 +5750,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -5789,7 +5782,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to have its positive evasiveness stat stage ignored while it is active. Normal- and Fighting-type attacks can hit the target if it is a Ghost type. The effect ends when the target is no longer active. Fails if the target is already affected, or affected by Miracle Eye or Odor Sleuth.",
+		desc: "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Normal- and Fighting-type attacks can hit the target if it is a Ghost type. Fails if the target is already affected, or affected by Miracle Eye or Odor Sleuth.",
 		shortDesc: "Fighting, Normal hit Ghost. Evasiveness ignored.",
 		id: "foresight",
 		name: "Foresight",
@@ -5814,7 +5807,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'crit2',
@@ -5837,7 +5830,7 @@ let BattleMovedex = {
 			if (!target.addType('Grass')) return false;
 			this.add('-start', target, 'typeadd', 'Grass', '[from] move: Forest\'s Curse');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -5857,7 +5850,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		useTargetOffensive: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 175,
@@ -5926,7 +5919,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Special",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "frenzyplant",
 		name: "Frenzy Plant",
@@ -5936,7 +5929,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 200,
@@ -5947,7 +5940,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 60,
 		category: "Special",
-		desc: "This move is always a critical hit unless the target is under the effect of Lucky Chant or has the Abilities Battle Armor or Shell Armor.",
+		desc: "This move is always a critical hit unless the target is under the effect of Lucky Chant or has the Battle Armor or Shell Armor Abilities.",
 		shortDesc: "Always results in a critical hit.",
 		id: "frostbreath",
 		name: "Frost Breath",
@@ -5955,7 +5948,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		willCrit: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 120,
@@ -5977,7 +5970,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -5988,7 +5981,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 15,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "furyattack",
 		name: "Fury Attack",
@@ -5996,7 +5989,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -6013,7 +6006,7 @@ let BattleMovedex = {
 			return this.clampIntRange(move.basePower * pokemon.volatiles.furycutter.multiplier, 1, 160);
 		},
 		category: "Physical",
-		desc: "Power doubles with each successful hit, up to a maximum of 160 power; power is reset if the move misses or another move is used.",
+		desc: "Power doubles with each successful hit, up to a maximum of 160 power. The power is reset if this move misses or another move is used.",
 		shortDesc: "Power doubles with each hit, up to 160.",
 		id: "furycutter",
 		name: "Fury Cutter",
@@ -6035,7 +6028,7 @@ let BattleMovedex = {
 				this.effectData.duration = 2;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 100,
@@ -6046,7 +6039,7 @@ let BattleMovedex = {
 		accuracy: 80,
 		basePower: 18,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "furyswipes",
 		name: "Fury Swipes",
@@ -6054,7 +6047,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -6082,7 +6075,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 180,
@@ -6110,7 +6103,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 180,
@@ -6156,7 +6149,7 @@ let BattleMovedex = {
 			this.add('-start', source, 'move: Future Sight');
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 190,
@@ -6167,7 +6160,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target's Ability to be rendered ineffective as long as it remains active. If the target uses Baton Pass, the replacement will remain under this effect. Fails if the target's Ability is Multitype or Stance Change.",
+		desc: "Causes the target's Ability to be rendered ineffective as long as it remains active. If the target uses Baton Pass, the replacement will remain under this effect. If the target's Ability is Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, or Stance Change, this move fails, and receiving the effect through Baton Pass ends the effect immediately.",
 		shortDesc: "Nullifies the target's Ability.",
 		id: "gastroacid",
 		name: "Gastro Acid",
@@ -6188,7 +6181,7 @@ let BattleMovedex = {
 				this.singleEvent('End', this.getAbility(pokemon.ability), pokemon.abilityData, pokemon, pokemon, 'gastroacid');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMoveBoost: {spe: 1},
@@ -6208,7 +6201,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 180,
@@ -6219,7 +6212,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Raises the Attack and Special Attack of Pokemon on the user's side with the Abilities Plus or Minus by 1 stage.",
+		desc: "Raises the Attack and Special Attack of Pokemon on the user's side with the Plus or Minus Abilities by 1 stage.",
 		shortDesc: "Raises Atk, Sp. Atk of allies with Plus/Minus by 1.",
 		id: "gearup",
 		name: "Gear Up",
@@ -6238,7 +6231,7 @@ let BattleMovedex = {
 				this.boost({atk: 1, spa: 1}, target, source, 'move: Gear Up');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Steel",
 		zMoveBoost: {spa: 1},
@@ -6249,7 +6242,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 185,
 		category: "Special",
-		desc: "The terrain becomes Psychic Terrain.",
+		desc: "If this move is successful, the terrain becomes Psychic Terrain.",
 		shortDesc: "Summons Psychic Terrain.",
 		id: "genesissupernova",
 		name: "Genesis Supernova",
@@ -6300,7 +6293,7 @@ let BattleMovedex = {
 			spd: 2,
 			spe: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Fairy",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -6320,7 +6313,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 140,
@@ -6331,7 +6324,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Physical",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "gigaimpact",
 		name: "Giga Impact",
@@ -6341,7 +6334,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 200,
@@ -6360,7 +6353,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "electriumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		contestType: "Cool",
@@ -6402,7 +6395,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'par',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -6438,7 +6431,7 @@ let BattleMovedex = {
 			return 20;
 		},
 		category: "Special",
-		desc: "Deals damage to the target based on its weight. Power is 20 if less than 10 kg, 40 if less than 25 kg, 60 if less than 50 kg, 80 if less than 100 kg, 100 if less than 200 kg, and 120 if greater than or equal to 200 kg.",
+		desc: "This move's power is 20 if the target weighs less than 10 kg, 40 if less than 25 kg, 60 if less than 50 kg, 80 if less than 100 kg, 100 if less than 200 kg, and 120 if greater than or equal to 200 kg.",
 		shortDesc: "More power the heavier the target.",
 		id: "grassknot",
 		isViable: true,
@@ -6446,7 +6439,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 160,
@@ -6464,7 +6457,7 @@ let BattleMovedex = {
 			return 80;
 		},
 		category: "Special",
-		desc: "If one of the user's allies chose to use Fire Pledge or Water Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Fire Pledge, the ally uses Fire Pledge with 150 Base Power and a sea of fire appears on the target's side for 4 turns, which causes damage to non-Fire types equal to 1/8 of their maximum HP, rounded down, at the end of each turn during effect. If combined with Water Pledge, the ally uses Grass Pledge with 150 Base Power and a swamp appears on the target's side for 4 turns, which quarters the Speed of each Pokemon on that side. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Grass Gem.",
+		desc: "If one of the user's allies chose to use Fire Pledge or Water Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Fire Pledge, the ally uses Fire Pledge with 150 power and a sea of fire appears on the target's side for 4 turns, which causes damage to non-Fire types equal to 1/8 of their maximum HP, rounded down, at the end of each turn during effect, including the last turn. If combined with Water Pledge, the ally uses Grass Pledge with 150 power and a swamp appears on the target's side for 4 turns, which quarters the Speed of each Pokemon on that side. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Grass Gem.",
 		shortDesc: "Use with Fire or Water Pledge for added effect.",
 		id: "grasspledge",
 		name: "Grass Pledge",
@@ -6514,7 +6507,7 @@ let BattleMovedex = {
 				return this.chainModify(0.25);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 160,
@@ -6525,15 +6518,14 @@ let BattleMovedex = {
 		accuracy: 55,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "grasswhistle",
 		name: "Grass Whistle",
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1, sound: 1, authentic: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {spe: 1},
@@ -6590,11 +6582,11 @@ let BattleMovedex = {
 				}
 			},
 			onEnd: function () {
-				this.eachEvent('Terrain');
+				if (!this.effectData.duration) this.eachEvent('Terrain');
 				this.add('-fieldend', 'move: Grassy Terrain');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Grass",
 		zMoveBoost: {def: 1},
@@ -6605,7 +6597,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the evasiveness of all active Pokemon is multiplied by 0.6. At the time of use, Bounce, Fly, Magnet Rise, Sky Drop, and Telekinesis end immediately for all active Pokemon. During the effect, Bounce, Fly, Flying Press, High Jump Kick, Jump Kick, Magnet Rise, Sky Drop, Splash, and Telekinesis are prevented from being used by all active Pokemon. Ground-type attacks, Spikes, Toxic Spikes, Sticky Web, and the Ability Arena Trap can affect Flying types or Pokemon with the Ability Levitate. Fails if this move is already in effect.",
+		desc: "For 5 turns, the evasiveness of all active Pokemon is multiplied by 0.6. At the time of use, Bounce, Fly, Magnet Rise, Sky Drop, and Telekinesis end immediately for all active Pokemon. During the effect, Bounce, Fly, Flying Press, High Jump Kick, Jump Kick, Magnet Rise, Sky Drop, Splash, and Telekinesis are prevented from being used by all active Pokemon. Ground-type attacks, Spikes, Toxic Spikes, Sticky Web, and the Arena Trap Ability can affect Flying types or Pokemon with the Levitate Ability. Fails if this move is already in effect.",
 		shortDesc: "For 5 turns, negates all Ground immunities.",
 		id: "gravity",
 		name: "Gravity",
@@ -6617,6 +6609,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -6675,7 +6668,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Gravity');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Psychic",
 		zMoveBoost: {spa: 1},
@@ -6696,7 +6689,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -6721,7 +6714,7 @@ let BattleMovedex = {
 			atk: 1,
 			spa: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {spa: 1},
@@ -6732,7 +6725,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the user's next turn, if a foe's attack knocks the user out, that foe loses all remaining PP for that attack.",
+		desc: "Until the user's next turn, if an opposing Pokemon's attack knocks the user out, that move loses all its remaining PP.",
 		shortDesc: "If the user faints, the attack used loses all its PP.",
 		id: "grudge",
 		name: "Grudge",
@@ -6761,7 +6754,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('grudge');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Ghost",
 		zMoveEffect: 'redirect',
@@ -6788,7 +6781,7 @@ let BattleMovedex = {
 			source.stats.spd = newspd;
 			this.add('-activate', source, 'move: Guard Split', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -6811,7 +6804,9 @@ let BattleMovedex = {
 			let sourceBoosts = {};
 
 			for (const stat of ['def', 'spd']) {
+				// @ts-ignore
 				targetBoosts[stat] = target.boosts[stat];
+				// @ts-ignore
 				sourceBoosts[stat] = source.boosts[stat];
 			}
 
@@ -6820,7 +6815,7 @@ let BattleMovedex = {
 
 			this.add('-swapboost', source, target, 'def, spd', '[from] move: Guard Swap');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -6846,7 +6841,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "tapuniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		contestType: "Tough",
@@ -6856,7 +6851,7 @@ let BattleMovedex = {
 		accuracy: 30,
 		basePower: 0,
 		category: "Physical",
-		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Ability Sturdy are immune.",
+		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Sturdy Ability are immune.",
 		shortDesc: "OHKOs the target. Fails if user is a lower level.",
 		id: "guillotine",
 		name: "Guillotine",
@@ -6864,7 +6859,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ohko: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 180,
@@ -6897,14 +6892,14 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Special",
-		desc: "Damage doubles if the target is using Bounce, Fly, or Sky Drop.",
-		shortDesc: "Power doubles during Fly, Bounce, and Sky Drop.",
+		desc: "Power doubles if the target is using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop.",
+		shortDesc: "Power doubles during Bounce, Fly, and Sky Drop.",
 		id: "gust",
 		name: "Gust",
 		pp: 35,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 100,
@@ -6921,7 +6916,7 @@ let BattleMovedex = {
 			return power;
 		},
 		category: "Physical",
-		desc: "Power is equal to (25 * target's current Speed / user's current Speed), rounded down, + 1, but not more than 150.",
+		desc: "Power is equal to (25 * target's current Speed / user's current Speed) + 1, rounded down, but not more than 150. If the user's current Speed is 0, this move's power is 1.",
 		shortDesc: "More power the slower the user than the target.",
 		id: "gyroball",
 		isViable: true,
@@ -6929,7 +6924,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {bullet: 1, contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 160,
@@ -6940,7 +6935,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the weather becomes Hail. At the end of each turn except the last, all active Pokemon lose 1/16 of their maximum HP, rounded down, unless they are an Ice type, or have the Abilities Ice Body, Magic Guard, Overcoat, or Snow Cloak. Lasts for 8 turns if the user is holding Icy Rock. Fails if the current weather is Hail.",
+		desc: "For 5 turns, the weather becomes Hail. At the end of each turn except the last, all active Pokemon lose 1/16 of their maximum HP, rounded down, unless they are an Ice type or have the Ice Body, Magic Guard, Overcoat, or Snow Cloak Abilities. Lasts for 8 turns if the user is holding Icy Rock. Fails if the current weather is Hail.",
 		shortDesc: "For 5 turns, hail crashes down.",
 		id: "hail",
 		name: "Hail",
@@ -6948,7 +6943,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		weather: 'hail',
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Ice",
 		zMoveBoost: {spe: 1},
@@ -6972,7 +6967,7 @@ let BattleMovedex = {
 				spe: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 180,
@@ -6983,7 +6978,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Money falls from the sky.",
 		shortDesc: "No competitive use.",
 		id: "happyhour",
 		name: "Happy Hour",
@@ -6993,7 +6987,7 @@ let BattleMovedex = {
 		onTryHit: function (target, source) {
 			this.add('-activate', target, 'move: Happy Hour');
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Normal",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -7014,7 +7008,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -7041,7 +7035,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Ice",
 		zMoveEffect: 'heal',
@@ -7061,7 +7055,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [1, 4],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -7081,7 +7075,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 200,
@@ -7113,7 +7107,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Every Pokemon in the user's party is cured of its major status condition. Active Pokemon with the Ability Soundproof are not cured.",
+		desc: "Every Pokemon in the user's party is cured of its major status condition. Active Pokemon with the Soundproof Ability are not cured.",
 		shortDesc: "Cures the user's party of all status conditions.",
 		id: "healbell",
 		isViable: true,
@@ -7141,7 +7135,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the target is prevented from restoring any HP as long as it remains active. During the effect, healing and draining moves are unusable, and Abilities and items that grant healing will not heal the user. If an affected Pokemon uses Baton Pass, the replacement will remain unable to restore its HP. Pain Split and the Ability Regenerator are unaffected.",
+		desc: "For 5 turns, the target is prevented from restoring any HP as long as it remains active. During the effect, healing and draining moves are unusable, and Abilities and items that grant healing will not heal the user. If an affected Pokemon uses Baton Pass, the replacement will remain unable to restore its HP. Pain Split and the Regenerator Ability are unaffected.",
 		shortDesc: "For 5 turns, the foe(s) is prevented from healing.",
 		id: "healblock",
 		name: "Heal Block",
@@ -7153,6 +7147,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (target, source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -7169,7 +7164,7 @@ let BattleMovedex = {
 			},
 			onBeforeMovePriority: 6,
 			onBeforeMove: function (pokemon, target, move) {
-				if (move.flags['heal']) {
+				if (move.flags['heal'] && !move.isZ) {
 					this.add('cant', pokemon, 'move: Heal Block', move);
 					return false;
 				}
@@ -7178,9 +7173,12 @@ let BattleMovedex = {
 			onEnd: function (pokemon) {
 				this.add('-end', pokemon, 'move: Heal Block');
 			},
-			onTryHeal: false,
+			onTryHeal: function (damage, target, source, effect) {
+				if ((effect && effect.id === 'zpower') || this.effectData.isZ) return damage;
+				return false;
+			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Psychic",
 		zMoveBoost: {spa: 2},
@@ -7200,7 +7198,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
 		heal: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Bug",
 		zMoveEffect: 'clearnegativeboost',
@@ -7211,7 +7209,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The target restores 1/2 of its maximum HP, rounded half up. If the user has the Ability Mega Launcher, the target instead restores 3/4 of its maximum HP, rounded half down.",
+		desc: "The target restores 1/2 of its maximum HP, rounded half up. If the user has the Mega Launcher Ability, the target instead restores 3/4 of its maximum HP, rounded half down.",
 		shortDesc: "Heals the target by 50% of its max HP.",
 		id: "healpulse",
 		name: "Heal Pulse",
@@ -7225,7 +7223,7 @@ let BattleMovedex = {
 				return this.heal(Math.ceil(target.maxhp * 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -7236,7 +7234,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user faints and the Pokemon brought out to replace it has its HP fully restored along with having any major status condition cured. Fails if the user is the last unfainted Pokemon in its party.",
+		desc: "The user faints and the Pokemon brought out to replace it has its HP fully restored along with having any major status condition cured. The new Pokemon is sent out at the end of the turn, and the healing happens before hazards take effect. Fails if the user is the last unfainted Pokemon in its party.",
 		shortDesc: "User faints. Replacement is fully healed.",
 		id: "healingwish",
 		isViable: true,
@@ -7257,7 +7255,6 @@ let BattleMovedex = {
 			onStart: function (side, source) {
 				this.debug('Healing Wish started on ' + side.name);
 				this.effectData.positions = [];
-				// @ts-ignore
 				for (let i = 0; i < side.active.length; i++) {
 					this.effectData.positions[i] = false;
 				}
@@ -7283,7 +7280,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		contestType: "Beautiful",
@@ -7326,7 +7323,9 @@ let BattleMovedex = {
 			let sourceBoosts = {};
 
 			for (let i in target.boosts) {
+				// @ts-ignore
 				targetBoosts[i] = target.boosts[i];
+				// @ts-ignore
 				sourceBoosts[i] = source.boosts[i];
 			}
 
@@ -7335,7 +7334,7 @@ let BattleMovedex = {
 
 			this.add('-swapboost', source, target, '[from] move: Heart Swap');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveEffect: 'crit2',
@@ -7370,7 +7369,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 160,
@@ -7428,7 +7427,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 160,
@@ -7466,7 +7465,7 @@ let BattleMovedex = {
 				return this.chainModify(this.effectData.multiplier);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "adjacentAlly",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -7489,7 +7488,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 160,
@@ -7510,7 +7509,7 @@ let BattleMovedex = {
 		onModifyMove: function (move, pokemon) {
 			move.type = pokemon.hpType || 'Dark';
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 120,
@@ -7528,7 +7527,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		contestType: "Clever",
@@ -7545,7 +7544,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		contestType: "Clever",
@@ -7562,7 +7561,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		contestType: "Clever",
@@ -7580,7 +7579,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		contestType: "Clever",
@@ -7598,7 +7597,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		contestType: "Clever",
@@ -7616,7 +7615,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		contestType: "Clever",
@@ -7633,7 +7632,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		contestType: "Clever",
@@ -7650,7 +7649,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		contestType: "Clever",
@@ -7668,7 +7667,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		contestType: "Clever",
@@ -7685,7 +7684,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		contestType: "Clever",
@@ -7703,7 +7702,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		contestType: "Clever",
@@ -7720,7 +7719,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		contestType: "Clever",
@@ -7737,7 +7736,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		contestType: "Clever",
@@ -7754,7 +7753,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		contestType: "Clever",
@@ -7771,7 +7770,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		contestType: "Clever",
@@ -7788,7 +7787,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		contestType: "Clever",
@@ -7798,14 +7797,13 @@ let BattleMovedex = {
 		accuracy: 95,
 		basePower: 95,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "highhorsepower",
 		name: "High Horsepower",
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 175,
@@ -7816,7 +7814,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 130,
 		category: "Physical",
-		desc: "If this attack is not successful, the user loses half of its maximum HP, rounded down, as crash damage. Pokemon with the Ability Magic Guard are unaffected by crash damage.",
+		desc: "If this attack is not successful, the user loses half of its maximum HP, rounded down, as crash damage. Pokemon with the Magic Guard Ability are unaffected by crash damage.",
 		shortDesc: "User is hurt by 50% of its max HP if it misses.",
 		id: "highjumpkick",
 		isViable: true,
@@ -7828,7 +7826,7 @@ let BattleMovedex = {
 		onMoveFail: function (target, source, move) {
 			this.damage(source.maxhp / 2, source, source, 'highjumpkick');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 195,
@@ -7847,7 +7845,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		noFaint: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -7858,14 +7856,14 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Nothing happens... Fails if there is no ally adjacent to the user.",
-		shortDesc: "No competitive use. Or any use.",
+		desc: "No competitive use. Fails if there is no ally adjacent to the user.",
+		shortDesc: "No competitive use.",
 		id: "holdhands",
 		name: "Hold Hands",
 		pp: 40,
 		priority: 0,
 		flags: {authentic: 1},
-		secondary: false,
+		secondary: null,
 		target: "adjacentAlly",
 		type: "Normal",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -7888,7 +7886,7 @@ let BattleMovedex = {
 			atk: 1,
 			accuracy: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Dark",
 		zMoveBoost: {atk: 1},
@@ -7899,14 +7897,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 65,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "hornattack",
 		name: "Horn Attack",
 		pp: 25,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 120,
@@ -7917,7 +7914,7 @@ let BattleMovedex = {
 		accuracy: 30,
 		basePower: 0,
 		category: "Physical",
-		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Ability Sturdy are immune.",
+		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + 30)%, and fails if the target is at a higher level. Pokemon with the Sturdy Ability are immune.",
 		shortDesc: "OHKOs the target. Fails if user is a lower level.",
 		id: "horndrill",
 		name: "Horn Drill",
@@ -7925,7 +7922,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ohko: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 180,
@@ -7945,7 +7942,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 140,
@@ -7966,7 +7963,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -7977,7 +7974,7 @@ let BattleMovedex = {
 		accuracy: 70,
 		basePower: 110,
 		category: "Special",
-		desc: "Has a 30% chance to confuse the target. This move can hit a target using Bounce, Fly, or Sky Drop. If the weather is Rain Dance, this move does not check accuracy. If the weather is Sunny Day, this move's accuracy is 50%.",
+		desc: "Has a 30% chance to confuse the target. This move can hit a target using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop. If the weather is Primordial Sea or Rain Dance, this move does not check accuracy. If the weather is Desolate Land or Sunny Day, this move's accuracy is 50%.",
 		shortDesc: "30% chance to confuse target. Can't miss in rain.",
 		id: "hurricane",
 		isViable: true,
@@ -8006,7 +8003,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Special",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "hydrocannon",
 		name: "Hydro Cannon",
@@ -8016,7 +8013,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 200,
@@ -8027,7 +8024,6 @@ let BattleMovedex = {
 		accuracy: 80,
 		basePower: 110,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "hydropump",
 		isViable: true,
@@ -8035,7 +8031,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 185,
@@ -8054,7 +8050,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "wateriumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		contestType: "Cool",
@@ -8064,7 +8060,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Special",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "hyperbeam",
 		name: "Hyper Beam",
@@ -8074,7 +8070,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 200,
@@ -8107,7 +8103,7 @@ let BattleMovedex = {
 		basePower: 100,
 		category: "Physical",
 		desc: "Lowers the user's Defense by 1 stage. This move cannot be used successfully unless the user's current form, while considering Transform, is Hoopa Unbound. If this move is successful, it breaks through the target's Baneful Bunker, Detect, King's Shield, Protect, or Spiky Shield for this turn, allowing other Pokemon to attack the target normally. If the target's side is protected by Crafty Shield, Mat Block, Quick Guard, or Wide Guard, that protection is also broken for this turn and other Pokemon may attack the target's side normally.",
-		shortDesc: "Hoopa-U: Lowers user's Def by 1; breaks protection.",
+		shortDesc: "Hoopa-U: Lowers user's Def by 1; breaks protect.",
 		id: "hyperspacefury",
 		isViable: true,
 		name: "Hyperspace Fury",
@@ -8132,7 +8128,7 @@ let BattleMovedex = {
 				def: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 180,
@@ -8151,7 +8147,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {mirror: 1, authentic: 1},
 		breaksProtect: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 160,
@@ -8170,7 +8166,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, sound: 1, authentic: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMovePower: 175,
@@ -8181,15 +8177,14 @@ let BattleMovedex = {
 		accuracy: 60,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "hypnosis",
 		name: "Hypnosis",
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -8212,7 +8207,7 @@ let BattleMovedex = {
 			return bp;
 		},
 		category: "Physical",
-		desc: "If this move is successful, the user is locked into this move and cannot make another move until it misses, 5 turns have passed, or the attack cannot be used. Power doubles with each successful hit of this move and doubles again if Defense Curl was used previously by the user. If this move is called by Sleep Talk, the move is used for one turn.",
+		desc: "If this move is successful, the user is locked into this move and cannot make another move until it misses, 5 turns have passed, or the attack cannot be used. Power doubles with each successful hit of this move and doubles again if Defense Curl was used previously by the user. If this move is called by Sleep Talk, the move is used for one turn. If this move hits an active Disguise during the effect, the power multiplier is paused but the turn counter is not, potentially allowing the multiplier to be used on the user's next move after this effect ends.",
 		shortDesc: "Power doubles with each hit. Repeats for 5 turns.",
 		id: "iceball",
 		name: "Ice Ball",
@@ -8238,7 +8233,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 100,
@@ -8344,7 +8339,7 @@ let BattleMovedex = {
 				spe: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 180,
@@ -8385,7 +8380,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 100,
@@ -8418,7 +8413,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "iciclespear",
 		isViable: true,
@@ -8427,7 +8422,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		zMovePower: 140,
@@ -8461,7 +8456,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user prevents all of its foes from using any moves that the user also knows as long as the user remains active.",
+		desc: "The user prevents all opposing Pokemon from using any moves that the user also knows as long as the user remains active.",
 		shortDesc: "No foe can use any move known by the user.",
 		id: "imprison",
 		name: "Imprison",
@@ -8483,13 +8478,13 @@ let BattleMovedex = {
 			},
 			onFoeBeforeMovePriority: 4,
 			onFoeBeforeMove: function (attacker, defender, move) {
-				if (move.id !== 'struggle' && this.effectData.source.hasMove(move.id)) {
+				if (move.id !== 'struggle' && this.effectData.source.hasMove(move.id) && !move.isZ) {
 					this.add('cant', attacker, 'move: Imprison', move);
 					return false;
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		pressureTarget: "foeSide",
 		target: "self",
 		type: "Psychic",
@@ -8501,7 +8496,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Special",
-		desc: "The target loses its held item if it is a Berry or a Gem. This move cannot cause Pokemon with the Ability Sticky Hold to lose their held item. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "The target loses its held item if it is a Berry or a Gem. This move cannot cause Pokemon with the Sticky Hold Ability to lose their held item. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "Destroys the foe(s) Berry/Gem.",
 		id: "incinerate",
 		name: "Incinerate",
@@ -8514,7 +8509,7 @@ let BattleMovedex = {
 				this.add('-enditem', pokemon, item.name, '[from] move: Incinerate');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Fire",
 		zMovePower: 120,
@@ -8554,7 +8549,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "firiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		contestType: "Cool",
@@ -8564,7 +8559,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 20,
 		category: "Special",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "infestation",
 		name: "Infestation",
@@ -8572,7 +8567,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 100,
@@ -8583,7 +8578,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user has 1/16 of its maximum HP restored at the end of each turn, but it is prevented from switching out and other Pokemon cannot force the user to switch out. The user can still switch out if it uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the user leaves the field using Baton Pass, the replacement will remain trapped and still receive the healing effect. During the effect, the user can be hit normally by Ground-type attacks and be affected by Spikes, Toxic Spikes, and Sticky Web, even if the user is a Flying type or has the Ability Levitate.",
+		desc: "The user has 1/16 of its maximum HP restored at the end of each turn, but it is prevented from switching out and other Pokemon cannot force the user to switch out. The user can still switch out if it uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the user leaves the field using Baton Pass, the replacement will remain trapped and still receive the healing effect. During the effect, the user can be hit normally by Ground-type attacks and be affected by Spikes, Toxic Spikes, and Sticky Web, even if the user is a Flying type or has the Levitate Ability.",
 		shortDesc: "Traps/grounds user; heals 1/16 max HP per turn.",
 		id: "ingrain",
 		name: "Ingrain",
@@ -8608,7 +8603,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Grass",
 		zMoveBoost: {spd: 1},
@@ -8619,7 +8614,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The target immediately uses its last used move. Fails if the target has not made a move, if the move has 0 PP, if the target is preparing to use Beak Blast, Focus Punch, or Shell Trap, or if the move is Assist, Beak Blast, Bide, Copycat, Focus Punch, Ice Ball, Instruct, Me First, Metronome, Mimic, Mirror Move, Nature Power, Outrage, Petal Dance, Rollout, Shell Trap, Sketch, Sleep Talk, Thrash, Transform, a charge move, a recharge move, or a Z-Move.",
+		desc: "The target immediately uses its last used move. Fails if the target has not made a move, if the move has 0 PP, if the target is preparing to use Beak Blast, Focus Punch, or Shell Trap, or if the move is Assist, Beak Blast, Belch, Bide, Copycat, Focus Punch, Ice Ball, Instruct, Me First, Metronome, Mimic, Mirror Move, Nature Power, Outrage, Petal Dance, Rollout, Shell Trap, Sketch, Sleep Talk, Struggle, Thrash, Transform, Uproar, any two-turn move, any recharge move, or any Z-Move.",
 		shortDesc: "The target immediately uses its last used move.",
 		id: "instruct",
 		name: "Instruct",
@@ -8639,7 +8634,7 @@ let BattleMovedex = {
 			this.add('-singleturn', target, 'move: Instruct', '[of] ' + source);
 			this.runMove(target.lastMove.id, target, target.lastMoveTargetLoc);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spa: 1},
@@ -8650,7 +8645,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes Normal-type moves to become Electric type this turn.",
+		desc: "Causes Normal-type moves to become Electric type this turn. The effect happens after other effects that change a move's type.",
 		shortDesc: "Normal moves become Electric type this turn.",
 		id: "iondeluge",
 		name: "Ion Deluge",
@@ -8671,7 +8666,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Electric",
 		zMoveBoost: {spa: 1},
@@ -8692,7 +8687,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Steel",
 		zMoveEffect: 'clearnegativeboost',
@@ -8762,7 +8757,7 @@ let BattleMovedex = {
 				move.type = item.onPlate;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 180,
@@ -8773,7 +8768,7 @@ let BattleMovedex = {
 		accuracy: 95,
 		basePower: 100,
 		category: "Physical",
-		desc: "If this attack is not successful, the user loses half of its maximum HP, rounded down, as crash damage. Pokemon with the Ability Magic Guard are unaffected by crash damage.",
+		desc: "If this attack is not successful, the user loses half of its maximum HP, rounded down, as crash damage. Pokemon with the Magic Guard Ability are unaffected by crash damage.",
 		shortDesc: "User is hurt by 50% of its max HP if it misses.",
 		id: "jumpkick",
 		isViable: true,
@@ -8785,7 +8780,7 @@ let BattleMovedex = {
 		onMoveFail: function (target, source, move) {
 			this.damage(source.maxhp / 2, source, source, 'jumpkick');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 180,
@@ -8804,7 +8799,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -8825,7 +8820,7 @@ let BattleMovedex = {
 		boosts: {
 			accuracy: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {evasion: 1},
@@ -8877,8 +8872,13 @@ let BattleMovedex = {
 				}
 				return null;
 			},
+			onHit: function (target, source, move) {
+				if (move.zPowered && move.flags['contact']) {
+					this.boost({atk: -2}, source, target, this.getMove("King's Shield"));
+				}
+			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Steel",
 		zMoveEffect: 'clearnegativeboost',
@@ -8889,7 +8889,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 65,
 		category: "Physical",
-		desc: "If the target is holding an item that can be removed from it, ignoring the Ability Sticky Hold, this move's power is multiplied by 1.5. If the user has not fainted, the target loses its held item. This move cannot remove Z-Crystals, cause Pokemon with the Ability Sticky Hold to lose their held item, cause Pokemon that can Mega Evolve to lose the Mega Stone for their species, or cause a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally to lose their Blue Orb, Red Orb, Griseous Orb, Plate, Drive, or Memory respectively. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "If the target is holding an item that can be removed from it, ignoring the Sticky Hold Ability, this move's power is multiplied by 1.5. If the user has not fainted, the target loses its held item. This move cannot remove Z-Crystals, cause Pokemon with the Sticky Hold Ability to lose their held item, cause Pokemon that can Mega Evolve to lose the Mega Stone for their species, or cause a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally to lose their Blue Orb, Red Orb, Griseous Orb, Plate, Drive, or Memory respectively. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "1.5x damage if foe holds an item. Removes item.",
 		id: "knockoff",
 		isViable: true,
@@ -8913,7 +8913,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 120,
@@ -8931,7 +8931,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Ground",
 		zMovePower: 185,
@@ -8942,8 +8942,8 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "On the next turn, the user's attack will be a critical hit. Fails if the user already has the effect.",
-		shortDesc: "Next turn, the user's attack will be a critical hit.",
+		desc: "Until the end of the next turn, the user's attacks will be critical hits.",
+		shortDesc: "Until the end of the next turn, user's moves crit.",
 		id: "laserfocus",
 		name: "Laser Focus",
 		pp: 30,
@@ -8962,7 +8962,7 @@ let BattleMovedex = {
 				this.add('-end', pokemon, 'move: Laser Focus', '[silent]');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -8992,7 +8992,7 @@ let BattleMovedex = {
 			}
 			return hasLastResort;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 200,
@@ -9034,7 +9034,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 175,
@@ -9058,7 +9058,7 @@ let BattleMovedex = {
 				spa: -2,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 195,
@@ -9092,14 +9092,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "leafage",
 		name: "Leafage",
 		pp: 40,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 100,
@@ -9119,7 +9118,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 160,
@@ -9130,7 +9129,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 0,
 		category: "Status",
-		desc: "The Pokemon at the user's position steals 1/8 of the target's maximum HP, rounded down, at the end of each turn. If Big Root is held by the recipient, the HP recovered is 1.3x normal, rounded half down. If the target uses Baton Pass, the replacement will continue being leeched. If the target switches out or uses Rapid Spin, the effect ends. Grass-type Pokemon are immune to this move on use, but not its effect.",
+		desc: "The Pokemon at the user's position steals 1/8 of the target's maximum HP, rounded down, at the end of each turn. If Big Root is held by the recipient, the HP recovered is 1.3x normal, rounded half down. If the target uses Baton Pass, the replacement will continue being leeched. If the target switches out or uses Rapid Spin successfully, the effect ends. Grass-type Pokemon are immune to this move on use, but not its effect.",
 		shortDesc: "1/8 of target's HP is restored to user every turn.",
 		id: "leechseed",
 		isViable: true,
@@ -9162,7 +9161,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveEffect: 'clearnegativeboost',
@@ -9183,7 +9182,7 @@ let BattleMovedex = {
 		boosts: {
 			def: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -9194,7 +9193,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 190,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "letssnuggleforever",
 		name: "Let's Snuggle Forever",
@@ -9202,7 +9200,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1},
 		isZ: "mimikiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		contestType: "Cool",
@@ -9243,7 +9241,7 @@ let BattleMovedex = {
 		flags: {protect: 1, mirror: 1},
 		isUnreleased: true,
 		recoil: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMovePower: 200,
@@ -9254,7 +9252,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user and its party members take 0.5x damage from special attacks, or 0.66x damage if in a Double Battle; does not reduce damage further with Aurora Veil. Critical hits ignore this protection. It is removed from the user's side if the user or an ally is successfully hit by Brick Break, Psychic Fangs, or Defog. Lasts for 8 turns if the user is holding Light Clay.",
+		desc: "For 5 turns, the user and its party members take 0.5x damage from special attacks, or 0.66x damage if in a Double Battle. Damage is not reduced further with Aurora Veil. Critical hits ignore this effect. It is removed from the user's side if the user or an ally is successfully hit by Brick Break, Psychic Fangs, or Defog. Lasts for 8 turns if the user is holding Light Clay. Fails if the effect is already active on the user's side.",
 		shortDesc: "For 5 turns, special damage to allies is halved.",
 		id: "lightscreen",
 		isViable: true,
@@ -9289,7 +9287,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'move: Light Screen');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Psychic",
 		zMoveBoost: {spd: 1},
@@ -9312,7 +9310,7 @@ let BattleMovedex = {
 		},
 		ignoreAbility: true,
 		isZ: "ultranecroziumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		contestType: "Cool",
@@ -9346,7 +9344,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "On the following turn, the target cannot avoid the user's moves, even if the target is in the middle of a two-turn move. Fails if the user used this move successfully last turn and that target is still active.",
+		desc: "Until the end of the next turn, the target cannot avoid the user's moves, even if the target is in the middle of a two-turn move. The effect ends if either the user or the target leaves the field. Fails if this effect is active for the user.",
 		shortDesc: "User's next move will not miss the target.",
 		id: "lockon",
 		name: "Lock-On",
@@ -9367,7 +9365,7 @@ let BattleMovedex = {
 				if (move && source === this.effectData.target && target === this.effectData.source) return true;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -9378,8 +9376,7 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "lovelykiss",
 		isViable: true,
 		name: "Lovely Kiss",
@@ -9387,7 +9384,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -9417,7 +9414,7 @@ let BattleMovedex = {
 			return 20;
 		},
 		category: "Physical",
-		desc: "Deals damage to the target based on its weight. Power is 20 if less than 10 kg, 40 if less than 25 kg, 60 if less than 50 kg, 80 if less than 100 kg, 100 if less than 200 kg, and 120 if greater than or equal to 200 kg.",
+		desc: "This move's power is 20 if the target weighs less than 10 kg, 40 if less than 25 kg, 60 if less than 50 kg, 80 if less than 100 kg, 100 if less than 200 kg, and 120 if greater than or equal to 200 kg.",
 		shortDesc: "More power the heavier the target.",
 		id: "lowkick",
 		isViable: true,
@@ -9425,7 +9422,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 160,
@@ -9459,7 +9456,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user and its party members cannot be struck by a critical hit. Fails if this move is already in effect for the user's side.",
+		desc: "For 5 turns, the user and its party members cannot be struck by a critical hit. Fails if the effect is already active on the user's side.",
 		shortDesc: "For 5 turns, shields user's party from critical hits.",
 		id: "luckychant",
 		name: "Lucky Chant",
@@ -9479,7 +9476,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'move: Lucky Chant'); // "[side.name]'s team's Lucky Chant wore off!"
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Normal",
 		zMoveBoost: {evasion: 1},
@@ -9490,7 +9487,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user faints and the Pokemon brought out to replace it has its HP and PP fully restored along with having any major status condition cured. Fails if the user is the last unfainted Pokemon in its party.",
+		desc: "The user faints and the Pokemon brought out to replace it has its HP and PP fully restored along with having any major status condition cured. The new Pokemon is sent out at the end of the turn, and the healing happens before hazards take effect. Fails if the user is the last unfainted Pokemon in its party.",
 		shortDesc: "User faints. Replacement is fully healed, with PP.",
 		id: "lunardance",
 		isViable: true,
@@ -9511,7 +9508,6 @@ let BattleMovedex = {
 			onStart: function (side, source) {
 				this.debug('Lunar Dance started on ' + side.name);
 				this.effectData.positions = [];
-				// @ts-ignore
 				for (const i of side.active.keys()) {
 					this.effectData.positions[i] = false;
 				}
@@ -9540,7 +9536,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		contestType: "Beautiful",
@@ -9605,7 +9601,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -9616,7 +9612,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the end of the turn, the user is unaffected by certain non-damaging moves directed at it and will instead use such moves against the original user. Moves reflected in this way are unable to be reflected again by this or the Ability Magic Bounce's effect. Spikes, Stealth Rock, Sticky Web, and Toxic Spikes can only be reflected once per side, by the leftmost Pokemon under this or the Ability Magic Bounce's effect. If the user has the Ability Soundproof, this move's effect happens before a sound-based move can be nullified. The Abilities Lightning Rod and Storm Drain redirect their respective moves before this move takes effect.",
+		desc: "Until the end of the turn, the user is unaffected by certain non-damaging moves directed at it and will instead use such moves against the original user. Moves reflected in this way are unable to be reflected again by this or the Magic Bounce Ability's effect. Spikes, Stealth Rock, Sticky Web, and Toxic Spikes can only be reflected once per side, by the leftmost Pokemon under this or the Magic Bounce Ability's effect. The Lightning Rod and Storm Drain Abilities redirect their respective moves before this move takes effect.",
 		shortDesc: "Bounces back certain non-damaging moves.",
 		id: "magiccoat",
 		isViable: true,
@@ -9655,7 +9651,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveBoost: {spd: 2},
@@ -9678,6 +9674,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -9694,7 +9691,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Magic Room', '[of] ' + this.effectData.source);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Psychic",
 		zMoveBoost: {spd: 1},
@@ -9705,14 +9702,13 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Special",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "magicalleaf",
 		name: "Magical Leaf",
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 120,
@@ -9723,7 +9719,7 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 100,
 		category: "Special",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "magmastorm",
 		isViable: true,
@@ -9732,7 +9728,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 180,
@@ -9743,14 +9739,13 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Physical",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "magnetbomb",
 		name: "Magnet Bomb",
 		pp: 20,
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 120,
@@ -9761,7 +9756,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Raises the Defense and Special Defense of Pokemon on the user's side with the Abilities Plus or Minus by 1 stage.",
+		desc: "Raises the Defense and Special Defense of Pokemon on the user's side with the Plus or Minus Abilities by 1 stage.",
 		shortDesc: "Raises Def, Sp. Def of allies with Plus/Minus by 1.",
 		id: "magneticflux",
 		name: "Magnetic Flux",
@@ -9780,7 +9775,7 @@ let BattleMovedex = {
 				this.boost({def: 1, spd: 1}, target, source, 'move: Magnetic Flux');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Electric",
 		zMoveBoost: {spd: 1},
@@ -9791,8 +9786,8 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user is immune to Ground-type attacks and the effects of Spikes, Toxic Spikes, Sticky Web, and the Ability Arena Trap as long as it remains active. If the user uses Baton Pass, the replacement will gain the effect. Ingrain, Smack Down, Thousand Arrows, and Iron Ball override this move if the user is under any of their effects. Fails if the user is already under this effect or the effects of Ingrain, Smack Down, or Thousand Arrows.",
-		shortDesc: "For 5 turns, the user is immune to Ground moves.",
+		desc: "For 5 turns, the user is immune to Ground-type attacks and the effects of Spikes, Toxic Spikes, Sticky Web, and the Arena Trap Ability as long as it remains active. If the user uses Baton Pass, the replacement will gain the effect. Ingrain, Smack Down, Thousand Arrows, and Iron Ball override this move if the user is under any of their effects. Fails if the user is already under this effect or the effects of Ingrain, Smack Down, or Thousand Arrows.",
+		shortDesc: "For 5 turns, the user has immunity to Ground.",
 		id: "magnetrise",
 		name: "Magnet Rise",
 		pp: 10,
@@ -9813,7 +9808,7 @@ let BattleMovedex = {
 				this.add('-end', target, 'Magnet Rise');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Electric",
 		zMoveBoost: {evasion: 1},
@@ -9857,10 +9852,9 @@ let BattleMovedex = {
 			}
 		},
 		onUseMoveMessage: function (pokemon, target, move) {
-			// @ts-ignore
 			this.add('-activate', pokemon, 'move: Magnitude', move.magnitude);
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Ground",
 		zMovePower: 140,
@@ -9879,7 +9873,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1},
 		isZ: "inciniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		contestType: "Cool",
@@ -9928,7 +9922,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Fighting",
 		zMoveBoost: {def: 1},
@@ -9939,7 +9933,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user uses the move the target chose for use this turn against it, if possible, with its power multiplied by 1.5. The move must be a damaging move other than Chatter, Counter, Covet, Focus Punch, Me First, Metal Burst, Mirror Coat, Thief, or Struggle. Fails if the target moves before the user. Ignores the target's substitute for the purpose of copying the move.",
+		desc: "The user uses the move the target chose for use this turn against it, if possible, with its power multiplied by 1.5. The move must be a damaging move other than Beak Blast, Chatter, Counter, Covet, Focus Punch, Me First, Metal Burst, Mirror Coat, Shell Trap, Struggle, Thief, or any Z-Move. Fails if the target moves before the user. Ignores the target's substitute for the purpose of copying the move.",
 		shortDesc: "Copies a foe at 1.5x power. User must be faster.",
 		id: "mefirst",
 		name: "Me First",
@@ -9968,7 +9962,7 @@ let BattleMovedex = {
 				return this.chainModify(1.5);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "adjacentFoe",
 		type: "Normal",
 		zMoveBoost: {spe: 2},
@@ -9980,7 +9974,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Prevents the target from switching out. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the target leaves the field using Baton Pass, the replacement will remain trapped. The effect ends if the user leaves the field.",
-		shortDesc: "The target cannot switch out.",
+		shortDesc: "Prevents the target from switching out.",
 		id: "meanlook",
 		name: "Mean Look",
 		pp: 5,
@@ -9989,7 +9983,7 @@ let BattleMovedex = {
 		onHit: function (target, source, move) {
 			return target.addVolatile('trapped', source, move, 'trapper');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -10010,7 +10004,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveBoost: {atk: 1},
@@ -10029,7 +10023,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 120,
@@ -10040,14 +10034,13 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 120,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "megakick",
 		name: "Mega Kick",
 		pp: 5,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -10058,14 +10051,13 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "megapunch",
 		name: "Mega Punch",
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -10076,7 +10068,6 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 120,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "megahorn",
 		isViable: true,
@@ -10084,7 +10075,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 190,
@@ -10108,7 +10099,7 @@ let BattleMovedex = {
 			spa: -2,
 		},
 		selfdestruct: "ifHit",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveEffect: 'healreplacement',
@@ -10128,7 +10119,7 @@ let BattleMovedex = {
 		flags: {},
 		isZ: "lunaliumz",
 		ignoreAbility: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		contestType: "Cool",
@@ -10142,7 +10133,7 @@ let BattleMovedex = {
 			return pokemon.volatiles['metalburst'].damage || 1;
 		},
 		category: "Physical",
-		desc: "Deals damage to the last foe to hit the user with an attack this turn equal to 1.5 times the HP lost by the user from that attack. If the user did not lose HP from the attack, this move deals damage with a Base Power of 1 instead. If that foe's position is no longer in use, the damage is done to a random foe in range. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by a foe's attack this turn.",
+		desc: "Deals damage to the last opposing Pokemon to hit the user with an attack this turn equal to 1.5 times the HP lost by the user from that attack, rounded down. If the user did not lose HP from the attack, this move deals 1 HP of damage instead. If that opposing Pokemon's position is no longer in use and there is another opposing Pokemon on the field, the damage is done to it instead. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by an opposing Pokemon's attack this turn.",
 		shortDesc: "If hit by an attack, returns 1.5x damage.",
 		id: "metalburst",
 		name: "Metal Burst",
@@ -10175,7 +10166,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "scripted",
 		type: "Steel",
 		zMovePower: 100,
@@ -10221,7 +10212,7 @@ let BattleMovedex = {
 		boosts: {
 			spd: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMoveBoost: {spa: 1},
@@ -10287,7 +10278,7 @@ let BattleMovedex = {
 			}
 			this.useMove(randomMove, target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		contestType: "Cute",
@@ -10306,7 +10297,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
 		heal: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -10317,7 +10308,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "This move is replaced by the last move used by the target. The copied move has the maximum PP for that move. Fails if the target has not made a move, if the user has Transformed, or if the move is Chatter, Mimic, Sketch, Struggle, or Transform.",
+		desc: "While the user remains active, this move is replaced by the last move used by the target. The copied move has the maximum PP for that move. Fails if the target has not made a move, if the user has Transformed, if the user already knows the move, or if the move is Chatter, Mimic, Sketch, Struggle, Transform, or any Z-Move.",
 		shortDesc: "The last move the target used replaces this one.",
 		id: "mimic",
 		name: "Mimic",
@@ -10342,7 +10333,7 @@ let BattleMovedex = {
 			};
 			this.add('-start', source, 'Mimic', move.name);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {accuracy: 1},
@@ -10353,7 +10344,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 150,
 		category: "Special",
-		desc: "Whether or not this move is successful, the user loses 1/2 of its maximum HP, rounded up, unless the user has the Ability Magic Guard. This move is prevented from executing and the user does not lose HP if any active Pokemon has the Ability Damp, if the user is affected by Powder, or Primordial Sea is in effect.",
+		desc: "Whether or not this move is successful, the user loses 1/2 of its maximum HP, rounded up, unless the user has the Magic Guard Ability. This move is prevented from executing and the user does not lose HP if any active Pokemon has the Damp Ability, or if this move is Fire type and the user is affected by Powder or the weather is Primordial Sea.",
 		shortDesc: "User loses 50% max HP. Hits adjacent Pokemon.",
 		id: "mindblown",
 		isViable: true,
@@ -10367,7 +10358,7 @@ let BattleMovedex = {
 				this.damage(Math.round(pokemon.maxhp / 2), pokemon, pokemon, this.getEffect('Mind Blown'), true);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Fire",
 		zMovePower: 200,
@@ -10378,7 +10369,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "On the following turn, the target cannot avoid the user's moves, even if the target is in the middle of a two-turn move. Fails if the user used this move successfully last turn and that target is still active.",
+		desc: "Until the end of the next turn, the target cannot avoid the user's moves, even if the target is in the middle of a two-turn move. The effect ends if either the user or the target leaves the field. Fails if this effect is active for the user.",
 		shortDesc: "User's next move will not miss the target.",
 		id: "mindreader",
 		name: "Mind Reader",
@@ -10392,7 +10383,7 @@ let BattleMovedex = {
 			source.addVolatile('lockon', target);
 			this.add('-activate', source, 'move: Mind Reader', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spa: 1},
@@ -10403,7 +10394,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Raises the user's evasiveness by 2 stages. Whether or not the user's evasiveness was changed, Body Slam, Dragon Rush, Flying Press, Heat Crash, Heavy Slam, Malicious Moonsault, Phantom Force, Shadow Force, Steamroller, and Stomp will not check accuracy and have their damage doubled if used against the user while it is active.",
+		desc: "Raises the user's evasiveness by 2 stages. Whether or not the user's evasiveness was changed, Body Slam, Dragon Rush, Flying Press, Heat Crash, Heavy Slam, Malicious Moonsault, Steamroller, and Stomp will not check accuracy and have their damage doubled if used against the user while it is active.",
 		shortDesc: "Raises the user's evasiveness by 2.",
 		id: "minimize",
 		name: "Minimize",
@@ -10414,12 +10405,12 @@ let BattleMovedex = {
 		effect: {
 			noCopy: true,
 			onSourceModifyDamage: function (damage, source, target, move) {
-				if (['stomp', 'steamroller', 'bodyslam', 'flyingpress', 'dragonrush', 'phantomforce', 'heatcrash', 'shadowforce', 'heavyslam', 'maliciousmoonsault'].includes(move.id)) {
+				if (['stomp', 'steamroller', 'bodyslam', 'flyingpress', 'dragonrush', 'heatcrash', 'heavyslam', 'maliciousmoonsault'].includes(move.id)) {
 					return this.chainModify(2);
 				}
 			},
 			onAccuracy: function (accuracy, target, source, move) {
-				if (['stomp', 'steamroller', 'bodyslam', 'flyingpress', 'dragonrush', 'phantomforce', 'heatcrash', 'shadowforce', 'heavyslam', 'maliciousmoonsault'].includes(move.id)) {
+				if (['stomp', 'steamroller', 'bodyslam', 'flyingpress', 'dragonrush', 'heatcrash', 'heavyslam', 'maliciousmoonsault'].includes(move.id)) {
 					return true;
 				}
 				return accuracy;
@@ -10428,7 +10419,7 @@ let BattleMovedex = {
 		boosts: {
 			evasion: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -10439,7 +10430,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to have its positive evasiveness stat stage ignored while it is active. Psychic-type attacks can hit the target if it is a Dark type. The effect ends when the target is no longer active. Fails if the target is already affected, or affected by Foresight or Odor Sleuth.",
+		desc: "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Psychic-type attacks can hit the target if it is a Dark type. Fails if the target is already affected, or affected by Foresight or Odor Sleuth.",
 		shortDesc: "Psychic hits Dark. Evasiveness ignored.",
 		id: "miracleeye",
 		name: "Miracle Eye",
@@ -10464,7 +10455,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spa: 1},
@@ -10479,7 +10470,7 @@ let BattleMovedex = {
 			return pokemon.volatiles['mirrorcoat'].damage || 1;
 		},
 		category: "Special",
-		desc: "Deals damage to the last foe to hit the user with a special attack this turn equal to twice the HP lost by the user from that attack. If the user did not lose HP from the attack, this move deals damage with a Base Power of 1 instead. If that foe's position is no longer in use, the damage is done to a random foe in range. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by a foe's special attack this turn.",
+		desc: "Deals damage to the last opposing Pokemon to hit the user with a special attack this turn equal to twice the HP lost by the user from that attack. If the user did not lose HP from the attack, this move deals 1 HP of damage instead. If that opposing Pokemon's position is no longer in use and there is another opposing Pokemon on the field, the damage is done to it instead. Only the last hit of a multi-hit attack is counted. Fails if the user was not hit by an opposing Pokemon's special attack this turn.",
 		shortDesc: "If hit by special attack, returns double damage.",
 		id: "mirrorcoat",
 		name: "Mirror Coat",
@@ -10506,14 +10497,13 @@ let BattleMovedex = {
 				return source.side.foe.active[this.effectData.position];
 			},
 			onAfterDamage: function (damage, target, source, effect) {
-				// @ts-ignore
 				if (effect && effect.effectType === 'Move' && source.side !== target.side && this.getCategory(effect) === 'Special') {
 					this.effectData.position = source.position;
 					this.effectData.damage = 2 * damage;
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "scripted",
 		type: "Psychic",
 		zMovePower: 100,
@@ -10524,7 +10514,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user uses the last move used by the target. The copied move is used against that target, if possible. Fails if the target has not made a move, or the last move used was Acupressure, After You, Aromatherapy, Aromatic Mist, Belch, Conversion 2, Counter, Crafty Shield, Curse, Doom Desire, Electric Terrain, Final Gambit, Flower Shield, Focus Punch, Future Sight, Grassy Terrain, Gravity, Guard Split, Hail, Happy Hour, Haze, Heal Bell, Heal Pulse, Helping Hand, Hold Hands, Ion Deluge, Light Screen, Lucky Chant, Magnetic Flux, Mat Block, Me First, Mimic, Mirror Coat, Mirror Move, Mist, Misty Terrain, Mud Sport, Nature Power, Perish Song, Power Split, Psych Up, Quick Guard, Rain Dance, Reflect, Reflect Type, Role Play, Rototiller, Safeguard, Sandstorm, Sketch, Spikes, Spit Up, Stealth Rock, Sticky Web, Struggle, Sunny Day, Tailwind, Toxic Spikes, Transform, Water Sport, Wide Guard, or any move that is self-targeting.",
+		desc: "The user uses the last move used by the target. The copied move is used against that target, if possible. Fails if the target has not made a move, or if the last move used cannot be copied by this move.",
 		shortDesc: "User uses the target's last used move against it.",
 		id: "mirrormove",
 		name: "Mirror Move",
@@ -10532,13 +10522,13 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		onTryHit: function (target, pokemon) {
-			if (!target.lastMove || !target.lastMove.flags['mirror']) {
+			if (!target.lastMove || !target.lastMove.flags['mirror'] || target.lastMove.isZ) {
 				return false;
 			}
 			this.useMove(target.lastMove.id, pokemon, target);
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		zMoveBoost: {atk: 2},
@@ -10572,7 +10562,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user and its party members are protected from having their stats lowered by other Pokemon.",
+		desc: "For 5 turns, the user and its party members are protected from having their stat stages lowered by other Pokemon. Fails if the effect is already active on the user's side.",
 		shortDesc: "For 5 turns, protects user's party from stat drops.",
 		id: "mist",
 		name: "Mist",
@@ -10605,7 +10595,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'Mist');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Ice",
 		zMoveEffect: 'heal',
@@ -10688,7 +10678,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'Misty Terrain');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Fairy",
 		zMoveBoost: {spd: 1},
@@ -10732,7 +10722,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		ignoreAbility: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 180,
@@ -10743,7 +10733,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user restores 1/2 of its maximum HP if no weather conditions are in effect, 2/3 of its maximum HP if the weather is Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Rain Dance, or Sandstorm, all rounded half down.",
+		desc: "The user restores 1/2 of its maximum HP if Delta Stream or no weather conditions are in effect, 2/3 of its maximum HP if the weather is Desolate Land or Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Primordial Sea, Rain Dance, or Sandstorm, all rounded half down.",
 		shortDesc: "Heals the user by a weather-dependent amount.",
 		id: "moonlight",
 		isViable: true,
@@ -10760,7 +10750,7 @@ let BattleMovedex = {
 				return this.heal(this.modify(pokemon.maxhp, 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Fairy",
 		zMoveEffect: 'clearnegativeboost',
@@ -10771,7 +10761,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user restores 1/2 of its maximum HP if no weather conditions are in effect, 2/3 of its maximum HP if the weather is Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Rain Dance, or Sandstorm, all rounded half down.",
+		desc: "The user restores 1/2 of its maximum HP if Delta Stream or no weather conditions are in effect, 2/3 of its maximum HP if the weather is Desolate Land or Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Primordial Sea, Rain Dance, or Sandstorm, all rounded half down.",
 		shortDesc: "Heals the user by a weather-dependent amount.",
 		id: "morningsun",
 		isViable: true,
@@ -10788,7 +10778,7 @@ let BattleMovedex = {
 				return this.heal(this.modify(pokemon.maxhp, 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -10868,7 +10858,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, all Electric-type attacks used by any active Pokemon have their power reduced to 0.33x. Fails if this move is already in effect.",
+		desc: "For 5 turns, all Electric-type attacks used by any active Pokemon have their power multiplied by 0.33. Fails if this effect is already active.",
 		shortDesc: "For 5 turns, Electric-type attacks have 1/3 power.",
 		id: "mudsport",
 		name: "Mud Sport",
@@ -10893,7 +10883,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Mud Sport');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Ground",
 		zMoveBoost: {spd: 1},
@@ -10938,7 +10928,7 @@ let BattleMovedex = {
 		onModifyMove: function (move, pokemon) {
 			move.type = this.runEvent('Memory', pokemon, null, 'multiattack', 'Normal');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 185,
@@ -10983,7 +10973,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Dark",
 		zMoveEffect: 'clearnegativeboost',
@@ -10994,7 +10984,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Physical",
-		desc: "The type and power of this move depend on the user's held Berry, and the Berry is lost. Fails if the user is not holding a Berry, if the user has the Ability Klutz, or if Embargo or Magic Room is in effect for the user.",
+		desc: "The type and power of this move depend on the user's held Berry, and the Berry is lost. Fails if the user is not holding a Berry, if the user has the Klutz Ability, or if Embargo or Magic Room is in effect for the user.",
 		shortDesc: "Power and type depends on the user's Berry.",
 		id: "naturalgift",
 		name: "Natural Gift",
@@ -11012,7 +11002,7 @@ let BattleMovedex = {
 			pokemon.usedItemThisTurn = true;
 			this.runEvent('AfterUseItem', pokemon, null, null, item);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -11045,7 +11035,7 @@ let BattleMovedex = {
 			this.useMove(move, pokemon, target);
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		contestType: "Beautiful",
@@ -11066,7 +11056,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMovePower: 100,
@@ -11106,7 +11096,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "ghostiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		contestType: "Cool",
@@ -11148,7 +11138,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 100,
@@ -11168,7 +11158,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 140,
@@ -11199,14 +11189,8 @@ let BattleMovedex = {
 			onResidual: function (pokemon) {
 				this.damage(pokemon.maxhp / 4);
 			},
-			onUpdate: function (pokemon) {
-				if (pokemon.status !== 'slp' && !pokemon.hasAbility('comatose')) {
-					pokemon.removeVolatile('nightmare');
-					this.add('-end', pokemon, 'Nightmare', '[silent]');
-				}
-			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMoveBoost: {spa: 1},
@@ -11228,7 +11212,7 @@ let BattleMovedex = {
 			atk: -1,
 			spa: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -11270,7 +11254,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, distance: 1, heal: 1},
 		drain: [3, 4],
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 160,
@@ -11281,7 +11265,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 195,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "oceanicoperetta",
 		name: "Oceanic Operetta",
@@ -11289,7 +11272,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "primariumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		contestType: "Cool",
@@ -11322,7 +11305,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to have its positive evasiveness stat stage ignored while it is active. Normal- and Fighting-type attacks can hit the target if it is a Ghost type. The effect ends when the target is no longer active. Fails if the target is already affected, or affected by Foresight or Miracle Eye.",
+		desc: "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Normal- and Fighting-type attacks can hit the target if it is a Ghost type. Fails if the target is already affected, or affected by Foresight or Miracle Eye.",
 		shortDesc: "Fighting, Normal hit Ghost. Evasiveness ignored.",
 		id: "odorsleuth",
 		name: "Odor Sleuth",
@@ -11333,7 +11316,7 @@ let BattleMovedex = {
 		onTryHit: function (target) {
 			if (target.volatiles['miracleeye']) return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -11391,7 +11374,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 120,
 		category: "Physical",
-		desc: "Deals damage to one adjacent foe at random. The user spends two or three turns locked into this move and becomes confused after the last turn of the effect if it is not already. If the user is prevented from moving or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk, the move is used for one turn and does not confuse the user.",
+		desc: "The user spends two or three turns locked into this move and becomes confused immediately after its move on the last turn of the effect if it is not already. This move targets an opposing Pokemon at random on each turn. If the user is prevented from moving, is asleep at the beginning of a turn, or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk and the user is asleep, the move is used for one turn and does not confuse the user.",
 		shortDesc: "Lasts 2-3 turns. Confuses the user afterwards.",
 		id: "outrage",
 		isViable: true,
@@ -11407,7 +11390,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('lockedmove');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "randomNormal",
 		type: "Dragon",
 		zMovePower: 190,
@@ -11431,7 +11414,7 @@ let BattleMovedex = {
 				spa: -2,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 195,
@@ -11456,7 +11439,7 @@ let BattleMovedex = {
 			pokemon.sethp(averagehp);
 			this.add('-sethp', target, target.getHealth, pokemon, pokemon.getHealth, '[from] move: Pain Split');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -11475,7 +11458,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, heal: 1},
 		drain: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Electric",
 		zMovePower: 120,
@@ -11486,7 +11469,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Lowers the target's Attack and Special Attack by 1 stage. If this move is successful, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members.",
+		desc: "Lowers the target's Attack and Special Attack by 1 stage. If this move is successful, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if the target's Attack and Special Attack stat stages were both unchanged, or if there are no unfainted party members.",
 		shortDesc: "Lowers target's Atk, Sp. Atk by 1. User switches.",
 		id: "partingshot",
 		isViable: true,
@@ -11499,7 +11482,7 @@ let BattleMovedex = {
 			atk: -1,
 			spa: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveEffect: 'healreplacement',
@@ -11520,7 +11503,7 @@ let BattleMovedex = {
 		onHit: function () {
 			this.add('-fieldactivate', 'move: Pay Day');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -11539,14 +11522,14 @@ let BattleMovedex = {
 			return move.basePower * 2;
 		},
 		category: "Physical",
-		desc: "Power doubles if the target moves before the user; power is not doubled if the target switches out.",
+		desc: "Power doubles if the user moves after the target this turn, including actions taken through Instruct or the Dancer Ability. Switching in does not count as an action.",
 		shortDesc: "Power doubles if the user moves after the target.",
 		id: "payback",
 		name: "Payback",
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 100,
@@ -11557,14 +11540,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 35,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "peck",
 		name: "Peck",
 		pp: 35,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 100,
@@ -11618,7 +11600,7 @@ let BattleMovedex = {
 				this.add('-start', pokemon, 'perish' + duration);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -11637,7 +11619,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Grass",
 		zMovePower: 175,
@@ -11648,7 +11630,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 120,
 		category: "Special",
-		desc: "Deals damage to one adjacent foe at random. The user spends two or three turns locked into this move and becomes confused after the last turn of the effect if it is not already. If the user is prevented from moving or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk, the move is used for one turn and does not confuse the user.",
+		desc: "The user spends two or three turns locked into this move and becomes confused immediately after its move on the last turn of the effect if it is not already. This move targets an opposing Pokemon at random on each turn. If the user is prevented from moving, is asleep at the beginning of a turn, or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk and the user is asleep, the move is used for one turn and does not confuse the user.",
 		shortDesc: "Lasts 2-3 turns. Confuses the user afterwards.",
 		id: "petaldance",
 		name: "Petal Dance",
@@ -11663,7 +11645,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('lockedmove');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "randomNormal",
 		type: "Grass",
 		zMovePower: 190,
@@ -11674,7 +11656,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Physical",
-		desc: "If this move is successful, it breaks through the target's Baneful Bunker, Detect, King's Shield, Protect, or Spiky Shield for this turn, allowing other Pokemon to attack the target normally. If the target's side is protected by Crafty Shield, Mat Block, Quick Guard, or Wide Guard, that protection is also broken for this turn and other Pokemon may attack the target's side normally. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks. If the user is holding a Power Herb, the move completes in one turn. Damage doubles and no accuracy check is done if the target has used Minimize while active.",
+		desc: "If this move is successful, it breaks through the target's Baneful Bunker, Detect, King's Shield, Protect, or Spiky Shield for this turn, allowing other Pokemon to attack the target normally. If the target's side is protected by Crafty Shield, Mat Block, Quick Guard, or Wide Guard, that protection is also broken for this turn and other Pokemon may attack the target's side normally. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks. If the user is holding a Power Herb, the move completes in one turn.",
 		shortDesc: "Disappears turn 1. Hits turn 2. Breaks protection.",
 		id: "phantomforce",
 		name: "Phantom Force",
@@ -11707,7 +11689,7 @@ let BattleMovedex = {
 				return false;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 175,
@@ -11730,7 +11712,7 @@ let BattleMovedex = {
 			if (pokemon.getStat('atk', false, true) > pokemon.getStat('spa', false, true)) move.category = 'Physical';
 		},
 		ignoreAbility: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 180,
@@ -11741,7 +11723,7 @@ let BattleMovedex = {
 		accuracy: 95,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "pinmissile",
 		name: "Pin Missile",
@@ -11749,7 +11731,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 140,
@@ -11769,8 +11751,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
 		pseudoWeather: 'iondeluge',
-		isUnreleased: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 180,
@@ -11791,7 +11772,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -11826,7 +11807,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "If this move is successful and the user has not fainted, it steals the target's held Berry if it is holding one and eats it immediately. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "If this move is successful and the user has not fainted, it steals the target's held Berry if it is holding one and eats it immediately, gaining its effects even if the user's item is being ignored. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "User steals and eats the target's Berry.",
 		id: "pluck",
 		name: "Pluck",
@@ -11843,7 +11824,7 @@ let BattleMovedex = {
 				if (item.onEat) source.ateBerry = true;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 120,
@@ -11883,7 +11864,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'psn',
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -11924,7 +11905,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
 		status: 'psn',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -11991,7 +11972,7 @@ let BattleMovedex = {
 				move.heal = [1, 2];
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 175,
@@ -12002,14 +11983,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "pound",
 		name: "Pound",
 		pp: 35,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -12042,7 +12022,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMoveBoost: {spd: 2},
@@ -12074,7 +12054,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "powergem",
 		isViable: true,
@@ -12082,7 +12061,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 160,
@@ -12109,7 +12088,7 @@ let BattleMovedex = {
 			source.stats.spa = newspa;
 			this.add('-activate', source, 'move: Power Split', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -12132,7 +12111,9 @@ let BattleMovedex = {
 			let sourceBoosts = {};
 
 			for (const stat of ['atk', 'spa']) {
+				// @ts-ignore
 				targetBoosts[stat] = target.boosts[stat];
+				// @ts-ignore
 				sourceBoosts[stat] = source.boosts[stat];
 			}
 
@@ -12141,7 +12122,7 @@ let BattleMovedex = {
 
 			this.add('-swapboost', source, target, 'atk, spa', '[from] move: Power Swap');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -12152,7 +12133,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its Attack and Defense stats; stat stage changes remain on their respective stats. This move can be used again to swap the stats back. If the user uses Baton Pass, the replacement will have its Attack and Defense stats swapped if the effect is active. If the user has its stats recalculated by changing forme while its stats are swapped, this effect is ignored but is still active for the purposes of Baton Pass.",
+		desc: "The user swaps its Attack and Defense stats, and stat stage changes remain on their respective stats. This move can be used again to swap the stats back. If the user uses Baton Pass, the replacement will have its Attack and Defense stats swapped if the effect is active. If the user has its stats recalculated by changing forme while its stats are swapped, this effect is ignored but is still active for the purposes of Baton Pass.",
 		shortDesc: "Switches user's Attack and Defense stats.",
 		id: "powertrick",
 		name: "Power Trick",
@@ -12185,7 +12166,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('Power Trick');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveBoost: {atk: 1},
@@ -12206,7 +12187,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 160,
@@ -12243,7 +12224,6 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 120,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "powerwhip",
 		isViable: true,
@@ -12251,7 +12231,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 190,
@@ -12280,8 +12260,8 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 0,
 		category: "Physical",
-		desc: "Deals damage or heals the target. 40% chance for 40 power, 30% chance for 80 power, 10% chance for 120 power, and 20% chance to heal the target by 1/4 of its maximum HP, rounded down. This move must hit to be effective.",
-		shortDesc: "40, 80, 120 power, or heals target by 1/4 max HP.",
+		desc: "If this move is successful, it deals damage or heals the target. 40% chance for 40 power, 30% chance for 80 power, 10% chance for 120 power, and 20% chance to heal the target by 1/4 of its maximum HP, rounded down.",
+		shortDesc: "40, 80, 120 power, or heals target 1/4 max HP.",
 		id: "present",
 		name: "Present",
 		pp: 15,
@@ -12299,7 +12279,7 @@ let BattleMovedex = {
 				move.basePower = 120;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -12310,7 +12290,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 160,
 		category: "Special",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "prismaticlaser",
 		name: "Prismatic Laser",
@@ -12320,7 +12300,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 200,
@@ -12370,7 +12350,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -12411,11 +12391,12 @@ let BattleMovedex = {
 		flags: {authentic: 1, mystery: 1},
 		onHit: function (target, source) {
 			for (let i in target.boosts) {
+				// @ts-ignore
 				source.boosts[i] = target.boosts[i];
 			}
 			this.add('-copyboost', source, target, '[from] move: Psych Up');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -12466,7 +12447,7 @@ let BattleMovedex = {
 				pokemon.side.removeSideCondition('auroraveil');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 160,
@@ -12521,7 +12502,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Psychic Terrain');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Psychic",
 		zMoveBoost: {spa: 1},
@@ -12545,7 +12526,7 @@ let BattleMovedex = {
 				spa: -2,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 200,
@@ -12565,7 +12546,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 140,
@@ -12576,21 +12557,23 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "The user's major status condition is transferred to the target, and the user is then cured. Fails if the target already has a major status condition.",
+		desc: "The user's major status condition is transferred to the target, and the user is then cured. Fails if the user has no major status condition or if the target already has one.",
 		shortDesc: "Transfers the user's status ailment to the target.",
 		id: "psychoshift",
 		name: "Psycho Shift",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		onHit: function (target, pokemon) {
-			if (pokemon.status && !target.status && target.trySetStatus(pokemon.status)) {
-				pokemon.cureStatus();
-			} else {
-				return false;
-			}
+		onPrepareHit: function (target, source, move) {
+			if (!source.status) return false;
+			move.status = source.status;
 		},
-		secondary: false,
+		self: {
+			onHit: function (pokemon) {
+				pokemon.cureStatus();
+			},
+		},
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spa: 2},
@@ -12610,7 +12593,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 160,
@@ -12630,7 +12613,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 180,
@@ -12644,14 +12627,14 @@ let BattleMovedex = {
 			return (this.random(50, 151) * pokemon.level) / 100;
 		},
 		category: "Special",
-		desc: "Deals damage to the target equal to (user's level) * (X+50) / 100, where X is a random number from 0 to 100, rounded down, but not less than 1 HP.",
+		desc: "Deals damage to the target equal to (user's level) * (X + 50) / 100, where X is a random number from 0 to 100, rounded down, but not less than 1 HP.",
 		shortDesc: "Random damage equal to 0.5x-1.5x user's level.",
 		id: "psywave",
 		name: "Psywave",
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 100,
@@ -12662,7 +12645,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 210,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "pulverizingpancake",
 		name: "Pulverizing Pancake",
@@ -12670,7 +12652,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1},
 		isZ: "snorliumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		contestType: "Cool",
@@ -12692,7 +12674,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 160,
@@ -12714,7 +12696,7 @@ let BattleMovedex = {
 			if (!target.cureStatus()) return false;
 			this.heal(Math.ceil(source.maxhp * 0.5), source);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -12733,7 +12715,7 @@ let BattleMovedex = {
 			return move.basePower;
 		},
 		category: "Physical",
-		desc: "If an adjacent foe switches out this turn, this move hits that Pokemon before it leaves the field, even if it was not the original target. If the user moves after a foe using Parting Shot, U-turn, or Volt Switch, but not Baton Pass, it will hit that foe before it leaves the field. Power doubles and no accuracy check is done if the user hits a foe switching out, and the user's turn is over; if a foe faints from this, the replacement Pokemon does not become active until the end of the turn.",
+		desc: "If an opposing Pokemon switches out this turn, this move hits that Pokemon before it leaves the field, even if it was not the original target. If the user moves after an opponent using Parting Shot, U-turn, or Volt Switch, but not Baton Pass, it will hit that opponent before it leaves the field. Power doubles and no accuracy check is done if the user hits an opponent switching out, and the user's turn is over; if an opponent faints from this, the replacement Pokemon does not become active until the end of the turn.",
 		shortDesc: "Power doubles if a foe is switching out.",
 		id: "pursuit",
 		isViable: true,
@@ -12783,7 +12765,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 100,
@@ -12818,7 +12800,7 @@ let BattleMovedex = {
 				return false;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {spe: 1},
@@ -12837,7 +12819,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -12888,7 +12870,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Fighting",
 		zMoveBoost: {def: 1},
@@ -12912,7 +12894,7 @@ let BattleMovedex = {
 			spd: 1,
 			spe: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Bug",
 		zMoveEffect: 'clearnegativeboost',
@@ -12923,7 +12905,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 20,
 		category: "Physical",
-		desc: "Once this move is successfuly used, the user's Attack is raised by 1 stage every time it is hit by another Pokemon's attack as long as this move is chosen for use.",
+		desc: "Once this move is successfully used, the user's Attack is raised by 1 stage every time it is hit by another Pokemon's attack as long as this move is chosen for use.",
 		shortDesc: "Raises the user's Attack by 1 if hit during use.",
 		id: "rage",
 		name: "Rage",
@@ -12948,7 +12930,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('rage');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -12959,7 +12941,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the end of the turn, all single-target attacks from the foe's team are redirected to the user if they are in range. Such attacks are redirected to the user before they can be reflected by Magic Coat or the Ability Magic Bounce, or drawn in by the Abilities Lightning Rod or Storm Drain. Fails if it is not a Double or Triple Battle.",
+		desc: "Until the end of the turn, all single-target attacks from the opposing side are redirected to the user. Such attacks are redirected to the user before they can be reflected by Magic Coat or the Magic Bounce Ability, or drawn in by the Lightning Rod or Storm Drain Abilities. Fails if it is not a Double Battle or Battle Royal. This effect is ignored while the user is under the effect of Sky Drop.",
 		shortDesc: "The foes' moves target the user on the turn used.",
 		id: "ragepowder",
 		name: "Rage Powder",
@@ -12983,7 +12965,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Bug",
 		zMoveEffect: 'clearnegativeboost',
@@ -13002,7 +12984,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		weather: 'RainDance',
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Water",
 		zMoveBoost: {spe: 1},
@@ -13013,8 +12995,8 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 20,
 		category: "Physical",
-		desc: "If this move is successful and the user has not fainted, the effects of Leech Seed and partial-trapping moves end for the user, and all hazards are removed from the user's side of the field.",
-		shortDesc: "Frees user from hazards/partial trap/Leech Seed.",
+		desc: "If this move is successful and the user has not fainted, the effects of Leech Seed and binding moves end for the user, and all hazards are removed from the user's side of the field.",
+		shortDesc: "Frees user from hazards, binding, Leech Seed.",
 		id: "rapidspin",
 		isViable: true,
 		name: "Rapid Spin",
@@ -13037,7 +13019,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -13056,7 +13038,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Grass",
 		zMovePower: 100,
@@ -13117,7 +13099,7 @@ let BattleMovedex = {
 			return null;
 		},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMovePower: 160,
@@ -13137,7 +13119,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
 		heal: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -13148,7 +13130,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user regains the item it last used, if it is not holding an item. Fails if the user was not holding an item, if the item was a popped Air Balloon, if the item was picked up by a Pokemon with the Ability Pickup, or if the item was lost to Bug Bite, Covet, Incinerate, Knock Off, Pluck, or Thief. Items thrown with Fling can be regained.",
+		desc: "The user regains the item it last used. Fails if the user is holding an item, if the user has not held an item, if the item was a popped Air Balloon, if the item was picked up by a Pokemon with the Pickup Ability, or if the item was lost to Bug Bite, Covet, Incinerate, Knock Off, Pluck, or Thief. Items thrown with Fling can be regained.",
 		shortDesc: "Restores the item the user last used.",
 		id: "recycle",
 		name: "Recycle",
@@ -13161,7 +13143,7 @@ let BattleMovedex = {
 			pokemon.lastItem = '';
 			this.add('-item', pokemon, pokemon.getItem(), '[from] move: Recycle');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {spe: 2},
@@ -13172,7 +13154,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user and its party members take 0.5x damage from physical attacks, or 0.66x damage if in a Double Battle; does not reduce damage further with Aurora Veil. Critical hits ignore this protection. It is removed from the user's side if the user or an ally is successfully hit by Brick Break, Psychic Fangs, or Defog. Brick Break and Psychic Fangs remove the effect before damage is calculated. Lasts for 8 turns if the user is holding Light Clay.",
+		desc: "For 5 turns, the user and its party members take 0.5x damage from physical attacks, or 0.66x damage if in a Double Battle. Damage is not reduced further with Aurora Veil. Critical hits ignore this effect. It is removed from the user's side if the user or an ally is successfully hit by Brick Break, Psychic Fangs, or Defog. Lasts for 8 turns if the user is holding Light Clay. Fails if the effect is already active on the user's side.",
 		shortDesc: "For 5 turns, physical damage to allies is halved.",
 		id: "reflect",
 		isViable: true,
@@ -13206,7 +13188,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'Reflect');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Psychic",
 		zMoveBoost: {def: 1},
@@ -13235,11 +13217,11 @@ let BattleMovedex = {
 					return false;
 				}
 			}
-			source.types = newBaseTypes;
+			source.setType(newBaseTypes);
 			source.addedType = target.addedType;
 			source.knownType = target.side === source.side && target.knownType;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spa: 1},
@@ -13250,7 +13232,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user cures its burn, poison, or paralysis.",
+		desc: "The user cures its burn, poison, or paralysis. Fails if the user is not burned, poisoned, or paralyzed.",
 		shortDesc: "User cures its burn, poison, or paralysis.",
 		id: "refresh",
 		isViable: true,
@@ -13262,7 +13244,7 @@ let BattleMovedex = {
 			if (['', 'slp', 'frz'].includes(pokemon.status)) return false;
 			pokemon.cureStatus();
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -13273,7 +13255,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 75,
 		category: "Special",
-		desc: "Has a 10% chance to cause the target to fall asleep. If this move is successful on at least one target and the user is a Meloetta, it changes to Pirouette Forme if it is currently in Aria Forme, or changes to Aria Forme if it is currently in Pirouette Forme. This forme change does not happen if the Meloetta has the Ability Sheer Force. The Pirouette Forme reverts to Aria Forme when Meloetta is not active.",
+		desc: "Has a 10% chance to cause the target to fall asleep. If this move is successful on at least one target and the user is a Meloetta, it changes to Pirouette Forme if it is currently in Aria Forme, or changes to Aria Forme if it is currently in Pirouette Forme. This forme change does not happen if the Meloetta has the Sheer Force Ability. The Pirouette Forme reverts to Aria Forme when Meloetta is not active.",
 		shortDesc: "10% chance to sleep foe(s). Meloetta transforms.",
 		id: "relicsong",
 		isViable: true,
@@ -13292,9 +13274,7 @@ let BattleMovedex = {
 		},
 		onAfterMoveSecondarySelf: function (pokemon, target, move) {
 			if (move.willChangeForme) {
-				if (pokemon.formeChange(pokemon.template.speciesid === 'meloettapirouette' ? 'Meloetta' : 'Meloetta-Pirouette')) {
-					this.add('-formechange', pokemon, pokemon.illusion ? pokemon.illusion.template.species : pokemon.template.species, '[msg]');
-				}
+				pokemon.formeChange(pokemon.template.speciesid === 'meloettapirouette' ? 'Meloetta' : 'Meloetta-Pirouette', this.effect, false, '[msg]');
 			}
 		},
 		target: "allAdjacentFoes",
@@ -13315,15 +13295,19 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
+		onTryMove: function (pokemon) {
+			if (pokemon.hp < pokemon.maxhp && pokemon.status !== 'slp' && !pokemon.hasAbility('comatose')) return;
+			this.add('-fail', pokemon);
+			return null;
+		},
 		onHit: function (target) {
-			if (target.hp >= target.maxhp) return false;
 			if (!target.setStatus('slp')) return false;
 			target.statusData.time = 3;
 			target.statusData.startTime = 3;
 			this.heal(target.maxhp); //Aeshetic only as the healing happens after you fall asleep in-game
 			this.add('-status', target, 'slp', '[from] move: Rest');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'clearnegativeboost',
@@ -13348,7 +13332,7 @@ let BattleMovedex = {
 				return this.chainModify(2);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -13370,7 +13354,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -13381,7 +13365,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Special",
-		desc: "This move's type depends on the user's primary type.",
+		desc: "This move's type depends on the user's primary type. If the user's primary type is typeless, this move's type is the user's secondary type if it has one, otherwise the added type from Forest's Curse or Trick-or-Treat. This move is typeless if the user's type is typeless alone.",
 		shortDesc: "Type varies based on the user's primary type.",
 		id: "revelationdance",
 		isViable: true,
@@ -13394,7 +13378,7 @@ let BattleMovedex = {
 			if (type === "Bird") type = "???";
 			move.type = type;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 175,
@@ -13419,7 +13403,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: -4,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 120,
@@ -13449,14 +13433,14 @@ let BattleMovedex = {
 			return 20;
 		},
 		category: "Physical",
-		desc: "Deals damage to the target based on the amount of HP the user has left. X is equal to (user's current HP * 48 / user's maximum HP), rounded down; the base power of this attack is 20 if X is 33 to 48, 40 if X is 17 to 32, 80 if X is 10 to 16, 100 if X is 5 to 9, 150 if X is 2 to 4, and 200 if X is 0 or 1.",
+		desc: "The power of this move is 20 if X is 33 to 48, 40 if X is 17 to 32, 80 if X is 10 to 16, 100 if X is 5 to 9, 150 if X is 2 to 4, and 200 if X is 0 or 1, where X is equal to (user's current HP * 48 / user's maximum HP), rounded down.",
 		shortDesc: "More power the less HP the user has left.",
 		id: "reversal",
 		name: "Reversal",
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 160,
@@ -13467,7 +13451,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The target is forced to switch out and be replaced with a random unfainted ally. Fails if the target used Ingrain previously or has the Ability Suction Cups.",
+		desc: "The target is forced to switch out and be replaced with a random unfainted ally. Fails if the target is the last unfainted Pokemon in its party, or if the target used Ingrain previously or has the Suction Cups Ability.",
 		shortDesc: "Forces the target to switch to a random ally.",
 		id: "roar",
 		isViable: true,
@@ -13476,7 +13460,7 @@ let BattleMovedex = {
 		priority: -6,
 		flags: {reflectable: 1, mirror: 1, sound: 1, authentic: 1, mystery: 1},
 		forceSwitch: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -13487,7 +13471,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Special",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "roaroftime",
 		name: "Roar of Time",
@@ -13497,7 +13481,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 200,
@@ -13508,7 +13492,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "rockblast",
 		isViable: true,
@@ -13517,7 +13501,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 140,
@@ -13560,7 +13544,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Rock",
 		zMoveEffect: 'clearnegativeboost',
@@ -13616,14 +13600,13 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 50,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "rockthrow",
 		name: "Rock Throw",
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 100,
@@ -13657,7 +13640,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 150,
 		category: "Physical",
-		desc: "If this move is successful, the user must recharge on the following turn and cannot make a move.",
+		desc: "If this move is successful, the user must recharge on the following turn and cannot select a move.",
 		shortDesc: "User cannot move next turn.",
 		id: "rockwrecker",
 		name: "Rock Wrecker",
@@ -13667,7 +13650,7 @@ let BattleMovedex = {
 		self: {
 			volatileStatus: 'mustrecharge',
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 200,
@@ -13678,7 +13661,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user's Ability changes to match the target's Ability. Fails if the user's Ability is Multitype, Stance Change, or already matches the target, or if the target's Ability is Flower Gift, Forecast, Illusion, Imposter, Multitype, Stance Change, Trace, Wonder Guard, or Zen Mode.",
+		desc: "The user's Ability changes to match the target's Ability. Fails if the user's Ability is Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, Stance Change, or already matches the target, or if the target's Ability is Battle Bond, Comatose, Disguise, Flower Gift, Forecast, Illusion, Imposter, Multitype, Power Construct, Power of Alchemy, Receiver, RKS System, Schooling, Shields Down, Stance Change, Trace, Wonder Guard, or Zen Mode.",
 		shortDesc: "User replaces its Ability with the target's.",
 		id: "roleplay",
 		name: "Role Play",
@@ -13700,7 +13683,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -13744,7 +13727,7 @@ let BattleMovedex = {
 			return bp;
 		},
 		category: "Physical",
-		desc: "If this move is successful, the user is locked into this move and cannot make another move until it misses, 5 turns have passed, or the attack cannot be used. Power doubles with each successful hit of this move and doubles again if Defense Curl was used previously by the user. If this move is called by Sleep Talk, the move is used for one turn.",
+		desc: "If this move is successful, the user is locked into this move and cannot make another move until it misses, 5 turns have passed, or the attack cannot be used. Power doubles with each successful hit of this move and doubles again if Defense Curl was used previously by the user. If this move is called by Sleep Talk, the move is used for one turn. If this move hits an active Disguise during the effect, the power multiplier is paused but the turn counter is not, potentially allowing the multiplier to be used on the user's next move after this effect ends.",
 		shortDesc: "Power doubles with each hit. Repeats for 5 turns.",
 		id: "rollout",
 		name: "Rollout",
@@ -13770,7 +13753,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 100,
@@ -13796,9 +13779,13 @@ let BattleMovedex = {
 		effect: {
 			duration: 1,
 			onResidualOrder: 20,
-			// implemented in BattlePokemon#getTypes
+			onTypePriority: -1,
+			onType: function (types, pokemon) {
+				this.effectData.typeWas = types;
+				return types.filter(type => type !== 'Flying');
+			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Flying",
 		zMoveEffect: 'clearnegativeboost',
@@ -13810,7 +13797,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Raises the Attack and Special Attack of all grounded Grass-type Pokemon on the field by 1 stage.",
-		shortDesc: "Raises Atk, Sp. Atk of grounded Grass types by 1.",
+		shortDesc: "Raises Atk/Sp. Atk of grounded Grass types by 1.",
 		id: "rototiller",
 		name: "Rototiller",
 		pp: 10,
@@ -13838,7 +13825,7 @@ let BattleMovedex = {
 				this.boost({atk: 1, spa: 1}, pokemon, source);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Ground",
 		zMoveBoost: {atk: 1},
@@ -13874,7 +13861,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 120,
@@ -13917,7 +13904,7 @@ let BattleMovedex = {
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ignoreEvasion: true,
 		ignoreDefensive: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 175,
@@ -13928,7 +13915,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the user and its party members cannot have major status conditions or confusion inflicted on them by other Pokemon. It is removed from the user's side if the user or an ally is successfully hit by Defog.",
+		desc: "For 5 turns, the user and its party members cannot have major status conditions or confusion inflicted on them by other Pokemon. It is removed from the user's side if the user or an ally is successfully hit by Defog. Fails if the effect is already active on the user's side.",
 		shortDesc: "For 5 turns, protects user's party from status.",
 		id: "safeguard",
 		name: "Safeguard",
@@ -13940,6 +13927,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (target, source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -13968,7 +13956,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'Safeguard');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -13989,7 +13977,7 @@ let BattleMovedex = {
 		boosts: {
 			accuracy: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMoveBoost: {evasion: 1},
@@ -14000,7 +13988,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 35,
 		category: "Physical",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "sandtomb",
 		name: "Sand Tomb",
@@ -14008,7 +13996,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 100,
@@ -14019,7 +14007,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, the weather becomes Sandstorm. At the end of each turn except the last, all active Pokemon lose 1/16 of their maximum HP, rounded down, unless they are a Ground, Rock, or Steel type, or have the Abilities Magic Guard, Overcoat, Sand Force, Sand Rush, or Sand Veil. The Special Defense of Rock-type Pokemon is multiplied by 1.5 when taking damage from a special attack during the effect. Lasts for 8 turns if the user is holding Smooth Rock. Fails if the current weather is Sandstorm.",
+		desc: "For 5 turns, the weather becomes Sandstorm. At the end of each turn except the last, all active Pokemon lose 1/16 of their maximum HP, rounded down, unless they are a Ground, Rock, or Steel type, or have the Magic Guard, Overcoat, Sand Force, Sand Rush, or Sand Veil Abilities. During the effect, the Special Defense of Rock-type Pokemon is multiplied by 1.5 when taking damage from a special attack. Lasts for 8 turns if the user is holding Smooth Rock. Fails if the current weather is Sandstorm.",
 		shortDesc: "For 5 turns, a sandstorm rages.",
 		id: "sandstorm",
 		name: "Sandstorm",
@@ -14027,7 +14015,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		weather: 'Sandstorm',
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Rock",
 		zMoveBoost: {spe: 1},
@@ -14045,7 +14033,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "buginiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		contestType: "Cool",
@@ -14088,7 +14076,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -14099,14 +14087,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "scratch",
 		name: "Scratch",
 		pp: 35,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -14127,7 +14114,7 @@ let BattleMovedex = {
 		boosts: {
 			def: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -14169,7 +14156,7 @@ let BattleMovedex = {
 		flags: {contact: 1},
 		isZ: "solganiumz",
 		ignoreAbility: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		contestType: "Cool",
@@ -14238,7 +14225,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 160,
@@ -14249,7 +14236,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "seedbomb",
 		isViable: true,
@@ -14257,7 +14243,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {bullet: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 160,
@@ -14301,7 +14287,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -14312,7 +14298,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 200,
 		category: "Physical",
-		desc: "The user faints after using this move, even if this move fails for having no target. This move is prevented from executing if any active Pokemon has the Ability Damp.",
+		desc: "The user faints after using this move, even if this move fails for having no target. This move is prevented from executing if any active Pokemon has the Damp Ability.",
 		shortDesc: "Hits adjacent Pokemon. The user faints.",
 		id: "selfdestruct",
 		name: "Self-Destruct",
@@ -14320,7 +14306,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		selfdestruct: "always",
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Normal",
 		zMovePower: 200,
@@ -14388,7 +14374,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 140,
@@ -14399,7 +14385,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 120,
 		category: "Physical",
-		desc: "If this move is successful, it breaks through the target's Baneful Bunker, Detect, King's Shield, Protect, or Spiky Shield for this turn, allowing other Pokemon to attack the target normally. If the target's side is protected by Crafty Shield, Mat Block, Quick Guard, or Wide Guard, that protection is also broken for this turn and other Pokemon may attack the target's side normally. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks. If the user is holding a Power Herb, the move completes in one turn. Damage doubles and no accuracy check is done if the target has used Minimize while active.",
+		desc: "If this move is successful, it breaks through the target's Baneful Bunker, Detect, King's Shield, Protect, or Spiky Shield for this turn, allowing other Pokemon to attack the target normally. If the target's side is protected by Crafty Shield, Mat Block, Quick Guard, or Wide Guard, that protection is also broken for this turn and other Pokemon may attack the target's side normally. This attack charges on the first turn and executes on the second. On the first turn, the user avoids all attacks. If the user is holding a Power Herb, the move completes in one turn.",
 		shortDesc: "Disappears turn 1. Hits turn 2. Breaks protection.",
 		id: "shadowforce",
 		isViable: true,
@@ -14433,7 +14419,7 @@ let BattleMovedex = {
 				return false;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 190,
@@ -14444,7 +14430,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Physical",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "shadowpunch",
 		isViable: true,
@@ -14452,7 +14437,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 120,
@@ -14471,7 +14456,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 100,
@@ -14492,7 +14477,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -14511,7 +14496,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "psychiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		contestType: "Cool",
@@ -14521,14 +14506,14 @@ let BattleMovedex = {
 		accuracy: 30,
 		basePower: 0,
 		category: "Special",
-		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + X)%, where X is 30 if the user is an Ice type and 20 otherwise, and fails if the target is at a higher level. Ice-type Pokemon and Pokemon with the Ability Sturdy are immune.",
+		desc: "Deals damage to the target equal to the target's maximum HP. Ignores accuracy and evasiveness modifiers. This attack's accuracy is equal to (user's level - target's level + X)%, where X is 30 if the user is an Ice type and 20 otherwise, and fails if the target is at a higher level. Ice-type Pokemon and Pokemon with the Sturdy Ability are immune.",
 		shortDesc: "OHKOs non-Ice targets. Fails if user's lower level.",
 		id: "sheercold",
 		name: "Sheer Cold",
 		pp: 5,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		ohko: 'Ice',
 		target: "normal",
 		type: "Ice",
@@ -14555,7 +14540,7 @@ let BattleMovedex = {
 			spa: 2,
 			spe: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -14566,7 +14551,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 150,
 		category: "Special",
-		desc: "Fails unless the user is hit by a physical attack from an opponent this turn before it can execute the move.",
+		desc: "Fails unless the user is hit by a physical attack from an opponent this turn before it can execute the move. If the user was hit and has not fainted, it attacks immediately after being hit, and the effect ends. If the opponent's physical attack had a secondary effect removed by the Sheer Force Ability, it does not count for the purposes of this effect.",
 		shortDesc: "User must take physical damage before moving.",
 		id: "shelltrap",
 		name: "Shell Trap",
@@ -14593,7 +14578,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Fire",
 		zMovePower: 200,
@@ -14616,7 +14601,7 @@ let BattleMovedex = {
 			spe: 2,
 			atk: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Steel",
 		zMoveEffect: 'clearnegativeboost',
@@ -14627,14 +14612,13 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 60,
 		category: "Special",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "shockwave",
 		name: "Shock Wave",
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 120,
@@ -14660,7 +14644,7 @@ let BattleMovedex = {
 				return this.heal(this.modify(pokemon.maxhp, 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Ground",
 		zMoveEffect: 'clearnegativeboost',
@@ -14722,7 +14706,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target's Ability to become Simple. Fails if the target's Ability is Multitype, Simple, Stance Change, or Truant.",
+		desc: "Causes the target's Ability to become Simple. Fails if the target's Ability is Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, Simple, Stance Change, or Truant.",
 		shortDesc: "The target's Ability becomes Simple.",
 		id: "simplebeam",
 		name: "Simple Beam",
@@ -14743,7 +14727,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spa: 1},
@@ -14754,15 +14738,14 @@ let BattleMovedex = {
 		accuracy: 55,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "sing",
 		name: "Sing",
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1, sound: 1, authentic: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -14773,7 +14756,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 180,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "sinisterarrowraid",
 		name: "Sinister Arrow Raid",
@@ -14781,7 +14763,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "decidiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		contestType: "Cool",
@@ -14818,7 +14800,7 @@ let BattleMovedex = {
 			source.baseMoveSlots[sketchIndex] = sketchedMove;
 			this.add('-activate', source, 'move: Sketch', move.name);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -14829,7 +14811,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its Ability with the target's Ability. Fails if either the user or the target's Ability is Illusion, Multitype, Stance Change, or Wonder Guard, but does not fail if both have the same Ability.",
+		desc: "The user swaps its Ability with the target's Ability. Fails if either the user or the target's Ability is Battle Bond, Comatose, Disguise, Illusion, Multitype, Power Construct, RKS System, Schooling, Shields Down, Stance Change, or Wonder Guard.",
 		shortDesc: "The user and the target trade Abilities.",
 		id: "skillswap",
 		name: "Skill Swap",
@@ -14861,7 +14843,7 @@ let BattleMovedex = {
 			this.singleEvent('Start', targetAbility, source.abilityData, source);
 			this.singleEvent('Start', sourceAbility, target.abilityData, target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -14893,7 +14875,7 @@ let BattleMovedex = {
 			attacker.addVolatile('twoturnmove', defender);
 			return null;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 195,
@@ -14938,7 +14920,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "This attack takes the target into the air with the user on the first turn and executes on the second. Pokemon weighing 200 kg or more cannot be lifted. On the first turn, the user and the target avoid all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister. The user and the target cannot make a move between turns, but the target can select a move to use. This move cannot damage Flying-type Pokemon. Fails on the first turn if the target is an ally or if the target has a substitute.",
+		desc: "This attack takes the target into the air with the user on the first turn and executes on the second. Pokemon weighing 200 kg or more cannot be lifted. On the first turn, the user and the target avoid all attacks other than Gust, Hurricane, Sky Uppercut, Smack Down, Thousand Arrows, Thunder, and Twister. The user and the target cannot make a move between turns, but the target can select a move to use. This move cannot damage Flying-type Pokemon. Fails on the first turn if the target is an ally, if the target has a substitute, or if the target is using Bounce, Dig, Dive, Fly, Phantom Force, Shadow Force, or Sky Drop.",
 		shortDesc: "User and foe fly up turn 1. Damages on turn 2.",
 		id: "skydrop",
 		name: "Sky Drop",
@@ -14948,7 +14930,6 @@ let BattleMovedex = {
 		onModifyMove: function (move, source) {
 			if (!source.volatiles['skydrop']) {
 				move.accuracy = true;
-				// @ts-ignore
 				move.flags.contact = 0;
 			}
 		},
@@ -15046,7 +15027,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 120,
@@ -15057,14 +15038,14 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 85,
 		category: "Physical",
-		desc: "This move can hit a target using Bounce, Fly, or Sky Drop.",
+		desc: "This move can hit a target using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop.",
 		shortDesc: "Can hit Pokemon using Bounce, Fly, or Sky Drop.",
 		id: "skyuppercut",
 		name: "Sky Uppercut",
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 160,
@@ -15084,7 +15065,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
 		heal: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -15095,14 +15076,13 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "slam",
 		name: "Slam",
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -15121,7 +15101,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -15132,8 +15112,7 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "sleeppowder",
 		isViable: true,
 		name: "Sleep Powder",
@@ -15141,7 +15120,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {spe: 1},
@@ -15152,7 +15131,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "One of the user's known moves, besides this move, is selected for use at random. Fails if the user is not asleep. The selected move does not have PP deducted from it, and can currently have 0 PP. This move cannot select Assist, Belch, Bide, Chatter, Copycat, Focus Punch, Hold Hands, Me First, Metronome, Mimic, Mirror Move, Nature Power, Sketch, Sleep Talk, Struggle, Uproar, or any two-turn move.",
+		desc: "One of the user's known moves, besides this move, is selected for use at random. Fails if the user is not asleep. The selected move does not have PP deducted from it, and can currently have 0 PP. This move cannot select Assist, Beak Blast, Belch, Bide, Chatter, Copycat, Focus Punch, Hold Hands, Me First, Metronome, Mimic, Mirror Move, Nature Power, Shell Trap, Sketch, Sleep Talk, Struggle, Uproar, any two-turn move, or any Z-Move.",
 		shortDesc: "User must be asleep. Uses another known move.",
 		id: "sleeptalk",
 		isViable: true,
@@ -15182,7 +15161,7 @@ let BattleMovedex = {
 			}
 			this.useMove(randomMove, pokemon);
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'crit2',
@@ -15258,7 +15237,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 50,
 		category: "Physical",
-		desc: "This move can hit a target using Bounce, Fly, or Sky Drop. If this move hits a target under the effect of Bounce, Fly, Magnet Rise, or Telekinesis, the effect ends. If the target is a Flying type that has not used Roost this turn or a Pokemon with the Ability Levitate, it loses its immunity to Ground-type attacks and the Ability Arena Trap as long as it remains active. During the effect, Magnet Rise fails for the target and Telekinesis fails against the target.",
+		desc: "This move can hit a target using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop. If this move hits a target under the effect of Bounce, Fly, Magnet Rise, or Telekinesis, the effect ends. If the target is a Flying type that has not used Roost this turn or a Pokemon with the Levitate Ability, it loses its immunity to Ground-type attacks and the Arena Trap Ability as long as it remains active. During the effect, Magnet Rise fails for the target and Telekinesis fails against the target.",
 		shortDesc: "Removes the target's Ground immunity.",
 		id: "smackdown",
 		name: "Smack Down",
@@ -15296,7 +15275,7 @@ let BattleMovedex = {
 			},
 			// groundedness implemented in battle.engine.js:BattlePokemon#isGrounded
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 100,
@@ -15307,14 +15286,13 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 70,
 		category: "Physical",
-		desc: "This move does not check accuracy.",
 		shortDesc: "This move does not check accuracy.",
 		id: "smartstrike",
 		name: "Smart Strike",
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 140,
@@ -15339,7 +15317,7 @@ let BattleMovedex = {
 		onHit: function (target) {
 			if (target.status === 'par') target.cureStatus();
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -15381,7 +15359,7 @@ let BattleMovedex = {
 		boosts: {
 			accuracy: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {evasion: 1},
@@ -15415,7 +15393,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "If another Pokemon uses one of the following moves this turn, the user steals that move to use itself. If multiple Pokemon use this move in the same turn, the applicable moves will be stolen in turn order; a move cannot be stolen multiple times. Aqua Ring, Aromatherapy, Autotomize, Belly Drum, Camouflage, Charge, Conversion, Cosmic Power, Cotton Guard, Heal Bell, Healing Wish, Imprison, Ingrain, Light Screen, Lucky Chant, Lunar Dance, Magnet Rise, Mist, Power Trick, Quick Guard, Recycle, Reflect, Refresh, Safeguard, Stockpile, Substitute, Swallow, Tailwind, Wide Guard, Wish, and any move that has a primary effect of raising the user's stats or healing the user.",
+		desc: "If another Pokemon uses certain non-damaging moves this turn, the user steals that move to use itself. If multiple Pokemon use one of those moves this turn, the applicable moves are all stolen by the first Pokemon in turn order that used this move this turn. This effect is ignored while the user is under the effect of Sky Drop.",
 		shortDesc: "User steals certain support moves to use itself.",
 		id: "snatch",
 		name: "Snatch",
@@ -15439,7 +15417,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		pressureTarget: "foeSide",
 		target: "self",
 		type: "Dark",
@@ -15476,7 +15454,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Physical",
-		desc: "The target's raised stat stages are stolen from it and applied to the user before dealing damage.",
+		desc: "The target's stat stages greater than 0 are stolen from it and applied to the user before dealing damage.",
 		shortDesc: "Steals target's boosts before dealing damage.",
 		id: "spectralthief",
 		isViable: true,
@@ -15486,7 +15464,7 @@ let BattleMovedex = {
 		flags: {contact: 1, protect: 1, mirror: 1, authentic: 1},
 		stealsBoosts: true,
 		// Boost stealing implemented in scripts.js
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMovePower: 175,
@@ -15497,7 +15475,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its raw Speed stat with the target.",
+		desc: "The user swaps its Speed stat with the target. Stat stage changes are unaffected.",
 		shortDesc: "Swaps Speed stat with target.",
 		id: "speedswap",
 		name: "Speed Swap",
@@ -15510,7 +15488,7 @@ let BattleMovedex = {
 			source.stats.spe = targetSpe;
 			this.add('-activate', source, 'move: Speed Swap', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 1},
@@ -15562,8 +15540,13 @@ let BattleMovedex = {
 				}
 				return null;
 			},
+			onHit: function (target, source, move) {
+				if (move.zPowered && move.flags['contact']) {
+					this.damage(source.maxhp / 8, source, target);
+				}
+			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Grass",
 		zMoveBoost: {def: 1},
@@ -15598,7 +15581,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to become a Water type. Fails if the target is an Arceus.",
+		desc: "Causes the target to become a Water type. Fails if the target is an Arceus or a Silvally.",
 		shortDesc: "Changes the target's type to Water.",
 		id: "soak",
 		name: "Soak",
@@ -15609,7 +15592,7 @@ let BattleMovedex = {
 			if (!target.setType('Water')) return false;
 			this.add('-start', target, 'typechange', 'Water');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMoveBoost: {spa: 1},
@@ -15629,7 +15612,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {snatch: 1, heal: 1},
 		heal: [1, 2],
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -15640,7 +15623,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 120,
 		category: "Special",
-		desc: "This attack charges on the first turn and executes on the second. Power is halved if the weather is Hail, Rain Dance, or Sandstorm. If the user is holding a Power Herb or the weather is Sunny Day, the move completes in one turn.",
+		desc: "This attack charges on the first turn and executes on the second. Power is halved if the weather is Hail, Primordial Sea, Rain Dance, or Sandstorm. If the user is holding a Power Herb or the weather is Desolate Land or Sunny Day, the move completes in one turn.",
 		shortDesc: "Charges turn 1. Hits turn 2. No charge in sunlight.",
 		id: "solarbeam",
 		name: "Solar Beam",
@@ -15666,7 +15649,7 @@ let BattleMovedex = {
 				return this.chainModify(0.5);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 190,
@@ -15677,7 +15660,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 125,
 		category: "Physical",
-		desc: "This attack charges on the first turn and executes on the second. Power is halved if the weather is Hail, Rain Dance, or Sandstorm. If the user is holding a Power Herb or the weather is Sunny Day, the move completes in one turn.",
+		desc: "This attack charges on the first turn and executes on the second. Power is halved if the weather is Hail, Primordial Sea, Rain Dance, or Sandstorm. If the user is holding a Power Herb or the weather is Desolate Land or Sunny Day, the move completes in one turn.",
 		shortDesc: "Charges turn 1. Hits turn 2. No charge in sunlight.",
 		id: "solarblade",
 		name: "Solar Blade",
@@ -15703,7 +15686,7 @@ let BattleMovedex = {
 				return this.chainModify(0.5);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 190,
@@ -15722,7 +15705,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -15733,7 +15716,6 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 195,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "soulstealing7starstrike",
 		name: "Soul-Stealing 7-Star Strike",
@@ -15741,7 +15723,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1},
 		isZ: "marshadiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		contestType: "Cool",
@@ -15760,7 +15742,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		zMovePower: 180,
@@ -15817,7 +15799,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Prevents the target from switching out. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. If the target leaves the field using Baton Pass, the replacement will remain trapped. The effect ends if the user leaves the field.",
-		shortDesc: "The target cannot switch out.",
+		shortDesc: "Prevents the target from switching out.",
 		id: "spiderweb",
 		name: "Spider Web",
 		pp: 10,
@@ -15826,7 +15808,7 @@ let BattleMovedex = {
 		onHit: function (target, source, move) {
 			return target.addVolatile('trapped', source, move, 'trapper');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMoveBoost: {def: 1},
@@ -15837,7 +15819,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 20,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "spikecannon",
 		name: "Spike Cannon",
@@ -15845,7 +15827,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -15856,7 +15838,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Sets up a hazard on the foe's side of the field, damaging each foe that switches in, unless it is a Flying-type Pokemon or has the Ability Levitate. Can be used up to three times before failing. Foes lose 1/8 of their maximum HP with one layer, 1/6 of their maximum HP with two layers, and 1/4 of their maximum HP with three layers, all rounded down. Can be removed from the foe's side if any foe uses Rapid Spin or Defog, or is hit by Defog.",
+		desc: "Sets up a hazard on the opposing side of the field, damaging each opposing Pokemon that switches in, unless it is a Flying-type Pokemon or has the Levitate Ability. Can be used up to three times before failing. Opponents lose 1/8 of their maximum HP with one layer, 1/6 of their maximum HP with two layers, and 1/4 of their maximum HP with three layers, all rounded down. Can be removed from the opposing side if any opposing Pokemon uses Rapid Spin or Defog successfully, or is hit by Defog.",
 		shortDesc: "Hurts grounded foes on switch-in. Max 3 layers.",
 		id: "spikes",
 		isViable: true,
@@ -15882,7 +15864,7 @@ let BattleMovedex = {
 				this.damage(damageAmounts[this.effectData.layers] * pokemon.maxhp / 24);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "foeSide",
 		type: "Ground",
 		zMoveBoost: {def: 1},
@@ -15912,7 +15894,7 @@ let BattleMovedex = {
 		onAfterMove: function (pokemon) {
 			pokemon.removeVolatile('stockpile');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -15931,7 +15913,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1, authentic: 1},
 		onHit: function (target) {
-			if (target.lastMove) {
+			if (target.lastMove && !target.lastMove.isZ) {
 				let ppDeducted = target.deductPP(target.lastMove.id, 4);
 				if (ppDeducted) {
 					this.add("-activate", target, 'move: Spite', this.getMove(target.lastMove.id).name, ppDeducted);
@@ -15940,7 +15922,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMoveEffect: 'heal',
@@ -15951,8 +15933,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Nothing happens...",
-		shortDesc: "Does nothing (but we still love it).",
+		shortDesc: "No competitive use.",
 		id: "splash",
 		name: "Splash",
 		pp: 40,
@@ -15961,7 +15942,7 @@ let BattleMovedex = {
 		onTryHit: function (target, source) {
 			this.add('-nothing');
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 3},
@@ -15983,7 +15964,7 @@ let BattleMovedex = {
 			this.clearTerrain();
 		},
 		isZ: "lycaniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		contestType: "Cool",
@@ -15993,8 +15974,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep.",
-		shortDesc: "Puts the target to sleep.",
+		shortDesc: "Causes the target to fall asleep.",
 		id: "spore",
 		isViable: true,
 		name: "Spore",
@@ -16002,7 +15982,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
 		status: 'slp',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveEffect: 'clearnegativeboost',
@@ -16013,7 +15993,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Until the end of the turn, all single-target attacks from opponents of the target are redirected to the target. Such attacks are redirected to the target before they can be reflected by Magic Coat or the Ability Magic Bounce, or drawn in by the Abilities Lightning Rod or Storm Drain. Fails if it is not a Double Battle or Battle Royale.",
+		desc: "Until the end of the turn, all single-target attacks from opponents of the target are redirected to the target. Such attacks are redirected to the target before they can be reflected by Magic Coat or the Magic Bounce Ability, or drawn in by the Lightning Rod or Storm Drain Abilities. Fails if it is not a Double Battle or Battle Royal.",
 		shortDesc: "Target's foes' moves are redirected to it this turn.",
 		id: "spotlight",
 		name: "Spotlight",
@@ -16037,7 +16017,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -16048,7 +16028,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Sets up a hazard on the foe's side of the field, damaging each foe that switches in. Can be used only once before failing. Foes lose 1/32, 1/16, 1/8, 1/4, or 1/2 of their maximum HP, rounded down, based on their weakness to the Rock type; 0.25x, 0.5x, neutral, 2x, or 4x, respectively. Can be removed from the foe's side if any foe uses Rapid Spin or Defog, or is hit by Defog.",
+		desc: "Sets up a hazard on the opposing side of the field, damaging each opposing Pokemon that switches in. Fails if the effect is already active on the opposing side. Foes lose 1/32, 1/16, 1/8, 1/4, or 1/2 of their maximum HP, rounded down, based on their weakness to the Rock type; 0.25x, 0.5x, neutral, 2x, or 4x, respectively. Can be removed from the opposing side if any opposing Pokemon uses Rapid Spin or Defog successfully, or is hit by Defog.",
 		shortDesc: "Hurts foes on switch-in. Factors Rock weakness.",
 		id: "stealthrock",
 		isViable: true,
@@ -16067,7 +16047,7 @@ let BattleMovedex = {
 				this.damage(pokemon.maxhp * Math.pow(2, typeMod) / 8);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "foeSide",
 		type: "Rock",
 		zMoveBoost: {def: 1},
@@ -16126,7 +16106,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Sets up a hazard on the foe's side of the field, lowering the Speed by 1 stage of each foe that switches in, unless it is a Flying-type Pokemon or has the Ability Levitate. Can be used only once before failing. Can be removed from the foe's side if any foe uses Rapid Spin or Defog, or is hit by Defog.",
+		desc: "Sets up a hazard on the opposing side of the field, lowering the Speed by 1 stage of each opposing Pokemon that switches in, unless it is a Flying-type Pokemon or has the Levitate Ability. Fails if the effect is already active on the opposing side. Can be removed from the opposing side if any opposing Pokemon uses Rapid Spin or Defog successfully, or is hit by Defog.",
 		shortDesc: "Lowers Speed of grounded foes by 1 on switch-in.",
 		id: "stickyweb",
 		isViable: true,
@@ -16145,7 +16125,7 @@ let BattleMovedex = {
 				this.boost({spe: -1}, pokemon, pokemon.side.foe.active[0], this.getMove('stickyweb'));
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "foeSide",
 		type: "Bug",
 		zMoveBoost: {spe: 1},
@@ -16156,7 +16136,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Raises the user's Defense and Special Defense by 1 stage. The user's Stockpile count increases by 1. Fails if the user's Stockpile count is 3.",
+		desc: "Raises the user's Defense and Special Defense by 1 stage. The user's Stockpile count increases by 1. Fails if the user's Stockpile count is 3. The user's Stockpile count is reset to 0 when it is no longer active.",
 		shortDesc: "Raises user's Defense, Sp. Def by 1. Max 3 uses.",
 		id: "stockpile",
 		name: "Stockpile",
@@ -16187,7 +16167,7 @@ let BattleMovedex = {
 				this.add('-end', target, 'Stockpile');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -16239,21 +16219,19 @@ let BattleMovedex = {
 		num: 707,
 		accuracy: 100,
 		basePower: 75,
+		basePowerCallback: function (pokemon, target, move) {
+			if (pokemon.moveLastTurnResult === false) return move.basePower * 2;
+			return move.basePower;
+		},
 		category: "Physical",
-		desc: "Power doubles if the user's last move on the previous turn, including moves called by other moves or those used out of turn through Instruct, Snatch, or Magic Coat or the Abilities Dancer or Magic Bounce, failed to do any of its normal effects, not counting damage from an unsuccessful Mind Blown, Jump Kick, or High Jump Kick, or if the user was prevented from moving by any effect other than recharging or Sky Drop. A move that was blocked by Baneful Bunker, Detect, King's Shield, Protect, Spiky Shield, Crafty Shield, Mat Block, Quick Guard, or Wide Guard will not double this move's power, nor will Bounce or Fly ending early due to the effect of Gravity, Smack Down, or Thousand Arrows.",
+		desc: "Power doubles if the user's last move on the previous turn, including moves called by other moves or those used through Instruct, Magic Coat, Snatch, or the Dancer or Magic Bounce Abilities, failed to do any of its normal effects, not including damage from an unsuccessful High Jump Kick, Jump Kick, or Mind Blown, or if the user was prevented from moving by any effect other than recharging or Sky Drop. A move that was blocked by Baneful Bunker, Detect, King's Shield, Protect, Spiky Shield, Crafty Shield, Mat Block, Quick Guard, or Wide Guard will not double this move's power, nor will Bounce or Fly ending early due to the effect of Gravity, Smack Down, or Thousand Arrows.",
 		shortDesc: "Power doubles if the user's last move failed.",
 		id: "stompingtantrum",
 		name: "Stomping Tantrum",
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		onBasePowerPriority: 4,
-		onBasePower: function (basePower, pokemon) {
-			if (pokemon.moveLastTurnResult === false) {
-				return this.chainModify(2);
-			}
-		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		zMovePower: 140,
@@ -16273,7 +16251,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		critRatio: 2,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Rock",
 		zMovePower: 180,
@@ -16294,7 +16272,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMovePower: 160,
@@ -16305,7 +16283,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "This move is always a critical hit unless the target is under the effect of Lucky Chant or has the Abilities Battle Armor or Shell Armor.",
+		desc: "This move is always a critical hit unless the target is under the effect of Lucky Chant or has the Battle Armor or Shell Armor Abilities.",
 		shortDesc: "Always results in a critical hit.",
 		id: "stormthrow",
 		isViable: true,
@@ -16314,7 +16292,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		willCrit: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 120,
@@ -16346,14 +16324,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "strength",
 		name: "Strength",
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -16378,7 +16355,7 @@ let BattleMovedex = {
 			let success = this.boost({atk: -1}, target, source, null, false, true);
 			return this.heal(atk, source, target) || success;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {def: 1},
@@ -16399,7 +16376,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Bug",
 		zMoveBoost: {spe: 1},
@@ -16410,8 +16387,8 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 50,
 		category: "Physical",
-		desc: "Deals typeless damage to one adjacent foe at random. If this move was successful, the user loses 1/4 of its maximum HP, rounded half up; the Ability Rock Head does not prevent this. This move can only be used if none of the user's known moves can be selected.",
-		shortDesc: "User loses 25% of its max HP as recoil.",
+		desc: "Deals typeless damage to a random opposing Pokemon. If this move was successful, the user loses 1/4 of its maximum HP, rounded half up, and the Rock Head Ability does not prevent this. This move is automatically used if none of the user's known moves can be selected.",
+		shortDesc: "User loses 1/4 of its max HP.",
 		id: "struggle",
 		name: "Struggle",
 		pp: 1,
@@ -16424,7 +16401,7 @@ let BattleMovedex = {
 			this.add('-activate', pokemon, 'move: Struggle');
 		},
 		struggleRecoil: true,
-		secondary: false,
+		secondary: null,
 		target: "randomNormal",
 		type: "Normal",
 		zMovePower: 1,
@@ -16466,7 +16443,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
 		status: 'par',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {spd: 1},
@@ -16485,7 +16462,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [1, 4],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 160,
@@ -16496,8 +16473,8 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user takes 1/4 of its maximum HP, rounded down, and puts it into a substitute to take its place in battle. The substitute is removed once enough damage is inflicted on it, or if the user switches out or faints. Baton Pass can be used to transfer the substitute to an ally, and the substitute will keep its remaining HP. Until the substitute is broken, it receives damage from all attacks made by other Pokemon and shields the user from status effects and stat stage changes caused by other Pokemon. Sound-based moves and Pokemon with the Ability Infiltrator ignore substitutes. The user still takes normal damage from weather and status effects while behind its substitute. If the substitute breaks during a multi-hit attack, the user will take damage from any remaining hits. If a substitute is created while the user is partially trapped, the partial-trapping effect ends immediately. This move fails if the user does not have enough HP remaining to create a substitute, or if it already has a substitute.",
-		shortDesc: "User takes 1/4 its max HP to put in a Substitute.",
+		desc: "The user takes 1/4 of its maximum HP, rounded down, and puts it into a substitute to take its place in battle. The substitute is removed once enough damage is inflicted on it, or if the user switches out or faints. Baton Pass can be used to transfer the substitute to an ally, and the substitute will keep its remaining HP. Until the substitute is broken, it receives damage from all attacks made by other Pokemon and shields the user from status effects and stat stage changes caused by other Pokemon. Sound-based moves and Pokemon with the Infiltrator Ability ignore substitutes. The user still takes normal damage from weather and status effects while behind its substitute. If the substitute breaks during a multi-hit attack, the user will take damage from any remaining hits. If a substitute is created while the user is trapped by a binding move, the binding effect ends immediately. Fails if the user does not have enough HP remaining to create a substitute without fainting, or if it already has a substitute.",
+		shortDesc: "User takes 1/4 its max HP to put in a substitute.",
 		id: "substitute",
 		isViable: true,
 		name: "Substitute",
@@ -16562,7 +16539,7 @@ let BattleMovedex = {
 				this.add('-end', target, 'Substitute');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -16581,7 +16558,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "iciumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ice",
 		contestType: "Cool",
@@ -16607,7 +16584,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 140,
@@ -16626,7 +16603,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		weather: 'sunnyday',
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Fire",
 		zMoveBoost: {spe: 1},
@@ -16646,7 +16623,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		ignoreAbility: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Steel",
 		zMovePower: 180,
@@ -16668,7 +16645,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -16693,7 +16670,7 @@ let BattleMovedex = {
 				def: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 190,
@@ -16704,15 +16681,14 @@ let BattleMovedex = {
 		accuracy: 55,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to become confused.",
-		shortDesc: "Confuses the target.",
+		shortDesc: "Causes the target to become confused.",
 		id: "supersonic",
 		name: "Supersonic",
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1, sound: 1, authentic: 1},
 		volatileStatus: 'confusion',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},
@@ -16731,7 +16707,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "flyiniumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Flying",
 		contestType: "Cool",
@@ -16742,14 +16718,14 @@ let BattleMovedex = {
 		basePower: 90,
 		category: "Special",
 		desc: "Damage doubles if the target is using Dive.",
-		shortDesc: "Hits adjacent Pokemon. Power doubles on Dive.",
+		shortDesc: "Hits adjacent Pokemon. Double damage on Dive.",
 		id: "surf",
 		isViable: true,
 		name: "Surf",
 		pp: 15,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, nonsky: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Water",
 		zMovePower: 175,
@@ -16771,7 +16747,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -16798,7 +16774,7 @@ let BattleMovedex = {
 			pokemon.removeVolatile('stockpile');
 			return healedBy;
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -16809,15 +16785,14 @@ let BattleMovedex = {
 		accuracy: 75,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to become confused.",
-		shortDesc: "Confuses the target.",
+		shortDesc: "Causes the target to become confused.",
 		id: "sweetkiss",
 		name: "Sweet Kiss",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		volatileStatus: 'confusion',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		zMoveBoost: {spa: 1},
@@ -16838,7 +16813,7 @@ let BattleMovedex = {
 		boosts: {
 			evasion: -2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMoveBoost: {accuracy: 1},
@@ -16856,7 +16831,7 @@ let BattleMovedex = {
 		pp: 20,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMovePower: 120,
@@ -16867,7 +16842,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its held item with the target's held item. Fails if either the user or the target is holding a Mail or Z-Crystal, if neither is holding an item, if the user is trying to give or take a Mega Stone to or from the species that can Mega Evolve with it, or if the user is trying to give or take a Blue Orb, a Red Orb, a Griseous Orb, a Plate, a Drive, or a Memory to or from a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally, respectively. Pokemon with the Ability Sticky Hold are immune.",
+		desc: "The user swaps its held item with the target's held item. Fails if either the user or the target is holding a Mail or Z-Crystal, if neither is holding an item, if the user is trying to give or take a Mega Stone to or from the species that can Mega Evolve with it, or if the user is trying to give or take a Blue Orb, a Red Orb, a Griseous Orb, a Plate, a Drive, or a Memory to or from a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally, respectively. The target is immune to this move if it has the Sticky Hold Ability.",
 		shortDesc: "User switches its held item with the target's.",
 		id: "switcheroo",
 		isViable: true,
@@ -16908,7 +16883,7 @@ let BattleMovedex = {
 				this.add('-enditem', source, myItem, '[silent]', '[from] move: Switcheroo');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {spe: 2},
@@ -16930,7 +16905,7 @@ let BattleMovedex = {
 		boosts: {
 			atk: 2,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveEffect: 'clearnegativeboost',
@@ -16954,7 +16929,7 @@ let BattleMovedex = {
 				return null;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Psychic",
 		zMovePower: 190,
@@ -16965,7 +16940,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user restores 1/2 of its maximum HP if no weather conditions are in effect, 2/3 of its maximum HP if the weather is Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Rain Dance, or Sandstorm, all rounded half down.",
+		desc: "The user restores 1/2 of its maximum HP if Delta Stream or no weather conditions are in effect, 2/3 of its maximum HP if the weather is Desolate Land or Sunny Day, and 1/4 of its maximum HP if the weather is Hail, Primordial Sea, Rain Dance, or Sandstorm, all rounded half down.",
 		shortDesc: "Heals the user by a weather-dependent amount.",
 		id: "synthesis",
 		isViable: true,
@@ -16982,7 +16957,7 @@ let BattleMovedex = {
 				return this.heal(this.modify(pokemon.maxhp, 0.5));
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Grass",
 		zMoveEffect: 'clearnegativeboost',
@@ -16993,14 +16968,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "tackle",
 		name: "Tackle",
 		pp: 35,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -17022,7 +16996,7 @@ let BattleMovedex = {
 		boosts: {
 			spa: 3,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Bug",
 		zMoveEffect: 'clearnegativeboost',
@@ -17033,7 +17007,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 25,
 		category: "Physical",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times.",
 		shortDesc: "Hits 2-5 times in one turn.",
 		id: "tailslap",
 		isViable: true,
@@ -17042,7 +17016,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 140,
@@ -17063,7 +17037,7 @@ let BattleMovedex = {
 		boosts: {
 			def: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -17087,6 +17061,7 @@ let BattleMovedex = {
 			duration: 4,
 			durationCallback: function (target, source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 6;
 				}
 				return 4;
@@ -17103,7 +17078,7 @@ let BattleMovedex = {
 				this.add('-sideend', side, 'move: Tailwind');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Flying",
 		zMoveEffect: 'crit2',
@@ -17122,7 +17097,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [1, 4],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 175,
@@ -17133,8 +17108,8 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Prevents the target from using non-damaging moves for its next three turns. Pokemon with the Ability Oblivious or protected by the Ability Aroma Veil are immune.",
-		shortDesc: "For 3 turns, the target can't use status moves.",
+		desc: "Prevents the target from using non-damaging moves for its next three turns. Pokemon with the Oblivious Ability or protected by the Aroma Veil Ability are immune.",
+		shortDesc: "Target can't use status moves its next 3 turns.",
 		id: "taunt",
 		isViable: true,
 		name: "Taunt",
@@ -17169,7 +17144,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {atk: 1},
@@ -17191,7 +17166,7 @@ let BattleMovedex = {
 			atk: -1,
 			spa: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -17213,7 +17188,7 @@ let BattleMovedex = {
 		onModifyMove: function (move, pokemon) {
 			move.type = this.runEvent('Drive', pokemon, null, 'technoblast', 'Normal');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -17232,7 +17207,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "groundiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ground",
 		contestType: "Cool",
@@ -17250,7 +17225,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, dance: 1},
 		volatileStatus: 'confusion',
-		secondary: false,
+		secondary: null,
 		target: "allAdjacent",
 		type: "Normal",
 		zMoveBoost: {spa: 1},
@@ -17261,7 +17236,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 3 turns, the target cannot avoid any attacks made against it, other than OHKO moves, as long as it remains active. During the effect, the target is immune to Ground-type attacks and the effects of Spikes, Toxic Spikes, Sticky Web, and the Ability Arena Trap as long as it remains active. If the target uses Baton Pass, the replacement will gain the effect. Ingrain, Smack Down, Thousand Arrows, and Iron Ball override this move if the target is under any of their effects. Fails if the target is already under this effect or the effects of Ingrain, Smack Down, or Thousand Arrows. The target is immune to this move on use if its species is Diglett, Dugtrio, Alolan Diglett, Alolan Dugtrio, Sandygast, Palossand, or Gengar while Mega-Evolved. Mega Gengar cannot be under this effect by any means.",
+		desc: "For 3 turns, the target cannot avoid any attacks made against it, other than OHKO moves, as long as it remains active. During the effect, the target is immune to Ground-type attacks and the effects of Spikes, Toxic Spikes, Sticky Web, and the Arena Trap Ability as long as it remains active. If the target uses Baton Pass, the replacement will gain the effect. Ingrain, Smack Down, Thousand Arrows, and Iron Ball override this move if the target is under any of their effects. Fails if the target is already under this effect or the effects of Ingrain, Smack Down, or Thousand Arrows. The target is immune to this move on use if its species is Diglett, Dugtrio, Alolan Diglett, Alolan Dugtrio, Sandygast, Palossand, or Gengar while Mega-Evolved. Mega Gengar cannot be under this effect by any means.",
 		shortDesc: "For 3 turns, target floats but moves can't miss it.",
 		id: "telekinesis",
 		name: "Telekinesis",
@@ -17298,7 +17273,7 @@ let BattleMovedex = {
 				this.add('-end', target, 'Telekinesis');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spa: 1},
@@ -17309,15 +17284,14 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Fails when used.",
-		shortDesc: "Flee from wild Pokemon battles.",
+		shortDesc: "Fails when used.",
 		id: "teleport",
 		name: "Teleport",
 		pp: 20,
 		priority: 0,
 		flags: {},
 		onTryHit: false,
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Psychic",
 		zMoveEffect: 'heal',
@@ -17328,14 +17302,14 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "If this attack was successful and the user has not fainted, it steals the target's held item if the user is not holding one. The target's item is not stolen if it is a Mail or Z-Crystal, or if the target is a Kyogre holding a Blue Orb, a Groudon holding a Red Orb, a Giratina holding a Griseous Orb, an Arceus holding a Plate, a Genesect holding a Drive, a Silvally holding a Memory, or a Pokemon that can Mega Evolve holding the Mega Stone for its species. Items lost to this move cannot be regained with Recycle or the Ability Harvest.",
+		desc: "If this attack was successful and the user has not fainted, it steals the target's held item if the user is not holding one. The target's item is not stolen if it is a Mail or Z-Crystal, or if the target is a Kyogre holding a Blue Orb, a Groudon holding a Red Orb, a Giratina holding a Griseous Orb, an Arceus holding a Plate, a Genesect holding a Drive, a Silvally holding a Memory, or a Pokemon that can Mega Evolve holding the Mega Stone for its species. Items lost to this move cannot be regained with Recycle or the Harvest Ability.",
 		shortDesc: "If the user has no item, it steals the target's.",
 		id: "thief",
 		name: "Thief",
 		pp: 25,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		onAfterHit: function (target, source) {
+		onAfterHit: function (target, source, move) {
 			if (source.item || source.volatiles['gem']) {
 				return;
 			}
@@ -17343,13 +17317,13 @@ let BattleMovedex = {
 			if (!yourItem) {
 				return;
 			}
-			if (!source.setItem(yourItem)) {
+			if (!this.singleEvent('TakeItem', yourItem, target.itemData, source, target, move, yourItem) || !source.setItem(yourItem)) {
 				target.item = yourItem.id; // bypass setItem so we don't break choicelock or anything
 				return;
 			}
 			this.add('-item', source, yourItem, '[from] move: Thief', '[of] ' + target);
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMovePower: 120,
@@ -17360,7 +17334,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Physical",
-		desc: "This move can hit airborne Pokemon, which includes Flying-type Pokemon, Pokemon with the Ability Levitate, Pokemon holding an Air Balloon, and Pokemon under the effect of Magnet Rise or Telekinesis. If the target is a Flying type and is not already grounded, this move deals neutral damage regardless of its other type(s). This move can hit a target using Bounce, Fly, or Sky Drop. If this move hits a target under the effect of Bounce, Fly, Magnet Rise, or Telekinesis, the effect ends. If the target is a Flying type that has not used Roost this turn or a Pokemon with the Ability Levitate, it loses its immunity to Ground-type attacks and the Ability Arena Trap as long as it remains active. During the effect, Magnet Rise fails for the target and Telekinesis fails against the target.",
+		desc: "This move can hit airborne Pokemon, which includes Flying-type Pokemon, Pokemon with the Levitate Ability, Pokemon holding an Air Balloon, and Pokemon under the effect of Magnet Rise or Telekinesis. If the target is a Flying type and is not already grounded, this move deals neutral damage regardless of its other type(s). This move can hit a target using Bounce, Fly, or Sky Drop. If this move hits a target under the effect of Bounce, Fly, Magnet Rise, or Telekinesis, the effect ends. If the target is a Flying type that has not used Roost this turn or a Pokemon with the Levitate Ability, it loses its immunity to Ground-type attacks and the Arena Trap Ability as long as it remains active. During the effect, Magnet Rise fails for the target and Telekinesis fails against the target.",
 		shortDesc: "Grounds adjacent foes. First hit neutral on Flying.",
 		id: "thousandarrows",
 		isViable: true,
@@ -17369,7 +17343,6 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1, nonsky: 1},
 		onEffectiveness: function (typeMod, type, move) {
-			// @ts-ignore
 			if (move.type !== 'Ground') return;
 			let target = this.activeTarget;
 			if (!target) return; // avoid crashing when called from a chat plugin
@@ -17380,7 +17353,7 @@ let BattleMovedex = {
 		},
 		volatileStatus: 'smackdown',
 		ignoreImmunity: {'Ground': true},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Ground",
 		zMovePower: 180,
@@ -17401,7 +17374,7 @@ let BattleMovedex = {
 		onHit: function (target, source, move) {
 			if (source.isActive) target.addVolatile('trapped', source, move, 'trapper');
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Ground",
 		zMovePower: 175,
@@ -17412,7 +17385,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 120,
 		category: "Physical",
-		desc: "Deals damage to one adjacent foe at random. The user spends two or three turns locked into this move and becomes confused after the last turn of the effect if it is not already. If the user is prevented from moving or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk, the move is used for one turn and does not confuse the user.",
+		desc: "The user spends two or three turns locked into this move and becomes confused immediately after its move on the last turn of the effect if it is not already. This move targets an opposing Pokemon at random on each turn. If the user is prevented from moving, is asleep at the beginning of a turn, or the attack is not successful against the target on the first turn of the effect or the second turn of a three-turn effect, the effect ends without causing confusion. If this move is called by Sleep Talk and the user is asleep, the move is used for one turn and does not confuse the user.",
 		shortDesc: "Lasts 2-3 turns. Confuses the user afterwards.",
 		id: "thrash",
 		name: "Thrash",
@@ -17427,7 +17400,7 @@ let BattleMovedex = {
 				pokemon.removeVolatile('lockedmove');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "randomNormal",
 		type: "Normal",
 		zMovePower: 190,
@@ -17485,8 +17458,8 @@ let BattleMovedex = {
 		accuracy: 70,
 		basePower: 110,
 		category: "Special",
-		desc: "Has a 30% chance to paralyze the target. This move can hit a target using Bounce, Fly, or Sky Drop. If the weather is Rain Dance, this move does not check accuracy. If the weather is Sunny Day, this move's accuracy is 50%.",
-		shortDesc: "30% chance to paralyze target. Can't miss in rain.",
+		desc: "Has a 30% chance to paralyze the target. This move can hit a target using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop. If the weather is Primordial Sea or Rain Dance, this move does not check accuracy. If the weather is Desolate Land or Sunny Day, this move's accuracy is 50%.",
+		shortDesc: "30% chance to paralyze. Can't miss in rain.",
 		id: "thunder",
 		isViable: true,
 		name: "Thunder",
@@ -17583,7 +17556,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 0,
 		category: "Status",
-		desc: "Paralyzes the target.",
+		desc: "Paralyzes the target. This move does not ignore type immunity.",
 		shortDesc: "Paralyzes the target.",
 		id: "thunderwave",
 		isViable: true,
@@ -17593,7 +17566,7 @@ let BattleMovedex = {
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'par',
 		ignoreImmunity: false,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMoveBoost: {spd: 1},
@@ -17637,7 +17610,7 @@ let BattleMovedex = {
 			atk: -1,
 			def: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {def: 1},
@@ -17658,14 +17631,16 @@ let BattleMovedex = {
 		onHit: function (target) {
 			let success = false;
 			for (let i in target.boosts) {
+				// @ts-ignore
 				if (target.boosts[i] === 0) continue;
+				// @ts-ignore
 				target.boosts[i] = -target.boosts[i];
 				success = true;
 			}
 			if (!success) return false;
 			this.add('-invertboost', target, '[from] move: Topsy-Turvy');
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {atk: 1},
@@ -17676,7 +17651,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Prevents the target from selecting the same move for use two turns in a row. This effect lasts until the target leaves the field.",
+		desc: "Prevents the target from selecting the same move for use two turns in a row. This effect ends when the target is no longer active.",
 		shortDesc: "Target can't select the same move twice in a row.",
 		id: "torment",
 		name: "Torment",
@@ -17696,7 +17671,7 @@ let BattleMovedex = {
 				if (pokemon.lastMove && pokemon.lastMove.id !== 'struggle') pokemon.disableMove(pokemon.lastMove.id);
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Dark",
 		zMoveBoost: {def: 1},
@@ -17708,7 +17683,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Badly poisons the target. If a Poison-type Pokemon uses this move, the target cannot avoid the attack, even if the target is in the middle of a two-turn move.",
-		shortDesc: "Badly poisons the target.",
+		shortDesc: "Badly poisons the target. Poison types can't miss.",
 		id: "toxic",
 		isViable: true,
 		name: "Toxic",
@@ -17717,7 +17692,7 @@ let BattleMovedex = {
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		// No Guard-like effect for Poison-type users implemented in BattleScripts#tryMoveHit
 		status: 'tox',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -17728,7 +17703,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Sets up a hazard on the foe's side of the field, poisoning each foe that switches in, unless it is a Flying-type Pokemon or has the Ability Levitate. Can be used up to two times before failing. Foes become poisoned with one layer and badly poisoned with two layers. Can be removed from the foe's side if any foe uses Rapid Spin or Defog, is hit by Defog, or a grounded Poison-type Pokemon switches in. Safeguard prevents the foe's party from being poisoned on switch-in, but a substitute does not.",
+		desc: "Sets up a hazard on the opposing side of the field, poisoning each opposing Pokemon that switches in, unless it is a Flying-type Pokemon or has the Levitate Ability. Can be used up to two times before failing. Opposing Pokemon become poisoned with one layer and badly poisoned with two layers. Can be removed from the opposing side if any opposing Pokemon uses Rapid Spin or Defog successfully, is hit by Defog, or a grounded Poison-type Pokemon switches in. Safeguard prevents the opposing party from being poisoned on switch-in, but a substitute does not.",
 		shortDesc: "Poisons grounded foes on switch-in. Max 2 layers.",
 		id: "toxicspikes",
 		isViable: true,
@@ -17761,7 +17736,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "foeSide",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -17784,7 +17759,7 @@ let BattleMovedex = {
 		boosts: {
 			spe: -1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMoveBoost: {spe: 1},
@@ -17795,7 +17770,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The user transforms into the target. The target's current stats, stat stages, types, moves, Ability, weight, gender, and sprite are copied. The user's level and HP remain the same and each copied move receives only 5 PP, with a maximum of 5 PP each. The user can no longer change formes if it would have the ability to do so. This move fails if the target has a substitute, if either the user or the target is already transformed, or if either is behind an Illusion.",
+		desc: "The user transforms into the target. The target's current stats, stat stages, types, moves, Ability, weight, gender, and sprite are copied. The user's level and HP remain the same and each copied move receives only 5 PP, with a maximum of 5 PP each. The user can no longer change formes if it would have the ability to do so. This move fails if it hits a substitute, if either the user or the target is already transformed, or if either is behind an Illusion.",
 		shortDesc: "Copies target's stats, moves, types, and Ability.",
 		id: "transform",
 		name: "Transform",
@@ -17807,7 +17782,7 @@ let BattleMovedex = {
 				return false;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveEffect: 'heal',
@@ -17849,7 +17824,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "The user swaps its held item with the target's held item. Fails if either the user or the target is holding a Mail or Z-Crystal, if neither is holding an item, if the user is trying to give or take a Mega Stone to or from the species that can Mega Evolve with it, or if the user is trying to give or take a Blue Orb, a Red Orb, a Griseous Orb, a Plate, a Drive, or a Memory to or from a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally, respectively. Pokemon with the Ability Sticky Hold are immune.",
+		desc: "The user swaps its held item with the target's held item. Fails if either the user or the target is holding a Mail or Z-Crystal, if neither is holding an item, if the user is trying to give or take a Mega Stone to or from the species that can Mega Evolve with it, or if the user is trying to give or take a Blue Orb, a Red Orb, a Griseous Orb, a Plate, a Drive, or a Memory to or from a Kyogre, a Groudon, a Giratina, an Arceus, a Genesect, or a Silvally, respectively. The target is immune to this move if it has the Sticky Hold Ability.",
 		shortDesc: "User switches its held item with the target's.",
 		id: "trick",
 		isViable: true,
@@ -17890,7 +17865,7 @@ let BattleMovedex = {
 				this.add('-enditem', source, myItem, '[silent]', '[from] move: Trick');
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Psychic",
 		zMoveBoost: {spe: 2},
@@ -17921,7 +17896,7 @@ let BattleMovedex = {
 				}
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Ghost",
 		zMoveBoost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1},
@@ -17932,7 +17907,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, all active Pokemon with lower Speed will move before those with higher Speed, within their priority brackets. If this move is used during the effect, the effect ends.",
+		desc: "For 5 turns, the Speed of every Pokemon is recalculated for the purposes of determining turn order. During the effect, each Pokemon's Speed is considered to be (10000 - its normal Speed), and if this value is greater than 8191, 8192 is subtracted from it. If this move is used during the effect, the effect ends.",
 		shortDesc: "For 5 turns, slower Pokemon move first.",
 		id: "trickroom",
 		name: "Trick Room",
@@ -17944,6 +17919,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -17960,7 +17936,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Trick Room');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Psychic",
 		zMoveBoost: {accuracy: 1},
@@ -17979,7 +17955,7 @@ let BattleMovedex = {
 			return 10 * move.hit;
 		},
 		category: "Physical",
-		desc: "Hits three times. Power increases to 20 for the second hit and 30 for the third. This move checks accuracy for each hit, and the attack ends if the target avoids any of the hits. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit three times.",
+		desc: "Hits three times. Power increases to 20 for the second hit and 30 for the third. This move checks accuracy for each hit, and the attack ends if the target avoids a hit. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit three times.",
 		shortDesc: "Hits 3 times. Each hit can miss, but power rises.",
 		id: "triplekick",
 		name: "Triple Kick",
@@ -17988,7 +17964,7 @@ let BattleMovedex = {
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 3,
 		multiaccuracy: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 120,
@@ -18023,7 +17999,7 @@ let BattleMovedex = {
 		basePower: 0,
 		basePowerCallback: function (source, target, move) {
 			const callerMoveId = move.sourceEffect || move.id;
-			const moveSlot = source.getMoveData(callerMoveId);
+			const moveSlot = callerMoveId === 'instruct' ? source.getMoveData(move.id) : source.getMoveData(callerMoveId);
 			// @ts-ignore
 			switch (moveSlot.pp) {
 			case 0:
@@ -18039,7 +18015,7 @@ let BattleMovedex = {
 			}
 		},
 		category: "Special",
-		desc: "This move does not check accuracy. The power of this move is based on the amount of PP remaining after normal PP reduction and the Ability Pressure resolve. 200 power for 0 PP, 80 power for 1 PP, 60 power for 2 PP, 50 power for 3 PP, and 40 power for 4 or more PP.",
+		desc: "The power of this move is based on the amount of PP remaining after normal PP reduction and the Pressure Ability resolve. 200 power for 0 PP, 80 power for 1 PP, 60 power for 2 PP, 50 power for 3 PP, and 40 power for 4 or more PP.",
 		shortDesc: "More power the fewer PP this move has left.",
 		id: "trumpcard",
 		name: "Trump Card",
@@ -18047,7 +18023,7 @@ let BattleMovedex = {
 		noPPBoosts: true,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -18088,7 +18064,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {},
 		isZ: "fairiumz",
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fairy",
 		contestType: "Cool",
@@ -18098,7 +18074,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Special",
-		desc: "Has a 20% chance to flinch the target. Damage doubles if the target is using Bounce, Fly, or Sky Drop.",
+		desc: "Has a 20% chance to flinch the target. Power doubles if the target is using Bounce, Fly, or Sky Drop, or is under the effect of Sky Drop.",
 		shortDesc: "20% chance to flinch the foe(s).",
 		id: "twister",
 		name: "Twister",
@@ -18119,7 +18095,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 70,
 		category: "Physical",
-		desc: "If this move is successful and the user has not fainted, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members, or if the target switched out using an Eject Button.",
+		desc: "If this move is successful and the user has not fainted, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members, or if the target switched out using an Eject Button or through the effect of the Emergency Exit or Wimp Out Abilities.",
 		shortDesc: "User switches out after damaging the target.",
 		id: "uturn",
 		isViable: true,
@@ -18128,7 +18104,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		selfSwitch: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 140,
@@ -18139,7 +18115,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 90,
 		category: "Special",
-		desc: "Deals damage to one adjacent foe at random. The user spends three turns locked into this move. On the first of the three turns, all sleeping active Pokemon wake up. During the three turns, no active Pokemon can fall asleep by any means; Pokemon switched in during the effect do not wake up. If the user is prevented from moving or the attack is not successful against the target during one of the turns, the effect ends.",
+		desc: "The user spends three turns locked into this move. This move targets an opponent at random on each turn. On the first of the three turns, all sleeping active Pokemon wake up. During the three turns, no active Pokemon can fall asleep by any means, and Pokemon switched in during the effect do not wake up. If the user is prevented from moving or the attack is not successful against the target during one of the turns, the effect ends.",
 		shortDesc: "Lasts 3 turns. Active Pokemon cannot fall asleep.",
 		id: "uproar",
 		name: "Uproar",
@@ -18183,7 +18159,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "randomNormal",
 		type: "Normal",
 		zMovePower: 175,
@@ -18209,7 +18185,7 @@ let BattleMovedex = {
 				spd: -1,
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMovePower: 220,
@@ -18227,7 +18203,7 @@ let BattleMovedex = {
 		pp: 30,
 		priority: 1,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 100,
@@ -18239,7 +18215,7 @@ let BattleMovedex = {
 		basePower: 0,
 		category: "Status",
 		desc: "Lowers the target's Attack, Special Attack, and Speed by 1 stage if the target is poisoned. Fails if the target is not poisoned.",
-		shortDesc: "Lowers Atk, Sp. Atk, Speed of poisoned foes by 1.",
+		shortDesc: "Lowers Atk/Sp. Atk/Speed of poisoned foes by 1.",
 		id: "venomdrench",
 		name: "Venom Drench",
 		pp: 20,
@@ -18251,7 +18227,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Poison",
 		zMoveBoost: {def: 1},
@@ -18275,7 +18251,7 @@ let BattleMovedex = {
 				return this.chainModify(2);
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Poison",
 		zMovePower: 120,
@@ -18286,14 +18262,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 55,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "vicegrip",
 		name: "Vice Grip",
 		pp: 30,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -18304,14 +18279,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 45,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "vinewhip",
 		name: "Vine Whip",
 		pp: 25,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 100,
@@ -18329,7 +18303,7 @@ let BattleMovedex = {
 		pp: 10,
 		priority: -1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 140,
@@ -18340,7 +18314,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 70,
 		category: "Special",
-		desc: "If this move is successful and the user has not fainted, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members, or if the target switched out using an Eject Button.",
+		desc: "If this move is successful and the user has not fainted, the user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members, or if the target switched out using an Eject Button or through the effect of the Emergency Exit or Wimp Out Abilities.",
 		shortDesc: "User switches out after damaging the target.",
 		id: "voltswitch",
 		isViable: true,
@@ -18349,7 +18323,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		selfSwitch: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 140,
@@ -18397,7 +18371,7 @@ let BattleMovedex = {
 		onHit: function (target) {
 			if (target.status === 'slp') target.cureStatus();
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fighting",
 		zMovePower: 140,
@@ -18408,14 +18382,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 40,
 		category: "Special",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "watergun",
 		name: "Water Gun",
 		pp: 25,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 100,
@@ -18433,7 +18406,7 @@ let BattleMovedex = {
 			return 80;
 		},
 		category: "Special",
-		desc: "If one of the user's allies chose to use Fire Pledge or Grass Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Fire Pledge, the ally uses Water Pledge with 150 Base Power and a rainbow appears on the user's side for 4 turns, which doubles secondary effect chances but does not stack with the Ability Serene Grace. If combined with Grass Pledge, the ally uses Grass Pledge with 150 Base Power and a swamp appears on the target's side for 4 turns, which quarters the Speed of each Pokemon on that side. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Water Gem, and cannot be redirected by the Ability Storm Drain.",
+		desc: "If one of the user's allies chose to use Fire Pledge or Grass Pledge this turn and has not moved yet, it takes its turn immediately after the user and the user's move does nothing. If combined with Fire Pledge, the ally uses Water Pledge with 150 power and a rainbow appears on the user's side for 4 turns, which doubles secondary effect chances but does not stack with the Serene Grace Ability. If combined with Grass Pledge, the ally uses Grass Pledge with 150 power and a swamp appears on the target's side for 4 turns, which quarters the Speed of each Pokemon on that side. When used as a combined move, this move gains STAB no matter what the user's type is. This move does not consume the user's Water Gem, and cannot be redirected by the Storm Drain Ability.",
 		shortDesc: "Use with Grass or Fire Pledge for added effect.",
 		id: "waterpledge",
 		name: "Water Pledge",
@@ -18483,13 +18456,12 @@ let BattleMovedex = {
 				if (move.secondaries && move.id !== 'secretpower') {
 					this.debug('doubling secondary chance');
 					for (const secondary of move.secondaries) {
-						// @ts-ignore
-						secondary.chance *= 2;
+						if (secondary.chance) secondary.chance *= 2;
 					}
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 160,
@@ -18521,7 +18493,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "For 5 turns, all Fire-type attacks used by any active Pokemon have their power reduced to 0.33x. Fails if this move is already in effect.",
+		desc: "For 5 turns, all Fire-type attacks used by any active Pokemon have their power multiplied by 0.33. Fails if this effect is already active.",
 		shortDesc: "For 5 turns, Fire-type attacks have 1/3 power.",
 		id: "watersport",
 		name: "Water Sport",
@@ -18546,7 +18518,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Water Sport');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Water",
 		zMoveBoost: {spd: 1},
@@ -18568,7 +18540,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "allAdjacentFoes",
 		type: "Water",
 		zMovePower: 200,
@@ -18607,8 +18579,8 @@ let BattleMovedex = {
 			return move.basePower;
 		},
 		category: "Special",
-		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Ability Skill Link, this move will always hit five times. Base power is 20 if the user is Ash-Greninja.",
-		shortDesc: "Hits 2-5 times in one turn.",
+		desc: "Hits two to five times. Has a 1/3 chance to hit two or three times, and a 1/6 chance to hit four or five times. If one of the hits breaks the target's substitute, it will take damage for the remaining hits. If the user has the Skill Link Ability, this move will always hit five times. If the user is an Ash-Greninja with the Battle Bond Ability, this move has a power of 20 and always hits three times.",
+		shortDesc: "Usually goes first. Hits 2-5 times in one turn.",
 		id: "watershuriken",
 		isViable: true,
 		name: "Water Shuriken",
@@ -18616,7 +18588,7 @@ let BattleMovedex = {
 		priority: 1,
 		flags: {protect: 1, mirror: 1},
 		multihit: [2, 5],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 100,
@@ -18627,7 +18599,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 50,
 		category: "Special",
-		desc: "Power doubles during weather effects (except strong winds) and this move's type changes to match; Ice type during Hail, Water type during Rain Dance, Rock type during Sandstorm, and Fire type during Sunny Day.",
+		desc: "Power doubles if a weather condition other than Delta Stream is active, and this move's type changes to match. Ice type during Hail, Water type during Primordial Sea or Rain Dance, Rock type during Sandstorm, and Fire type during Desolate Land or Sunny Day.",
 		shortDesc: "Power doubles and type varies in each weather.",
 		id: "weatherball",
 		name: "Weather Ball",
@@ -18656,7 +18628,7 @@ let BattleMovedex = {
 				break;
 			}
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 160,
@@ -18667,7 +18639,7 @@ let BattleMovedex = {
 		accuracy: 85,
 		basePower: 35,
 		category: "Special",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "whirlpool",
 		name: "Whirlpool",
@@ -18675,7 +18647,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Water",
 		zMovePower: 100,
@@ -18686,7 +18658,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "The target is forced to switch out and be replaced with a random unfainted ally. Fails if the target used Ingrain previously or has the Ability Suction Cups.",
+		desc: "The target is forced to switch out and be replaced with a random unfainted ally. Fails if the target is the last unfainted Pokemon in its party, or if the target used Ingrain previously or has the Suction Cups Ability.",
 		shortDesc: "Forces the target to switch to a random ally.",
 		id: "whirlwind",
 		isViable: true,
@@ -18695,7 +18667,7 @@ let BattleMovedex = {
 		priority: -6,
 		flags: {reflectable: 1, mirror: 1, authentic: 1, mystery: 1},
 		forceSwitch: true,
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -18747,7 +18719,7 @@ let BattleMovedex = {
 				return null;
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "allySide",
 		type: "Rock",
 		zMoveBoost: {def: 1},
@@ -18767,7 +18739,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [1, 4],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Electric",
 		zMovePower: 175,
@@ -18787,7 +18759,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {protect: 1, reflectable: 1, mirror: 1},
 		status: 'brn',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Fire",
 		zMoveBoost: {atk: 1},
@@ -18798,14 +18770,13 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 60,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "wingattack",
 		name: "Wing Attack",
 		pp: 35,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
-		secondary: false,
+		secondary: null,
 		target: "any",
 		type: "Flying",
 		zMovePower: 120,
@@ -18832,7 +18803,6 @@ let BattleMovedex = {
 			},
 			onResidualOrder: 4,
 			onEnd: function (side) {
-				// @ts-ignore
 				let target = side.active[this.effectData.sourcePosition];
 				if (target && !target.fainted) {
 					let source = this.effectData.source;
@@ -18841,7 +18811,7 @@ let BattleMovedex = {
 				}
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {spd: 1},
@@ -18862,7 +18832,7 @@ let BattleMovedex = {
 		boosts: {
 			def: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Water",
 		zMoveBoost: {def: 1},
@@ -18885,6 +18855,7 @@ let BattleMovedex = {
 			duration: 5,
 			durationCallback: function (source, effect) {
 				if (source && source.hasAbility('persistent')) {
+					this.add('-activate', source, 'ability: Persistent', effect);
 					return 7;
 				}
 				return 5;
@@ -18901,7 +18872,7 @@ let BattleMovedex = {
 				this.add('-fieldend', 'move: Wonder Room');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "all",
 		type: "Psychic",
 		zMoveBoost: {spd: 1},
@@ -18921,7 +18892,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		recoil: [33, 100],
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMovePower: 190,
@@ -18943,7 +18914,7 @@ let BattleMovedex = {
 			atk: 1,
 			spa: 1,
 		},
-		secondary: false,
+		secondary: null,
 		target: "self",
 		type: "Normal",
 		zMoveBoost: {atk: 1},
@@ -18954,7 +18925,7 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target's Ability to become Insomnia. Fails if the target's Ability is Insomnia, Multitype, Stance Change, or Truant.",
+		desc: "Causes the target's Ability to become Insomnia. Fails if the target's Ability is Battle Bond, Comatose, Disguise, Insomnia, Multitype, Power Construct, RKS System, Schooling, Shields Down, Stance Change, or Truant.",
 		shortDesc: "The target's Ability becomes Insomnia.",
 		id: "worryseed",
 		name: "Worry Seed",
@@ -18978,7 +18949,7 @@ let BattleMovedex = {
 			}
 			return false;
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Grass",
 		zMoveBoost: {spe: 1},
@@ -18989,7 +18960,7 @@ let BattleMovedex = {
 		accuracy: 90,
 		basePower: 15,
 		category: "Physical",
-		desc: "Prevents the target from switching for four or five turns; seven turns if the user is holding Grip Claw. Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute. This effect is not stackable or reset by using this or another partial-trapping move.",
+		desc: "Prevents the target from switching for four or five turns (seven turns if the user is holding Grip Claw). Causes damage to the target equal to 1/8 of its maximum HP (1/6 if the user is holding Binding Band), rounded down, at the end of each turn during effect. The target can still switch out if it is holding Shed Shell or uses Baton Pass, Parting Shot, U-turn, or Volt Switch. The effect ends if either the user or the target leaves the field, or if the target uses Rapid Spin or Substitute successfully. This effect is not stackable or reset by using this or another binding move.",
 		shortDesc: "Traps and damages the target for 4-5 turns.",
 		id: "wrap",
 		name: "Wrap",
@@ -18997,7 +18968,7 @@ let BattleMovedex = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		volatileStatus: 'partiallytrapped',
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 100,
@@ -19018,7 +18989,7 @@ let BattleMovedex = {
 		pp: 5,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMovePower: 190,
@@ -19029,7 +19000,6 @@ let BattleMovedex = {
 		accuracy: 100,
 		basePower: 80,
 		category: "Physical",
-		desc: "No additional effect.",
 		shortDesc: "No additional effect.",
 		id: "xscissor",
 		isViable: true,
@@ -19037,7 +19007,7 @@ let BattleMovedex = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Bug",
 		zMovePower: 160,
@@ -19048,7 +19018,7 @@ let BattleMovedex = {
 		accuracy: true,
 		basePower: 0,
 		category: "Status",
-		desc: "Causes the target to fall asleep at the end of the next turn. Fails when used if the target cannot fall asleep or if it already has a major status condition. At the end of the next turn, if the target is still on the field, does not have a major status condition, and can fall asleep, it falls asleep. If the target becomes affected, this effect cannot be prevented by Safeguard or a substitute, or by falling asleep and waking up during the effect.",
+		desc: "Causes the target to fall asleep at the end of the next turn. Fails when used if the target cannot fall asleep or if it already has a major status condition. At the end of the next turn, if the target is still active, does not have a major status condition, and can fall asleep, it falls asleep. If the target becomes affected, this effect cannot be prevented by Safeguard or a substitute, or by falling asleep and waking up during the effect.",
 		shortDesc: "Puts the target to sleep after 1 turn.",
 		id: "yawn",
 		name: "Yawn",
@@ -19072,7 +19042,7 @@ let BattleMovedex = {
 				target.trySetStatus('slp');
 			},
 		},
-		secondary: false,
+		secondary: null,
 		target: "normal",
 		type: "Normal",
 		zMoveBoost: {spe: 1},

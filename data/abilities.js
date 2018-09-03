@@ -40,6 +40,14 @@ Ratings and how they work:
 
 /**@type {{[k: string]: AbilityData}} */
 let BattleAbilities = {
+	"noability": {
+		shortDesc: "Does nothing.",
+		id: "noability",
+		isNonstandard: "gen2",
+		name: "No Ability",
+		rating: 0.1,
+		num: 0,
+	},
 	"adaptability": {
 		desc: "This Pokemon's moves that match one of its types have a same-type attack bonus (STAB) of 2 instead of 1.5.",
 		shortDesc: "This Pokemon's same-type attack bonus (STAB) is 2 instead of 1.5.",
@@ -52,7 +60,7 @@ let BattleAbilities = {
 		num: 91,
 	},
 	"aftermath": {
-		desc: "If this Pokemon is knocked out with a contact move, that move's user loses 1/4 of its maximum HP, rounded down. If any active Pokemon has the Ability Damp, this effect is prevented.",
+		desc: "If this Pokemon is knocked out with a contact move, that move's user loses 1/4 of its maximum HP, rounded down. If any active Pokemon has the Damp Ability, this effect is prevented.",
 		shortDesc: "If this Pokemon is KOed with a contact move, that move's user loses 1/4 its max HP.",
 		id: "aftermath",
 		name: "Aftermath",
@@ -192,7 +200,7 @@ let BattleAbilities = {
 		num: 165,
 	},
 	"aurabreak": {
-		desc: "While this Pokemon is active, the effects of the Abilities Dark Aura and Fairy Aura are reversed, multiplying the power of Dark- and Fairy-type moves, respectively, by 3/4 instead of 1.33.",
+		desc: "While this Pokemon is active, the effects of the Dark Aura and Fairy Aura Abilities are reversed, multiplying the power of Dark- and Fairy-type moves, respectively, by 3/4 instead of 1.33.",
 		shortDesc: "While this Pokemon is active, the Dark Aura and Fairy Aura power modifier is 0.75x.",
 		onStart: function (pokemon) {
 			this.add('-ability', pokemon, 'Aura Break');
@@ -253,11 +261,7 @@ let BattleAbilities = {
 		onSourceFaint: function (target, source, effect) {
 			if (effect && effect.effectType === 'Move' && source.template.speciesid === 'greninja' && source.hp && !source.transformed && source.side.foe.pokemonLeft) {
 				this.add('-activate', source, 'ability: Battle Bond');
-				let template = this.getTemplate('Greninja-Ash');
-				source.formeChange(template);
-				source.baseTemplate = template;
-				source.details = template.species + (source.level === 100 ? '' : ', L' + source.level) + (source.gender === '' ? '' : ', ' + source.gender) + (source.set.shiny ? ', shiny' : '');
-				this.add('detailschange', source, source.details);
+				source.formeChange('Greninja-Ash', this.effect, true);
 			}
 		},
 		onModifyMovePriority: -1,
@@ -435,7 +439,7 @@ let BattleAbilities = {
 		num: 16,
 	},
 	"comatose": {
-		desc: "This Pokemon cannot be statused, and is considered to be asleep. Moongeist Beam, Sunsteel Strike, and the Abilities Mold Breaker, Teravolt, and Turboblaze cannot ignore this Ability.",
+		desc: "This Pokemon cannot be statused, and is considered to be asleep. Moongeist Beam, Sunsteel Strike, and the Mold Breaker, Teravolt, and Turboblaze Abilities cannot ignore this Ability.",
 		shortDesc: "This Pokemon cannot be statused, and is considered to be asleep.",
 		onStart: function (pokemon) {
 			this.add('-ability', pokemon, 'Comatose');
@@ -541,7 +545,7 @@ let BattleAbilities = {
 		num: 56,
 	},
 	"damp": {
-		desc: "While this Pokemon is active, Explosion, Mind Blown, Self-Destruct, and the Ability Aftermath are prevented from having an effect.",
+		desc: "While this Pokemon is active, Explosion, Mind Blown, Self-Destruct, and the Aftermath Ability are prevented from having an effect.",
 		shortDesc: "Prevents Explosion/Mind Blown/Self-Destruct/Aftermath while this Pokemon is active.",
 		id: "damp",
 		onAnyTryMove: function (target, source, effect) {
@@ -599,7 +603,7 @@ let BattleAbilities = {
 		},
 		id: "dazzling",
 		name: "Dazzling",
-		rating: 3.5,
+		rating: 3,
 		num: 219,
 	},
 	"defeatist": {
@@ -719,11 +723,8 @@ let BattleAbilities = {
 		},
 		onUpdate: function (pokemon) {
 			if (['mimikyu', 'mimikyutotem'].includes(pokemon.template.speciesid) && this.effectData.busted) {
-				let template = this.getTemplate(pokemon.template.speciesid === 'mimikyutotem' ? 'Mimikyu-Busted-Totem' : 'Mimikyu-Busted');
-				pokemon.formeChange(template);
-				pokemon.baseTemplate = template;
-				pokemon.details = template.species + (pokemon.level === 100 ? '' : ', L' + pokemon.level) + (pokemon.gender === '' ? '' : ', ' + pokemon.gender) + (pokemon.set.shiny ? ', shiny' : '');
-				this.add('detailschange', pokemon, pokemon.details);
+				let templateid = pokemon.template.speciesid === 'mimikyutotem' ? 'Mimikyu-Busted-Totem' : 'Mimikyu-Busted';
+				pokemon.formeChange(templateid, this.effect, true);
 			}
 		},
 		id: "disguise",
@@ -986,13 +987,11 @@ let BattleAbilities = {
 			if (!pokemon.isActive || pokemon.baseTemplate.baseSpecies !== 'Cherrim' || pokemon.transformed) return;
 			if (this.isWeather(['sunnyday', 'desolateland'])) {
 				if (pokemon.template.speciesid !== 'cherrimsunshine') {
-					pokemon.formeChange('Cherrim-Sunshine');
-					this.add('-formechange', pokemon, 'Cherrim-Sunshine', '[msg]', '[from] ability: Flower Gift');
+					pokemon.formeChange('Cherrim-Sunshine', this.effect, false, '[msg]');
 				}
 			} else {
 				if (pokemon.template.speciesid === 'cherrimsunshine') {
-					pokemon.formeChange('Cherrim');
-					this.add('-formechange', pokemon, 'Cherrim', '[msg]', '[from] ability: Flower Gift');
+					pokemon.formeChange('Cherrim', this.effect, false, '[msg]');
 				}
 			}
 		},
@@ -1080,8 +1079,7 @@ let BattleAbilities = {
 				break;
 			}
 			if (pokemon.isActive && forme) {
-				pokemon.formeChange(forme);
-				this.add('-formechange', pokemon, forme, '[msg]', '[from] ability: Forecast');
+				pokemon.formeChange(forme, this.effect, false, '[msg]');
 			}
 		},
 		id: "forecast",
@@ -1150,7 +1148,7 @@ let BattleAbilities = {
 		num: 119,
 	},
 	"fullmetalbody": {
-		desc: "Prevents other Pokemon from lowering this Pokemon's stat stages. Moongeist Beam, Sunsteel Strike, and the Abilities Mold Breaker, Teravolt, and Turboblaze cannot ignore this Ability.",
+		desc: "Prevents other Pokemon from lowering this Pokemon's stat stages. Moongeist Beam, Sunsteel Strike, and the Mold Breaker, Teravolt, and Turboblaze Abilities cannot ignore this Ability.",
 		shortDesc: "Prevents other Pokemon from lowering this Pokemon's stat stages.",
 		onBoost: function (boost, target, source, effect) {
 			if (source && target === source) return;
@@ -1902,8 +1900,8 @@ let BattleAbilities = {
 		num: 196,
 	},
 	"minus": {
-		desc: "If an active ally has this Ability or the Ability Plus, this Pokemon's Special Attack is multiplied by 1.5.",
-		shortDesc: "If an active ally has this Ability or the Ability Plus, this Pokemon's Sp. Atk is 1.5x.",
+		desc: "If an active ally has this Ability or the Plus Ability, this Pokemon's Special Attack is multiplied by 1.5.",
+		shortDesc: "If an active ally has this Ability or the Plus Ability, this Pokemon's Sp. Atk is 1.5x.",
 		onModifySpAPriority: 5,
 		onModifySpA: function (spa, pokemon) {
 			if (pokemon.side.active.length === 1) {
@@ -1952,6 +1950,7 @@ let BattleAbilities = {
 			let stats = [];
 			let boost = {};
 			for (let statPlus in pokemon.boosts) {
+				// @ts-ignore
 				if (pokemon.boosts[statPlus] < 6) {
 					stats.push(statPlus);
 				}
@@ -1961,6 +1960,7 @@ let BattleAbilities = {
 
 			stats = [];
 			for (let statMinus in pokemon.boosts) {
+				// @ts-ignore
 				if (pokemon.boosts[statMinus] > -6 && statMinus !== randomStat) {
 					stats.push(statMinus);
 				}
@@ -2026,7 +2026,7 @@ let BattleAbilities = {
 		num: 121,
 	},
 	"mummy": {
-		desc: "Pokemon making contact with this Pokemon have their Ability changed to Mummy. Does not affect the Abilities Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, and Stance Change.",
+		desc: "Pokemon making contact with this Pokemon have their Ability changed to Mummy. Does not affect the Battle Bond, Comatose, Disguise, Multitype, Power Construct, RKS System, Schooling, Shields Down, and Stance Change Abilities.",
 		shortDesc: "Pokemon making contact with this Pokemon have their Ability changed to Mummy.",
 		id: "mummy",
 		name: "Mummy",
@@ -2271,12 +2271,10 @@ let BattleAbilities = {
 		},
 		onBasePowerPriority: 8,
 		onBasePower: function (basePower, pokemon, target, move) {
-			// @ts-ignore
-			if (move.hasParentalBond && ++move.hit > 1) return this.chainModify(0.25);
+			if (move.hasParentalBond && typeof move.hit === 'number' && ++move.hit > 1) return this.chainModify(0.25);
 		},
 		onSourceModifySecondaries: function (secondaries, target, source, move) {
-			// @ts-ignore
-			if (move.hasParentalBond && move.id === 'secretpower' && move.hit < 2) {
+			if (move.hasParentalBond && move.id === 'secretpower' && move.hit && move.hit < 2) {
 				// hack to prevent accidentally suppressing King's Rock/Razor Fang
 				return secondaries.filter(effect => effect.volatileStatus === 'flinch');
 			}
@@ -2326,6 +2324,7 @@ let BattleAbilities = {
 					source.item = yourItem.id;
 					return;
 				}
+				this.add('-enditem', source, yourItem, '[silent]', '[from] ability: Pickpocket', '[of] ' + source);
 				this.add('-item', target, yourItem, '[from] ability: Pickpocket', '[of] ' + source);
 			}
 		},
@@ -2354,8 +2353,8 @@ let BattleAbilities = {
 		num: 182,
 	},
 	"plus": {
-		desc: "If an active ally has this Ability or the Ability Minus, this Pokemon's Special Attack is multiplied by 1.5.",
-		shortDesc: "If an active ally has this Ability or the Ability Minus, this Pokemon's Sp. Atk is 1.5x.",
+		desc: "If an active ally has this Ability or the Minus Ability, this Pokemon's Special Attack is multiplied by 1.5.",
+		shortDesc: "If an active ally has this Ability or the Minus Ability, this Pokemon's Sp. Atk is 1.5x.",
 		onModifySpAPriority: 5,
 		onModifySpA: function (spa, pokemon) {
 			if (pokemon.side.active.length === 1) {
@@ -2428,13 +2427,7 @@ let BattleAbilities = {
 			if (pokemon.baseTemplate.baseSpecies !== 'Zygarde' || pokemon.transformed || !pokemon.hp) return;
 			if (pokemon.template.speciesid === 'zygardecomplete' || pokemon.hp > pokemon.maxhp / 2) return;
 			this.add('-activate', pokemon, 'ability: Power Construct');
-			let template = this.getTemplate('Zygarde-Complete');
-			pokemon.formeChange(template);
-			pokemon.baseTemplate = template;
-			pokemon.details = template.species + (pokemon.level === 100 ? '' : ', L' + pokemon.level) + (pokemon.gender === '' ? '' : ', ' + pokemon.gender) + (pokemon.set.shiny ? ', shiny' : '');
-			this.add('detailschange', pokemon, pokemon.details);
-			pokemon.setAbility(template.abilities['0']);
-			pokemon.baseAbility = pokemon.ability;
+			pokemon.formeChange('Zygarde-Complete', this.effect, true);
 			let newHP = Math.floor(Math.floor(2 * pokemon.template.baseStats['hp'] + pokemon.set.ivs['hp'] + Math.floor(pokemon.set.evs['hp'] / 4) + 100) * pokemon.level / 100 + 10);
 			pokemon.hp = newHP - (pokemon.maxhp - pokemon.hp);
 			pokemon.maxhp = newHP;
@@ -2517,7 +2510,7 @@ let BattleAbilities = {
 		num: 189,
 	},
 	"prismarmor": {
-		desc: "This Pokemon receives 3/4 damage from supereffective attacks. Moongeist Beam, Sunsteel Strike, and the Abilities Mold Breaker, Teravolt, and Turboblaze cannot ignore this Ability.",
+		desc: "This Pokemon receives 3/4 damage from supereffective attacks. Moongeist Beam, Sunsteel Strike, and the Mold Breaker, Teravolt, and Turboblaze Abilities cannot ignore this Ability.",
 		shortDesc: "This Pokemon receives 3/4 damage from supereffective attacks.",
 		onSourceModifyDamage: function (damage, source, target, move) {
 			if (move.typeMod > 0) {
@@ -2580,7 +2573,7 @@ let BattleAbilities = {
 		},
 		id: "queenlymajesty",
 		name: "Queenly Majesty",
-		rating: 3.5,
+		rating: 3,
 		num: 214,
 	},
 	"quickfeet": {
@@ -2840,12 +2833,10 @@ let BattleAbilities = {
 			if (pokemon.hp > pokemon.maxhp / 4) {
 				if (pokemon.template.speciesid === 'wishiwashi') {
 					pokemon.formeChange('Wishiwashi-School');
-					this.add('-formechange', pokemon, 'Wishiwashi-School', '[from] ability: Schooling');
 				}
 			} else {
 				if (pokemon.template.speciesid === 'wishiwashischool') {
 					pokemon.formeChange('Wishiwashi');
-					this.add('-formechange', pokemon, 'Wishiwashi', '[from] ability: Schooling');
 				}
 			}
 		},
@@ -2855,12 +2846,10 @@ let BattleAbilities = {
 			if (pokemon.hp > pokemon.maxhp / 4) {
 				if (pokemon.template.speciesid === 'wishiwashi') {
 					pokemon.formeChange('Wishiwashi-School');
-					this.add('-formechange', pokemon, 'Wishiwashi-School', '[from] ability: Schooling');
 				}
 			} else {
 				if (pokemon.template.speciesid === 'wishiwashischool') {
 					pokemon.formeChange('Wishiwashi');
-					this.add('-formechange', pokemon, 'Wishiwashi', '[from] ability: Schooling');
 				}
 			}
 		},
@@ -2891,8 +2880,7 @@ let BattleAbilities = {
 			if (move.secondaries) {
 				this.debug('doubling secondary chance');
 				for (const secondary of move.secondaries) {
-					// @ts-ignore
-					secondary.chance *= 2;
+					if (secondary.chance) secondary.chance *= 2;
 				}
 			}
 		},
@@ -2902,7 +2890,7 @@ let BattleAbilities = {
 		num: 32,
 	},
 	"shadowshield": {
-		desc: "If this Pokemon is at full HP, damage taken from attacks is halved. Moongeist Beam, Sunsteel Strike, and the Abilities Mold Breaker, Teravolt, and Turboblaze cannot ignore this Ability.",
+		desc: "If this Pokemon is at full HP, damage taken from attacks is halved. Moongeist Beam, Sunsteel Strike, and the Mold Breaker, Teravolt, and Turboblaze Abilities cannot ignore this Ability.",
 		shortDesc: "If this Pokemon is at full HP, damage taken from attacks is halved.",
 		onSourceModifyDamage: function (damage, source, target, move) {
 			if (target.hp >= target.maxhp) {
@@ -2958,6 +2946,8 @@ let BattleAbilities = {
 		onModifyMove: function (move, pokemon) {
 			if (move.secondaries) {
 				delete move.secondaries;
+				// Technically not a secondary effect, but it is negated
+				if (move.id === 'clangoroussoulblaze') delete move.selfBoost;
 				// Actual negation of `AfterMoveSecondary` effects implemented in scripts.js
 				move.hasSheerForce = true;
 			}
@@ -2991,19 +2981,17 @@ let BattleAbilities = {
 		num: 19,
 	},
 	"shieldsdown": {
-		desc: "If this Pokemon is a Minior, it changes to its Core forme if it has 1/2 or less of its maximum HP, and changes to Meteor Form if it has more than 1/2 its maximum HP. This check is done on switch-in and at the end of each turn. While in its Meteor Form, it cannot become affected by major status conditions. Moongeist Beam, Sunsteel Strike, and the Abilities Mold Breaker, Teravolt, and Turboblaze cannot ignore this Ability.",
+		desc: "If this Pokemon is a Minior, it changes to its Core forme if it has 1/2 or less of its maximum HP, and changes to Meteor Form if it has more than 1/2 its maximum HP. This check is done on switch-in and at the end of each turn. While in its Meteor Form, it cannot become affected by major status conditions. Moongeist Beam, Sunsteel Strike, and the Mold Breaker, Teravolt, and Turboblaze Abilities cannot ignore this Ability.",
 		shortDesc: "If Minior, switch-in/end of turn it changes to Core at 1/2 max HP or less, else Meteor.",
 		onStart: function (pokemon) {
 			if (pokemon.baseTemplate.baseSpecies !== 'Minior' || pokemon.transformed) return;
 			if (pokemon.hp > pokemon.maxhp / 2) {
 				if (pokemon.template.speciesid === 'minior') {
 					pokemon.formeChange('Minior-Meteor');
-					this.add('-formechange', pokemon, 'Minior-Meteor', '[from] ability: Shields Down');
 				}
 			} else {
 				if (pokemon.template.speciesid !== 'minior') {
 					pokemon.formeChange(pokemon.set.species);
-					this.add('-formechange', pokemon, pokemon.set.species, '[from] ability: Shields Down');
 				}
 			}
 		},
@@ -3013,12 +3001,10 @@ let BattleAbilities = {
 			if (pokemon.hp > pokemon.maxhp / 2) {
 				if (pokemon.template.speciesid === 'minior') {
 					pokemon.formeChange('Minior-Meteor');
-					this.add('-formechange', pokemon, 'Minior-Meteor', '[msg]', '[from] ability: Shields Down');
 				}
 			} else {
 				if (pokemon.template.speciesid !== 'minior') {
 					pokemon.formeChange(pokemon.set.species);
-					this.add('-formechange', pokemon, pokemon.set.species, '[msg]', '[from] ability: Shields Down');
 				}
 			}
 		},
@@ -3279,9 +3265,7 @@ let BattleAbilities = {
 			if (attacker.template.baseSpecies !== 'Aegislash' || attacker.transformed) return;
 			if (move.category === 'Status' && move.id !== 'kingsshield') return;
 			let targetSpecies = (move.id === 'kingsshield' ? 'Aegislash' : 'Aegislash-Blade');
-			if (attacker.template.species !== targetSpecies && attacker.formeChange(targetSpecies)) {
-				this.add('-formechange', attacker, targetSpecies, '[from] ability: Stance Change');
-			}
+			if (attacker.template.species !== targetSpecies) attacker.formeChange(targetSpecies);
 		},
 		id: "stancechange",
 		name: "Stance Change",
@@ -3522,17 +3506,15 @@ let BattleAbilities = {
 		desc: "If an ally uses its item, this Pokemon gives its item to that ally immediately. Does not activate if the ally's item was stolen or knocked off.",
 		shortDesc: "If an ally uses its item, this Pokemon gives its item to that ally immediately.",
 		onAllyAfterUseItem: function (item, pokemon) {
-			let sourceItem = this.effectData.target.getItem();
-			if (!sourceItem) return;
+			let source = this.effectData.target;
+			let myItem = source.takeItem();
+			if (!myItem) return;
 			// @ts-ignore
-			if (!this.singleEvent('TakeItem', item, this.effectData.target.itemData, this.effectData.target, pokemon, this.effectData, item)) return;
-			sourceItem = this.effectData.target.takeItem();
-			if (!sourceItem) {
+			if (!this.singleEvent('TakeItem', myItem, source.itemData, pokemon, source, this.effectData, myItem) || !pokemon.setItem(myItem)) {
+				source.item = myItem.id;
 				return;
 			}
-			if (pokemon.setItem(sourceItem)) {
-				this.add('-activate', this.effectData.target, 'ability: Symbiosis', sourceItem, '[of] ' + pokemon);
-			}
+			this.add('-activate', source, 'ability: Symbiosis', myItem, '[of] ' + pokemon);
 		},
 		id: "symbiosis",
 		name: "Symbiosis",
@@ -3547,6 +3529,8 @@ let BattleAbilities = {
 			if (effect && effect.id === 'toxicspikes') return;
 			if (status.id === 'slp' || status.id === 'frz') return;
 			this.add('-activate', target, 'ability: Synchronize');
+			// Hack to make status-prevention abilities think Synchronize is a status move
+			// and show messages when activating against it.
 			// @ts-ignore
 			source.trySetStatus(status, target, {status: status.id, id: 'synchronize'});
 		},
@@ -3708,17 +3692,22 @@ let BattleAbilities = {
 		num: 181,
 	},
 	"trace": {
-		desc: "On switch-in, this Pokemon copies a random adjacent opposing Pokemon's Ability. If there is no Ability that can be copied at that time, this Ability will activate as soon as an Ability can be copied. Abilities that cannot be copied are Comatose, Disguise, Flower Gift, Forecast, Illusion, Imposter, Multitype, Schooling, Stance Change, Trace, and Zen Mode.",
+		desc: "On switch-in, or when this Pokemon acquires this ability, this Pokemon copies a random adjacent opposing Pokemon's Ability. However, if one or more adjacent Pokemon has the Ability \"No Ability\", Trace won't copy anything even if there is another valid Ability it could normally copy. Otherwise, if there is no Ability that can be copied at that time, this Ability will activate as soon as an Ability can be copied. Abilities that cannot be copied are the previously mentioned \"No Ability\", as well as Comatose, Disguise, Flower Gift, Forecast, Illusion, Imposter, Multitype, Schooling, Stance Change, Trace, and Zen Mode.",
 		shortDesc: "On switch-in, or when it can, this Pokemon copies a random adjacent foe's Ability.",
+		onStart: function (pokemon) {
+			if (pokemon.side.foe.active.some(foeActive => foeActive && this.isAdjacent(pokemon, foeActive) && foeActive.ability === 'noability')) {
+				this.effectData.gaveUp = true;
+			}
+		},
 		onUpdate: function (pokemon) {
-			if (!pokemon.isStarted) return;
+			if (!pokemon.isStarted || this.effectData.gaveUp) return;
 			let possibleTargets = pokemon.side.foe.active.filter(foeActive => foeActive && this.isAdjacent(pokemon, foeActive));
 			while (possibleTargets.length) {
 				let rand = 0;
 				if (possibleTargets.length > 1) rand = this.random(possibleTargets.length);
 				let target = possibleTargets[rand];
 				let ability = this.getAbility(target.ability);
-				let bannedAbilities = ['battlebond', 'comatose', 'disguise', 'flowergift', 'forecast', 'illusion', 'imposter', 'multitype', 'powerconstruct', 'powerofalchemy', 'receiver', 'rkssystem', 'schooling', 'shieldsdown', 'stancechange', 'trace', 'zenmode'];
+				let bannedAbilities = ['noability', 'battlebond', 'comatose', 'disguise', 'flowergift', 'forecast', 'illusion', 'imposter', 'multitype', 'powerconstruct', 'powerofalchemy', 'receiver', 'rkssystem', 'schooling', 'shieldsdown', 'stancechange', 'trace', 'zenmode'];
 				if (bannedAbilities.includes(target.ability)) {
 					possibleTargets.splice(rand, 1);
 					continue;
@@ -3745,17 +3734,21 @@ let BattleAbilities = {
 	},
 	"truant": {
 		shortDesc: "This Pokemon skips every other turn instead of using a move.",
+		onStart: function (pokemon) {
+			pokemon.removeVolatile('truant');
+			if (pokemon.activeTurns && (pokemon.moveThisTurnResult !== undefined || !this.willMove(pokemon))) {
+				pokemon.addVolatile('truant');
+			}
+		},
 		onBeforeMovePriority: 9,
-		onBeforeMove: function (pokemon, target, move) {
+		onBeforeMove: function (pokemon) {
 			if (pokemon.removeVolatile('truant')) {
 				this.add('cant', pokemon, 'ability: Truant');
 				return false;
 			}
 			pokemon.addVolatile('truant');
 		},
-		effect: {
-			duration: 2,
-		},
+		effect: {},
 		id: "truant",
 		name: "Truant",
 		rating: -2,
@@ -4075,18 +4068,14 @@ let BattleAbilities = {
 			if (!pokemon.volatiles['zenmode'] || !pokemon.hp) return;
 			pokemon.transformed = false;
 			delete pokemon.volatiles['zenmode'];
-			if (pokemon.formeChange('Darmanitan')) {
-				this.add('-formechange', pokemon, 'Darmanitan', '[silent]');
-			}
+			pokemon.formeChange('Darmanitan', this.effect, false, '[silent]');
 		},
 		effect: {
 			onStart: function (pokemon) {
-				if (pokemon.template.speciesid === 'darmanitanzen' || !pokemon.formeChange('Darmanitan-Zen')) return;
-				this.add('-formechange', pokemon, 'Darmanitan-Zen', '[from] ability: Zen Mode');
+				if (pokemon.template.speciesid !== 'darmanitanzen') pokemon.formeChange('Darmanitan-Zen');
 			},
 			onEnd: function (pokemon) {
-				if (!pokemon.formeChange('Darmanitan')) return;
-				this.add('-formechange', pokemon, 'Darmanitan', '[from] ability: Zen Mode');
+				pokemon.formeChange('Darmanitan');
 			},
 		},
 		id: "zenmode",
@@ -4151,7 +4140,8 @@ let BattleAbilities = {
 		num: -3,
 	},
 	"persistent": {
-		shortDesc: "The duration of certain field effects is increased by 2 turns if used by this Pokemon.",
+		desc: "The duration of Gravity, Heal Block, Magic Room, Safeguard, Tailwind, Trick Room, and Wonder Room is increased by 2 turns if the effect is started by this Pokemon.",
+		shortDesc: "When used, Gravity/Heal Block/Safeguard/Tailwind/Room effects last 2 more turns.",
 		id: "persistent",
 		isNonstandard: true,
 		name: "Persistent",
