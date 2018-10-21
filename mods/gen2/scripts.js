@@ -10,7 +10,7 @@ let BattleScripts = {
 	gen: 2,
 	// BattlePokemon scripts.
 	pokemon: {
-		getStat: function (statName, unboosted, unmodified) {
+		getStat(statName, unboosted, unmodified) {
 			statName = toId(statName);
 			if (statName === 'hp') return this.maxhp;
 
@@ -65,16 +65,16 @@ let BattleScripts = {
 		},
 	},
 	// Battle scripts.
-	runMove: function (move, pokemon, targetLoc, sourceEffect) {
-		let target = this.getTarget(pokemon, move, targetLoc);
-		if (!sourceEffect && toId(move) !== 'struggle') {
-			let changedMove = this.runEvent('OverrideAction', pokemon, target, move);
+	runMove(moveOrMoveName, pokemon, targetLoc, sourceEffect) {
+		let target = this.getTarget(pokemon, moveOrMoveName, targetLoc);
+		if (!sourceEffect && toId(moveOrMoveName) !== 'struggle') {
+			let changedMove = this.runEvent('OverrideAction', pokemon, target, moveOrMoveName);
 			if (changedMove && changedMove !== true) {
-				move = changedMove;
+				moveOrMoveName = changedMove;
 				target = null;
 			}
 		}
-		move = this.getMove(move);
+		let move = this.getActiveMove(moveOrMoveName);
 		if (!target && target !== false) target = this.resolveTarget(pokemon, move);
 
 		this.setActiveMove(move, pokemon, target);
@@ -115,7 +115,7 @@ let BattleScripts = {
 		this.singleEvent('AfterMove', move, null, pokemon, target, move);
 		if (!move.selfSwitch && target && target.hp > 0) this.runEvent('AfterMoveSelf', pokemon, target, move);
 	},
-	tryMoveHit: function (target, pokemon, move) {
+	tryMoveHit(target, pokemon, move) {
 		let positiveBoostTable = [1, 1.33, 1.66, 2, 2.33, 2.66, 3];
 		let negativeBoostTable = [1, 0.75, 0.6, 0.5, 0.43, 0.36, 0.33];
 		let doSelfDestruct = true;
@@ -230,6 +230,7 @@ let BattleScripts = {
 			let i;
 			for (i = 0; i < hits && target.hp && pokemon.hp; i++) {
 				if (pokemon.status === 'slp' && !isSleepUsable) break;
+				move.hit = i + 1;
 				moveDamage = this.moveHit(target, pokemon, move);
 				if (moveDamage === false) break;
 				if (nullDamage && (moveDamage || moveDamage === 0 || moveDamage === undefined)) nullDamage = false;
@@ -261,9 +262,9 @@ let BattleScripts = {
 		}
 		return damage;
 	},
-	moveHit: function (target, pokemon, move, moveData, isSecondary, isSelf) {
+	moveHit(target, pokemon, move, moveData, isSecondary, isSelf) {
 		let damage;
-		move = this.getMoveCopy(move);
+		move = this.getActiveMove(move);
 
 		if (!moveData) moveData = move;
 		/**@type {?boolean | number} */
@@ -429,22 +430,19 @@ let BattleScripts = {
 		}
 		return damage;
 	},
-	getDamage: function (pokemon, target, move, suppressMessages) {
+	getDamage(pokemon, target, move, suppressMessages) {
 		// First of all, we get the move.
 		if (typeof move === 'string') {
-			move = this.getMove(move);
+			move = this.getActiveMove(move);
 		} else if (typeof move === 'number') {
-			// @ts-ignore
-			move = {
+			move = /** @type {ActiveMove} */ ({
 				basePower: move,
 				type: '???',
 				category: 'Physical',
 				willCrit: false,
 				flags: {},
-			};
+			});
 		}
-
-		move = /**@type {Move} */ (move); // eslint-disable-line no-self-assign
 
 		// Let's test for immunities.
 		if (!move.ignoreImmunity || (move.ignoreImmunity !== true && !move.ignoreImmunity[move.type])) {
@@ -581,6 +579,7 @@ let BattleScripts = {
 
 		// Gen 2 Present has a glitched damage calculation using the secondary types of the Pokemon for the Attacker's Level and Defender's Defense.
 		if (move.id === 'present') {
+			/**@type {{[k: string]: number}} */
 			const typeIndexes = {"Normal": 0, "Fighting": 1, "Flying": 2, "Poison": 3, "Ground": 4, "Rock": 5, "Bug": 7, "Ghost": 8, "Steel": 9, "Fire": 20, "Water": 21, "Grass": 22, "Electric": 23, "Psychic": 24, "Ice": 25, "Dragon": 26, "Dark": 27};
 			attack = 10;
 
@@ -662,7 +661,7 @@ let BattleScripts = {
 		// We are done, this is the final damage
 		return damage;
 	},
-	damage: function (damage, target, source, effect) {
+	damage(damage, target, source, effect) {
 		if (this.event) {
 			if (!target) target = this.event.target;
 			if (!source) source = this.event.source;

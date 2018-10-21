@@ -154,9 +154,11 @@ class Pokemon {
 		 */
 		this.moveThisTurnResult = undefined;
 
+		/** used for Assurance check */
+		this.hurtThisTurn = false;
 		this.lastDamage = 0;
-		/**@type {?{pokemon: Pokemon, damage: number, thisTurn: boolean, move?: string}} */
-		this.lastAttackedBy = null;
+		/**@type {{source: Pokemon, damage: number, thisTurn: boolean, move?: string}[]} */
+		this.attackedBy = [];
 		this.usedItemThisTurn = false;
 		this.newlySwitched = false;
 		this.beingCalledBack = false;
@@ -174,6 +176,7 @@ class Pokemon {
 
 		let genders = {M: 'M', F: 'F', N: 'N'};
 		/**@type {GenderName} */
+		// @ts-ignore
 		this.gender = genders[set.gender] || this.template.gender || (this.battle.random() * 2 < 1 ? 'M' : 'F');
 		if (this.gender === 'N') this.gender = '';
 		this.happiness = typeof set.happiness === 'number' ? this.battle.clampIntRange(set.happiness, 0, 255) : 255;
@@ -186,6 +189,7 @@ class Pokemon {
 
 		/**@type {AnyObject} */
 		this.statusData = {};
+		/**@type {AnyObject} */
 		this.volatiles = {};
 
 		this.heightm = this.template.heightm;
@@ -195,7 +199,9 @@ class Pokemon {
 		this.baseAbility = toId(set.ability);
 		this.ability = this.baseAbility;
 		this.item = toId(set.item);
+		/**@type {{[k: string]: string | Pokemon}} */
 		this.abilityData = {id: this.ability};
+		/**@type {{[k: string]: string | Pokemon}} */
 		this.itemData = {id: this.item};
 		this.speciesData = {id: this.speciesid};
 
@@ -269,6 +275,7 @@ class Pokemon {
 
 		/**@type {BoostsTable} */
 		this.boosts = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0, accuracy: 0, evasion: 0};
+		/**@type {{[k: string]: number}} */
 		this.stats = {atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
 
 		// This is used in gen 1 only, here to avoid code repetition.
@@ -366,8 +373,10 @@ class Pokemon {
 		// stat boosts
 		// boost = this.boosts[statName];
 		let boosts = {};
+		// @ts-ignore
 		boosts[statName] = boost;
 		boosts = this.battle.runEvent('ModifyBoost', this, null, null, boosts);
+		// @ts-ignore
 		boost = boosts[statName];
 		let boostTable = [1, 1.5, 2, 2.5, 3, 3.5, 4];
 		if (boost > 6) boost = 6;
@@ -430,6 +439,7 @@ class Pokemon {
 		// stat modifier effects
 		if (!unmodified) {
 			let statTable = {atk: 'Atk', def: 'Def', spa: 'SpA', spd: 'SpD', spe: 'Spe'};
+			// @ts-ignore
 			stat = this.battle.runEvent('Modify' + statTable[statName], this, null, null, stat);
 		}
 
@@ -550,6 +560,7 @@ class Pokemon {
 	}
 
 	ignoringItem() {
+		// @ts-ignore
 		return !!((this.battle.gen >= 5 && !this.isActive) || (this.hasAbility('klutz') && !this.getItem().ignoreKlutz) || this.volatiles['embargo'] || this.battle.pseudoWeather['magicroom']);
 	}
 
@@ -602,12 +613,18 @@ class Pokemon {
 	gotAttacked(move, damage, source) {
 		if (!damage) damage = 0;
 		move = this.battle.getMove(move);
-		this.lastAttackedBy = {
-			pokemon: source,
+		let lastAttackedBy = {
+			source: source,
 			damage: damage,
 			move: move.id,
 			thisTurn: true,
 		};
+		this.attackedBy.push(lastAttackedBy);
+	}
+
+	getLastAttackedBy() {
+		if (this.attackedBy.length === 0) return undefined;
+		return this.attackedBy[this.attackedBy.length - 1];
 	}
 
 	/**
@@ -696,6 +713,7 @@ class Pokemon {
 		let isLastActive = this.isLastActive();
 		let canSwitchIn = this.battle.canSwitch(this.side) > 0;
 		let moves = this.getMoves(lockedMove, isLastActive);
+		/**@type {{moves: {move: string, id: string, target?: string, disabled?: boolean}[], maybeDisabled?: boolean, trapped?: boolean, maybeTrapped?: boolean, canMegaEvo?: boolean, canUltraBurst?: boolean, canZMove?: AnyObject | null}} */
 		let data = {moves: moves.length ? moves : [{move: 'Struggle', id: 'struggle', target: 'randomNormal', disabled: false}]};
 
 		if (isLastActive) {
@@ -921,6 +939,7 @@ class Pokemon {
 		this.apparentType = rawTemplate.types.join('/');
 		this.addedType = template.addedType || '';
 		this.knownType = true;
+		if (this.battle.gen >= 7) this.removeVolatile('autotomize');
 
 		if (source) {
 			let stats = this.battle.spreadModify(this.template.baseStats, this.set);
@@ -955,7 +974,12 @@ class Pokemon {
 						this.battle.add('-burst', this, apparentSpecies, template.requiredItem);
 						this.moveThisTurnResult = true; // Ultra Burst counts as an action for Truant
 					} else if (source.onPrimal) {
-						this.battle.add('-primal', !this.illusion && this);
+						if (this.illusion) {
+							this.ability = '';
+							this.battle.add('-primal', this.illusion);
+						} else {
+							this.battle.add('-primal', this);
+						}
 					} else {
 						this.battle.add('-mega', this, apparentSpecies, template.requiredItem);
 						this.moveThisTurnResult = true; // Mega Evolution counts as an action for Truant
@@ -1022,7 +1046,8 @@ class Pokemon {
 		this.moveThisTurn = '';
 
 		this.lastDamage = 0;
-		this.lastAttackedBy = null;
+		this.attackedBy = [];
+		this.hurtThisTurn = false;
 		this.newlySwitched = true;
 		this.beingCalledBack = false;
 
@@ -1073,11 +1098,9 @@ class Pokemon {
 	 * @param {Effect?} effect
 	 */
 	damage(d, source = null, effect = null) {
-		if (!this.hp) return 0;
+		if (!this.hp || isNaN(d) || d <= 0) return 0;
 		if (d < 1 && d > 0) d = 1;
 		d = Math.floor(d);
-		if (isNaN(d)) return 0;
-		if (d <= 0) return 0;
 		this.hp -= d;
 		if (this.hp <= 0) {
 			d += this.hp;

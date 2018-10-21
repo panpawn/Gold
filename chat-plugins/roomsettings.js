@@ -171,8 +171,20 @@ class RoomSettings {
 			return `${this.button('Mafia enabled', null, 'mafia enable')} ${this.button('off', true)}`;
 		}
 	}
+	language() {
+		const languageList = ['Portuguese', 'Spanish', 'Italian', 'French', 'Simplified Chinese', 'Traditional Chinese', 'Japanese', 'Hindi', 'Turkish', 'Dutch', 'German'];
+		if (!this.user.can('editroom', null, this.room)) return this.button(this.room.language ? this.room.language : 'English', true);
+
+		let languageOutput = [];
+		languageOutput.push(this.button(`English`, !this.room.language, 'roomlanguage english'));
+		for (let language of languageList) {
+			languageOutput.push(this.button(`${language}`, this.room.language === toId(language), `roomlanguage ${toId(language)}`));
+		}
+		return languageOutput.join(' ');
+	}
 	generateDisplay(user, room, connection) {
 		let output = Chat.html`<div class="infobox">Room Settings for ${this.room.title}<br />`;
+		output += `<strong>Language:</strong> <br />${this.language()}<br />`;
 		output += `<strong>Modchat:</strong> <br />${this.modchat()}<br />`;
 		output += `<strong>Modjoin:</strong> <br />${this.modjoin()}<br />`;
 		output += `<strong>Stretch filter:</strong> <br />${this.stretching()}<br />`;
@@ -365,6 +377,43 @@ exports.commands = {
 		`/modjoin [sync|off] - Sets modjoin. Only users who can speak in modchat can join this room. Requires: \u2606 # & ~`,
 	],
 
+	roomlanguage: function (target, room, user) {
+		const languageTable = {
+			__proto__: null,
+			portuguese: 'Portuguese',
+			spanish: 'Spanish',
+			italian: 'Italian',
+			french: 'French',
+			simplifiedchinese: 'Simplified Chinese',
+			traditionalchinese: 'Traditional Chinese',
+			japanese: 'Japanese',
+			hindi: 'Hindi',
+			turkish: 'Turkish',
+			dutch: 'Dutch',
+			german: 'German',
+			// Listed as "false" under room.language
+			english: 'English',
+		};
+		if (!target) return this.sendReply(`This room's primary language is ${languageTable[room.language] || 'English'}`);
+		if (!this.can('editroom', null, room)) return false;
+
+		let targetLanguage = toId(target);
+		if (!(targetLanguage in languageTable)) return this.errorReply(`"${target}" is not a supported language.`);
+
+		room.language = targetLanguage === 'english' ? false : targetLanguage;
+
+		if (room.chatRoomData) {
+			room.chatRoomData.language = room.language;
+			Rooms.global.writeChatRoomData();
+		}
+		this.modlog(`LANGUAGE`, null, languageTable[targetLanguage]);
+		this.sendReply(`The room's language has been set to ${languageTable[targetLanguage]}`);
+	},
+	roomlanguagehelp: [
+		`/roomlanguage [language] - Sets the the language for the room, which changes language of a few commands. Requires # & ~`,
+		`Supported Languages: English, Spanish, Italian, French, Simplified Chinese, Traditional Chinese, Japanese, Hindi, Turkish, Dutch, German.`,
+	],
+
 	slowchat: function (target, room, user) {
 		if (!target) {
 			const slowchatSetting = (room.slowchat || "OFF");
@@ -377,14 +426,12 @@ exports.commands = {
 		if (this.meansNo(target)) {
 			if (!room.slowchat) return this.errorReply(`Slow chat is already disabled in this room.`);
 			room.slowchat = false;
-			this.add("|raw|<div class=\"broadcast-blue\"><strong>Slow chat was disabled!</strong><br />There is no longer a set minimum time between messages.</div>");
 		} else if (targetInt) {
 			if (!user.can('bypassall') && room.userCount < SLOWCHAT_USER_REQUIREMENT) return this.errorReply(`This room must have at least ${SLOWCHAT_USER_REQUIREMENT} users to set slowchat; it only has ${room.userCount} right now.`);
 			if (room.slowchat === targetInt) return this.errorReply(`Slow chat is already set to ${room.slowchat} seconds in this room.`);
 			if (targetInt < SLOWCHAT_MINIMUM) targetInt = SLOWCHAT_MINIMUM;
 			if (targetInt > SLOWCHAT_MAXIMUM) targetInt = SLOWCHAT_MAXIMUM;
 			room.slowchat = targetInt;
-			this.add(`|raw|<div class="broadcast-red"><strong>Slow chat was enabled!</strong><br />Messages must have at least ${room.slowchat} seconds between them.</div>`);
 		} else {
 			return this.parse("/help slowchat");
 		}

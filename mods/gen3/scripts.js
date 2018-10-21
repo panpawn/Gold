@@ -4,7 +4,7 @@
 let BattleScripts = {
 	inherit: 'gen4',
 	gen: 3,
-	init: function () {
+	init() {
 		for (let i in this.data.Pokedex) {
 			delete this.data.Pokedex[i].abilities['H'];
 		}
@@ -19,7 +19,7 @@ let BattleScripts = {
 			}
 		}
 	},
-	tryMoveHit: function (target, pokemon, move) {
+	tryMoveHit(target, pokemon, move) {
 		this.setActiveMove(move, pokemon, target);
 		let hitResult = true;
 		let naturalImmunity = false;
@@ -154,6 +154,7 @@ let BattleScripts = {
 			let i;
 			for (i = 0; i < hits && target.hp && pokemon.hp; i++) {
 				if (pokemon.status === 'slp' && !isSleepUsable) break;
+				move.hit = i + 1;
 
 				if (move.multiaccuracy && i > 0) {
 					accuracy = move.accuracy;
@@ -221,7 +222,7 @@ let BattleScripts = {
 		return damage;
 	},
 
-	calcRecoilDamage: function (damageDealt, move) {
+	calcRecoilDamage(damageDealt, move) {
 		// @ts-ignore
 		return this.clampIntRange(Math.floor(damageDealt * move.recoil[0] / move.recoil[1]), 1);
 	},

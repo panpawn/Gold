@@ -616,6 +616,13 @@ class Battle {
 		while ((next = await this.stream.read())) {
 			this.receive(next.split('\n'));
 		}
+		if (!this.ended) {
+			this.room.add(`|bigerror|The simulator process has crashed. We've been notified and will fix this ASAP.`);
+			Monitor.crashlog(new Error(`Process disconnected`), `A battle`);
+			this.started = true;
+			this.ended = true;
+			this.checkActive();
+		}
 	}
 	receive(/** @type {string[]} */ lines) {
 		switch (lines[0]) {
@@ -1040,6 +1047,7 @@ class Battle {
 		this[slot] = player;
 		this.playerNames[slotNum] = player.name;
 
+		/**@type {{name: string, avatar: string, team?: string}} */
 		let options = {
 			name: player.name,
 			avatar: '' + user.avatar,
@@ -1085,6 +1093,7 @@ class Battle {
 	}
 
 	destroy() {
+		this.ended = true;
 		this.stream.destroy();
 		if (this.active) {
 			Rooms.global.battleCount += -1;

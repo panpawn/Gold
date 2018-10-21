@@ -176,6 +176,7 @@ let HostLeaderboard = new PlayerLadder(HOST_DATA_FILE);
 let PlayerLeaderboard = new PlayerLadder(PLAYER_DATA_FILE);
 
 function formatQueue(queue = [], viewer, room) {
+	const isStaff = viewer.can('mute', null, room);
 	const queueDisabled = room.scavQueueDisabled;
 	const timerDuration = room.defaultScavTimer || DEFAULT_TIMER_DURATION;
 	let buffer;
@@ -184,7 +185,9 @@ function formatQueue(queue = [], viewer, room) {
 	} else {
 		buffer = `<tr><td colspan=3>The scavenger queue is currently empty.</td></tr>`;
 	}
-	return `<div class="ladder"><table style="width: 100%"><tr><th>By</th><th>Questions</th></tr>${buffer}</table></div><table style="width: 100%"><tr><td style="text-align: left;">Auto Timer Duration: ${timerDuration} minutes</td><td>Auto Dequeue: <button class="button${!queueDisabled ? '" name="send" value="/scav disablequeue"' : ' disabled" style="font-weight:bold; color:#575757; font-weight:bold; background-color:#d3d3d3;"'}>OFF</button>&nbsp;<button class="button${queueDisabled ? '" name="send" value="/scav enablequeue"' : ' disabled" style="font-weight:bold; color:#575757; font-weight:bold; background-color:#d3d3d3;"'}>ON</button></td><td style="text-align: right;"><button class="button" name="send" value="/scav next 0">Start the next hunt</button></td></tr></table>`;
+	let template = `<div class="ladder"><table style="width: 100%"><tr><th>By</th><th>Questions</th></tr>${isStaff ? buffer : buffer.replace(/<button.*?>.+?<\/button>/gi, '')}</table></div>`;
+	if (isStaff) template += `<table style="width: 100%"><tr><td style="text-align: left;">Auto Timer Duration: ${timerDuration} minutes</td><td>Auto Dequeue: <button class="button${!queueDisabled ? '" name="send" value="/scav disablequeue"' : ' disabled" style="font-weight:bold; color:#575757; font-weight:bold; background-color:#d3d3d3;"'}>OFF</button>&nbsp;<button class="button${queueDisabled ? '" name="send" value="/scav enablequeue"' : ' disabled" style="font-weight:bold; color:#575757; font-weight:bold; background-color:#d3d3d3;"'}>ON</button></td><td style="text-align: right;"><button class="button" name="send" value="/scav next 0">Start the next hunt</button></td></tr></table>`;
+	return template;
 }
 
 function formatOrder(place) {
@@ -522,7 +525,7 @@ class ScavengerHunt extends Rooms.RoomGame {
 		}
 
 		let uniqueConnections = this.getUniqueConnections(Users(player.userid));
-		if (uniqueConnections > 1) {
+		if (uniqueConnections > 1 && this.room.scavmod && this.room.scavmod.ipcheck) {
 			// multiple users on one alt
 			player.sendRoom("You have been caught for attempting a hunt with multiple connections on your account.  Staff has been notified.");
 
@@ -1044,7 +1047,6 @@ let commands = {
 
 	viewqueue: function (target, room, user) {
 		if (room.id !== 'scavengers') return this.errorReply("This command can only be used in the scavengers room.");
-		if (!this.can('mute', null, room)) return false;
 
 		this.sendReply(`|uhtml|scav-queue|${formatQueue(room.scavQueue, user, room)}`);
 	},
@@ -1372,6 +1374,46 @@ let commands = {
 
 		this.privateModAction(`(${user.name} has ${(change > 0 ? 'given' : 'taken')} one infraction point ${(change > 0 ? 'to' : 'from')} '${targetId}'.)`);
 		this.modlog(`SCAV ${this.cmd.toUpperCase()}`, user);
+	},
+
+	modsettings: {
+		'': 'update',
+		'update': function (target, room, user) {
+			if (!this.can('declare', null, room) || room.id !== 'scavengers') return false;
+			let settings = room.scavmod || {};
+
+			this.sendReply(`|uhtml${this.cmd === 'update' ? 'change' : ''}|scav-modsettings|<div class=infobox><strong>Scavenger Moderation Settings:</strong><br /><br />` +
+				`<button name=send value='/scav modsettings ipcheck toggle'><i class="fa fa-power-off"></i></button> Multiple connection verification: ${settings.ipcheck ? 'ON' : 'OFF'}` +
+				`</div>`);
+		},
+
+		'ipcheck': function (target, room, user) {
+			if (!this.can('declare', null, room) || room.id !== 'scavengers') return false;
+
+			let settings = scavsRoom.scavmod || {};
+			target = toId(target);
+
+			let setting = {
+				'on': true,
+				'off': false,
+				'toggle': !settings.ipcheck,
+			};
+
+			if (!(target in setting)) return this.sendReply('Invalid setting - ON, OFF, TOGGLE');
+
+			settings.ipcheck = setting[target];
+			room.scavmod = settings;
+
+			if (scavsRoom.chatRoomData) {
+				scavsRoom.chatRoomData.scavmod = scavsRoom.scavmod;
+				Rooms.global.writeChatRoomData();
+			}
+
+			this.privateModAction(`(${user.name} has set multiple connections verification to ${setting[target] ? 'ON' : 'OFF'}.)`);
+			this.modlog('SCAV MODSETTINGS IPCHECK', null, setting[target] ? 'ON' : 'OFF');
+
+			this.parse('/scav modsettings update');
+		},
 	},
 };
 
