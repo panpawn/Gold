@@ -140,7 +140,7 @@ const commands = {
 		if (target.startsWith('\n')) target = target.slice(1);
 		if (target.length >= 8192) return this.errorReply("Your code must be under 8192 characters long!");
 		const separator = '\n';
-		if (target.includes(separator)) {
+		if (target.includes(separator) || target.length > 150) {
 			const params = target.split(separator);
 			let output = [];
 			for (const param of params) {
@@ -2410,9 +2410,6 @@ const commands = {
 		target = this.canHTML(target);
 		if (!target) return;
 
-		Rooms.rooms.forEach((curRoom, id) => {
-			if (id !== 'global') curRoom.addRaw(`<div class="broadcast-blue"><b>${target}</b></div>`).update();
-		});
 		Users.users.forEach(u => {
 			if (u.connected) u.send(`|pm|~|${u.group}${u.name}|/raw <div class="broadcast-blue"><b>${target}</b></div>`);
 		});
