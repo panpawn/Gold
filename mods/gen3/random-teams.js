@@ -10,7 +10,6 @@ class RandomGen3Teams extends RandomGen4Teams {
 	 * @return {RandomTeamsTypes["RandomSet"]}
 	 */
 	randomSet(template, slot, teamDetails = {}) {
-		if (slot === undefined) slot = 1;
 		let baseTemplate = (template = this.getTemplate(template));
 		let species = template.species;
 
@@ -363,9 +362,9 @@ class RandomGen3Teams extends RandomGen4Teams {
 				}
 				if (reqMove) {
 					// reject a move
-					for (let move of moves) {
+					for (let [i, move] of moves.entries()) {
 						if (move === 'weatherball' || this.getMove(move).type in hasType) continue;
-						move = reqMove;
+						moves[i] = reqMove;
 						let reqMoveIndex = movePool.indexOf(reqMove);
 						if (reqMoveIndex !== -1) this.fastPop(movePool, reqMoveIndex);
 						break;
@@ -500,7 +499,6 @@ class RandomGen3Teams extends RandomGen4Teams {
 			}
 		}
 
-		item = 'Leftovers';
 		if (template.requiredItems) {
 			item = this.sample(template.requiredItems);
 

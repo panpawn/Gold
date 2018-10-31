@@ -1095,6 +1095,11 @@ class CommandContext {
 			user.lastMessageTime = Date.now();
 		}
 
+		if (room && room.highTraffic && toId(message).replace(/[^a-z]+/, '').length < 2 && !user.can('mute', null, room)) {
+			this.errorReply('Due to this room being a high traffic room, your message must contain at least two letters.');
+			return false;
+		}
+
 		if (Chat.filters.length) {
 			return Chat.filter.call(this, message, user, room, connection, targetUser);
 		}
@@ -1792,10 +1797,9 @@ Chat.getImageDimensions = function (url) {
 Chat.fitImage = async function (url, maxHeight = 300, maxWidth = 300) {
 	let {height, width} = await Chat.getImageDimensions(url);
 
-	let ratio = 1;
-
 	if (width <= maxWidth && height <= maxHeight) return [width, height];
 
+	let ratio;
 	if (height * (maxWidth / maxHeight) > width) {
 		ratio = maxHeight / height;
 	} else {

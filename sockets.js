@@ -100,8 +100,8 @@ if (cluster.isMaster) {
 	});
 
 	/**
-	 * @param {number} port
-	 * @param {string} bindAddress
+	 * @param {number} [port]
+	 * @param {string} [bindAddress]
 	 * @param {number} [workerCount]
 	 */
 	exports.listen = function (port, bindAddress, workerCount) {
@@ -122,6 +122,9 @@ if (cluster.isMaster) {
 		}
 		if (bindAddress !== undefined) {
 			Config.bindaddress = bindAddress;
+		}
+		if (port !== undefined) {
+			Config.port = port;
 		}
 		if (workerCount === undefined) {
 			workerCount = (Config.workers !== undefined ? Config.workers : 1);

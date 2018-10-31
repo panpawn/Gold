@@ -26,6 +26,9 @@ const HOURMUTE_LENGTH = 60 * 60 * 1000;
 
 const MAX_CHATROOM_ID_LENGTH = 225;
 
+/** Require reasons */
+const REQUIRE_REASONS = true;
+
 /** @type {ChatCommands} */
 const commands = {
 
@@ -1745,7 +1748,7 @@ const commands = {
 			if (!target) {
 				return this.privateModAction(`(${targetUser.name} would be muted by ${user.name} ${problem}.)`);
 			}
-			return this.addModAction(`${targetUser.name} would be muted by ${user.name} ${problem}.${(target ? ` (${target})` : ``)}`);
+			return this.addModAction(`${targetUser.name} would be muted by ${user.name} ${problem}. (${target})`);
 		}
 
 		if (targetUser in room.users) targetUser.popup(`|modal|${user.name} has muted you in ${room.id} for ${Chat.toDurationString(muteDuration)}. ${target}`);
@@ -2021,7 +2024,7 @@ const commands = {
 		if (target.length > MAX_REASON_LENGTH) {
 			return this.errorReply(`The reason is too long. It cannot exceed ${MAX_REASON_LENGTH} characters.`);
 		}
-		if (!target) {
+		if (!target && REQUIRE_REASONS) {
 			return this.errorReply("Global bans require a reason.");
 		}
 		if (!this.can('ban', targetUser)) return false;
@@ -2628,7 +2631,7 @@ const commands = {
 			return this.errorReply(`This user is already blacklisted from this room.`);
 		}
 
-		if (!target) {
+		if (!target && REQUIRE_REASONS) {
 			return this.errorReply(`Blacklists require a reason.`);
 		}
 		if (target.length > MAX_REASON_LENGTH) {
@@ -2679,7 +2682,8 @@ const commands = {
 		`/expiringblacklists OR /expiringbls - show a list of blacklisted users from the room whose blacklists are expiring in 3 months or less. Requires: % @ # & ~`,
 	],
 
-	battleban: function (target, room, user, connection) {
+	forcebattleban: 'battleban',
+	battleban: function (target, room, user, connection, cmd) {
 		if (!target) return this.parse(`/help battleban`);
 
 		const reason = this.splitTarget(target);
@@ -2690,6 +2694,9 @@ const commands = {
 		}
 		if (!reason) {
 			return this.errorReply(`Battle bans require a reason.`);
+		}
+		if (!room.battle && (!reason.includes('.pokemonshowdown.com/') && cmd !== 'forcebattleban')) {
+			 return this.errorReply(`Battle bans require a battle replay if used outside of a battle; if the battle has expired, use /forcebattleban.`);
 		}
 		if (!this.can('lock', targetUser)) return;
 		if (Punishments.isBattleBanned(targetUser)) return this.errorReply(`User '${targetUser.name}' is already banned from battling.`);
@@ -2748,7 +2755,9 @@ const commands = {
 		}
 
 		let [targetStr, reason] = target.split('|').map(val => val.trim());
-		if (!(targetStr && reason)) return this.errorReply("Usage: /blacklistname name1, name2, ... | reason");
+		if (!targetStr || (!reason && REQUIRE_REASONS)) {
+			return this.errorReply("Usage: /blacklistname name1, name2, ... | reason");
+		}
 
 		let targets = targetStr.split(',').map(s => toId(s));
 

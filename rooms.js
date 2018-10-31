@@ -124,6 +124,7 @@ class BasicRoom {
 		/** @type {Map<string, ChatRoom>?} */
 		this.subRooms = null;
 		this.gameNumber = 0;
+		this.highTraffic = false;
 	}
 
 	/**

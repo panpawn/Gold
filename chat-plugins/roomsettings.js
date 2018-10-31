@@ -303,6 +303,10 @@ exports.commands = {
 			this.sendReply("Your next battle will be invite-only.");
 		}
 	},
+	ionexthelp: [
+		`/ionext - Sets your next battle to be invite-only.`,
+		`/ionext off - Sets your next battle to be publicly visible.`,
+	],
 
 	inviteonly: function (target, room, user) {
 		if (!target) return this.parse('/help inviteonly');
@@ -583,7 +587,7 @@ exports.commands = {
 					if (!user.can('makeroom')) return this.errorReply("Regex banwords are only allowed for leaders or above.");
 
 					try {
-						let test = new RegExp(word); // eslint-disable-line no-unused-vars
+						new RegExp(word); // eslint-disable-line no-new
 					} catch (e) {
 						return this.errorReply(e.message.startsWith('Invalid regular expression: ') ? e.message : `Invalid regular expression: /${word}/: ${e.message}`);
 					}
@@ -669,5 +673,29 @@ exports.commands = {
 		`/banword add [words] - Adds the comma-separated list of phrases (& or ~ can also input regex) to the banword list of the current room. Requires: # & ~`,
 		`/banword delete [words] - Removes the comma-separated list of phrases from the banword list. Requires: # & ~`,
 		`/banword list - Shows the list of banned words in the current room. Requires: % @ * # & ~`,
+	],
+
+	hightraffic: function (target, room, user) {
+		if (!target) return this.sendReply(`This room is${!room.highTraffic ? ' not' : ''} currently marked as high traffic.`);
+		if (!this.can('makeroom')) return false;
+
+		if (this.meansYes(target)) {
+			room.highTraffic = true;
+		} else if (this.meansNo(target)) {
+			room.highTraffic = false;
+		} else {
+			return this.parse('/help hightraffic');
+		}
+
+		if (room.chatRoomData) {
+			room.chatRoomData.highTraffic = room.highTraffic;
+			Rooms.global.writeChatRoomData();
+		}
+		this.modlog(`HIGHTRAFFIC`, null, room.highTraffic);
+		this.addModAction(`This room was marked as high traffic by ${user.name}.`);
+	},
+	hightraffichelp: [
+		`/hightraffic [true|false] - (Un)marks a room as a high traffic room. Requires & ~`,
+		`When a room is marked as high-traffic, PS requires all messages sent to that room to contain at least 2 letters.`,
 	],
 };

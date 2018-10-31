@@ -211,7 +211,7 @@ class RandomStaffBrosTeams extends RandomTeams {
 				evs: {hp: 4, atk: 252, spe: 252}, nature: 'Jolly',
 			},
 			'duck': {
-				species: 'Farfetch\'d', ability: 'Sniper', item: 'Stick', gender: 'M',
+				species: 'Farfetch\'d', ability: 'Super Luck', item: 'Stick', gender: 'M',
 				moves: ['Shift Gear', 'Superpower', 'Dragon Ascent'],
 				signatureMove: 'Holy Duck!',
 				evs: {atk: 252, spd: 4, spe: 252}, nature: 'Jolly',
@@ -446,9 +446,9 @@ class RandomStaffBrosTeams extends RandomTeams {
 			},
 			'Osiris': {
 				species: 'Pumpkaboo-Super', ability: 'Sacred Shadow', item: 'Eviolite', gender: 'M',
-				moves: ['Leech Seed', 'Will-O-Wisp', 'Seed Bomb'],
+				moves: [['Leech Seed', 'Will-O-Wisp'], 'Recover', 'Seed Bomb'],
 				signatureMove: 'Night March',
-				evs: {hp: 252, atk: 144, spd: 112}, nature: 'Adamant', shiny: true,
+				evs: {hp: 252, atk: 144, spd: 112}, ivs: {spe: 0}, nature: 'Brave', shiny: true,
 			},
 			'Overneat': {
 				species: 'Sylveon', ability: 'Fairy Aura', item: 'Life Orb', gender: 'F',
@@ -487,8 +487,8 @@ class RandomStaffBrosTeams extends RandomTeams {
 				evs: {hp: 252, def: 4, spe: 252}, ivs: {atk: 0}, nature: 'Timid',
 			},
 			'Rory Mercury': {
-				species: 'Charjabug', ability: 'Multiscale', item: 'Eviolite', gender: 'M',
-				moves: ['Spikes', ['Lunge', 'U-turn'], ['Poison Fang', 'Nuzzle']],
+				species: 'Charjabug', ability: 'Recharge', item: 'Eviolite', gender: 'M',
+				moves: ['Spikes', 'Leech Life', ['Poison Fang', 'Nuzzle']],
 				signatureMove: 'Switch Off',
 				evs: {hp: 252, atk: 252, def: 4}, ivs: {spe: 0}, nature: 'Brave',
 			},
@@ -514,7 +514,7 @@ class RandomStaffBrosTeams extends RandomTeams {
 				species: 'Fletchinder', ability: 'Gale Wings v1', item: 'Eviolite', gender: 'F',
 				moves: ['Dragon Ascent', 'Sacred Fire', 'Roost'],
 				signatureMove: 'GO INDA',
-				evs: {atk: 252, hp: 248, spe: 8}, nature: 'Adamant',
+				evs: {hp: 248, atk: 252, spe: 8}, nature: 'Adamant',
 			},
 			'Slowbroth': {
 				species: 'Beheeyem', ability: 'Psychic Surge', item: 'Psychium Z', gender: 'M',
@@ -559,10 +559,10 @@ class RandomStaffBrosTeams extends RandomTeams {
 				evs: {hp: 252, def: 136, spd: 120}, ivs: {atk: 0}, nature: 'Bold', shiny: true,
 			},
 			'The Immortal': {
-				species: 'Buzzwole', ability: 'Beast Boost 2', item: 'Assault Vest', gender: 'N', // confirm with TI
+				species: 'Buzzwole', ability: 'Beast Boost 2', item: ['Buzznium Z', 'Choice Scarf'], gender: 'M',
 				moves: ['Leech Life', 'Plasma Fists', 'Ice Punch'],
-				signatureMove: 'Ultra Succ',
-				evs: {hp: 252, atk: 252, spd: 4}, nature: 'Adamant',
+				signatureMove: 'Drain Punch',
+				evs: {hp: 4, atk: 252, spe: 252}, nature: 'Jolly',
 			},
 			'The Leprechaun': {
 				species: 'Bronzong', ability: 'Steelworker', item: 'Life Orb', gender: 'N',
@@ -703,6 +703,7 @@ class RandomStaffBrosTeams extends RandomTeams {
 				set.moves.push(move);
 			}
 			set.moves.push(ssbSet.signatureMove);
+			if (name === 'The Immortal' && set.item === 'Choice Scarf') set.moves[3] = 'Superpower';
 			team.push(set);
 		}
 		return team;
