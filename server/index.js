@@ -181,7 +181,7 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 	}, 1 * 60 * 60 * 1000);
 });
 
-require('./github'); // GitHub alerts
+require('./github'); // GitHub alerts 
 
 /*********************************************************
  * Start up the REPL server
