@@ -7,9 +7,9 @@
  * publicids are dex numbers and any unique identifiers (if they're not a Pokemon, do a shorthand version of the card name)
  * Dex Number, (for multiple pokemon: DEX[lowercase letter, a, b, c, d])
 ********************/
-/**
+
 const uuid = require('uuid');
-const cards = require('..../config/card-data.js');
+const cards = require('../../config/card-data.js');
 
 const colors = {
 	Mythic: '#D82A2A',
@@ -931,4 +931,3 @@ exports.commands = {
 		this.logModCommand(user.name + " took the card '" + card.name + "' from " + targetUser + ".");
 	},
 };
-*/
