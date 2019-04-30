@@ -39,11 +39,6 @@
     "posttest": "npm run tsc",
     "fulltest": "npm run pretest && mocha -g \".*\" && npm run posttest"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "eslint --cache ."
-    }
-  },
   "bin": "./pokemon-showdown",
   "homepage": "http://pokemonshowdown.com",
   "repository": {
