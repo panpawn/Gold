@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const CARD_IMAGE_PATH = `http://goldservers.info:${Config.port}/cards/`;
+const CARD_IMAGE_PATH = `http://158.69.63.206:${Config.port}/cards/`;
 
 class Blackjack extends Rooms.RoomGame {
 	constructor(room, user, target) {

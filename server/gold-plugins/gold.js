@@ -11,7 +11,7 @@ const nani = require('nani').init("niisama1-uvake", "llbgsBx3inTdyGizCPMgExBVmQ5
 const Autolinker = require('autolinker');
 
 // misc
-const serverIp = '167.114.155.242';
+const serverIp = '158.69.63.206';
 const formatHex = '#566'; //hex code for the formatting of the command
 const ADVERTISEMENT_COST = 10; // how much does /advertise cost to use?
 const MAX_REASON_LENGTH = 300; // pban command usage
@@ -696,11 +696,6 @@ exports.commands = {
 		if (!target) return this.sendReply('/pmupperstaff [message] - Sends a PM to every upper staff');
 		if (!this.can('pban')) return false;
 		Gold.pmUpperStaff(target, false, user.name);
-	},
-	'!client': true,
-	client: function (target, room, user) {
-		if (!this.runBroadcast()) return;
-		return this.sendReplyBox('Gold\'s custom client can be found <a href="http://goldservers.info">here</a>.');
 	},
 	pas: 'pmallstaff',
 	pmallstaff: function (target, room, user) {
