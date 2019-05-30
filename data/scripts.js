@@ -203,7 +203,6 @@ let BattleScripts = {
 		if (!target) {
 			this.attrLastMove('[notarget]');
 			this.add(this.gen >= 5 ? '-fail' : '-notarget', pokemon);
-			if (move.target === 'normal') pokemon.isStaleCon = 0;
 			return false;
 		}
 
@@ -350,7 +349,8 @@ let BattleScripts = {
 
 		const moveResult = !!targets.length;
 		if (!moveResult && !atLeastOneFailure) pokemon.moveThisTurnResult = null;
-		if (move.spreadHit) this.attrLastMove('[spread] ' + targets.join(','));
+		const hitSlot = targets.map(pokemon => `${pokemon}`.slice(0, 3));
+		if (move.spreadHit) this.attrLastMove('[spread] ' + hitSlot.join(','));
 		return moveResult;
 	},
 	hitStepTryImmunityEvent(targets, pokemon, move) {
@@ -963,7 +963,7 @@ let BattleScripts = {
 			}
 			this.debug('move failed because it did nothing');
 		} else if (move.selfSwitch && pokemon.hp) {
-			pokemon.switchFlag = move.fullname;
+			pokemon.switchFlag = move.id;
 		}
 
 		return damage;
@@ -1129,7 +1129,7 @@ let BattleScripts = {
 	canMegaEvo(pokemon) {
 		let altForme = pokemon.baseTemplate.otherFormes && this.getTemplate(pokemon.baseTemplate.otherFormes[0]);
 		let item = pokemon.getItem();
-		if (altForme && altForme.isMega && altForme.requiredMove && pokemon.baseMoves.includes(toId(altForme.requiredMove)) && !item.zMove) return altForme.species;
+		if (altForme && altForme.isMega && altForme.requiredMove && pokemon.baseMoves.includes(toID(altForme.requiredMove)) && !item.zMove) return altForme.species;
 		if (item.megaEvolves !== pokemon.baseTemplate.baseSpecies || item.megaStone === pokemon.species) {
 			return null;
 		}

@@ -226,9 +226,9 @@ let chatfilter = function (message, user, room) {
 
 /** @type {NameFilter} */
 let namefilter = function (name, user) {
-	let id = toId(name);
+	let id = toID(name);
 	if (Chat.namefilterwhitelist.has(id)) return name;
-	if (id === toId(user.trackRename)) return '';
+	if (id === toID(user.trackRename)) return '';
 	let lcName = name.replace(/\u039d/g, 'N').toLowerCase().replace(/[\u200b\u007F\u00AD]/g, '').replace(/\u03bf/g, 'o').replace(/\u043e/g, 'o').replace(/\u0430/g, 'a').replace(/\u0435/g, 'e').replace(/\u039d/g, 'e');
 	// Remove false positives.
 	lcName = lcName.replace('herapist', '').replace('grape', '').replace('scrape', '');
@@ -264,7 +264,12 @@ let namefilter = function (name, user) {
 	}
 	return name;
 };
-
+/** @type {LoginFilter} */
+let loginfilter = function (user) {
+	if (user.namelocked) return;
+	const forceRenamer = Chat.forceRenames.get(user.userid);
+	if (forceRenamer) Monitor.log(`[NameMonitor] Name being used: ${user.name} (forcerenamed by ${forceRenamer})`);
+};
 /** @type {NameFilter} */
 let nicknamefilter = function (name, user) {
 	let lcName = name.replace(/\u039d/g, 'N').toLowerCase().replace(/[\u200b\u007F\u00AD]/g, '').replace(/\u03bf/g, 'o').replace(/\u043e/g, 'o').replace(/\u0430/g, 'a').replace(/\u0435/g, 'e').replace(/\u039d/g, 'e');
@@ -346,7 +351,7 @@ let commands = {
 			if (!this.can('updateserver')) return false;
 
 			let [list, ...rest] = target.split(',');
-			list = toId(list);
+			list = toID(list);
 
 			if (!list || !rest.length) return this.errorReply("Syntax: /filter add list, word, reason");
 
@@ -391,7 +396,7 @@ let commands = {
 			if (!this.can('updateserver')) return false;
 
 			let [list, ...words] = target.split(',').map(param => param.trim());
-			list = toId(list);
+			list = toID(list);
 
 			if (!list || !words.length) return this.errorReply("Syntax: /filter remove list, words");
 
@@ -429,7 +434,7 @@ let commands = {
 	],
 	allowname(target, room, user) {
 		if (!this.can('forcerename')) return false;
-		target = toId(target);
+		target = toID(target);
 		if (!target) return this.errorReply(`Syntax: /allowname username`);
 		Chat.namefilterwhitelist.set(target, user.name);
 
@@ -445,3 +450,4 @@ exports.commands = commands;
 exports.chatfilter = chatfilter;
 exports.namefilter = namefilter;
 exports.nicknamefilter = nicknamefilter;
+exports.loginfilter = loginfilter;

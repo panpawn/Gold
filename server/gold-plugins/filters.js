@@ -136,7 +136,7 @@ Chat.namefilter = function (name, user) {
 		return;
 	}
 
-	Dnsbl.reverse(ip).then(host => {
+	Dnsbl.getHost(ip).then(host => {
 		if (!host) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
 

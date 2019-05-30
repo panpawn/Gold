@@ -1,8 +1,8 @@
 import {Battle as BattleType} from './battle';
 import * as BattleStreamType from './battle-stream';
 import * as DataType from './dex-data';
-import DexType = require('./dex');
-import SimType = require('./index');
+import {Dex as DexType} from './dex';
+import * as SimType from './index';
 import {Field as FieldType} from './field';
 import {Pokemon as PokemonType} from './pokemon';
 import {PRNG as PRNGType} from './prng';
@@ -13,7 +13,7 @@ declare global {
 	namespace NodeJS {
 		interface Global {
 			Dex: any
-			toId(input: any): string
+			toID(input: any): string
 			TeamValidator: any
 			__version: string
 		}
@@ -40,5 +40,5 @@ declare global {
 	const Template: DataType.Template
 	const Tools: DataType.Tools
 	const TypeInfo: DataType.TypeInfo
-	const toId: typeof DataType.Tools.getId
+	const toID: typeof DataType.Tools.getId
 }

@@ -11,7 +11,7 @@ let BattleScripts = {
 	// BattlePokemon scripts.
 	pokemon: {
 		getStat(statName, unboosted, unmodified, fastReturn) {
-			statName = /** @type {StatNameExceptHP} */(toId(statName));
+			statName = /** @type {StatNameExceptHP} */(toID(statName));
 			// @ts-ignore - type checking prevents 'hp' from being passed, but we're paranoid
 			if (statName === 'hp') throw new Error("Please read `maxhp` directly");
 
@@ -468,7 +468,7 @@ let BattleScripts = {
 			}
 		}
 		if (move.selfSwitch && pokemon.hp) {
-			pokemon.switchFlag = move.fullname;
+			pokemon.switchFlag = move.id;
 		}
 		return damage;
 	},

@@ -323,6 +323,10 @@ let BattleAbilities = {
 		rating: 4,
 		num: 86,
 	},
+	"soundproof": {
+		inherit: true,
+		shortDesc: "This Pokemon is immune to sound-based moves, including Heal Bell.",
+	},
 	"stench": {
 		desc: "No competitive use.",
 		shortDesc: "No competitive use.",
@@ -378,7 +382,7 @@ let BattleAbilities = {
 			if (effect && effect.id === 'toxicspikes') return;
 			let id = status.id;
 			if (id === 'slp' || id === 'frz') return;
-			if (id === 'tox') id = 'psn';
+			if (id === 'tox') id = /** @type {ID} */('psn');
 			source.trySetStatus(id, target);
 		},
 	},

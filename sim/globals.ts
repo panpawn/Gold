@@ -1,11 +1,12 @@
 type Battle = import('./battle').Battle
 type Field = import('./field').Field
-type ModdedDex = typeof import('./dex')
+type ModdedDex = import('./dex').ModdedDex
 type Pokemon = import('./pokemon').Pokemon
 type PRNGSeed = import('./prng').PRNGSeed;
 type Side = import('./side').Side
 type Validator = import('./team-validator').Validator
 
+type ID = '' | string & {__isID: true};
 interface AnyObject {[k: string]: any}
 type DexTable<T> = {[key: string]: T}
 
@@ -714,6 +715,9 @@ interface ModdedEffectData extends Partial<EffectData> {
 type EffectType = 'Effect' | 'Pokemon' | 'Move' | 'Item' | 'Ability' | 'Format' | 'Ruleset' | 'Weather' | 'Status' | 'Rule' | 'ValidatorRule'
 
 interface BasicEffect extends EffectData {
+	id: ID
+	weather?: ID
+	status?: ID
 	effectType: EffectType
 	exists: boolean
 	flags: AnyObject
@@ -871,6 +875,9 @@ type MoveHitData = {[targetSlotid: string]: {
 
 interface ActiveMove extends BasicEffect, MoveData {
 	readonly effectType: 'Move'
+	id: ID
+	weather?: ID
+	status?: ID
 	hit: number
 	moveHitData?: MoveHitData
 	ability?: Ability
@@ -878,7 +885,7 @@ interface ActiveMove extends BasicEffect, MoveData {
 	allies?: Pokemon[]
 	auraBooster?: Pokemon
 	causedCrashDamage?: boolean
-	forceStatus?: string
+	forceStatus?: ID
 	galvanizeBoosted?: boolean
 	hasAuraBreak?: boolean
 	hasBounced?: boolean
@@ -892,6 +899,7 @@ interface ActiveMove extends BasicEffect, MoveData {
 	pranksterBoosted?: boolean
 	refrigerateBoosted?: boolean
 	selfDropped?: boolean
+	selfSwitch?: ID | boolean
 	spreadHit?: boolean
 	stab?: number
 	statusRoll?: string
@@ -985,7 +993,7 @@ interface Template extends Readonly<BasicEffect & TemplateData & TemplateFormats
 	readonly maleOnlyHidden: boolean
 	readonly nfe: boolean
 	readonly prevo: string
-	readonly speciesid: string
+	readonly speciesid: ID
 	readonly spriteid: string
 	readonly tier: string
 	readonly addedType?: string
@@ -1012,6 +1020,7 @@ interface GameTimerSettings {
 interface FormatsData extends EventMethods {
 	name: string
 	banlist?: string[]
+	battle?: ModdedBattleScriptsData
 	cannotMega?: string[]
 	canUseRandomTeam?: boolean
 	challengeShow?: boolean
@@ -1049,10 +1058,11 @@ interface FormatsData extends EventMethods {
 	onBegin?: (this: Battle) => void
 	onChangeSet?: (this: ModdedDex, set: PokemonSet, format: Format, setHas?: AnyObject, teamHas?: AnyObject) => string[] | void
 	onModifyTemplate?: (this: Battle, template: Template, target: Pokemon, source: Pokemon, effect: Effect) => Template | void
+	onStart?: (this: Battle) => void
 	onTeamPreview?: (this: Battle) => void
 	onValidateSet?: (this: ModdedDex, set: PokemonSet, format: Format, setHas: AnyObject, teamHas: AnyObject) => string[] | void
 	onValidateTeam?: (this: ModdedDex, team: PokemonSet[], format: Format, teamHas: AnyObject) => string[] | void
-	validateSet?: (this: Validator, set: PokemonSet, teamHas: AnyObject) => string[] | void
+	validateSet?: (this: Validator, set: PokemonSet, teamHas: AnyObject) => string[] | null
 	validateTeam?: (this: Validator, team: PokemonSet[], removeNicknames: boolean) => string[] | void,
 	trunc?: (n: number) => number;
 	section?: string,
@@ -1136,7 +1146,7 @@ interface ModdedBattlePokemon {
 	boostBy?: (this: Pokemon, boost: SparseBoostsTable) => boolean | number
 	calculateStat?: (this: Pokemon, statName: StatNameExceptHP, boost: number, modifier?: number) => number
 	getActionSpeed?: (this: Pokemon) => number
-	getRequestData?: (this: Pokemon) => {moves: {move: string, id: string, target?: string, disabled?: boolean}[], maybeDisabled?: boolean, trapped?: boolean, maybeTrapped?: boolean, canMegaEvo?: boolean, canUltraBurst?: boolean, canZMove?: AnyObject | null}
+	getRequestData?: (this: Pokemon) => {moves: {move: string, id: ID, target?: string, disabled?: boolean}[], maybeDisabled?: boolean, trapped?: boolean, maybeTrapped?: boolean, canMegaEvo?: boolean, canUltraBurst?: boolean, canZMove?: AnyObject | null}
 	getStat?: (this: Pokemon, statName: StatNameExceptHP, unboosted?: boolean, unmodified?: boolean, fastReturn?: boolean) => number
 	getWeight?: (this: Pokemon) => number
 	hasAbility?: (this: Pokemon, ability: string | string[]) => boolean
@@ -1168,6 +1178,10 @@ interface ModdedBattleScriptsData extends Partial<BattleScriptsData> {
 	doGetMixedTemplate?: (this: Battle, template: Template, deltas: AnyObject) => Template
 	getMegaDeltas?: (this: Battle, megaSpecies: Template) => AnyObject
 	getMixedTemplate?: (this: Battle, originalSpecies: string, megaSpecies: string) => Template
+	getAbility?: (this: Battle, name: string | Ability ) => Ability
+	getZMove?: (this: Battle, move: Move, pokemon: Pokemon, skipChecks?: boolean) => string | undefined
+	getActiveZMove?: (this: Battle, move: Move, pokemon: Pokemon) => ActiveMove
+	canZMove?: (this: Battle, pokemon: Pokemon) => (AnyObject | null)[] | void
 }
 
 interface TypeData {
@@ -1186,7 +1200,7 @@ interface TypeInfo extends Readonly<TypeData> {
 	readonly gen: number
 	readonly HPdvs: SparseStatsTable
 	readonly HPivs: SparseStatsTable
-	readonly id: string
+	readonly id: ID
 	readonly name: string
 	readonly toString: () => string
 }
@@ -1212,7 +1226,7 @@ namespace Actions {
 		/** location of the target, relative to pokemon's side */
 		targetLoc: number;
 		/** a move to use (move action only) */
-		moveid: string;
+		moveid: ID
 		/** a move to use (move action only) */
 		move: Move;
 		/** true if megaing or ultra bursting */

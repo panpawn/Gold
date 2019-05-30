@@ -9,11 +9,11 @@ import {State} from './state';
 
 export class Field {
 	readonly battle: Battle;
-	readonly id: '';
+	readonly id: ID;
 
-	weather: string;
+	weather: ID;
 	weatherData: AnyObject;
-	terrain: string;
+	terrain: ID;
 	terrainData: AnyObject;
 	pseudoWeather: AnyObject;
 
@@ -111,13 +111,13 @@ export class Field {
 	isWeather(weather: string | string[]) {
 		const ourWeather = this.effectiveWeather();
 		if (!Array.isArray(weather)) {
-			return ourWeather === toId(weather);
+			return ourWeather === toID(weather);
 		}
-		return weather.map(toId).includes(ourWeather);
+		return weather.map(toID).includes(ourWeather);
 	}
 
 	getWeather() {
-		return this.battle.getEffect(this.weather);
+		return this.battle.getEffectByID(this.weather);
 	}
 
 	setTerrain(status: string | Effect, source: Pokemon | 'debug' | null = null, sourceEffect: Effect | null = null) {
@@ -166,13 +166,13 @@ export class Field {
 	isTerrain(terrain: string | string[], target?: Pokemon | Side | Battle) {
 		const ourTerrain = this.effectiveTerrain(target);
 		if (!Array.isArray(terrain)) {
-			return ourTerrain === toId(terrain);
+			return ourTerrain === toID(terrain);
 		}
-		return terrain.map(toId).includes(ourTerrain);
+		return terrain.map(toID).includes(ourTerrain);
 	}
 
 	getTerrain() {
-		return this.battle.getEffect(this.terrain);
+		return this.battle.getEffectByID(this.terrain);
 	}
 
 	addPseudoWeather(

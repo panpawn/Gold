@@ -1,8 +1,8 @@
-import child_process = require('child_process');
+import * as child_process from 'child_process';
 
 import RoomsType = require('./rooms');
 import RoomlogsType = require('./roomlogs');
-import LadderStoreType = require('./ladders-remote');
+import {LadderStore as LadderStoreType} from './ladders-remote';
 import LaddersType = require('./ladders');
 import UsersType = require('./users');
 import PunishmentsType = require('./punishments');
@@ -13,7 +13,7 @@ import * as StreamsType from './../lib/streams';
 declare global {
 	namespace NodeJS {
 		interface Global {
-			Dnsbl: any
+			IPTools: any
 			Config: any
 			Chat: any
 			__version: string

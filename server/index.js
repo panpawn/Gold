@@ -91,10 +91,11 @@ if (Config.watchconfig) {
  * Set up most of our globals
  *********************************************************/
 
-global.Dex = require('../.sim-dist/dex');
+global.Dex = require('../.sim-dist/dex').Dex;
+global.toID = Dex.getId;
 global.toId = Dex.getId;
 
-global.LoginServer = require('./loginserver');
+global.LoginServer = require('../.server-dist/loginserver').LoginServer;
 
 global.Ladders = require('./ladders');
 
@@ -106,7 +107,7 @@ global.Punishments = require('./punishments');
 
 global.Rooms = require('./rooms');
 
-global.Verifier = require('./verifier');
+global.Verifier = require('../.server-dist/verifier');
 Verifier.PM.spawn();
 
 global.Gold = {};
@@ -114,7 +115,9 @@ global.Db = require('origindb')('config/db');
 
 global.Tournaments = require('./tournaments');
 
-global.Dnsbl = require('./dnsbl');
+global.IPTools = require('../.server-dist/ip-tools').IPTools;
+IPTools.loadDatacenters();
+global.Dnsbl = IPTools;
 Dnsbl.loadDatacenters();
 
 if (Config.crashguard) {
