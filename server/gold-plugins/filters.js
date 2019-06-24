@@ -107,6 +107,7 @@ Chat.namefilter = function (name, user) {
 	const nameId = toId(name);
 
 	let badNameMatch = false;
+	if (!Config.bannedNames) loadBannedNames();
 	Config.bannedNames.forEach(badName => {
 		if (badNameMatch) return;
 		if (badName && nameId.includes(badName)) {
