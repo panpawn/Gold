@@ -137,7 +137,7 @@ class Ladder extends LadderStore {
 		if (isRated && !Ladders.disabled) {
 			let userid = user.userid;
 			[valResult, rating] = await Promise.all([
-				TeamValidatorAsync(this.formatid).validateTeam(team, !!(user.locked || user.namelocked)),
+				TeamValidatorAsync.get(this.formatid).validateTeam(team, !!(user.locked || user.namelocked)),
 				this.getRating(userid),
 			]);
 			if (userid !== user.userid) {
@@ -150,7 +150,7 @@ class Ladder extends LadderStore {
 				connection.popup(`The ladder is temporarily disabled due to technical difficulties - you will not receive ladder rating for this game.`);
 				rating = 1;
 			}
-			valResult = await TeamValidatorAsync(this.formatid).validateTeam(team, !!(user.locked || user.namelocked));
+			valResult = await TeamValidatorAsync.get(this.formatid).validateTeam(team, !!(user.locked || user.namelocked));
 		}
 
 		if (valResult.charAt(0) !== '1') {
@@ -414,13 +414,13 @@ class Ladder extends LadderStore {
 			if (!room) {
 				Monitor.warn(`while searching, room ${roomid} expired for user ${user.userid} in rooms ${[...user.inRooms]} and games ${[...user.games]}`);
 				user.games.delete(roomid);
-				return;
+				continue;
 			}
 			const game = room.game;
 			if (!game) {
 				Monitor.warn(`while searching, room ${roomid} has no game for user ${user.userid} in rooms ${[...user.inRooms]} and games ${[...user.games]}`);
 				user.games.delete(roomid);
-				return;
+				continue;
 			}
 			games[roomid] = game.title + (game.allowRenames ? '' : '*');
 			atLeastOne = true;
@@ -638,8 +638,10 @@ class Ladder extends LadderStore {
 		Rooms.createBattle(ready1.formatid, {
 			p1: user1,
 			p1team: ready1.team,
+			p1rating: ready1.rating,
 			p2: user2,
 			p2team: ready2.team,
+			p2rating: ready2.rating,
 			rated: Math.min(ready1.rating, ready2.rating),
 		});
 	}

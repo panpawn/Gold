@@ -1092,7 +1092,7 @@ exports.commands = {
 		return true;
 	},
 	permalockhelp: ["/permalock [username], [reason] - Locks the user from talking in all chats permanantly. Requires: & ~"],
-	// Away commands: by Morfent
+	/*// Away commands: by Morfent
 	away: function (target, room, user) {
 		if (!user.isAway && user.name.length > 19) return this.errorReply("Your username is too long for any kind of use of this command.");
 
@@ -1170,7 +1170,7 @@ exports.commands = {
 	},
 	coding: function (target, room, user) {
 		this.parse('/away CODING');
-	},
+	},*/
 	// Poof commands by kota
 	d: 'poof',
 	cpoof: 'poof',
@@ -1475,8 +1475,8 @@ exports.commands = {
 		if (seen === 'Never') return this.sendReplyBox(userName + ' has <font color=\"red\">never</font> been seen online on this server.');
 		this.sendReplyBox(userName + ' was last seen online on ' + seen);
 	},
-	bio: 'status',
-	status: function (target, room, user, connection, cmd) {
+	//bio: 'status',
+	bio: function (target, room, user, connection, cmd) {
 		if (!this.canTalk()) return this.sendReply("You cannot do this while unable to talk.");
 		let data = Gold.checkExisting(user.userid);
 		if (target && target === 'delete') {

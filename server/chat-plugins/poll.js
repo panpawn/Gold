@@ -275,7 +275,11 @@ const commands = {
 				return this.errorReply("Too many options for poll (maximum is 36).");
 			}
 
-			room.poll = new Poll(room, {source: params[0], supportHTML: supportHTML, username: user.name}, options);
+			if (new Set(options).size !== options.length) {
+				return this.errorReply("There are duplicate options in the poll.");
+			}
+
+			room.poll = new Poll(room, {source: params[0], supportHTML: supportHTML}, options);
 			room.poll.display();
 
 			this.roomlog(`${user.name} used ${message}`);

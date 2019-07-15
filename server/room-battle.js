@@ -442,6 +442,8 @@ class RoomBattle extends RoomGames.RoomGame {
 		 * @type {number}
 		 */
 		this.rated = options.rated || 0;
+		// true when onCreateBattleRoom has been called
+		this.missingBattleStartMessage = !!options.inputLog;
 		this.started = false;
 		this.ended = false;
 		this.active = false;
@@ -512,11 +514,11 @@ class RoomBattle extends RoomGames.RoomGame {
 
 		this.listen();
 
-		this.addPlayer(options.p1, options.p1team || '');
-		this.addPlayer(options.p2, options.p2team || '');
+		this.addPlayer(options.p1, options.p1team || '', options.p1rating);
+		this.addPlayer(options.p2, options.p2team || '', options.p2rating);
 		if (this.playerCap > 2) {
-			this.addPlayer(options.p3, options.p3team || '');
-			this.addPlayer(options.p4, options.p4team || '');
+			this.addPlayer(options.p3, options.p3team || '', options.p3rating);
+			this.addPlayer(options.p4, options.p4team || '', options.p4rating);
 		}
 		this.timer = new RoomBattleTimer(this);
 		if (Config.forcetimer) this.timer.start();
@@ -631,6 +633,11 @@ class RoomBattle extends RoomGames.RoomGame {
 			return false;
 		}
 
+		if (user.userid in this.playerTable) {
+			user.popup(`You have already joined this battle.`);
+			return false;
+		}
+
 		/** @type {SideID[]} */
 		let validSlots = [];
 		for (const player of this.players) {
@@ -655,6 +662,16 @@ class RoomBattle extends RoomGames.RoomGame {
 		if (!slot) slot = validSlots[0];
 
 		this.updatePlayer(this[slot], user);
+		if (validSlots.length - 1 < 1 && this.missingBattleStartMessage) {
+			const users = this.players.map(player => {
+				const user = player.getUser();
+				if (!user) throw new Error(`User ${player.name} not found on ${this.id} battle creation`);
+				return user;
+			});
+			Rooms.global.onCreateBattleRoom(users, this.room, {rated: this.rated});
+			this.missingBattleStartMessage = false;
+		}
+		if (user.inRooms.has(this.id)) this.onConnect(user);
 		this.room.update();
 		return true;
 	}
@@ -895,7 +912,7 @@ class RoomBattle extends RoomGames.RoomGame {
 		let logData = this.logData;
 		if (!logData) return;
 		this.logData = null; // deallocate to save space
-		logData.log = this.room.getLog(3).split('\n'); // replay log (exact damage)
+		logData.log = this.room.getLog(-1).split('\n'); // replay log (exact damage)
 
 		// delete some redundant data
 		for (const rating of [p1rating, p2rating, p3rating, p4rating]) {
@@ -1072,8 +1089,9 @@ class RoomBattle extends RoomGames.RoomGame {
 	 *
 	 * @param {User | null} user
 	 * @param {string?} team
+	 * @param {number} rating
 	 */
-	addPlayer(user, team) {
+	addPlayer(user, team, rating = 0) {
 		// TypeScript bug: no `T extends RoomGamePlayer`
 		const player = /** @type {RoomBattlePlayer} */ (super.addPlayer(user));
 		if (!player) return null;
@@ -1085,8 +1103,9 @@ class RoomBattle extends RoomGames.RoomGame {
 				name: player.name,
 				avatar: user ? '' + user.avatar : '',
 				team: team,
+				rating: Math.round(rating),
 			};
-			this.stream.write(`>player ${slot} ` + JSON.stringify(options));
+			this.stream.write(`>player ${slot} ${JSON.stringify(options)}`);
 		}
 
 		if (user) this.room.auth[user.userid] = Users.PLAYER_SYMBOL;
@@ -1130,20 +1149,20 @@ class RoomBattle extends RoomGames.RoomGame {
 		this.started = true;
 		const users = this.players.map(player => {
 			const user = player.getUser();
-			if (!user) throw new Error(`User ${player.name} not found on ${this.id} battle creation`);
+			if (!user && !this.missingBattleStartMessage) throw new Error(`User ${player.name} not found on ${this.id} battle creation`);
 			return user;
 		});
-		Rooms.global.onCreateBattleRoom(users, this.room, {rated: this.rated});
+		if (!this.missingBattleStartMessage) {
+			// @ts-ignore The above error should throw if null is found, or this should be skipped
+			Rooms.global.onCreateBattleRoom(users, this.room, {rated: this.rated});
+		}
 
 		if (this.gameType === 'multi') {
-			// @ts-ignore
 			this.room.title = `Team ${this.p1.name} vs. Team ${this.p2.name}`;
 		} else if (this.gameType === 'free-for-all') {
 			// p1 vs. p2 vs. p3 vs. p4 is too long of a title
-			// @ts-ignore
 			this.room.title = `${this.p1.name} and friends`;
 		} else {
-			// @ts-ignore
 			this.room.title = `${this.p1.name} vs. ${this.p2.name}`;
 		}
 		this.room.send(`|title|${this.room.title}`);
@@ -1283,8 +1302,7 @@ const PM = new StreamProcessManager(module, () => {
 
 if (!PM.isParentProcess) {
 	// This is a child process!
-	// @ts-ignore This file doesn't exist on the repository, so Travis checks fail if this isn't ignored
-	global.Config = require('../config/config');
+	global.Config = require(/** @type {any} */('../.server-dist/config-loader')).Config;
 	global.Chat = require('./chat');
 	// @ts-ignore ???
 	global.Monitor = {
@@ -1299,13 +1317,18 @@ if (!PM.isParentProcess) {
 			process.send(`THROW\n@!!@${repr}\n${error.stack}`);
 		},
 	};
-	global.__version = '';
+	global.__version = {head: ''};
 	try {
 		const execSync = require('child_process').execSync;
-		const out = execSync('git merge-base master HEAD', {
+		const head = execSync('git rev-parse HEAD', {
 			stdio: ['ignore', 'pipe', 'ignore'],
 		});
-		global.__version = ('' + out).trim();
+		const merge = execSync('git merge-base origin/master HEAD', {
+			stdio: ['ignore', 'pipe', 'ignore'],
+		});
+		global.__version.head = ('' + head).trim();
+		const origin = ('' + merge).trim();
+		if (origin !== global.__version.head) global.__version.origin = origin;
 	} catch (e) {}
 
 	if (Config.crashguard) {

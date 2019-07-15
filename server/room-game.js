@@ -26,7 +26,7 @@ class RoomGamePlayer {
 	 */
 	constructor(user, game, num = 0) {
 		this.num = num;
-		if (!user) user = num ? `Player` : `Player ${num}`;
+		if (!user) user = num ? `Player ${num}` : `Player`;
 		/**
 		 * Will be the username of the user playing, but with some exceptions:
 		 *
@@ -159,7 +159,7 @@ class RoomGame {
 			this.playerTable[player.userid] = player;
 			this.room.auth[player.userid] = Users.PLAYER_SYMBOL;
 		} else {
-			player.userid = '';
+			player.unlinkUser();
 		}
 	}
 

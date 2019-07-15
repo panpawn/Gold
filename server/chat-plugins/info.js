@@ -4,7 +4,6 @@
  *
  * These are informational commands. For instance, you can define the command
  * 'whois' here, then use it by typing /whois into Pokemon Showdown.
- *
  * For the API, see chat-plugins/COMMANDS.md
  *
  * @license MIT license
@@ -179,7 +178,7 @@ const commands = {
 			});
 			buf += `<br /> IP${Chat.plural(ips)}: ${ips.join(", ")}`;
 			if (user.group !== ' ' && targetUser.latestHost) {
-				buf += Chat.html`<br />Host: ${targetUser.latestHost}`;
+				buf += Chat.html`<br />Host: ${targetUser.latestHost} [${targetUser.latestHostType}]`;
 			}
 		}
 		if (canViewAlts && hiddenrooms) {
@@ -324,8 +323,9 @@ const commands = {
 		if (!this.can('rangeban')) return;
 		target = target.trim();
 		if (!/^[0-9.]+$/.test(target)) return this.errorReply('You must pass a valid IPv4 IP to /host.');
-		IPTools.getHost(target).then(host => {
-			this.sendReply('IP ' + target + ': ' + (host || "ERROR"));
+		IPTools.lookup(target).then(({dnsbl, host, hostType}) => {
+			const dnsblMessage = dnsbl ? ` [${dnsbl}]` : ``;
+			this.sendReply(`IP ${target}: ${host || "ERROR"} [${hostType}]${dnsblMessage}`);
 		});
 	},
 	hosthelp: [`/host [ip] - Gets the host for a given IP. Requires: & ~`],
@@ -671,10 +671,10 @@ const commands = {
 					}[move.target] || "Unknown";
 
 					if (move.id === 'snatch' && mod.gen >= 3) {
-						details['<a href="https://pokemonshowdown.com/dex/moves/snatch">Snatchable Moves</a>'] = '';
+						details['<a href="https://${Config.routes.dex}/moves/snatch">Snatchable Moves</a>'] = '';
 					}
 					if (move.id === 'mirrormove') {
-						details['<a href="https://pokemonshowdown.com/dex/moves/mirrormove">Mirrorable Moves</a>'] = '';
+						details['<a href="https://${Config.routes.dex}/moves/mirrormove">Mirrorable Moves</a>'] = '';
 					}
 					if (move.isUnreleased) {
 						details["Unreleased in Gen " + mod.gen] = "";
@@ -997,7 +997,7 @@ const commands = {
 			let buffer = '<div class="scrollable"><table cellpadding="1" width="100%"><tr><th></th>';
 			let icon = {};
 			for (let type in mod.data.TypeChart) {
-				icon[type] = '<img src="https://play.pokemonshowdown.com/sprites/types/' + type + '.png" width="32" height="14">';
+				icon[type] = `<img src="https://${Config.routes.client}/sprites/types/' + type + '.png" width="32" height="14">`;
 				// row of icons at top
 				buffer += '<th>' + icon[type] + '</th>';
 			}
@@ -1428,14 +1428,14 @@ const commands = {
 			`- We log PMs so you can report them - staff can't look at them without permission unless there's a law enforcement reason.<br />` +
 			`- We log IPs to enforce bans and mutes.<br />` +
 			`- We use cookies to save your login info and teams, and for Google Analytics and AdSense.<br />` +
-			`- For more information, you can read our <a href="https://pokemonshowdown.com/privacy">full privacy policy.</a>`
+			`- For more information, you can read our <a href="https://${Config.routes.root}/privacy">full privacy policy.</a>`
 		);
 	},
 
 	'!suggestions': true,
 	suggestions(target, room, user) {
 		if (!this.runBroadcast()) return;
-		this.sendReplyBox(`<a href="https://www.smogon.com/forums/threads/3534365/">Make a suggestion for Pok&eacute;mon Showdown</a>`);
+		this.sendReplyBox(`<a href="https://www.smogon.com/forums/forums/517/">Make a suggestion for Pok&eacute;mon Showdown</a>`);
 	},
 
 	'!bugs': true,
@@ -1508,30 +1508,47 @@ const commands = {
 	},
 
 	'!calc': true,
+	bsscalc: 'calc',
 	calculator: 'calc',
+	cantsaycalc: 'calc',
 	damagecalculator: 'calc',
 	damagecalc: 'calc',
+	honkalculator: 'calc',
+	honkocalc: 'calc',
 	randomscalc: 'calc',
 	randbatscalc: 'calc',
 	rcalc: 'calc',
 	calc(target, room, user, connection, cmd) {
 		if (cmd === 'calc' && target) return this.parse(`/math ${target}`);
 		if (!this.runBroadcast()) return;
-		let isRandomBattle = (room && room.battle && room.battle.format === 'gen7randombattle');
-		if (['randomscalc', 'randbatscalc', 'rcalc'].includes(cmd) || isRandomBattle) {
+		const DEFAULT_CALC_COMMANDS = ['honkalculator', 'honkocalc'];
+		const RANDOMS_CALC_COMMANDS = ['randomscalc', 'randbatscalc', 'rcalc'];
+		const BATTLESPOT_CALC_COMMANDS = ['bsscalc', 'cantsaycalc'];
+		const SUPPORTED_RANDOM_FORMATS = ['gen7randombattle', 'gen7unratedrandombattle'];
+		const SUPPORTED_BATTLESPOT_FORMATS = ['gen5gbusingles', 'gen5gbudoubles', 'gen6battlespotsingles', 'gen6battlespotdoubles', 'gen6battlespottriples', 'gen7battlespotsingles', 'gen7battlespotdoubles', 'gen7bssfactory'];
+		const isRandomBattle = (room && room.battle && SUPPORTED_RANDOM_FORMATS.includes(room.battle.format));
+		const isBattleSpotBattle = (room && room.battle && (SUPPORTED_BATTLESPOT_FORMATS.includes(room.battle.format) || room.battle.format.includes("battlespotspecial")));
+		if (RANDOMS_CALC_COMMANDS.includes(cmd) || (isRandomBattle && !DEFAULT_CALC_COMMANDS.includes(cmd) && !BATTLESPOT_CALC_COMMANDS.includes(cmd))) {
 			return this.sendReplyBox(
-				`Random Battles damage calculator. (Courtesy of LegoFigure11 &amp; Smoochyena)<br />` +
-				`- <a href="https://randbatscalc.github.io/">Random Battles Damage Calcuator</a>`
+				`Random Battles damage calculator. (Courtesy of LegoFigure11 &amp; Wiggleetuff)<br />` +
+				`- <a href="https://randbatscalc.github.io/">Random Battles Damage Calculator</a>`
+			);
+		}
+		if (BATTLESPOT_CALC_COMMANDS.includes(cmd) || (isBattleSpotBattle && !DEFAULT_CALC_COMMANDS.includes(cmd))) {
+			return this.sendReplyBox(
+				`Battle Spot damage calculator. (Courtesy of cant say &amp; LegoFigure11)<br />` +
+				`- <a href="https://cantsay.github.io/">Battle Spot Damage Calculator</a>`
 			);
 		}
 		this.sendReplyBox(
-			`Pok&eacute;mon Showdown! damage calculator. (Courtesy of Honko)<br />` +
-			`- <a href="https://pokemonshowdown.com/damagecalc/">Damage Calculator</a>`
+			`Pok&eacute;mon Showdown! damage calculator. (Courtesy of Honko &amp; Austin)<br />` +
+			`- <a href="https://${Config.routes.root}/damagecalc/">Damage Calculator</a>`
 		);
 	},
 	calchelp: [
 		`/calc - Provides a link to a damage calculator`,
 		`/rcalc - Provides a link to the random battles damage calculator`,
+		`/bsscalc - Provides a link to the Battle Spot damage calculator`,
 		`!calc - Shows everyone a link to a damage calculator. Requires: + % @ # & ~`,
 	],
 
@@ -1761,31 +1778,15 @@ const commands = {
 	'!rules': true,
 	rule: 'rules',
 	rules(target, room, user) {
-		/*
 		if (!target) {
-			const languageTable = {
-				portuguese: ['Por favor siga as regras:', 'pages/rules-pt', 'Regras Globais', room ? `Regras da sala ${room.title}` : ``],
-				spanish: ['Por favor sigue las reglas:', 'pages/rules-es', 'Reglas Globales', room ? `Reglas de la sala ${room.title}` : ``],
-				italian: ['Per favore, rispetta le seguenti regole:', 'pages/rules-it', 'Regole Globali', room ? `Regole della room ${room.title}` : ``],
-				french: ['Veuillez suivre ces règles:', 'pages/rules-fr', 'Règles Générales', room ? `Règles de la room ${room.title}` : ``],
-				simplifiedchinese: ['请遵守规则:', 'pages/rules-zh', '全站规则', room ? `${room.title}房间规则` : ``],
-				traditionalchinese: ['請遵守規則:', 'pages/rules-tw', '全站規則', room ? `${room.title}房間規則` : ``],
-				japanese: ['ルールを守ってください:', 'pages/rules-ja', '全部屋共通ルール', room ? `${room.title}部屋のルール` : ``],
-				hindi: ['कृपया इन नियमों का पालन करें:', 'pages/rules-hi', 'सामान्य नियम', room ? `${room.title} Room के नियम` : ``],
-				turkish: ['Lütfen kurallara uyun:', 'pages/rules-tr', 'Genel kurallar', room ? `${room.title} odası kuralları` : ``],
-				dutch: ['Volg de regels:', 'pages/rules-nl', 'Globale Regels ', room ? `Regels van de ${room.title} room` : ``],
-				german: ['Bitte befolgt die Regeln:', 'pages/rules-de', 'Globale Regeln', room ? `Regeln des ${room.title} Raumes` : ``],
-				english: ['Please follow the rules:', 'rules', 'Global Rules', room ? `${room.title} room rules` : ``],
-			};
-			*/
-		if (!this.runBroadcast()) return;
-		// const globalRulesLink = `https://pokemonshowdown.com/${languageTable[room && room.language ? room.language : 'english'][1]}`;
-		// const globalRulesLinkText = languageTable[room && room.language ? room.language : 'english'][2];
-		return this.sendReplyBox(
-			`Please follow the rules:<br />` +
-			(room && room.rulesLink ? Chat.html`- <a href="${room.rulesLink}">${room.title} room rules</a><br />` : ``) +
-			`- <a href="http://goldservers.info/forums/showthread.php?tid=116">${room && room.rulesLink ? "Global rules" : "Rules"}</a>`
-		);
+			if (!this.runBroadcast()) return;
+			this.sendReplyBox(
+				`${room ? this.tr("Please follow the rules:") + '<br />' : ``}` +
+				(room && room.rulesLink ? Chat.html`- <a href="${room.rulesLink}">${this.tr `${room.title} room rules`}</a><br />` : ``) +
+				`- <a href="https://${Config.routes.root}${this.tr('/rules')}">${this.tr("Global Rules")}</a>`
+			);
+			return;
+		}
 		if (!room) {
 			return this.errorReply(`This is not a room you can set the rules of.`);
 		}
@@ -1839,7 +1840,7 @@ const commands = {
 			buffer.push(`<a href="https://www.smogon.com/forums/threads/3508013/">What is COIL?</a>`);
 		}
 		if (showAll || target === 'ladder' || target === 'ladderhelp' || target === 'decay') {
-			buffer.push(`<a href="https://pokemonshowdown.com/pages/ladderhelp">How the ladder works</a>`);
+			buffer.push(`<a href="https://${Config.routes.root}/pages/ladderhelp">How the ladder works</a>`);
 		}
 		if (showAll || target === 'tiering' || target === 'tiers' || target === 'tier') {
 			buffer.push(`<a href="https://www.smogon.com/ingame/battle/tiering-faq">Tiering FAQ</a>`);
@@ -1848,7 +1849,7 @@ const commands = {
 			buffer.push(`<a href="https://www.smogon.com/badge_faq">Badge FAQ</a>`);
 		}
 		if (showAll || target === 'rng') {
-			buffer.push(`<a href="https://pokemonshowdown.com/pages/rng">How Pokémon Showdown's RNG works</a>`);
+			buffer.push(`<a href="https://${Config.routes.root}/pages/rng">How Pokémon Showdown's RNG works</a>`);
 		}
 		if (showAll || !buffer.length) {
 			buffer.unshift(`<a href="https://www.smogon.com/forums/posts/6774128/">Frequently Asked Questions</a>`);

@@ -68,16 +68,15 @@ const FS = require('../.lib-dist/fs').FS;
  * Load configuration
  *********************************************************/
 
-global.Config = require('../config/config');
+const ConfigLoader = require('../.server-dist/config-loader');
+global.Config = ConfigLoader.Config;
 
 global.Monitor = require('./monitor');
 
 if (Config.watchconfig) {
-	let configPath = require.resolve('../config/config');
-	FS(configPath).onModify(() => {
+	FS(require.resolve('../config/config')).onModify(() => {
 		try {
-			delete require.cache[configPath];
-			global.Config = require('../config/config');
+			global.Config = ConfigLoader.load(true);
 			if (global.Users) Users.cacheGroupData();
 			Gold.readAvatars();
 			Monitor.notice('Reloaded ../config/config.js');
