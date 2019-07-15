@@ -49,7 +49,7 @@ try {
 		 * Initialize User Functions  *
 		 ******************************/
 		createUser: function (user) { // doesn't save unless it gets edited
-			user = toId(user);
+			user = toID(user);
 			if (Gold.userData[user] || user === 'constructor') return false;
 			if (user.substr(0, 5) === 'guest') return false;
 
@@ -75,14 +75,14 @@ try {
 			}, (1.25 * 1000)); // only save every 1.25 seconds - TOPS
 		},
 		initiateUser: function (user, ip) {	// when the user connections, this runs
-			user = toId(user);
+			user = toID(user);
 			if (!Gold.userData[user]) Gold.createUser(user);
 
 			this.addIp(user, ip);
 			this.updateSeen(user); // (saves)
 		},
 		checkExisting: function (user) {
-			user = toId(user);
+			user = toID(user);
 			if (!Gold.userData[user]) Gold.createUser(user);
 			return Gold.userData[user];
 		},
@@ -91,7 +91,7 @@ try {
 		 * Economy Functions *
 		 *********************/
 		updateMoney: function (user, amount) {
-			user = toId(user);
+			user = toID(user);
 			if (isNaN(amount)) return false;
 			amount = Number(amount);
 
@@ -101,7 +101,7 @@ try {
 			// if (Rooms('staff')) Rooms('staff').add(`[DEBUG] ${user} has recieved ${amount} bucks.  They now have ${data.money} bucks.`).update();
 		},
 		removeAllMoney: function (user, punisher) {
-			user = toId(user);
+			user = toID(user);
 			if (!Gold.userData[user] || Gold.userData[user].money === 0) return false;
 			let data = this.checkExisting(user);
 			let oldMoney = data.money;
@@ -112,7 +112,7 @@ try {
 			if (staff) staff.add(`|c|~|[BucksMonitor] ${user} has lost ${oldMoney} buck${Gold.pluralFormat(oldMoney)} due to being globally locked and/or banned by ${punisher}.`).update();
 		},
 		readMoney: function (user) {
-			user = toId(user);
+			user = toID(user);
 			if (user === 'constructor') return 0;
 			let data = this.checkExisting(user);
 			if (data) return data.money;
@@ -171,7 +171,7 @@ try {
 		 * Badge Functions *
 		 *******************/
 		hasVip: function (user) {
-			user = toId(user);
+			user = toID(user);
 			if (user.startsWith('guest')) return false;
 			let data = this.checkExisting(user);
 			if (!data.badges) data.badges = [];
@@ -179,8 +179,8 @@ try {
 			return vip;
 		},
 		modifyBadge: function (user, badgeid, action) {
-			user = toId(user);
-			badgeid = toId(badgeid);
+			user = toID(user);
+			badgeid = toID(badgeid);
 
 			let data = this.checkExisting(user);
 			if (!data.badges) data.badges = [];
@@ -248,7 +248,7 @@ try {
 			return badgeList;
 		},
 		displayBadges: function (user) {
-			user = toId(user);
+			user = toID(user);
 			let data = this.checkExisting(user), buff = [];
 			if (!data.badges || data.badges.length < 0) return false;
 
@@ -292,7 +292,7 @@ try {
 			this.saveData();
 		},
 		addIp: function (user, ip) { // sub-function of initialize user
-			if (toId(user).substr(0, 5) === 'guest') return false;
+			if (toID(user).substr(0, 5) === 'guest') return false;
 
 			let data = this.checkExisting(user);
 			if (!data.ips) data.ips = [];
@@ -300,7 +300,7 @@ try {
 			if (!data.ips.includes(ip)) data.ips.push(ip);
 		},
 		updateSeen: function (user) {
-			if (toId(user).substr(0, 5) === 'guest') return false;
+			if (toID(user).substr(0, 5) === 'guest') return false;
 
 			let data = this.checkExisting(user);
 
@@ -308,16 +308,16 @@ try {
 			this.saveData();
 		},
 		getLastSeen: function (user) {
-			let data = Gold.userData[toId(user)] || false;
+			let data = Gold.userData[toID(user)] || false;
 
 			if (data && data.lastSeen && data.lastSeen !== 0) {
-				let reply = moment(Gold.userData[toId(user)].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[toId(user)].lastSeen).fromNow() + ')';
+				let reply = moment(Gold.userData[toID(user)].lastSeen).format("MMMM DD, YYYY h:mm A") + ' EST (' + moment(Gold.userData[toID(user)].lastSeen).fromNow() + ')';
 				return reply;
 			}
 			return "Never";
 		},
 		updateFriends: function (user, friend, action) {
-			friend = toId(friend);
+			friend = toID(friend);
 			let data = this.checkExisting(user);
 			if (!data.friends) data.friends = [];
 
@@ -333,8 +333,8 @@ try {
 		},
 		createTell: function (user, reciever, message) { // heavy lifting for /tell
 			let userName = user;
-			reciever = toId(reciever);
-			user = toId(user);
+			reciever = toID(reciever);
+			user = toID(user);
 			message = Gold.emoticons.processEmoticons(Chat.escapeHTML(message)).replace(/&#x2f;/g, '/');
 
 			let data = this.checkExisting(reciever);
@@ -355,7 +355,7 @@ try {
 			let data = this.checkExisting(user);
 			if (data) {
 				if (Object.keys(data.tells).length > 0) {
-					for (let i in Gold.userData[toId(user)].tells) {
+					for (let i in Gold.userData[toID(user)].tells) {
 						reply.push(`|raw|${data.tells[i]}`);
 						delete data.tells[i];
 					}
@@ -380,7 +380,7 @@ try {
 					}
 				}
 				staff.forEach(member => {
-					if (toId(member) !== toId(from)) Gold.createTell(from, member, message);
+					if (toID(member) !== toID(from)) Gold.createTell(from, member, message);
 				});
 			});
 		},
@@ -394,7 +394,7 @@ try {
 			this.saveData();
 		},
 		isDev: function (user) {
-			user = toId(user);
+			user = toID(user);
 			let devs = ['panpawn', 'jd'];
 			return devs.includes(user);
 		},
@@ -420,7 +420,7 @@ try {
 			}
 		},
 		whois: function (user, online) {
-			user = toId(user);
+			user = toID(user);
 			if (user === 'constructor') return false;
 
 			// variable declarations

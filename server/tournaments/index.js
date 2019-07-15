@@ -1160,10 +1160,10 @@ class Tournament extends Rooms.RoomGame {
 		}
 
 		let tourSize = this.generator.users.size;
-		let tourRarity = Gold.tourCard(tourSize, toId(winner));
+		let tourRarity = Gold.tourCard(tourSize, toID(winner));
 		if (this.prizeMoney !== 0) {
 			this.room.add('|raw|<b>' + Gold.nameColor(winner, false) + ' has won the bucks tournament for <font color=#24678d>' + this.prizeMoney + '</font> bucks!');
-			Gold.updateMoney(toId(winner), Number(this.prizeMoney));
+			Gold.updateMoney(toID(winner), Number(this.prizeMoney));
 			if (tourRarity) this.room.addRaw("<b>" + Gold.nameColor(winner, false) + " has also won a <font color=" + tourRarity[0] + ">" + tourRarity[1] + "</font> card: <button class='tourcard-btn' style='border-radius: 20px; box-shadow: 1px 1px rgba(255, 255, 255, 0.3) inset, -1px -1px rgba(0, 0, 0, 0.2) inset, 2px 2px 2px rgba(0, 0, 0, 0.5);' name='send' value='/card " + tourRarity[2] + "'>" + tourRarity[3] + "</button> from the tournament.");
 		} else if (this.room.isOfficial && tourSize >= 3) {
 			let money = (tourSize < 50 ? Math.round(1.5 * tourSize) : 75);
@@ -1652,7 +1652,7 @@ const commands = {
 			}
 		},
 		setprize: 'prizemoney',
-		prizemoney: function (tournament, user, params, cmd) {
+		prizemoney(tournament, user, params, cmd) {
 			if (!this.can('pban')) return false;
 			if (!params[0]) return this.sendReply("Usage: " + cmd + " [bucks prize]");
 			let prize = params[0];
@@ -1661,11 +1661,11 @@ const commands = {
 			tournament.prizeMoney = prize;
 			this.privateModCommand("(" + user.name + " has set the prize for this tournament to be " + prize + " bucks.)");
 		},
-		prize: function (tournament, user, params, cmd) {
+		prize(tournament, user, params, cmd) {
 			if (tournament.prizeMoney === 0) return this.errorReply("There is currently no prize set for this tournament.");
 			return this.sendReply("The prize for this tournament is currently set to " + tournament.prizeMoney + " Gold bucks.");
 		},
-		banuser: function (tournament, user, params, cmd) {
+		banuser(tournament, user, params, cmd) {
 			if (params.length < 1) {
 				return this.sendReply(`Usage: ${cmd} <user>, <reason>`);
 			}

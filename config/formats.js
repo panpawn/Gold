@@ -2025,7 +2025,7 @@ let Formats = [
 		name: "[Gen 7] Gold Battle",
 		desc: ["&bullet; Only Gold Pokemon are allowed!"],
 
-		onValidateSet: function (set) {
+		onValidateSet(set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.color !== 'Yellow') return [set.species + " is not a yellow / gold Pokémon."];
 			if (set.shiny) return [set.species + " is not allowed to be shiny... This is called Gold Battle, duh."];
@@ -2050,7 +2050,7 @@ let Formats = [
 		ruleset: ['Pokemon', 'Standard', 'Team Preview', 'Swagger Clause', 'Baton Pass Clause'],
 		mod: 'mcpx',
 		banlist: ['Uber', 'Shadow Tag', 'DeepSeaTooth', 'Light Ball', 'Teeter Dance', 'Flatter', 'Supersonic', 'Dynamic Punch', 'Flatter', 'Confuse Ray', 'Chatter'],
-		onValidateSet: function (set) {
+		onValidateSet(set) {
 			let tier = this.getTemplate(set.species).tier;
 			if (set.item === 'Eviolite' && tier !== 'LC') return [set.species + " is not in LC and cannot hold an Eviolite."];
 			const allowed = {
@@ -2064,7 +2064,7 @@ let Formats = [
 				'golbat': 1,
 			};
 			const NFEbanlist = {'frogadier': 1, 'fraxure': 1, 'electabuzz': 1, 'magmar': 1, 'servine': 1, 'murkrow': 1, 'grovyle': 1};
-			let species = toId(set.species);
+			let species = toID(set.species);
 			if ((!(species in allowed) && tier !== 'LC' && tier !== 'NFE') || (tier === 'NFE' && (species in NFEbanlist))) {
 				return [set.species + " is banned in MCPX."];
 			}
@@ -2089,7 +2089,7 @@ let Formats = [
 		name: "Sp00ky Mons",
 		desc: ["&bullet; This tier only allows Ghost-type Pokemon."],
 
-		onValidateSet: function (set) {
+		onValidateSet(set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (!(template.types.includes('Ghost'))) return [set.species + " is not a Ghost-type."];
 		},
@@ -2099,7 +2099,7 @@ let Formats = [
 		name: "Swalot World",
 		desc: ["Basically 1v1 but with only Swalot's.  Banned moves: Stockpile, Amnesia and Power-Up Punch."],
 
-		onValidateSet: function (set) {
+		onValidateSet(set) {
 			let template = this.getTemplate(set.species || set.name);
 			if (template.species !== 'Swalot') return set.species + " is not a Swalot.";
 		},

@@ -1451,7 +1451,7 @@ const commands = {
 	roomownerhelp: [`/roomowner [username] - Appoints [username] as a room owner. Requires: & ~`],
 
 	roomdeowner: 'deroomowner',
-	deroomowner: function (target, room, user) {
+	deroomowner(target, room, user) {
 		if (!room.auth) {
 			return this.sendReply("/roomdeowner - This room isn't designed for per-room moderation");
 		}
@@ -1459,7 +1459,7 @@ const commands = {
 		target = this.splitTarget(target, true);
 		let targetUser = this.targetUser;
 		let name = this.targetUsername;
-		let userid = toId(name);
+		let userid = toID(name);
 		if (!userid || userid === '') return this.sendReply("User '" + name + "' does not exist.");
 
 		if (room.auth[userid] !== '#') return this.sendReply("User '" + name + "' is not a room owner.");
@@ -1699,7 +1699,7 @@ const commands = {
 	},
 
 	rb: 'roomban',
-	roomban: function (target, room, user, connection) {
+	roomban(target, room, user, connection) {
 		if (!target) return this.parse('/help roomban');
 		if (!this.canTalk()) return;
 
@@ -2280,7 +2280,7 @@ const commands = {
 			this.privateModAction(displayMessage);
 		}
 
-		room.hideText([userid, toId(this.inputUsername)]);
+		room.hideText([userid, toID(this.inputUsername)]);
 		Gold.removeAllMoney(targetUser.userid, user.name);
 
 		const globalReason = (target ? `: ${userReason} ${proof}` : '');
@@ -4083,15 +4083,6 @@ const commands = {
 
 	team(target, room, user) {
 		this.parse(`/choose team ${target}`);
-	},
-
-	tie: 'requesttie',
-	offerdraw: 'requesttie',
-	requesttie: function (target, room, user, connection, cmd) {
-		if (!room.game) return this.errorReply("This room doesn't have an active game.");
-		if (!room.game.requestTie) return this.errorReply("This game doesn't support /requesttie");
-
-		room.game.requestTie(user, room, cmd);
 	},
 
 	undo(target, room, user) {

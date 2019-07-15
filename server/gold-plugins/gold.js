@@ -104,7 +104,7 @@ exports.commands = {
 		if (targetUser in room.users) targetUser.popup("|modal|" + user.name + " has muted you in " + room.id + " for 24 hours. " + target);
 		this.addModCommand("" + targetUser.name + " was muted by " + user.name + " for 24 hours." + (target ? " (" + target + ")" : ""));
 		if (targetUser.autoconfirmed && targetUser.autoconfirmed !== targetUser.userid) this.privateModCommand("(" + targetUser.name + "'s ac account: " + targetUser.autoconfirmed + ")");
-		this.add('|unlink|' + toId(this.inputUsername));
+		this.add('|unlink|' + toID(this.inputUsername));
 
 		room.mute(targetUser, muteDuration, false);
 	},
@@ -133,7 +133,7 @@ exports.commands = {
 		if (targetUser in room.users) targetUser.popup("|modal|" + user.name + " has muted you in " + room.id + " for 45 seconds. " + target);
 		this.addModCommand("" + targetUser.name + " was muted by " + user.name + " for 45 seconds." + (target ? " (" + target + ")" : ""));
 		if (targetUser.autoconfirmed && targetUser.autoconfirmed !== targetUser.userid) this.privateModCommand("(" + targetUser.name + "'s ac account: " + targetUser.autoconfirmed + ")");
-		this.add('|unlink|' + toId(this.inputUsername));
+		this.add('|unlink|' + toID(this.inputUsername));
 
 		room.mute(targetUser, muteDuration, false);
 	},
@@ -159,7 +159,7 @@ exports.commands = {
 				if (!row[i]) continue;
 				let rank = row[i].split(',')[1].replace("\r", '');
 				let person = row[i].split(',')[0];
-				let personId = toId(person);
+				let personId = toID(person);
 				switch (rank) {
 				case '~':
 					if (ignoreUsers.includes(personId)) break;
@@ -324,14 +324,14 @@ exports.commands = {
 			guests -= alts.length;
 			this.privateModCommand("(" + name + "'s " + (acAccount ? " ac account: " + acAccount + ", " : "") + "banned alts: " + alts.join(", ") + (guests ? " [" + guests + " guests]" : "") + ")");
 			for (let i = 0; i < alts.length; ++i) {
-				this.add('|unlink|' + toId(alts[i]));
+				this.add('|unlink|' + toID(alts[i]));
 			}
 		} else if (acAccount) {
 			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
 
 		this.add('|unlink|hide|' + userid);
-		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
+		if (userid !== toID(this.inputUsername)) this.add('|unlink|hide|' + toID(this.inputUsername));
 		Gold.removeAllMoney(targetUser.userid, user.name);
 		Punishments.ban(targetUser, Infinity, null, target);
 		this.globalModlog("PERMABAN", targetUser, " by " + user.name + (target ? ": " + target : ""));
@@ -398,7 +398,7 @@ exports.commands = {
 		if (user.userid !== 'ponybot') return false;
 		let commaIndex = target.indexOf(',');
 		if (commaIndex < 0) return this.errorReply("You forgot the comma.");
-		let targetUser = toId(target.slice(0, commaIndex));
+		let targetUser = toID(target.slice(0, commaIndex));
 		let message = target.slice(commaIndex + 1).trim();
 		if (!targetUser || !message) return this.errorReply("Needs a target.");
 		if (!Users.get(targetUser).name) return false;
@@ -437,22 +437,22 @@ exports.commands = {
 					continue;
 				}
 				if (curRoom.isOfficial) {
-					official.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
+					official.push('<a href="/' + toID(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
 				if (curRoom.isPrivate) {
-					privateRoom.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
+					privateRoom.push('<a href="/' + toID(curRoom.title) + '" class="ilink">' + Chat.escapeHTML(curRoom.title) + '</a> (' + curRoom.userCount + ')');
 					continue;
 				}
 			}
-			if (curRoom.type !== 'battle') nonOfficial.push('<a href="/' + toId(curRoom.title) + '" class="ilink">' + curRoom.title + '</a> (' + curRoom.userCount + ')');
+			if (curRoom.type !== 'battle') nonOfficial.push('<a href="/' + toID(curRoom.title) + '" class="ilink">' + curRoom.title + '</a> (' + curRoom.userCount + ')');
 		}
 		this.sendReplyBox(header + official.join(' ') + nonOfficial.join(' ') + privateRoom.join(' ') + (groupChats.length > 1 ? groupChats.join(' ') : '') + (battleRooms.length > 1 ? battleRooms.join(' ') : ''));
 	},
 	mt: 'mktour',
 	mktour: function (target, room, user) {
 		if (!target) return this.errorReply("Usage: /mktour [tier] - creates a tournament in single elimination.");
-		target = toId(target);
+		target = toID(target);
 		let t = target;
 		if (t === 'rb') t = 'randombattle';
 		if (t === 'cc1v1' || t === 'cc1vs1') t = 'challengecup1v1';
@@ -483,12 +483,12 @@ exports.commands = {
 	def: 'define',
 	define: function (target, room, user) {
 		if (!target) return this.sendReply('Usage: /define <word>');
-		target = toId(target);
+		target = toID(target);
 		if (target > 50) return this.sendReply('/define <word> - word can not be longer than 50 characters.');
 		if (!this.runBroadcast()) return;
 
-		if (toId(target) !== 'constructor' && defCache[toId(target)]) {
-			this.sendReplyBox(defCache[toId(target)]);
+		if (toID(target) !== 'constructor' && defCache[toID(target)]) {
+			this.sendReplyBox(defCache[toID(target)]);
 			if (room) room.update();
 			return;
 		}
@@ -540,8 +540,8 @@ exports.commands = {
 		if (!target) return this.parse('/help urbandefine');
 		if (target.toString() > 50) return this.sendReply('Phrase can not be longer than 50 characters.');
 
-		if (toId(target) !== 'constructor' && udCache[toId(target)]) {
-			this.sendReplyBox(udCache[toId(target)]);
+		if (toID(target) !== 'constructor' && udCache[toID(target)]) {
+			this.sendReplyBox(udCache[toID(target)]);
 			if (room) room.update();
 			return;
 		}
@@ -578,7 +578,7 @@ exports.commands = {
 					let output = '<b>' + Chat.escapeHTML(definitions[0]['word']) + ':</b> ' + Chat.escapeHTML(definitions[0]['definition']).replace(/\r\n/g, '<br />').replace(/\n/g, ' ');
 					if (output.length > 400) output = output.slice(0, 400) + '...';
 					this.sendReplyBox(output);
-					udCache[toId(target)] = output;
+					udCache[toID(target)] = output;
 					if (room) room.update();
 					return;
 				}
@@ -590,7 +590,7 @@ exports.commands = {
 	hex: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!this.canTalk()) return;
-		if (!target) target = toId(user.name);
+		if (!target) target = toID(user.name);
 		return this.sendReplyBox(`${Gold.nameColor(target.trim(), true)}.  The hexcode for this name color is: ${Gold.hashColor(target)}.`);
 	},
 	rsi: 'roomshowimage',
@@ -688,7 +688,7 @@ exports.commands = {
 	userid: function (target, room, user) {
 		if (!target) return this.parse('/help userid');
 		if (!this.runBroadcast()) return;
-		return this.sendReplyBox(Chat.escapeHTML(target) + " ID: <b>" + Chat.escapeHTML(toId(target)) + "</b>");
+		return this.sendReplyBox(Chat.escapeHTML(target) + " ID: <b>" + Chat.escapeHTML(toID(target)) + "</b>");
 	},
 	useridhelp: ["/userid [user] - shows the user's ID (removes unicode from name basically)"],
 	pus: 'pmupperstaff',
@@ -734,7 +734,7 @@ exports.commands = {
 	},
 	'!regdate': true,
 	regdate: function (target, room, user, connection) {
-		if (toId(target).length < 1 || toId(target).length > 19) return this.errorReply("Usernames may not be less than one character or longer than 19");
+		if (toID(target).length < 1 || toID(target).length > 19) return this.errorReply("Usernames may not be less than one character or longer than 19");
 		if (!this.runBroadcast()) return;
 		Gold.regdate(target, date => {
 			this.sendReplyBox(`${Gold.nameColor(target.trim(), false)} ${(date ? ` was registered on ${moment(date).format("dddd, MMMM DD, YYYY HH:mmA ZZ")}` : ` is not registered.`)}`);
@@ -760,8 +760,8 @@ exports.commands = {
 		case 'remove':
 			if (!this.can('pban')) return false;
 			data = Gold.checkExisting(parts[1]);
-			if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
-			if (!data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
+			if (!badgeObj[toID(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+			if (!data.badges.includes(toID(parts[2]))) return this.errorReply(`User '${parts[1]}' does not have badge '${parts[2]}'.`);
 			Gold.modifyBadge(parts[1], parts[2], 'TAKE');
 			if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have been stripped of the badge '${badgeTitle}' by ${user.name}.`);
 			return this.sendReply(`You have removed badge '${badgeObj[parts[2]].title}' from user '${parts[1]}'.`);
@@ -769,8 +769,8 @@ exports.commands = {
 		case 'give':
 			if (!this.can('pban')) return false;
 			data = Gold.checkExisting(parts[1]);
-			if (!badgeObj[toId(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
-			if (data.badges.includes(toId(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
+			if (!badgeObj[toID(parts[2])]) return this.errorReply(`Badge '${parts[2]}' does not exist... check spelling?`);
+			if (data.badges.includes(toID(parts[2]))) return this.errorReply(`User '${parts[1]}' already has badge '${parts[2]}'.`);
 			Gold.modifyBadge(parts[1], parts[2], 'GIVE');
 			if (Users(parts[1]) && Users(parts[1]).connected) Users(parts[1]).popup(`|modal|You have recieved the badge '${badgeTitle}' from ${user.name}.`);
 			return this.sendReply(`You have given badge '${badgeTitle}' to user '${parts[1]}'.`);
@@ -848,7 +848,7 @@ exports.commands = {
 		return user.send('|popup|' + codes);
 	},
 	userauth: function (target, room, user, connection) {
-		let targetId = toId(target) || user.userid;
+		let targetId = toID(target) || user.userid;
 		let targetUser = Users.getExact(targetId);
 		let targetUsername = (targetUser ? targetUser.name : target);
 		let buffer = [];
@@ -1084,7 +1084,7 @@ exports.commands = {
 			this.privateModCommand("(" + name + "'s ac account: " + acAccount + ")");
 		}
 		this.add('|unlink|hide|' + userid);
-		if (userid !== toId(this.inputUsername)) this.add('|unlink|hide|' + toId(this.inputUsername));
+		if (userid !== toID(this.inputUsername)) this.add('|unlink|hide|' + toID(this.inputUsername));
 
 		this.globalModlog("LOCK", targetUser, " by " + user.name + (target ? ": " + target : ""));
 		Gold.removeAllMoney(targetUser.userid, user.name);
@@ -1209,15 +1209,15 @@ exports.commands = {
 	'!profile': true,
 	profile: function (target, room, user) {
 		if (!target) target = user.name;
-		if (toId(target).length > 19) return this.errorReply("Usernames may not be more than 19 characters long.");
-		if (toId(target).length < 1) return this.errorReply(target + " is not a valid username.");
+		if (toID(target).length > 19) return this.errorReply("Usernames may not be more than 19 characters long.");
+		if (toID(target).length < 1) return this.errorReply(target + " is not a valid username.");
 		if (!this.runBroadcast()) return;
 
 		let targetUser = Users.get(target);
 		let online = (targetUser ? targetUser.connected : false);
 
 		let username = (targetUser ? targetUser.name : target);
-		let userid = (targetUser ? targetUser.userid : toId(target));
+		let userid = (targetUser ? targetUser.userid : toID(target));
 
 		let avatar = (targetUser ? (isNaN(targetUser.avatar) ? "http://" + serverIp + ":" + Config.port + "/avatars/" + targetUser.avatar : "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar + ".png") : (Config.customavatars[userid] && userid !== 'constructor' ? "http://" + serverIp + ":" + Config.port + "/avatars/" + Config.customavatars[userid] : "http://play.pokemonshowdown.com/sprites/trainers/167.png"));
 		if (targetUser && targetUser.avatar[0] === '#') avatar = "http://play.pokemonshowdown.com/sprites/trainers/" + targetUser.avatar.substr(1) + ".png";
@@ -1249,11 +1249,11 @@ exports.commands = {
 			let badgeLength = Gold.userData[userid] && Gold.userData[userid].badges && Gold.userData[userid].badges.length > 0 ? Gold.userData[userid].badges.length : 0;
 			let bio = Gold.userData[userid] && Gold.userData[userid].status && Gold.userData[userid].status.length > 0 ? Gold.userData[userid].status : false;
 			profile += '<td><img src="' + avatar + '" height=80 width=80 align=left></td>';
-			if (!getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
-			if (getFlag(toId(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toId(username)) + vip + '<br />';
+			if (!getFlag(toID(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + vip + '<br />';
+			if (getFlag(toID(username))) profile += '<td style="vertical-align: top;">&nbsp;<font color=' + formatHex + '><b>Name:</b></font> ' + userSymbol + '<strong class="username">' + Gold.nameColor(username, false) + '</strong>' + getFlag(toID(username)) + vip + '<br />';
 			profile += '&nbsp;<font color=' + formatHex + '><b>Registered:</b></font> ' + regdate + '<br />';
 			if (bucks) profile += '&nbsp;<font color=' + formatHex + '><b>Bucks:</b></font> ' + bucks + '<br />';
-			if (online && lastActive(toId(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toId(username)) + '<br />';
+			if (online && lastActive(toID(username))) profile += '&nbsp;<font color=' + formatHex + '><b>Last Active:</b></font> ' + lastActive(toID(username)) + '<br />';
 			if (!online) profile += '&nbsp;<font color=' + formatHex + '><b>Last Online: </b></font>' + Gold.getLastSeen(userid) + '<br />';
 			if (bio) profile += '&nbsp;<font color=' + formatHex + '><b>Bio:</b></font> ' + Chat.escapeHTML(bio) + '<br />';
 			if (badgeLength > 0) profile += '&nbsp;<font color=' + formatHex + '><b>Badge' + Gold.pluralFormat(badgeLength) + ':</b></font> ' + Gold.displayBadges(userid);
@@ -1270,7 +1270,7 @@ exports.commands = {
 		target = target.split('|');
 		let targetRoom = (Rooms.search(target[0]) ? target[0] : false);
 		if (!room || !target || !target[1]) return this.parse('/help advertise');
-		if (!targetRoom) return this.errorReply("Room '" + toId(target[0]) + "' not found.  Check spelling?");
+		if (!targetRoom) return this.errorReply("Room '" + toID(target[0]) + "' not found.  Check spelling?");
 		if (user.lastAdvertisement) {
 			let milliseconds = (Date.now() - user.lastAdvertisement);
 			let seconds = ((milliseconds / 1000) % 60);
@@ -1284,7 +1284,7 @@ exports.commands = {
 			user.lastCommand = 'advertise';
 		} else if (user.lastCommand === 'advertise') {
 			let buttoncss = 'background: #ff9900; text-shadow: none; padding: 2px 6px; color: black; text-align: center; border: black, solid, 1px;';
-			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + advertisement + '<br /><hr width="80%"><button name="joinRoom" class="button" style="' + buttoncss + '" value="' + toId(targetRoom) + '">Click to join <b>' + Rooms.search(toId(targetRoom)).title + '</b></button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
+			Rooms('lobby').add('|raw|<div class="infobox"><strong style="color: green;">Advertisement:</strong> ' + advertisement + '<br /><hr width="80%"><button name="joinRoom" class="button" style="' + buttoncss + '" value="' + toID(targetRoom) + '">Click to join <b>' + Rooms.search(toID(targetRoom)).title + '</b></button> | <i><font color="gray">(Advertised by</font> ' + Gold.nameColor(user.name, false) + '<font color="gray">)</font></i></div>').update();
 			Gold.updateMoney(user.userid, -ADVERTISEMENT_COST);
 			user.lastCommand = '';
 			user.lastAdvertisement = Date.now();
@@ -1295,7 +1295,7 @@ exports.commands = {
 	animal: 'animals',
 	animals: function (target, room, user) {
 		if (!target) return this.parse('/help animals');
-		let tarId = toId(target);
+		let tarId = toID(target);
 		let validTargets = ['cat', 'otter', 'dog', 'bunny', 'pokemon', 'kitten', 'puppy'];
 		if (room.id === 'lobby') return this.errorReply("This command cannot be broadcasted in the Lobby.");
 		if (!validTargets.includes(tarId)) return this.parse('/help animals');
@@ -1428,7 +1428,7 @@ exports.commands = {
 		if (!this.can('pban')) return false;
 		if (!target) return this.parse('/help goldipsearch');
 		let searchType = target.includes('.') ? 'IP' : 'User';
-		let origtarget = target, targetId = toId(target), wildcard = target.includes('*');
+		let origtarget = target, targetId = toID(target), wildcard = target.includes('*');
 		let fallout = "No users or IPs of '" + target + "' have visted this server. Check spelling?";
 		if (targetId === 'constructor') return this.errorReply(fallout);
 
@@ -1465,7 +1465,7 @@ exports.commands = {
 	lastseen: 'seen',
 	seen: function (target, room, user) {
 		if (!this.runBroadcast()) return;
-		let userid = toId(target);
+		let userid = toID(target);
 		if (userid.length > 18) return this.errorReply("Usernames cannot be over 18 characters.");
 		if (userid.length < 1) return this.errorReply("/seen - Please specify a name.");
 		let userName = '<strong class="username">' + Gold.nameColor(target, false) + '</strong>';
@@ -1612,7 +1612,7 @@ exports.commands = {
 	roomtab: function (target, room, user) {
 		if (!this.can('hotpatch')) return false;
 		if (!room.chatRoomData) return this.errorReply("This room isn't going to be around long enough for this to really matter.");
-		if (target && toId(target)) {
+		if (target && toID(target)) {
 			if (target.includes('-') || target.includes(',') || target.includes('[') || target.includes('|')) return this.errorReply("Roomtab text cannot contain any of: ,|[-");
 			if (target === 'delete' || target === 'remove' && room.title2) {
 				if (!room.title2) return this.errorReply("This room does not have custom roomtab text.");
@@ -1781,7 +1781,7 @@ exports.commands = {
 			if (!this.can('declare')) return false;
 			if (!target || !target.includes(',')) return this.parse(`/help transferauthority`);
 			target = target.split(',');
-			let user1 = target[0].trim(), user2 = target[1].trim(), user1ID = toId(user1), user2ID = toId(user2);
+			let user1 = target[0].trim(), user2 = target[1].trim(), user1ID = toID(user1), user2ID = toID(user2);
 			if (user1ID.length < 1 || user2ID.length < 1) return this.errorReply(`One or more of the given usernames are too short to be a valid username (min 1 character).`);
 			if (user1ID.length > 17 || user2ID.length > 17) return this.errorReply(`One or more of the given usernames are too long to be a valid username (max 17 characters).`);
 			if (user1ID === user2ID) return this.errorReply(`You provided the same accounts for the alt change.`);
@@ -1875,7 +1875,7 @@ Gold.nameColor = function (name, bold) {
 };
 
 Gold.regdate = function (target, callback) {
-	target = toId(target);
+	target = toID(target);
 	if (target === 'constructor') return callback(0);
 	if (regdateCache[target]) return callback(regdateCache[target]);
 

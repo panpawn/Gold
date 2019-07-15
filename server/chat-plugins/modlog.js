@@ -237,7 +237,7 @@ function prettifyResults(resultArray, roomid, searchString, exactSearch, addModl
 		}
 		let parenIndex = line.indexOf(')');
 		let thisRoomID = line.slice(bracketIndex + 3, parenIndex);
-		if (addModlogButton && thisRoomID !== 'global') {
+		if (thisRoomID !== 'global') {
 			const button = Config.modlogbutton(origDate, thisRoomID, timestamp);
 			if (button) timestamp = button;
 		} else {
@@ -301,7 +301,7 @@ async function getModlog(connection, roomid = 'global', searchString = '', maxLi
 
 	const query = {cmd: 'modlog', roomidList, searchString, exactSearch, maxLines, onlyPunishments};
 	const response = await PM.query(query);
-	connection.send(prettifyResults(response, roomid, searchString, exactSearch, addModlogLinks, hideIps, maxLines, onlyPunishments));
+	connection.send(prettifyResults(response, roomid, searchString, exactSearch, addModlogButton, hideIps, maxLines, onlyPunishments));
 	const duration = Date.now() - startTime;
 	if (timed) connection.popup(`The modlog query took ${duration} ms to complete.`);
 	if (duration > LONG_QUERY_DURATION) console.log(`Long modlog query took ${duration} ms to complete:`, query);

@@ -539,7 +539,7 @@ exports.commands = {
 	},
 	emojifilterhelp: [`/emojifilter [on/off] - Toggles filtering messages in the room for emojis. Requires # & ~`],
 
-	blacklistpermission: function (target, room, user) {
+	blacklistpermission(target, room, user) {
 		if (!target) return this.parse('/help blacklistpermission');
 		if (!this.canTalk()) return;
 		if (!this.can('declare', null, room)) return false;

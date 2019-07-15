@@ -18,7 +18,7 @@ function reloadCustomAvatars() {
 		let ext = path.extname(file);
 		if (ext !== '.png' && ext !== '.gif') return;
 
-		let user = toId(path.basename(file, ext));
+		let user = toID(path.basename(file, ext));
 		newCustomAvatars[user] = file;
 		delete Config.customavatars[user];
 	});
@@ -97,7 +97,7 @@ exports.commands = {
 
 		switch (cmd) {
 		case 'set':
-			let userid = toId(parts[1]);
+			let userid = toID(parts[1]);
 			let targetUser = Users.getExact(userid);
 
 			let avatar = parts.slice(2).join(',').trim();
@@ -154,7 +154,7 @@ exports.commands = {
 
 		case 'remove':
 		case 'delete':
-			let targetUserid = toId(parts[1]);
+			let targetUserid = toID(parts[1]);
 			if (!globalUpper && !vipUser(targetUserid)) return false;
 			if (!Config.customavatars[targetUserid]) return this.errorReply(targetUserid + " does not have a custom avatar.");
 

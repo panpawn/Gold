@@ -24,7 +24,7 @@ const commands = {
 		if (room && room.id === 'staff' && !this.runBroadcast()) return;
 		if (!room) room = Rooms.global;
 		let targetUser = this.targetUserOrSelf(target, user.group === ' ');
-		let customCode = Gold.whois(toId(target), true);
+		let customCode = Gold.whois(toID(target), true);
 		let showAll = (cmd === 'ip' || cmd === 'whoare' || cmd === 'alt' || cmd === 'alts');
 		if (!targetUser) {
 			if (showAll) return this.parse('/offlinewhois ' + target);
@@ -2350,7 +2350,7 @@ const commands = {
 
 		if (user.userid === 'ponybot') {
 			if (!this.can('announce', null, room)) return;
-			if (message.charAt(0) === '!') this.broadcasting = true;
+			if (this.message.charAt(0) === '!') this.broadcasting = true;
 		} else {
 			if (!this.can('declare', null, room)) return;
 			if (!this.runBroadcast('!htmlbox')) return;

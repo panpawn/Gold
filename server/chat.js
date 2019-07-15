@@ -818,12 +818,12 @@ class CommandContext extends MessageContext {
 			...user.getAltUsers(true),
 			...Object.keys(user.prevNames),
 			user.userid,
-		].map(toId);
+		].map(toID);
 
 		let points = 0;
 		let times = [];
 		for (let log of room.log.chatLog.slice(-9)) {
-			const name = toId(log.split('|')[5]);
+			const name = toID(log.split('|')[5]);
 			const time = Number(log.split('|')[2]);
 			if (knownNames.includes(name)) {
 				times.push(time);

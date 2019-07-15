@@ -1,11 +1,11 @@
 'use strict';
 
 const ROOM_NAME = "Shadow Ban Room";
-let room = Rooms.get(toId(ROOM_NAME));
+let room = Rooms.get(toID(ROOM_NAME));
 
 if (!room) {
 	Rooms.global.addChatRoom(ROOM_NAME);
-	room = Rooms.get(toId(ROOM_NAME));
+	room = Rooms.get(toID(ROOM_NAME));
 
 	room.isPrivate = true;
 	room.staffRoom = true;
@@ -32,15 +32,15 @@ exports.room = room;
 function getAllAlts(user) {
 	let targets = {};
 	if (typeof user === 'string') {
-		targets[toId(user)] = 1;
+		targets[toID(user)] = 1;
 	} else {
 		user.getAlts().concat(user.name).forEach(function (altName) {
 			let alt = Users.get(altName);
 			if (!alt.named) return;
 
-			targets[toId(alt)] = 1;
+			targets[toID(alt)] = 1;
 			Object.keys(alt.prevNames).forEach(function (name) {
-				targets[toId(name)] = 1;
+				targets[toID(name)] = 1;
 			});
 		});
 	}
@@ -76,7 +76,7 @@ function intersectAndExclude(a, b) {
 
 let checkBannedCache = {};
 exports.checkBanned = function (user) {
-	let userId = toId(user);
+	let userId = toID(user);
 	if (userId in checkBannedCache) return checkBannedCache[userId];
 	//console.log("Shadow ban cache miss:", userId);
 
@@ -101,7 +101,7 @@ exports.checkBanned = function (user) {
 
 let addUser = exports.addUser = function (user, force) {
 	if (force) {
-		const u = toId(user);
+		const u = toID(user);
 		if (room.addedUsers[u]) return false;
 		room.addedUsers[u] = 1;
 		room.add(`||Added user: ${u}`).update();
@@ -196,7 +196,7 @@ exports.commands = {
 		let keys = Object.keys(Rooms('shadowbanroom').addedUsers);
 		if (keys.length < 1) return this.errorReply("There are currently no shadow banned users at this time.");
 
-		Users.get(toId(user.name)).send('|popup||wide| Here is a list of sbanned users: \n' + keys.join(', '));
+		Users.get(toID(user.name)).send('|popup||wide| Here is a list of sbanned users: \n' + keys.join(', '));
 	},
 };
 

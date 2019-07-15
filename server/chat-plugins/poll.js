@@ -401,7 +401,7 @@ const commands = {
 		`/poll end - Ends a poll and displays the results. Requires: % @ # & ~`,
 	],
 
-	votes: function (target, room, user) {
+	votes(target, room, user) {
 		if (!room.poll) return this.errorReply("There is no poll running in this room.");
 		if (!this.runBroadcast()) return;
 		room.poll.update();
@@ -409,11 +409,11 @@ const commands = {
 		return this.sendReplyBox("TOTAL VOTES: " + votes + " VOTE" + Gold.pluralFormat(votes, 'S'));
 	},
 	ep: 'endpoll',
-	endpoll: function (target, room, user) {
+	endpoll(target, room, user) {
 		this.parse('/poll end');
 	},
 	pr: 'pollremind',
-	pollremind: function (target, room, user) {
+	pollremind(target, room, user) {
 		if (!room.poll) return this.errorReply("There is no poll running in this room.");
 		if (!this.runBroadcast()) return;
 		room.poll.update();
@@ -426,11 +426,11 @@ const commands = {
 	},
 	tp: 'tpoll',
 	tierpoll: 'tpoll',
-	tpoll: function (target, room, user) {
+	tpoll(target, room, user) {
 		const tiers = ['OverUsed', 'Challenge Cup 1v1', 'Monotype', 'Pokebank Anything Goes', 'Random Monotype', 'Gold Battle', 'Random Battle', 'Ubers'];
 		this.parse('/poll new Next tournament tier?, ' + tiers.sort());
 	},
-	vote: function (target, room, user) {
+	vote(target, room, user) {
 		if (!target) return this.errorReply("Usage: /vote [poll option number] - votes for the [option] in the current poll.");
 		this.parse('/poll vote ' + target);
 	},

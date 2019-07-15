@@ -51,7 +51,7 @@ function cachePacks() {
 		}
 	}
 	for (let i = 0; i < packShop.length; i++) {
-		cleanShop.push(toId(packShop[i]));
+		cleanShop.push(toID(packShop[i]));
 	}
 }
 
@@ -66,14 +66,14 @@ function cacheRarity() {
 		}
 	}
 	for (let i = 0; i < cardRarity.length; i++) {
-		cleanCard.push(toId(cardRarity[i]));
+		cleanCard.push(toID(cardRarity[i]));
 	}
 }
 
 Gold.tourCard = function (tourSize, userid) {
 	if (tourSize > 32) tourSize = 32;
 	let tourRarity = tourCardRarity[Math.floor(tourSize / 3)];
-	let cacheValue = rareCache[cleanCard.indexOf(toId(tourRarity))];
+	let cacheValue = rareCache[cleanCard.indexOf(toID(tourRarity))];
 	if (!cacheValue || !cacheValue.length) return false;
 	let card = cacheValue[Math.round(Math.random() * (cacheValue.length - 1))];
 	if (tourRarity === 'No Card') return;
@@ -90,7 +90,7 @@ function addCard(name, card) {
 	newCard.rarity = cards[card].rarity;
 	newCard.points = cards[card].points;
 
-	let userid = toId(name);
+	let userid = toID(name);
 	Db('cards').set(userid, Db('cards').get(userid, []).concat([newCard]));
 	Db('points').set(userid, Db('points').get(userid, 0) + newCard.points);
 }
@@ -191,7 +191,7 @@ exports.commands = {
 	pack: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		if (!target) target = user.name;
-		target = toId(target);
+		target = toID(target);
 		if (!userPacks[target] || userPacks[target].length === 0) return this.sendReply((target === user.userid ? 'You have' : target + ' has') + ' no packs.');
 		this.sendReply('|raw|<u><b>List of packs:</b></u>');
 		for (let i = 0; i < userPacks[target].length; i++) {
@@ -203,15 +203,15 @@ exports.commands = {
 	buypack: function (target, room, user) {
 		if (!target) return this.sendReply("/buypack - Buys a pack from the pack shop. Alias: /buypacks");
 		let self = this;
-		let packId = toId(target);
+		let packId = toID(target);
 		let amount = Gold.readMoney(user.userid);
 		if (cleanShop.indexOf(packId) < 0) return self.sendReply("This is not a valid pack. Use /packshop to see all packs.");
-		let shopIndex = cleanShop.indexOf(toId(target));
+		let shopIndex = cleanShop.indexOf(toID(target));
 		if (packId !== 'xybase' && packId !== 'xyfuriousfists' && packId !== 'xyflashfire' && packId !== 'xyphantomforces' && packId !== 'xyroaringskies' && packId !== 'xyprimalclash' && packId !== 'xyancientorigins' && packId !== 'xygenerations' && packId !== 'xypromo') return self.sendReply("This pack is not currently in circulation.  Please use /packshop to see the current packs.");
 		let cost = shop[shopIndex][2];
 		if (cost > amount) return self.sendReply("You need " + (cost - amount) + " more bucks to buy this pack.");
 		Gold.updateMoney(user.userid, Number(-cost));
-		let pack = toId(target);
+		let pack = toID(target);
 		self.sendReply('|raw|You have bought ' + target + ' pack for ' + cost + ' bucks. Use <button name="send" value="/openpack ' + pack + '"><b>/openpack ' + pack + '</b></button> to open your pack.');
 		self.sendReply("You have until the server restarts to open your pack.");
 		if (!userPacks[user.userid]) userPacks[user.userid] = [];
@@ -231,17 +231,17 @@ exports.commands = {
 			this.sendReply("/openpack [pack] - Open a Pokemon Card Pack. Alias: /open, /openpacks");
 			return this.parse('/packs');
 		}
-		if (cleanShop.indexOf(toId(target)) < 0) return this.sendReply("This pack does not exist.");
+		if (cleanShop.indexOf(toID(target)) < 0) return this.sendReply("This pack does not exist.");
 		if (!userPacks[user.userid] || userPacks[user.userid].length === 0) return this.sendReply("You have no packs.");
-		if (userPacks[user.userid].indexOf(toId(target)) < 0) return this.sendReply("You do not have this pack.");
+		if (userPacks[user.userid].indexOf(toID(target)) < 0) return this.sendReply("You do not have this pack.");
 		let newPack;
 		for (let i = 0; i < 3; i++) {
-			newPack = toId(target);
-			let cacheValue = cardCache[cleanShop.indexOf(toId(target))];
+			newPack = toID(target);
+			let cacheValue = cardCache[cleanShop.indexOf(toID(target))];
 			let card = cacheValue[Math.round(Math.random() * (cacheValue.length - 1))];
 			addCard(user.userid, card);
 			let cardName = cards[card].name;
-			let packName = packShop[cleanShop.indexOf(toId(target))];
+			let packName = packShop[cleanShop.indexOf(toID(target))];
 			this.sendReplyBox(Gold.nameColor(user.name, true) + ' got <font color="' + colors[cards[card].rarity] + '">' + cards[card].rarity + '</font> ' +
 			'<button name="send" value="/card ' + card + '"><b>' + cardName + '</b></button> from a ' +
 			'<button name="send" value="/buypack ' + packName + '">' + packName + ' Pack</button>.');
@@ -257,8 +257,8 @@ exports.commands = {
 		let parts = target.split(',');
 		this.splitTarget(parts[0]);
 		if (!parts[1]) return this.sendReply("/givepack [user], [pack] - Give a user a pack.");
-		let pack = toId(parts[1]);
-		let userid = toId(this.targetUsername);
+		let pack = toID(parts[1]);
+		let userid = toID(this.targetUsername);
 		if (cleanShop.indexOf(pack) < 0) return this.sendReply("This pack does not exist.");
 		if (!this.targetUser) return this.sendReply("User '" + this.targetUsername + "' not found.");
 		if (!userPacks[userid]) userPacks[userid] = [];
@@ -276,8 +276,8 @@ exports.commands = {
 		let parts = target.split(',');
 		this.splitTarget(parts[0]);
 		if (!parts[1]) return this.sendReply("/takepack [user], [pack] - Take a pack from a user.");
-		let pack = toId(parts[1]);
-		let userid = toId(this.targetUsername);
+		let pack = toID(parts[1]);
+		let userid = toID(this.targetUsername);
 		let packIndex = userPacks[userid].indexOf(pack);
 		if (packShop.indexOf(pack) < 0) return this.sendReply("This pack does not exist.");
 		if (!this.targetUser) return this.sendReply("User '" + this.targetUsername + "' not found.");
@@ -293,7 +293,7 @@ exports.commands = {
 	showcase: function (target, room, user) {
 		if (!this.runBroadcast()) return;
 		let userid = user.userid;
-		if (target) userid = toId(target);
+		if (target) userid = toID(target);
 		const cards = Db('cards').get(userid, []);
 		if (!cards.length || userid === "constructor") return this.sendReplyBox(Gold.nameColor(userid, false) + " has no cards.");
 		const cardsMapping = cards.map(function (card) {
@@ -305,7 +305,7 @@ exports.commands = {
 	card: function (target, room, user) {
 		if (!target) return this.sendReply("/card [name] - Shows information about a card.");
 		if (!this.runBroadcast()) return;
-		let cardName = toId(target);
+		let cardName = toID(target);
 		if (!cards[cardName]) return this.sendReply(target + ": card not found.");
 		let card = cards[cardName];
 		let html = '<div class="card-div card-td" style="box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.2);"><img src="' + card.card + '" height="220" title="' + card.name + '" align="right">' +
@@ -355,9 +355,9 @@ exports.commands = {
 		let parts = target.split(",");
 		let actionCommand = parts.shift();
 		let cardDisplay;
-		switch (toId(actionCommand)) {
+		switch (toID(actionCommand)) {
 		case 'letter':
-			let letter = toId(parts[0]);
+			let letter = toID(parts[0]);
 
 			const letterMenu = '<center>' + letters.map(l => {
 				return '<button name="send" value="/searchcard letter, ' + l + '" ' + (letter === l ? "style=\"background-color:lightblue;height:30px;width:35px\"" : "style=\"background-color:aliceblue;height:30px;width:35px\"") + ">" + l.toUpperCase() + "</button>";
@@ -388,14 +388,14 @@ exports.commands = {
 		case 'category':
 			// clean all the parts first
 			parts = parts.map(p => {
-				return toId(p);
+				return toID(p);
 			});
 
 			// create category menu
 			let categoryMenu = "";
 			for (let c in categories) {
 				categoryMenu += '<b>' + c + ' -</b> ' + categories[c].map(k => {
-					let m = toId(k);
+					let m = toID(k);
 					// add a special search condition for rarity
 					if (c === "Rarity") m += "rarity";
 
@@ -437,7 +437,7 @@ exports.commands = {
 			});
 			if (rarityCheck) {
 				for (let c in paramCards) {
-					let cardRare = toId(paramCards[c].rarity);
+					let cardRare = toID(paramCards[c].rarity);
 					for (let i = 0; i < parts.length; i++) {
 						if (/rarity$/i.test(parts[i])) {
 							// check if rarity is the card's rarity
@@ -464,12 +464,12 @@ exports.commands = {
 			break;
 		case 'card':
 			let backButton = '<button name="send" value="/cardsearch ' + user.lastCardSearch + '" style="background-color:aliceblue;height:30px;width:35">&lt;&nbsp;Back</button><br /><br />';
-			if (!parts[0] || !(toId(parts[0]) in cards) || toId(parts[0]) === "constructor") {
+			if (!parts[0] || !(toID(parts[0]) in cards) || toID(parts[0]) === "constructor") {
 				return user.popup(definePopup + backButton + '<center><font color="red"><b>Invalid Card</b></font></center>');
 			}
 
 			// build the display screen for the card
-			let card = cards[toId(parts[0])];
+			let card = cards[toID(parts[0])];
 			// the image
 			let cardImage = '<img src="' + card.card + '" height=250>';
 			// the name of the card
@@ -521,7 +521,7 @@ exports.commands = {
 	trade: 'tradecard',
 	tradecard: function (target, room, user) {
 		if (!target) return this.errorReply("/tradecard [card ID], [user], [targetCard ID]");
-		let parts = target.split(",").map(p => toId(p));
+		let parts = target.split(",").map(p => toID(p));
 		if (parts.length !== 3) return this.errorReply("/tradecard [your card's ID], [targetUser], [targetCard ID]");
 		let match;
 
@@ -683,7 +683,7 @@ exports.commands = {
 	tradeaction: function (target, room, user) {
 		if (!target) return false; // due to the complexity of the command, this should only be used through the viewtrades screen
 		let parts = target.split(",").map(p => p.trim());
-		let action = toId(parts.shift());
+		let action = toID(parts.shift());
 		const backButton = '<button name="send" value="' + (user.lastTradeCommand || '/viewcardtrades') + '" style="background-color:aliceblue;height:30px">< Back</button><br /><br />';
 		const tradeError = "|html|" + backButton + '<center><font color="red"><b>ERROR: Invalid Trade / You cannot accept your own trade request!</b></font><center>';
 		let trade;
@@ -813,8 +813,8 @@ exports.commands = {
 	confirmtransfercard: 'transfercard',
 	transfercard: function (target, room, user, connection, cmd) {
 		if (!target) return this.errorReply("/transfercard [user], [card ID]");
-		if (toId(target) === user) return this.errorReply("You cannot transfer cards to yourself.");
-		let parts = target.split(",").map(p => toId(p));
+		if (toID(target) === user) return this.errorReply("You cannot transfer cards to yourself.");
+		let parts = target.split(",").map(p => toID(p));
 		// find targetUser and the card being transfered.
 		let targetUser = parts.shift();
 		let card = parts[0];
@@ -847,8 +847,8 @@ exports.commands = {
 	confirmtransferallcards: 'transferallcards',
 	transferallcards: function (target, room, user, connection, cmd) {
 		if (!target) return this.errorReply("/transferallcards [user]");
-		if (toId(target) === user) return this.errorReply("You cannot transfer cards to yourself.");
-		let targetUser = toId(target);
+		if (toID(target) === user) return this.errorReply("You cannot transfer cards to yourself.");
+		let targetUser = toID(target);
 		if (!targetUser) return this.errorReply("/transferallcards [user]");
 		let userCards = Db('cards').get(user.userid, []);
 		let targetCards = Db('cards').get(targetUser, []);
@@ -902,7 +902,7 @@ exports.commands = {
 	spawncard: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.errorReply("/givecard [user], [card ID]");
-		let parts = target.split(",").map(p => toId(p));
+		let parts = target.split(",").map(p => toID(p));
 		// find targetUser and the card being given.
 		let targetUser = parts.shift();
 		let card = parts[0].trim();
@@ -918,7 +918,7 @@ exports.commands = {
 	takecard: function (target, room, user, connection, cmd) {
 		if (!this.can('pban')) return false;
 		if (!target) return this.errorReply("/takecard [user], [card ID]");
-		let parts = target.split(",").map(p => toId(p));
+		let parts = target.split(",").map(p => toID(p));
 		// find targetUser and the card being taken.
 		let targetUser = parts.shift();
 		let card = parts[0].trim();

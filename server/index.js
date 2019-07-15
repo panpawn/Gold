@@ -92,7 +92,6 @@ if (Config.watchconfig) {
 
 global.Dex = require('../.sim-dist/dex').Dex;
 global.toID = Dex.getId;
-global.toId = Dex.getId;
 
 global.LoginServer = require('../.server-dist/loginserver').LoginServer;
 
@@ -116,8 +115,7 @@ global.Tournaments = require('./tournaments');
 
 global.IPTools = require('../.server-dist/ip-tools').IPTools;
 IPTools.loadDatacenters();
-global.Dnsbl = IPTools;
-Dnsbl.loadDatacenters();
+IPTools.loadDatacenters();
 
 if (Config.crashguard) {
 	// graceful crash - allow current battles to finish before restarting
@@ -183,7 +181,7 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 	}, 1 * 60 * 60 * 1000);
 });
 
-require('./github'); // GitHub alerts 
+require('./github'); // GitHub alerts
 
 /*********************************************************
  * Start up the REPL server
