@@ -74,7 +74,7 @@ exports.commands = {
 			logTransaction(user.name + ' has purchased a(n) ' + item + '. ' + desc);
 		}
 
-		switch (toId(parts[0])) {
+		switch (toID(parts[0])) {
 		case 'symbol':
 			price = prices['symbol'];
 			if (Gold.hasVip(user.userid)) return this.errorReply("You are a VIP user - you do not need to buy custom symbols from the shop.  Use /customsymbol to change your symbol.");
@@ -97,7 +97,7 @@ exports.commands = {
 			processPurchase(price, parts[0], 'Image: ' + parts[1]);
 			if (Config.customavatars[user.userid]) output = ' | <button name="send" value="/sca delete, ' + user.userid + '" target="_blank" title="Click this to remove current avatar.">Click2Remove</button>';
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a custom avatar. Image: ' + link(parts[1].replace(' ', ''), 'desired avatar'), true);
-			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
+			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toID(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
 			this.sendReply("You have bought a custom avatar from the shop.  The staff have been notified and will set it ASAP.");
 			break;
 
@@ -136,7 +136,7 @@ exports.commands = {
 			processPurchase(price, parts[0], 'Image: ' + parts[1]);
 			if (Config.customavatars[user.userid]) output = ' | <button name="send" value="/sca delete, ' + user.userid + '" target="_blank" title="Click this to remove current avatar.">Click2Remove</button>';
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a custom animated avatar. Image: ' + link(parts[1].replace(' ', ''), 'desired avatar'), true);
-			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toId(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
+			alertStaff('<center><img src="' + parts[1] + '" width="80" height="80"><br /><button name="send" value="/sca set, ' + toID(user.name) + ', ' + parts[1] + '" target="_blank" title="Click this to set the above custom avatar.">Click2Set</button> ' + output + '</center>', false);
 			this.sendReply("You have purchased a custom animated avatar.  The staff have been notified and will add it ASAP.");
 			break;
 
@@ -169,7 +169,7 @@ exports.commands = {
 			processPurchase(price, parts[0]);
 			alertStaff(Gold.nameColor(user.name, true) + ' has purchased a music box.', true);
 			Gold.createMusicBox(user); // give the user a music box
-			this.parse('/' + toId(parts[0]) + ' help');
+			this.parse('/' + toID(parts[0]) + ' help');
 			this.sendReply("You have purchased a music box. You may have a maximum of 8 songs in it.");
 			break;
 
@@ -310,8 +310,8 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /givebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
-		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
-		let amount = Math.round(Number(toId(parts[1])));
+		if (targetUser.length < 1 || toID(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
+		let amount = Math.round(Number(toID(parts[1])));
 
 		//checks
 		if (isNaN(amount)) return this.errorReply("The amount you give must be a number.");
@@ -319,7 +319,7 @@ exports.commands = {
 		if (amount > 1000) return this.errorReply("You cannot give more than 1,000 bucks at once.");
 
 		//give the bucks
-		Gold.updateMoney(toId(targetUser), amount);
+		Gold.updateMoney(toID(targetUser), amount);
 
 		//send replies
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
@@ -335,8 +335,8 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /removebucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
-		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
-		let amount = Math.round(Number(toId(parts[1])));
+		if (targetUser.length < 1 || toID(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
+		let amount = Math.round(Number(toID(parts[1])));
 		if (amount > Gold.readMoney(targetUser)) return this.errorReply("You cannot remove more bucks than the user has.");
 
 		//checks
@@ -345,7 +345,7 @@ exports.commands = {
 		if (amount > 1000) return this.errorReply("You cannot remove more than 1,000 bucks at once.");
 
 		//take the bucks
-		Gold.updateMoney(toId(targetUser), -amount);
+		Gold.updateMoney(toID(targetUser), -amount);
 
 		//send replies
 		let amountLbl = amount + " Gold buck" + Gold.pluralFormat(amount, 's');
@@ -360,14 +360,14 @@ exports.commands = {
 		if (!parts[1]) return this.errorReply("Usage: /transferbucks [user], [amount]");
 		for (let u in parts) parts[u] = parts[u].trim();
 		let targetUser = parts[0];
-		if (targetUser.length < 1 || toId(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
+		if (targetUser.length < 1 || toID(targetUser).length > 18) return this.errorReply("Usernames cannot be this length.");
 
 		let amount = Math.round(Number(parts[1]));
 
 		//checks
 		if (isNaN(amount)) return this.errorReply("The amount you transfer must be a number.");
 		if (amount < 1) return this.errorReply("Cannot be less than 1.");
-		if (toId(targetUser) === user.userid) return this.errorReply("You cannot transfer bucks to yourself.");
+		if (toID(targetUser) === user.userid) return this.errorReply("You cannot transfer bucks to yourself.");
 		if (Gold.readMoney(user.userid) < amount) return this.errorReply("You cannot transfer more than you have.");
 
 		//finally, transfer the bucks

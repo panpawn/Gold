@@ -21,7 +21,7 @@ exports.commands = {
 			for (let u in targets) targets[u] = targets[u].trim();
 			if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
 			let back = '';
-			switch (toId(targets[0])) {
+			switch (toID(targets[0])) {
 			case 'month':
 				if (!targets[1]) return this.errorReply("Please use /viewlogs with no target.");
 				if (!permissionCheck(user, targets[1])) return this.errorReply("/viewlogs - Access denied.");
@@ -95,9 +95,9 @@ exports.commands = {
 		let targetRoom = targetSplit[0];
 		if (!permissionCheck(user, targetRoom)) return this.errorReply("/viewlogs - Access denied.");
 		let date;
-		if (toId(targetSplit[1]) === 'today' || toId(targetSplit[1]) === 'yesterday') {
+		if (toID(targetSplit[1]) === 'today' || toID(targetSplit[1]) === 'yesterday') {
 			date = new Date();
-			if (toId(targetSplit[1]) === 'yesterday') date.setDate(date.getDate() - 1);
+			if (toID(targetSplit[1]) === 'yesterday') date.setDate(date.getDate() - 1);
 			targetSplit[1] = date.format('{yyyy}-{MM}-{dd}');
 		}
 		date = targetSplit[1].replace(/\.txt/, '');
@@ -107,7 +107,7 @@ exports.commands = {
 		fs.readFile('logs/chat/' + targetRoom.toLowerCase() + '/' + splitDate[0] + '-' + splitDate[1] + '/' + date + '.txt', 'utf8', (err, data) => {
 			if (err && err.code === "ENOENT") return user.send("|popup||html|<font color=\"red\">No logs found.</font>");
 			if (err) return this.errorReply("/viewlogs - Error: " + err);
-			fs.appendFileSync('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toId(targetRoom) + ". Date: " + date + '\n');
+			fs.appendFileSync('logs/viewlogs.log', '[' + new Date().toUTCString() + '] ' + user.name + " viewed the logs of " + toID(targetRoom) + ". Date: " + date + '\n');
 			let filename = require('crypto').randomBytes(4).toString('hex');
 
 			if (!user.can('warn', null, Rooms(targetRoom))) {
@@ -154,11 +154,11 @@ exports.commands = {
 		for (let u in targets) targets[u] = targets[u].trim();
 		if (!targets[1]) return this.errorReply("Please specify a phrase to search.");
 
-		if (toId(targets[0]) === 'all' && !this.can('hotpatch')) return false;
+		if (toID(targets[0]) === 'all' && !this.can('hotpatch')) return false;
 		if (!Rooms(targets[0]) && !this.can('hotpatch') || !this.can('mute', null, Rooms(targets[0]))) return false;
 
 		let pattern = escapeRegExp(targets[1]).replace(/\\\*/g, '.*');
-		let command = 'grep -Rnw \'./logs/chat/' + (toId(targets[0]) === 'all' ? '' : toId(targets[0])) + '\' -e "' + pattern + '"';
+		let command = 'grep -Rnw \'./logs/chat/' + (toID(targets[0]) === 'all' ? '' : toID(targets[0])) + '\' -e "' + pattern + '"';
 
 		require('child_process').exec(command, function (error, stdout, stderr) {
 			if (error && stderr) {
@@ -181,7 +181,7 @@ exports.commands = {
 					'</font><font color="#00AAAA">:</font>' + message + '<br />';
 			}
 			user.send('|popup||wide||html|Displaying last ' + MAX_LINES + ' lines containing "' + Chat.escapeHTML(pattern) + '"' +
-				(toId(targets[0]) === 'all' ? '' : ' in "' + Chat.escapeHTML(targets[0]) + '"') + ':<br /><br />' + output);
+				(toID(targets[0]) === 'all' ? '' : ' in "' + Chat.escapeHTML(targets[0]) + '"') + ':<br /><br />' + output);
 		});
 	},
 	searchlogshelp: ["/searchlogs [room / all], [phrase] - Phrase may contain * wildcards."],
@@ -231,7 +231,7 @@ function generateTable(array, command, isRoom) {
 		if (array[u] === 'today.txt') continue;
 		if (count === 0) output += "<tr>";
 		let cmdText = array[u];
-		if (isRoom) cmdText = toId(array[u]);
+		if (isRoom) cmdText = toID(array[u]);
 		output += '<td><button class="button" style="width:100%" name="send" value="' + command + Chat.escapeHTML(cmdText) + '">' + Chat.escapeHTML(array[u].replace('.txt', '')) + '</button></td>';
 		count++;
 		if (count > 3) {
@@ -251,7 +251,7 @@ function parseMessage(message, user) {
 	let timestamp = message.substr(0, 9).trim();
 	message = message.substr(9).trim();
 	let lineSplit = message.split('|');
-	let highlight = new RegExp("\\b" + toId(user) + "\\b", 'gi');
+	let highlight = new RegExp("\\b" + toID(user) + "\\b", 'gi');
 	let div = "chat", name = '';
 
 	switch (lineSplit[1]) {

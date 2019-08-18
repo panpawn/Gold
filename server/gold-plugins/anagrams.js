@@ -46,7 +46,7 @@ exports.commands = {
 		if (room.anagram) return this.sendReplyBox("Word: " + room.anagram.scrambledWord);
 		if (!room.anagram) room.anagram = {};
 
-		target = toId(target);
+		target = toID(target);
 		let theme = '';
 
 		switch (target) {
@@ -54,7 +54,7 @@ exports.commands = {
 			theme = 'Pokemon';
 			let pokemon = Tools.getTemplate(Object.keys(Tools.data.Pokedex).sample().trim());
 			room.anagram.word = pokemon.name;
-			while (toId(pokemon.name).indexOf('mega') > -1 || pokemon.tier === 'CAP') {
+			while (toID(pokemon.name).indexOf('mega') > -1 || pokemon.tier === 'CAP') {
 				pokemon = Tools.getTemplate(Object.keys(Tools.data.Pokedex).sample().trim());
 				room.anagram.word = pokemon.name;
 			}
@@ -74,14 +74,14 @@ exports.commands = {
 			break;
 		}
 
-		room.anagram.scrambledWord = toId(room.anagram.word.split('').sort(function () {return 0.5 - Math.random();}).join(''));
-		while (room.anagram.scrambledWord === toId(room.anagram.word)) room.anagram.scrambledWord = toId(room.anagram.word.split('').sort(function () {return 0.5 - Math.random();}).join(''));
+		room.anagram.scrambledWord = toID(room.anagram.word.split('').sort(function () {return 0.5 - Math.random();}).join(''));
+		while (room.anagram.scrambledWord === toID(room.anagram.word)) room.anagram.scrambledWord = toID(room.anagram.word.split('').sort(function () {return 0.5 - Math.random();}).join(''));
 
 		room.chat = function (user, message, connection) {
 			message = CommandParser.parse(message, this, user, connection);
 			if (message) {
 				this.add('|c|' + user.getIdentity(this.id) + '|' + message, true);
-				if (room.anagram && toId(message) === toId(room.anagram.word)) {
+				if (room.anagram && toID(message) === toID(room.anagram.word)) {
 					this.add('|raw|<div class="infobox">' + Tools.escapeHTML(user.name) + ' got the word! It was <b>' + room.anagram.word + '</b></div>');
 					delete room.anagram;
 					delete room.chat;

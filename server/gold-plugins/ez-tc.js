@@ -42,7 +42,7 @@ exports.commands = {
 		case 'add':
 			if (!this.can('trainercard')) return false;
 			if (!parts[2]) return this.sendReply("Usage: /trainercard add, [command name], [html]");
-			let commandName = toId(parts[1]);
+			let commandName = toID(parts[1]);
 			if (Chat.commands[commandName]) return this.sendReply("/trainercards - The command \"" + commandName + "\" already exists.");
 			let html = parts.splice(2, parts.length).join(',');
 			if (html.includes('\\')) html = html.replace('\\', '');
@@ -58,7 +58,7 @@ exports.commands = {
 		case 'remove':
 			if (!this.can('trainercard')) return false;
 			if (!parts[1]) return this.sendReply("Usage: /trainercard remove, [command name]");
-			let command = toId(parts[1]);
+			let command = toID(parts[1]);
 			if (!trainerCards[command]) return this.sendReply("/trainercards - The command \"" + command + "\" does not exist, or was added manually.");
 			delete Chat.commands[command];
 			delete trainerCards[command];

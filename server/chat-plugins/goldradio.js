@@ -26,7 +26,7 @@ if (goldenrodradiotower) {
 }
 
 let commands = {
-	start: function (target, room, user) {
+	start(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return;
@@ -52,7 +52,7 @@ let commands = {
 	},
 	starthelp: ["/aotd start - Start nominations for the Artist of the Day. Requires: % @ # & ~"],
 
-	end: function (target, room, user) {
+	end(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return;
@@ -74,7 +74,7 @@ let commands = {
 	},
 	endhelp: ["/aotd end - End nominations for the Artist of the Day and set it to a randomly selected artist. Requires: % @ # & ~"],
 
-	prenom: function (target, room, user) {
+	prenom(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd prenom');
 		if (!room.chatRoomData || !target) return false;
@@ -114,7 +114,7 @@ let commands = {
 	},
 	prenomhelp: ["/aotd prenom [artist] - Nominate an artist for the Artist of the Day between nomination periods."],
 
-	nom: function (target, room, user) {
+	nom(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd nom');
 		if (!room.chatRoomData || !target) return false;
@@ -146,7 +146,7 @@ let commands = {
 	},
 	nomhelp: ["/aotd nom [artist] - Nominate an artist for the Artist of the Day."],
 
-	viewnoms: function (target, room, user) {
+	viewnoms(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData) return false;
 
@@ -186,7 +186,7 @@ let commands = {
 	},
 	viewnomshelp: ["/aotd viewnoms - View the current nominations for the Artist of the Day. Requires: % @ * # & ~"],
 
-	removenom: function (target, room, user) {
+	removenom(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd removenom');
 		if (!room.chatRoomData || !target || !this.can('mute', null, room)) return false;
@@ -196,7 +196,7 @@ let commands = {
 
 		target = this.splitTarget(target);
 		let name = this.targetUsername;
-		let userid = toId(name);
+		let userid = toID(name);
 		if (!userid) return this.errorReply("'" + name + "' is not a valid username.");
 
 		for (let nominator of artistOfTheDay.nominations.keys()) {
@@ -211,12 +211,12 @@ let commands = {
 	},
 	removenomhelp: ["/aotd removenom [username] - Remove a user's nomination for the Artist of the Day and prevent them from voting again until the next round. Requires: % @ * # & ~"],
 
-	set: function (target, room, user) {
+	set(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) this.parse('/help aotd set');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
 		if (!this.canTalk()) return;
-		if (!toId(target)) return this.errorReply("No valid artist was specified.");
+		if (!toID(target)) return this.errorReply("No valid artist was specified.");
 		if (artistOfTheDay.pendingNominations) return this.sendReply("The Artist of the Day cannot be set while nominations are in progress.");
 
 		room.chatRoomData.artistOfTheDay = target;
@@ -225,7 +225,7 @@ let commands = {
 	},
 	sethelp: ["/aotd set [artist] - Set the Artist of the Day. Requires: % @ * # & ~"],
 
-	quote: function (target, room, user) {
+	quote(target, room, user) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData) return false;
 		if (!target) {
@@ -257,7 +257,7 @@ let commands = {
 		"/aotd quote - View the current Artist Quote of the Day.",
 		"/aotd quote [quote] - Set the Artist Quote of the Day. Requires: # & ~",
 	],
-	song: function (target, room, user) {
+	song(target, room, user) {
 		if (room.id !== 'thestudio') return this.errorReply('This command can only be used in The Studio.');
 		if (!target) return this.parse('/help aotd song');
 		if (!room.chatRoomData || !this.can('mute', null, room)) return false;
@@ -283,14 +283,14 @@ let commands = {
 		"/aotd song [off|disable] - Turns the Song of the Day off. Requires % @ * # & ~",
 	],
 
-	'': function (target, room) {
+	''(target, room) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.runBroadcast()) return false;
 		let song = (room.chatRoomData.songOfTheDayHTML ? '<br />The Song of the Day is ' + room.chatRoomData.songOfTheDayHTML : '');
 		this.sendReplyBox("The Artist of the Day " + (room.chatRoomData.artistOfTheDay ? "is " + Chat.escapeHTML(room.chatRoomData.artistOfTheDay) + "." : "has not been set yet.") + song);
 	},
 
-	help: function (target, room) {
+	help(target, room) {
 		if (room.id !== 'goldenrodradiotower') return this.errorReply('This command can only be used in The Studio.');
 		if (!room.chatRoomData || !this.runBroadcast()) return false;
 		this.sendReply("Use /help aotd to view help for all commands, or /help aotd [command] for help on a specific command.");

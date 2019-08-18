@@ -68,16 +68,15 @@ const FS = require('../.lib-dist/fs').FS;
  * Load configuration
  *********************************************************/
 
-global.Config = require('../config/config');
+const ConfigLoader = require('../.server-dist/config-loader');
+global.Config = ConfigLoader.Config;
 
 global.Monitor = require('./monitor');
 
 if (Config.watchconfig) {
-	let configPath = require.resolve('../config/config');
-	FS(configPath).onModify(() => {
+	FS(require.resolve('../config/config')).onModify(() => {
 		try {
-			delete require.cache[configPath];
-			global.Config = require('../config/config');
+			global.Config = ConfigLoader.load(true);
 			if (global.Users) Users.cacheGroupData();
 			Gold.readAvatars();
 			Monitor.notice('Reloaded ../config/config.js');
@@ -93,7 +92,6 @@ if (Config.watchconfig) {
 
 global.Dex = require('../.sim-dist/dex').Dex;
 global.toID = Dex.getId;
-global.toId = Dex.getId;
 
 global.LoginServer = require('../.server-dist/loginserver').LoginServer;
 
@@ -117,8 +115,7 @@ global.Tournaments = require('./tournaments');
 
 global.IPTools = require('../.server-dist/ip-tools').IPTools;
 IPTools.loadDatacenters();
-global.Dnsbl = IPTools;
-Dnsbl.loadDatacenters();
+IPTools.loadDatacenters();
 
 if (Config.crashguard) {
 	// graceful crash - allow current battles to finish before restarting
@@ -184,7 +181,7 @@ fs.readFile('./logs/uptime.txt', function (err, uptime) {
 	}, 1 * 60 * 60 * 1000);
 });
 
-require('./github'); // GitHub alerts 
+require('./github'); // GitHub alerts
 
 /*********************************************************
  * Start up the REPL server

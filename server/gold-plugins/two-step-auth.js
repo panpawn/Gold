@@ -78,12 +78,12 @@ Gold.TwoStepAuth = {
 		if (!option) return `<button class="button" name="send" value="${TWO_STEP_CMD}${value}">${value}</button>`;
 	},
 	checkIdentity: function (name, userObj, connection, host, pendingRename) {
-		let data = Gold.userData[toId(name)];
+		let data = Gold.userData[toID(name)];
 		if (!data) return true;
 		if (data.email) {
 			if (userObj && (!data.ips.includes(connection.ip) || (host && host.includes('.proxy-nohost')))) {
 				userObj.pendingRename = pendingRename;
-				this.sendEmail(toId(name), null, connection);
+				this.sendEmail(toID(name), null, connection);
 				this.sendCodePrompt(userObj);
 				return false;
 			} else { // known IP/not a proxy
@@ -133,7 +133,7 @@ exports.commands = {
 			if (!user.codeAttempt) user.codeAttempt = [];
 			user.codeAttempt.push(target);
 			if (user.codeAttempt.length >= 5) {
-				Gold.TwoStepAuth.verifyCode(toId(user.pendingRename.targetName), user, Number(user.codeAttempt.join('')), connection);
+				Gold.TwoStepAuth.verifyCode(toID(user.pendingRename.targetName), user, Number(user.codeAttempt.join('')), connection);
 				user.codeAttempt = [];
 			} else {
 				Gold.TwoStepAuth.sendCodePrompt(user);
@@ -154,16 +154,16 @@ exports.commands = {
 		reset: function (target, room, user) { // resets a user's 2-step email to nothing
 			if (!this.can('hotpatch')) return false;
 			if (!target) return this.errorReply("Usage: /twostep reset [username]");
-			if (!Gold.userData[toId(target)]) return this.errorReply("This user has not visted the server before, and therefore does not have two-step enabled to reset.");
-			if (!Gold.userData[toId(target)].email) return this.errorReply("This user does not currently have two-step authentication enabled.");
-			delete Gold.userData[toId(target)].email;
+			if (!Gold.userData[toID(target)]) return this.errorReply("This user has not visted the server before, and therefore does not have two-step enabled to reset.");
+			if (!Gold.userData[toID(target)].email) return this.errorReply("This user does not currently have two-step authentication enabled.");
+			delete Gold.userData[toID(target)].email;
 			Gold.saveData();
 			return this.privateModCommand(`(${user.name} has forcibly reset ${target}'s two-step authentication email address.)`);
 		},
 		check: function (target, room, user) { // checks if an account has 2-step enabled
 			if (!this.can('hotpatch')) return false;
 			if (!target) return this.errorReply("Usage: /twostep check [username]");
-			let hasTwoStep = (Gold.userData[toId(target)] && Gold.userData[toId(target)].email ? "has two-step" : "does NOT have two-step");
+			let hasTwoStep = (Gold.userData[toID(target)] && Gold.userData[toID(target)].email ? "has two-step" : "does NOT have two-step");
 			return this.sendReply(`${target} ${hasTwoStep} authentication enabled.`);
 		},
 		'': 'help',

@@ -30,7 +30,7 @@ exports.commands = {
 		for (let u in parts) parts[u] = parts[u].trim();
 		if (room.id !== 'gamechamber') return this.errorReply("You must be in Game Chamber to use this command.");
 		if (!Rooms.get('gamechamber')) return this.errorReply("You must have the room \"Game Chamber\" in order to use this script.");
-		switch (toId(parts[0])) {
+		switch (toID(parts[0])) {
 		case 'buy':
 		case 'join':
 			if (!Gold.lottery.gameActive) return this.errorReply("The game of lottery is not currently running.");
@@ -52,7 +52,7 @@ exports.commands = {
 				Gold.lottery.pot = Math.round(Gold.lottery.pot + (Gold.lottery.ticketPrice * bought * 1.5));
 				Rooms.get('gamechamber').add("|raw|<b><font color=" + Gold.hashColor(user.name) + ">" + user.name + "</font></b> has bought " + bought + " lottery tickets.");
 				for (let x = bought; x > 0; x--) {
-					Gold.lottery.players.push(toId(user.name));
+					Gold.lottery.players.push(toID(user.name));
 					Gold.lottery.playerIPS.push(user.latestIp);
 				}
 				saveLottery();
@@ -67,7 +67,7 @@ exports.commands = {
 				Gold.updateMoney(user.userid, -Gold.lottery.ticketPrice);
 				Gold.lottery.pot = Math.round(Gold.lottery.pot + (Gold.lottery.ticketPrice * 1.5));
 				Rooms.get('gamechamber').add("|raw|<b><font color=" + Gold.hashColor(user.name) + ">" + user.name + "</font></b> has bought a lottery ticket.");
-				Gold.lottery.players.push(toId(user.name));
+				Gold.lottery.players.push(toID(user.name));
 				Gold.lottery.playerIPS.push(user.latestIp);
 				saveLottery();
 			}
@@ -120,17 +120,17 @@ exports.commands = {
 				if (jackpot === 100) {
 					Rooms.get("gamechamber").add('|raw|<b><font size="7" color="green"><blink>JACKPOT!</blink></font></b>');
 					Rooms.get("gamechamber").add('|raw|<b><font size="4" color="' + Gold.hashColor(winner) + '">' + winner + '</b></font><font size="4"> has won the game of lottery for <b>' + (Gold.lottery.pot * 2) + '</b> bucks!</font>');
-					Gold.updateMoney(toId(winner), Gold.lottery.pot * 2);
+					Gold.updateMoney(toID(winner), Gold.lottery.pot * 2);
 					Gold.lottery = {};
 					saveLottery();
 				} else {
-					Gold.updateMoney(toId(winner), Gold.lottery.pot);
+					Gold.updateMoney(toID(winner), Gold.lottery.pot);
 					Rooms.get("gamechamber").add('|raw|<b><font size="4" color="' + Gold.hashColor(winner) + '">' + winner + '</b></font><font size="4"> has won the game of lottery for <b>' + Gold.lottery.pot + '</b> bucks!</font>');
 					Gold.lottery = {};
 					saveLottery();
 				}
 			} else if (Gold.lottery.pot === 0) {
-				this.add('|raw|<b><font size="4">This game has been cancelled due to a lack of players by ' + Chat.escapeHTML(toId(user.name)) + '.');
+				this.add('|raw|<b><font size="4">This game has been cancelled due to a lack of players by ' + Chat.escapeHTML(toID(user.name)) + '.');
 				Gold.lottery = {};
 				saveLottery();
 			}
@@ -165,7 +165,7 @@ exports.commands = {
 			let chance = 0;
 			if (Gold.lottery.players.length > 1) {
 				let filteredPlayerArray = Gold.lottery.players.filter(function (username) {
-					return username === toId(parts[1]);
+					return username === toID(parts[1]);
 				});
 				chance = ((filteredPlayerArray.length / Gold.lottery.players.length) * 100).toFixed(1);
 			}

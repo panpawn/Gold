@@ -245,12 +245,12 @@ const commands = {
 			buf += `<span class="col itemiconcol"><psicon item="${targetid}"/></span> `;
 		}
 		if (targetid === "dragonascent") {
-			buf += `<span class="col movenamecol" style="white-space:nowrap"><a href="https://pokemonshowdown.com/dex/moves/${targetid}" target="_blank">Dragon Ascent</a></span> `;
+			buf += `<span class="col movenamecol" style="white-space:nowrap"><a href="https://${Config.routes.dex}/moves/${targetid}" target="_blank">Dragon Ascent</a></span> `;
 		} else {
-			buf += `<span class="col pokemonnamecol" style="white-space:nowrap"><a href="https://pokemonshowdown.com/dex/items/${stone.id}" target="_blank">${stone.name}</a></span> `;
+			buf += `<span class="col pokemonnamecol" style="white-space:nowrap"><a href="https://${Config.routes.dex}/items/${stone.id}" target="_blank">${stone.name}</a></span> `;
 		}
 		if (deltas.type) {
-			buf += `<span class="col typecol"><img src="https://play.pokemonshowdown.com/sprites/types/${deltas.type}.png" alt="${deltas.type}" height="14" width="32"></span> `;
+			buf += `<span class="col typecol"><img src="https://${Config.routes.client}/sprites/types/${deltas.type}.png" alt="${deltas.type}" height="14" width="32"></span> `;
 		} else {
 			buf += `<span class="col typecol"></span>`;
 		}
@@ -339,6 +339,27 @@ const commands = {
 		this.sendReply(`|raw|${Chat.getDataPokemonHTML(template)}`);
 	},
 	scalemonshelp: [`/scale OR /scalemons <pokemon> - Shows the base stats that a Pokemon would have in Scalemons.`],
+
+	'!natureswap': true,
+	ns: 'natureswap',
+	natureswap(target, room, user) {
+		if (!this.runBroadcast()) return;
+		let nature = target.trim().split(' ')[0];
+		let pokemon = target.trim().split(' ')[1];
+		if (!toID(nature) || !toID(pokemon)) return this.parse(`/help natureswap`);
+		let natureObj = /** @type {{name: string, plus?: string | undefined, minus?: string | undefined, exists?: boolean}} */ Dex.getNature(nature);
+		if (!natureObj.exists) return this.errorReply(`Error: Nature ${nature} not found.`);
+		let template = Dex.deepClone(Dex.getTemplate(pokemon));
+		if (!template.exists) return this.errorReply(`Error: Pokemon ${pokemon} not found.`);
+		if (natureObj.minus && natureObj.plus) {
+			let swap = template.baseStats[natureObj.minus];
+			template.baseStats[natureObj.minus] = template.baseStats[natureObj.plus];
+			template.baseStats[natureObj.plus] = swap;
+			template.tier = 'NS';
+		}
+		this.sendReply(`|raw|${Chat.getDataPokemonHTML(template)}`);
+	},
+	natureswapshelp: [`/ns OR /natureswap <pokemon> - Shows the base stats that a Pokemon would have in Nature Swap. Usage: /ns <Nature> <Pokemon>.`],
 };
 
 exports.commands = commands;

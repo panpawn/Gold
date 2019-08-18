@@ -14,7 +14,7 @@ exports.commands = {
 		if (!target) return this.parse('/help tell');
 		let commaIndex = target.indexOf(',');
 		if (commaIndex < 0) return this.errorReply("You forgot the comma.");
-		let targetUser = toId(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
+		let targetUser = toID(target.slice(0, commaIndex)), origUser = target.slice(0, commaIndex);
 		let sentReply = `|raw|Your tell to ${Gold.nameColor(origUser, true)} has been added to their offline messaging queue.${Users(targetUser) && Users(targetUser).connected && user.userid !== targetUser ? "<br /><b>However, this user is currently online if you would like to private message them.</b>" : ""}`;
 		if (Users.ShadowBan.checkBanned(user)) return this.sendReply(sentReply);
 		if (targetUser === user.userid) return this.errorReply("You cannot send a tell to yourself.");

@@ -362,7 +362,7 @@ class Blackjack extends Rooms.RoomGame {
 		let points = 0;
 		let aceCount = 0;
 		for (let i in player.cards) {
-			let card = toId(player.cards[i]).toUpperCase();
+			let card = toID(player.cards[i]).toUpperCase();
 			if (!isNaN(Number(card))) {
 				points += Number(card);
 			} else if (['K', 'Q', 'J'].includes(card)) {
@@ -405,7 +405,7 @@ class Blackjack extends Rooms.RoomGame {
 		output += `It's your turn to move, ${this.players[this.curUser].name}<br />`;
 		for (let u in this.players[this.curUser].cards) {
 			let card = this.players[this.curUser].cards[u];
-			output += `<img src="${CARD_IMAGE_PATH}${toId(card).toUpperCase() + this.symbols[card.substr(-1)]}.png" title="${card}" height="100"/>' `;
+			output += `<img src="${CARD_IMAGE_PATH}${toID(card).toUpperCase() + this.symbols[card.substr(-1)]}.png" title="${card}" height="100"/>' `;
 		}
 		output += `<br />Score: ${this.players[this.curUser].points}${(this.players[this.curUser].points === 21 ? ` (you have blackjack!)` : ``)}`;
 		output += `<br /><button class="button" name="send" value="/blackjack hit" title="Hit (get another card)">Hit</button> | <button class="button" name="send" value="/blackjack stand" title="Stand (just keep these cards)">Stand</button>`;

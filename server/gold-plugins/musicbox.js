@@ -54,7 +54,7 @@ exports.commands = {
 	mb: 'musicbox',
 	musicbox: function (target, room, user, connection, cmd) {
 		let cmds = {'help':1, 'add':1, 'remove':1, 'css':1, 'removeall':1, 'delete':1};
-		if (target && toId(target.split(' ')[0]) in cmds) {
+		if (target && toID(target.split(' ')[0]) in cmds) {
 			if (typeof musicboxes[user.userid] !== 'object') return this.errorReply("You do not own a music box. Buy one from the shop.");
 			let cmdIndex = target.indexOf(' '), command;
 			if (cmdIndex > -1) {
@@ -65,7 +65,7 @@ exports.commands = {
 				target = '';
 			}
 
-			switch (toId(command)) {
+			switch (toID(command)) {
 			case 'help':
 				if (!this.runBroadcast()) return;
 				this.sendReplyBox('<b>Music Box Commands:</b><br><br><ul>' +
@@ -125,10 +125,10 @@ exports.commands = {
 				let box2 = musicboxes[user.userid];
 				if (!target || !target.trim()) {
 					if (!this.runBroadcast()) return;
-					if (toId(box2.css)) return this.sendReplyBox("Your music box css: <code>" + box2.css + "</code>");
+					if (toID(box2.css)) return this.sendReplyBox("Your music box css: <code>" + box2.css + "</code>");
 					return this.sendReplyBox("You haven't set button css for your music box yet.");
 				}
-				if (toId(target) in {'remove':1, 'delete':1, 'none':1, 'hidden':1}) {
+				if (toID(target) in {'remove':1, 'delete':1, 'none':1, 'hidden':1}) {
 					delete box2.css;
 				} else {
 					box2.css = Chat.escapeHTML(target.replace(/^["']/, '').replace(/["']$/, ''));
@@ -153,10 +153,10 @@ exports.commands = {
 			case 'delete':
 				if (!this.can('pban')) return false;
 				let targetUser = Users.getExact(target) ? Users.getExact(target).name : target;
-				let box3 = musicboxes[toId(targetUser)];
+				let box3 = musicboxes[toID(targetUser)];
 				if (!box3) return this.sendReply(targetUser + " doesn't have a music box...");
 
-				delete musicboxes[toId(targetUser)];
+				delete musicboxes[toID(targetUser)];
 				fs.writeFileSync(FILE, JSON.stringify(musicboxes, null, 1));
 				this.sendReply("You have successfully deleted " + targetUser + "'s music box.");
 				break;
@@ -165,12 +165,12 @@ exports.commands = {
 			if (!this.runBroadcast()) return;
 			if (target.length > 18) return this.sendReply("The username \"" + target + "\" is too long.");
 			let targetUserr;
-			if (!toId(target)) {
+			if (!toID(target)) {
 				targetUserr = user.name;
 			} else {
 				targetUserr = Users.getExact(target) ? Users.getExact(target).name : target;
 			}
-			let box4 = musicboxes[toId(targetUserr)];
+			let box4 = musicboxes[toID(targetUserr)];
 			if (!box4) return this.sendReplyBox(targetUserr + " doesn't have a music box...");
 			if (!box4.songs.length) return this.sendReplyBox(targetUserr + "'s music box is empty...");
 

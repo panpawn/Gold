@@ -71,7 +71,7 @@ exports.chatfilter = function (message, user, room, connection, targetUser) {
 	}
 
 	if (room && room.id === 'lobby') { // lag test messages
-		if (message.toLocaleString() === 'test' || message === '.' || toId(message) === 'lagtest' || toId(message) === 'testlag') {
+		if (message.toLocaleString() === 'test' || message === '.' || toID(message) === 'lagtest' || toID(message) === 'testlag') {
 			user.sendTo(room.id, `|c:|${~~(Date.now() / 1000)}|${user.getIdentity(room.id)}|${message}`);
 			return false;
 		}
@@ -104,7 +104,7 @@ loadBannedNames();
 
 Chat.namefilter = function (name, user) {
 	const badHosts = Object.keys(Gold.lockedHosts);
-	const nameId = toId(name);
+	const nameId = toID(name);
 
 	let badNameMatch = false;
 	if (!Config.bannedNames) loadBannedNames();
@@ -137,13 +137,13 @@ Chat.namefilter = function (name, user) {
 		return;
 	}
 
-	Dnsbl.getHost(ip).then(host => {
+	IPTools.getHost(ip).then(host => {
 		if (!host) return;
 		if (badHosts.length < 0) return; // there are no blacklisted hosts (yet)
 
 		// handling "trusted" users...
 		if (trusted) return;
-		if (Gold.userData[toId(name)] && Gold.userData[toId(name)].proxywhitelist) return;
+		if (Gold.userData[toID(name)] && Gold.userData[toID(name)].proxywhitelist) return;
 		if (proxyWhitelist && proxyWhitelist.includes(nameId)) return;
 
 		badHosts.forEach(badHost => {
@@ -164,7 +164,7 @@ Chat.namefilter = function (name, user) {
 
 // deal with global ranked user's manually...
 function trustedHack(name) {
-	let nameId = toId(name);
+	let nameId = toID(name);
 	let userSymbol = (Users.usergroups[nameId] ? Users.usergroups[nameId].substr(0, 1) : ' ');
 	let rankIndex = (Config.groupsranking.includes(userSymbol) ? Config.groupsranking.indexOf(userSymbol) : false);
 	if (rankIndex && rankIndex > 0) return true;
@@ -192,7 +192,7 @@ function saveHost() {
 Gold.evadeMonitor = function (user, name, punished) {
 	if (punished && punished.alts) { // handles when user is unlocked
 		punished.alts.forEach(alt => {
-			if (Gold.punishments[toId(alt)]) delete Gold.punishments[toId(alt)];
+			if (Gold.punishments[toID(alt)]) delete Gold.punishments[toID(alt)];
 		});
 		Gold.savePunishments();
 		return;

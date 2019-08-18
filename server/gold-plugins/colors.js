@@ -36,7 +36,7 @@ Gold.updateColor = updateColor;
 function generateCSS(name, color) {
 	let css = '';
 	let rooms = [];
-	name = toId(name);
+	name = toID(name);
 	Rooms.rooms.forEach((curRoom, id) => {
 		if (id === 'global' || curRoom.type !== 'chat' || curRoom.isPersonal) return;
 		if (!isNaN(Number(id.charAt(0)))) return;
@@ -58,10 +58,10 @@ exports.commands = {
 		target = target.split(',');
 		for (let u in target) target[u] = target[u].trim();
 		if (!target[1]) return this.parse('/help customcolor');
-		if (toId(target[0]).length > 19) return this.errorReply("Usernames are not this long...");
+		if (toID(target[0]).length > 19) return this.errorReply("Usernames are not this long...");
 		if (target[1] === 'delete') {
-			if (!customColors[toId(target[0])]) return this.errorReply('/customcolor - ' + target[0] + ' does not have a custom color.');
-			delete customColors[toId(target[0])];
+			if (!customColors[toID(target[0])]) return this.errorReply('/customcolor - ' + target[0] + ' does not have a custom color.');
+			delete customColors[toID(target[0])];
 			updateColor();
 			this.sendReply("You removed " + target[0] + "'s custom color.");
 			Rooms('staff').add(user.name + " removed " + target[0] + "'s custom color.").update();
@@ -69,12 +69,12 @@ exports.commands = {
 			if (Users(target[0]) && Users(target[0]).connected) Users(target[0]).popup(user.name + " removed your custom color.");
 			return;
 		}
-		if (toId(target[0]) === 'delete') return this.errorReply("Did you mean: /customcolor " + target[1] + ", delete");
-		if (customColors[toId(target[0])]) return this.errorReply("This user already has a custom color.  Do /customcolor [user], delete and then set their new color.");
+		if (toID(target[0]) === 'delete') return this.errorReply("Did you mean: /customcolor " + target[1] + ", delete");
+		if (customColors[toID(target[0])]) return this.errorReply("This user already has a custom color.  Do /customcolor [user], delete and then set their new color.");
 		this.sendReply("|raw|You have given <b><font color=" + target[1] + ">" + Chat.escapeHTML(target[0]) + "</font></b> a custom color.");
 		Rooms('staff').add('|raw|' + Chat.escapeHTML(target[0]) + " has recieved a <b><font color=" + target[1] + ">custom color</fon></b> from " + Chat.escapeHTML(user.name) + ".").update();
 		this.privateModCommand("(" + target[0] + " has recieved custom color: '" + target[1] + "' from " + user.name + ".)");
-		customColors[toId(target[0])] = target[1];
+		customColors[toID(target[0])] = target[1];
 		updateColor();
 	},
 	customcolorhelp: ["Commands Include:",
@@ -264,7 +264,7 @@ const mainCustomColors = {
 
 // hashColor function
 function hashColor(name) {
-	name = toId(name);
+	name = toID(name);
 	if (name === 'constructor') return '';
 	if (customColors[name]) {
 		let customHex = customColors[name].startsWith('#') ? customColors[name] : '#' + customColors[name];

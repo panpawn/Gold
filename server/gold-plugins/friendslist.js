@@ -61,7 +61,7 @@ function getFriendsNumber(user) {
 
 function getAdded(user) {
 	let originalName = user;
-	user = toId(user);
+	user = toID(user);
 	let list = Object.keys(Friends);
 	let output = [];
 	let label = (getFriendsNumber(user) > 1 ? 'users have' : 'user has');
@@ -139,7 +139,7 @@ exports.commands = {
 
 		switch (target[0]) {
 		case 'add':
-			let newFriend = toId(target[1]);
+			let newFriend = toID(target[1]);
 			if (!newFriend) return this.errorReply("Usage: /friendslist add, [user] - Adds a user to your friendslist.");
 			if (user.userid === newFriend) return this.errorReply("You cannot add yourself to your friendslist...");
 			if (newFriend.length > 18) return this.errorReply("Usernames are not this long...");
@@ -152,7 +152,7 @@ exports.commands = {
 
 		case 'delete':
 		case 'remove':
-			let removee = toId(target[1]);
+			let removee = toID(target[1]);
 			if (!removee) return this.errorReply("Usage: /friendslist remove, [user] - Removes a user from your friendslist.");
 			if (!~Friends[user.userid].indexOf(removee)) return this.errorReply("You are not currently friends with this user.  Check spelling?");
 			Friends[user.userid].splice(Friends[user.userid].indexOf(removee), 1);
@@ -209,7 +209,7 @@ exports.commands = {
 				}
 				return this.sendReplyBox(formatList(user.userid, user.userid));
 			} else {
-				target[0] = toId(target[0]);
+				target[0] = toID(target[0]);
 				if (!Friends[target[0]] || !Friends[target[0]].length || target[0] === 'constructor') {
 					return this.errorReply("This user does not have any friends added to their friendslist yet.");
 				}

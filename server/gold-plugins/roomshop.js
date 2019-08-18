@@ -61,7 +61,7 @@ exports.commands = {
 		if (!RoomShop[room.id]) RoomShop[room.id] = {};
 		let RS = RoomShop[room.id];
 		let item, desc, price, itemName;
-		switch (toId(target[0])) {
+		switch (toID(target[0])) {
 		case 'add':
 			if (user.userid !== room.founder && !this.can('declare') && room.isPrivate) return false;
 			if (RS.length > ITEM_CAP) return this.errorReply("You have reached the item cap of " + ITEM_CAP + " and cannot add any more items.");
@@ -72,14 +72,14 @@ exports.commands = {
 			if (item.lenth > 15) return this.errorReply("Item names cannot exceed 15 characters.");
 			if (desc.length > 200) return this.errorReply("Item descriptions cannot exceed 200 characters.");
 			if (isNaN(price) || price < 1 || ~price.indexOf('.') || price > 1000) return this.errorReply("The item's price must be a positive integer, and cannot exceed 1000.");
-			RS[toId(item)] = [item, desc, Number(price)];
+			RS[toID(item)] = [item, desc, Number(price)];
 			saveShop();
 			this.sendReply("You have successfully added the item '" + item + "' to your room shop.");
 			break;
 		case 'remove':
 			if ((user.userid !== room.founder) && !this.can('declare')) return false;
 			if (!target[1]) return this.sendReply("Usage: /roomshop remove, [item] - Removes an item from the roomshop.");
-			item = toId(target[1]);
+			item = toID(target[1]);
 			if (!RS[item]) return this.errorReply("'" + target[1] + "' is not an item in the room shop. Check spelling?");
 			itemName = RS[item][0];
 			delete RoomShop[room.id][item];
@@ -88,11 +88,11 @@ exports.commands = {
 			break;
 		case 'buy':
 			if (room.founder === user.userid) return this.errorReply("You can't buy from your own room shop.");
-			item = toId(target[1]);
+			item = toID(target[1]);
 			if (!item) return this.errorReply("Usage: /roomshop buy, [item] - Buys an item from the room's room shop.");
 			if (!RS[item]) return this.errorReply("This item is not in the room shop. Check spelling?");
 			item = RS[item][0];
-			price = RS[toId(item)][2];
+			price = RS[toID(item)][2];
 			if (Gold.readMoney(user.userid) < price) return this.errorReply("You do not have enough bucks to buy " + item + ". You need " + (price - Gold.readMoney(user.userid)) + " more bucks to buy this item.");
 			this.parse('/tb ' + room.founder + ', ' + price);
 			room.add("|raw|<b><u>Room Shop</u>: " + getName(user.name) + "</b> has bought a(n) <u>" + Chat.escapeHTML(item) + "</u> from the room shop for " + price + " buck" + (price > 1 ? "s" : "") + ".").update();
@@ -103,8 +103,8 @@ exports.commands = {
 			break;
 		default:
 			let check = /add|remove|buy/, correction = '';
-			if (check.test(toId(target[0]))) {
-				let test = toId(target[0]).match(check);
+			if (check.test(toID(target[0]))) {
+				let test = toID(target[0]).match(check);
 				correction = '\n(Did you mean: "' + message.replace(test, test + ',') + '")';
 			}
 			this.sendReply("'" + target[0] + "' is not a valid roomshop command. Valid roomshop commands include: add, remove, buy" + correction);
