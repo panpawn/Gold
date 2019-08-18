@@ -1,6 +1,6 @@
 'use strict';
 
-const CronJob = require('cron').CronJob();
+const CronJob = require('cron').CronJob;
 
 new CronJob('1 20 * * *', function() { // everday at 8:01 EST
 	const lobby = Rooms('lobby');
