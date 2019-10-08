@@ -1,7 +1,6 @@
 /* Custom color plugin
  * by jd and panpawn
  */
-
 'use strict';
 
 const filepath = 'config/customcolors.json';
